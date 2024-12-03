@@ -1,14 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
+    [Index(nameof(UserId), nameof(NotificationId), IsUnique = true)]
     public class UserNotification
     {
-        [Key, ForeignKey("User")]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int UserNotificationId { get; set; }
+
+        [ForeignKey("User")]
         public string UserId { get; set; }
 
-        [Key, ForeignKey("Notification")]
+        [ForeignKey("Notification")]
         public int NotificationId { get; set; }
 
         [Required]

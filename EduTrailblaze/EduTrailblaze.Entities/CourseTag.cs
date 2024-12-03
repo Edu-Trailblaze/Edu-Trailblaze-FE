@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduTrailblaze.Entities
 {
+    [Index(nameof(TagId), nameof(CourseId), IsUnique = true)]
     public class CourseTag
     {
-        [Key, ForeignKey("Course")]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int CourseTagId { get; set; }
+
+        [ForeignKey("Course")]
         public int CourseId { get; set; }
 
-        [Key, ForeignKey("Tag")]
+        [ForeignKey("Tag")]
         public int TagId { get; set; }
 
 
