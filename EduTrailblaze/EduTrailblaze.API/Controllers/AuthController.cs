@@ -18,6 +18,7 @@ namespace EduTrailblaze.API.Controllers
         private readonly TokenGenerator _jwtToken;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
 
         public AuthController(TokenGenerator tokenGenerator, UserManager<User> userManager, SignInManager<User> signInManager, IAuthService authService)
@@ -31,49 +32,14 @@ namespace EduTrailblaze.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            //if (model == null)
-            //{
-            //    return BadRequest(new { Message = "Invalid request." });
-            //}
+            var result = await _authService.Register(model);
 
-            //if (model.Password != model.ConfirmPassword)
-            //{
-            //    return BadRequest(new { Message = "Passwords do not match." });
-            //}
-
-            var user = new User
+            if (result.StatusCode == 200)
             {
-                UserName = model.Email,
-                Email = model.Email,
-               // Name = model.Name,
-               // DateCreated = DateTime.Now
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (!result.Succeeded) return BadRequest(new { Message = "Registration failed.", Errors = result.Errors });
-
-            if (model.RoleSelected == null)
-            {
-               // await _userManager.AddToRoleAsync(user, SD.User);
+                return Ok(new { Message = result });
+                
             }
-            else
-            {
-                await _userManager.AddToRoleAsync(user, model.RoleSelected);
-            }
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackurl = Url.Action("ConfirmEmail", "Account", new
-            {
-                userid = user.Id,
-                code
-            }, protocol: HttpContext.Request.Scheme);
-            //await _emailSender.SendEmailAsync(model.Email, "Confirm Email - Identity Manager",
-            //                               $"Please confirm your email by clicking here: <a href='{callbackurl}'>link</a>");
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-            return Ok(new { Message = "User registered successfully." });
-
+            return StatusCode(result.StatusCode, result); 
 
         }
 
@@ -81,34 +47,14 @@ namespace EduTrailblaze.API.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromBody]  LoginModel model)
         {
-            try
+            var result = await _authService.Login(model);
+
+            if (result.StatusCode == 200)
             {
-              
-                //var user = await _userManager.FindByNameAsync(model.Email);
-
-                //if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-                //{
-                //    return
-                //}
-
-                //var token = await _jwtToken.GenerateJwtToken(user,"Admin");
-                //return Ok(new { Token = token });
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
-                
-                if (!result.Succeeded)
-                {
-                    if (result.IsLockedOut) return StatusCode(statusCode:401,new { Message = "Your account is locked. Please contact support." });
-                    return StatusCode(statusCode: 400, new { Message = "Your account is locked. Please contact support." });
-
-                }
-                var user = await _userManager.FindByEmailAsync(model.Email);
-             var token =   await _jwtToken.GenerateJwtToken(user,"Admin");
-                return Ok(new { message = "Login successful." , Token = token });
+                return Ok(new { Message = result });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return StatusCode(result.StatusCode, result);
+
         }
 
 

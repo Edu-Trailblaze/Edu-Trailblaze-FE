@@ -39,9 +39,7 @@ namespace EduTrailblaze.Services.Helper
 
         }
 
-        public Task<string> GenerateRefreshToken()
-        {
-            throw new NotImplementedException();
-        }
+        public Task<string> GenerateRefreshToken() =>  Task.FromResult(Guid.NewGuid().ToString());
+        
     }
 }

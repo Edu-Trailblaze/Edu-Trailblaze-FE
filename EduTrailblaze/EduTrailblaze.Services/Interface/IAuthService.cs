@@ -10,8 +10,8 @@ namespace EduTrailblaze.Services.Interface
 {
     public interface IAuthService
     {
-        Task Register(string email, string password);
-        Task Login(string email, string password);
+        Task<ApiResponse> Register(RegisterModel registerModel);
+        Task<ApiResponse> Login(LoginModel loginModel);
         Task VerifyAuthenticatorCode(string email, string code);
         Task RemoveAuthenticator();
         Task ForgotPassword(ForgotPasswordModel forgotPasswordModel);

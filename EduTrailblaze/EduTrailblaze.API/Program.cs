@@ -8,11 +8,16 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using EduTrailblaze.Services.Helper;
+using System.Text.Json;
+using Polly;
 
-
+using Polly.Retry;
+using Polly.CircuitBreaker;
 using EduTrailblaze.Services.Interface;
 using EduTrailblaze.API.Controllers;
 using EduTrailblaze.Services;
+using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 namespace EduTrailblaze.API
 {
@@ -24,7 +29,13 @@ namespace EduTrailblaze.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.WriteIndented = true; 
+            }
+            )
+            ;
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -91,6 +102,7 @@ namespace EduTrailblaze.API
             // Add services to Dependency Container
             builder.Services.AddTransient<TokenGenerator>(); 
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 
 
             var app = builder.Build();
