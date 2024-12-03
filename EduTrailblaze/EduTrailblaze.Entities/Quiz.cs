@@ -18,6 +18,7 @@ namespace EduTrailblaze.Entities
         public decimal PassingScore { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
 
         // Navigation properties

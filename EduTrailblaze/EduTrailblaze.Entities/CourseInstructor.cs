@@ -1,14 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
+    [Index(nameof(InstructorId), nameof(CourseId), IsUnique = true)]
     public class CourseInstructor
     {
-        [Key, ForeignKey("Course")]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int CourseInstructorId { get; set; }
+
+        [ForeignKey("Course")]
         public int CourseId { get; set; }
 
-        [Key, ForeignKey("User")]
+        [ForeignKey("User")]
         public string InstructorId { get; set; }
 
         [Required]

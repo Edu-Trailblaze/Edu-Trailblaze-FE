@@ -1,0 +1,76 @@
+﻿using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Entities;
+using EduTrailblaze.Services.Interfaces;
+
+namespace EduTrailblaze.Services
+{
+    public class UserCertificateService : IUserCertificateService
+    {
+        private readonly IRepository<UserCertificate> _userCertificateRepository;
+
+        public UserCertificateService(IRepository<UserCertificate> userCertificateRepository)
+        {
+            _userCertificateRepository = userCertificateRepository;
+        }
+
+        public async Task<UserCertificate?> GetUserCertificate(int userCertificateId)
+        {
+            try
+            {
+                return await _userCertificateRepository.GetByIdAsync(userCertificateId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the userCertificate.", ex);
+            }
+        }
+        
+        public async Task<IEnumerable<UserCertificate>> GetUserCertificates()
+        {
+            try
+            {
+                return await _userCertificateRepository.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the userCertificate.", ex);
+            }
+        }
+
+        public async Task AddUserCertificate(UserCertificate userCertificate)
+        {
+            try
+            {
+                await _userCertificateRepository.AddAsync(userCertificate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the userCertificate.", ex);
+            }
+        }
+
+        public async Task UpdateUserCertificate(UserCertificate userCertificate)
+        {
+            try
+            {
+                await _userCertificateRepository.UpdateAsync(userCertificate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the userCertificate.", ex);
+            }
+        }
+
+        public async Task DeleteUserCertificate(UserCertificate userCertificate)
+        {
+            try
+            {
+                await _userCertificateRepository.DeleteAsync(userCertificate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the userCertificate.", ex);
+            }
+        }
+    }
+}
