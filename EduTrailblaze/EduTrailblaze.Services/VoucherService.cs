@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class VoucherService : IVoucherService
     {
-        private readonly IRepository<Voucher> _voucherRepository;
+        private readonly IRepository<Voucher, int> _voucherRepository;
 
-        public VoucherService(IRepository<Voucher> voucherRepository)
+        public VoucherService(IRepository<Voucher, int> voucherRepository)
         {
             _voucherRepository = voucherRepository;
         }

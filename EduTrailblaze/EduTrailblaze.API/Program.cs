@@ -29,7 +29,7 @@ namespace EduTrailblaze.API
                     .AddEntityFrameworkStores<EduTrailblazeDbContext>()
                     .AddDefaultTokenProviders();
 
-            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 
             builder.Services.AddScoped<INewsService, NewsService>();
 

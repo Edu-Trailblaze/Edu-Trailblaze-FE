@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class UserCertificateService : IUserCertificateService
     {
-        private readonly IRepository<UserCertificate> _userCertificateRepository;
+        private readonly IRepository<UserCertificate, int> _userCertificateRepository;
 
-        public UserCertificateService(IRepository<UserCertificate> userCertificateRepository)
+        public UserCertificateService(IRepository<UserCertificate, int> userCertificateRepository)
         {
             _userCertificateRepository = userCertificateRepository;
         }

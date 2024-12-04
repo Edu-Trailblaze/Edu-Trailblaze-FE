@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class SectionService : ISectionService
     {
-        private readonly IRepository<Section> _sectionRepository;
+        private readonly IRepository<Section, int> _sectionRepository;
 
-        public SectionService(IRepository<Section> sectionRepository)
+        public SectionService(IRepository<Section, int> sectionRepository)
         {
             _sectionRepository = sectionRepository;
         }

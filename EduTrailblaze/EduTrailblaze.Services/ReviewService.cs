@@ -1,14 +1,15 @@
 ﻿using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Interfaces;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services
 {
     public class ReviewService : IReviewService
     {
-        private readonly IRepository<Review> _reviewRepository;
+        private readonly IRepository<Review, int> _reviewRepository;
 
-        public ReviewService(IRepository<Review> reviewRepository)
+        public ReviewService(IRepository<Review, int> reviewRepository)
         {
             _reviewRepository = reviewRepository;
         }
@@ -70,6 +71,26 @@ namespace EduTrailblaze.Services
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while deleting the review.", ex);
+            }
+        }
+
+        public async Task<CourseReviewResponse> GetAverageRatingAndNumberOfRatings(int courseId)
+        {
+            try
+            {
+                var reviews = await _reviewRepository.GetAllAsync();
+                var courseReviews = reviews.Where(r => r.CourseId == courseId);
+                var averageRating = courseReviews.Average(r => r.Rating);
+                var numberOfRatings = courseReviews.Count();
+                return new CourseReviewResponse
+                {
+                    AverageRating = averageRating,
+                    TotalRatings = numberOfRatings
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the average rating.", ex);
             }
         }
     }
