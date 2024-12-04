@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using StackExchange.Redis;
 
 namespace EduTrailblaze.API.Controllers
 {
@@ -27,6 +28,7 @@ namespace EduTrailblaze.API.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
+            
         }
 
         [HttpPost("register")]

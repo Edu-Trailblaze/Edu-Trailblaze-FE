@@ -18,6 +18,8 @@ using EduTrailblaze.API.Controllers;
 using EduTrailblaze.Services;
 using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 
 namespace EduTrailblaze.API
 {
@@ -26,6 +28,10 @@ namespace EduTrailblaze.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
+            builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             // Add services to the container.
 
@@ -103,7 +109,41 @@ namespace EduTrailblaze.API
             builder.Services.AddTransient<TokenGenerator>(); 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+            builder.Services.AddScoped<IRedisService, RedisService>();
 
+            //redis Configuration
+            
+            
+
+            builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("RedisConfig"));
+            var redisTest = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<ConnectionStrings>>().Value;
+            var redisConfigurationSection = builder.Configuration.GetSection("RedisConfig");
+            Console.WriteLine(redisTest.DefaultConnection + " duma " + redisConfigurationSection["Port"] + " " + redisConfigurationSection["Password"] + " " + redisConfigurationSection["Ssl"] + " " + redisConfigurationSection["AbortOnConnectFail"]);
+            var redisConfiguration = new ConfigurationOptions
+            {
+                //EndPoints = { $"{redisConfigurationSection["Host"]}:{redisConfigurationSection["Port"]}" },
+                //Password = redisConfigurationSection["Password"],
+                //Ssl = bool.Parse(redisConfigurationSection["Ssl"]),
+                //AbortOnConnectFail = bool.Parse(redisConfigurationSection["AbortOnConnectFail"]),
+                //ConnectRetry = 5, 
+                //ConnectTimeout = 5000, 
+                //SyncTimeout = 5000, 
+                //KeepAlive = 180
+                EndPoints = { $"redis-19903.c91.us-east-1-3.ec2.redns.redis-cloud.com:19903" },
+                Password = "rbZ69HxoxaIJHQuAo16OJxXwZXz6cDrZ",
+                Ssl = bool.Parse("false"),
+                AbortOnConnectFail = bool.Parse("false"),
+                ConnectRetry = 5,
+                ConnectTimeout = 5000,
+                SyncTimeout = 5000,
+                KeepAlive = 180
+            };
+            builder.Services.AddSingleton(redisConfiguration);
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var configuration = sp.GetRequiredService<ConfigurationOptions>();
+                return ConnectionMultiplexer.Connect(configuration);
+            });
 
             var app = builder.Build();
 
@@ -127,5 +167,14 @@ namespace EduTrailblaze.API
 
             app.Run();
         }
+        private class ConnectionStrings
+        {
+            public string DefaultConnection { get; set; }
+            public string Port { get; set; }
+            public string Password { get; set; }
+            public string Ssl { get; set; }
+            public string AbortOnConnectFail { get; set; }
+        }
     }
+   
 }

@@ -7,18 +7,18 @@ using Microsoft.Identity.Client;
 using Microsoft.AspNetCore.Http;
 using System.Security.Policy;
 using Microsoft.EntityFrameworkCore;
-using System.Resources;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Polly;
 using Polly.Retry;
 using Polly.Timeout;
 using Polly.Wrap;
 using Microsoft.Data.SqlClient;
+using StackExchange.Redis;
 
 namespace EduTrailblaze.Services
 {
     public class AuthService : IAuthService
     {
+        private readonly IRedisService _redisService;
         private readonly ITokenGenerator _jwtToken;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -26,7 +26,7 @@ namespace EduTrailblaze.Services
         private readonly AsyncPolicyWrap _dbPolicyWrap;
         private readonly AsyncRetryPolicy _dbRetryPolicy;
         private readonly AsyncTimeoutPolicy _dbTimeoutPolicy;
-        public AuthService(ITokenGenerator authService, UserManager<User> userManager,SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
+        public AuthService(ITokenGenerator authService, UserManager<User> userManager,SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager,IRedisService redisService)
         {
             _jwtToken = authService;
             _userManager = userManager;
@@ -44,6 +44,7 @@ namespace EduTrailblaze.Services
                 return Task.CompletedTask;
             });
             _dbPolicyWrap = Policy.WrapAsync(_dbRetryPolicy, _dbTimeoutPolicy);
+            _redisService = redisService;
         }
 
         public Task EnableAuthenticator(TwoFactorAuthenticationModel twoFactorAuthenticationViewModel)
@@ -102,7 +103,8 @@ namespace EduTrailblaze.Services
                 await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FirstName", user.UserName));
                 
                 var token = await _jwtToken.GenerateJwtToken(user, "Admin");
-                var refreshToken = await _jwtToken.GenerateRefreshToken(); 
+                var refreshToken = await _jwtToken.GenerateRefreshToken();
+                await _redisService.AcquireLock(user.Id, refreshToken);
                 return new ApiResponse { StatusCode = StatusCodes.Status200OK,
                     Message = "Login successful.", Data = new {
                         AccessToken = token,
@@ -210,8 +212,9 @@ namespace EduTrailblaze.Services
                 await _userManager.GetAuthenticatorKeyAsync(newUser);
 
                 // Generate Tokens
-                var token = await _jwtToken.GenerateJwtToken(userLogin, model.RoleSelected);  // Giả sử bạn có service JWT để tạo token
+                var token = await _jwtToken.GenerateJwtToken(userLogin, model.RoleSelected);  
                 var refreshToken = await _jwtToken.GenerateRefreshToken();
+              
                 return new ApiResponse
                 {
                     StatusCode = StatusCodes.Status200OK,
