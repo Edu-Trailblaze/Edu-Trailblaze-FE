@@ -10,7 +10,7 @@ export default function WebFooter() {
               <div className="grid md:grid-cols-12 grid-cols-1 gap-[30px]">
                 <div className="lg:col-span-4 md:col-span-12">
                   <span className="text-2xl text-yellow-400 font-semibold flex justify-center lg:justify-start">
-                    Company Logo
+                  <img alt="" src="/assets/ETB_Logo.png" className="w-80" />
                   </span>
                   <p className="mt-6 text-gray-300 text-justify">
                     Discover a world of knowledge and innovation at

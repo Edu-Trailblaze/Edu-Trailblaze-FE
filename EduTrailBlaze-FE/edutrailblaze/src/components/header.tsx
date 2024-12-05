@@ -21,7 +21,7 @@ import {
 } from "@heroicons/react/24/outline";
 import {
   ChevronDownIcon,
-  PhoneIcon,
+  ArrowRightCircleIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 import { LuHandHeart } from "react-icons/lu";
@@ -65,11 +65,33 @@ const products = [
 ];
 const callsToAction = [
   { name: "Watch demo", href: "#", icon: PlayCircleIcon },
-  { name: "View all", href: "#", icon: PhoneIcon },
+  { name: "View all", href: "#", icon: ArrowRightCircleIcon },
+];
+
+const languageOptions = [
+  "English",
+  "Deutsch",
+  "Español",
+  "Français",
+  "Bahasa Indonesia",
+  "Italiano",
+  "日本語",
+  "한국어",
+  "中文(简体)",
+  "中文(繁體)",
+  "Português",
+  "Русский",
+  "Türkçe",
+  "Polski",
+  "Română",
+  "Tiếng Việt",
+  "ภาษาไทย",
+  "Nederlands",
 ];
 
 export default function WebHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [languageModalOpen, setLanguageModalOpen] = useState(false);
 
   return (
     <header className="bg-white">
@@ -151,30 +173,6 @@ export default function WebHeader() {
             </PopoverPanel>
           </Popover>
 
-          {/* <form className="relative outline outline-gray-300 shadow-lg focus:border-2 rounded-full transition-all 4 focus:w-6">
-              <input
-                placeholder="Type to search..."
-                className=" px-5 py-3 ml-6"
-                style={{ width: "650px" }}
-                name="search"
-                type="search"
-              />
-              <svg
-                className="size-6 absolute top-3 left-3 text-gray-500"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                ></path>
-              </svg>
-            </form> */}
-
           <div className="flex items-center justify-center p-5 ">
             <div className="rounded-full outline outline-gray-300 ">
               <div className="flex">
@@ -232,14 +230,56 @@ export default function WebHeader() {
             </button>
           </div>
 
+        <PopoverGroup className="flex justify-evenly items-center">
           <div>
-            <button className="outline select-none rounded-lg bg-white py-3 px-3 text-center font-bold  text-blue-500 shadow-md shadow-blue-500/90 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+            <button
+              onClick={() => setLanguageModalOpen(true)}
+              className="outline select-none rounded-lg bg-white py-3 px-3 text-center font-bold text-blue-500 shadow-md shadow-blue-500/90 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+            >
               <MdLanguage className="text-lg" />
             </button>
           </div>
+        </PopoverGroup>
+
+        <Dialog
+          open={languageModalOpen}
+          onClose={() => setLanguageModalOpen(false)}
+          className="relative z-50"
+        >
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <div className="fixed inset-0 flex items-center justify-center">
+            <DialogPanel className="w-full max-w-md rounded bg-white p-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold">Choose a language</h2>
+                <button
+                  onClick={() => setLanguageModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-700"
+                >
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
+              </div>
+              <ul className="mt-4 grid grid-cols-2 gap-4">
+                {languageOptions.map((language) => (
+                  <li
+                    key={language}
+                    className="cursor-pointer rounded p-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      console.log(`Language selected: ${language}`);
+                      setLanguageModalOpen(false);
+                    }}
+                  >
+                    {language}
+                  </li>
+                ))}
+              </ul>
+            </DialogPanel>
+          </div>
+        </Dialog>
         </div>
       </nav>
-      <Dialog
+
+      {/** The codes below is for mobile edition (incomplete) */}
+      {/* <Dialog
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
         className="lg:hidden"
@@ -318,7 +358,7 @@ export default function WebHeader() {
             </div>
           </div>
         </DialogPanel>
-      </Dialog>
+      </Dialog> */}
     </header>
   );
 }
