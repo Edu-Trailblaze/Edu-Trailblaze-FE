@@ -10,7 +10,7 @@ export default function WebFooter() {
               <div className="grid md:grid-cols-12 grid-cols-1 gap-[30px]">
                 <div className="lg:col-span-4 md:col-span-12">
                   <span className="text-2xl text-yellow-400 font-semibold flex justify-center lg:justify-start">
-                  <img alt="" src="/assets/ETB_Logo.png" className="w-80" />
+                  <img alt="" src="/assets/logos/ETB_Logo.png" className="w-80" />
                   </span>
                   <p className="mt-6 text-gray-300 text-justify">
                     Discover a world of knowledge and innovation at
@@ -27,7 +27,7 @@ export default function WebFooter() {
                         className="font-semibold tracking-wide align-middle transition duration-500 ease-in-out p-1 h-9 w-9 inline-flex items-center text-center justify-center text-sm border border-yellow-600 rounded-md hover:border-yellow-600 hover:bg-yellow-600"
                       >
                         <img
-                          src="/assets/facebook_logo1.png"
+                          src="/assets/logos/facebook_logo1.png"
                           alt=""
                           className="h-4 w-4 fill-gray-300"
                         />
@@ -39,7 +39,7 @@ export default function WebFooter() {
                         className="font-semibold tracking-wide align-middle transition duration-500 ease-in-out p-1 h-9 w-9 inline-flex items-center text-center justify-center text-sm border border-yellow-600 rounded-md hover:border-yellow-600 hover:bg-yellow-600"
                       >
                         <img
-                          src="/assets/instagram_logo.png"
+                          src="/assets/logos/instagram_logo.png"
                           alt=""
                           className="h-4 w-4 fill-gray-300"
                         />
@@ -51,7 +51,7 @@ export default function WebFooter() {
                         className="font-semibold tracking-wide align-middle transition duration-500 ease-in-out p-1 h-9 w-9 inline-flex items-center text-center justify-center text-sm border border-yellow-600 rounded-md hover:border-yellow-600 hover:bg-yellow-600"
                       >
                         <img
-                          src="/assets/twitter_logo.png"
+                          src="/assets/logos/twitter_logo.png"
                           alt=""
                           className="h-4 w-4 fill-gray-300"
                         />
@@ -63,7 +63,7 @@ export default function WebFooter() {
                         className="font-semibold tracking-wide align-middle transition duration-500 ease-in-out p-1 h-9 w-9 inline-flex items-center text-center justify-center text-sm border border-yellow-600 rounded-md hover:border-yellow-600 hover:bg-yellow-600"
                       >
                         <img
-                          src="/assets/linkedin_logo.png"
+                          src="/assets/logos/linkedin_logo.png"
                           alt=""
                           className="h-4 w-4 fill-gray-300"
                         />
