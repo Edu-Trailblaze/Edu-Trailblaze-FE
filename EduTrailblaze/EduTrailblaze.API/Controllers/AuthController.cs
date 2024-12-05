@@ -59,6 +59,41 @@ namespace EduTrailblaze.API.Controllers
 
         }
 
+        [HttpPost("logout")]
+        
+        public async Task<IActionResult> Logout(string userId)
+        {
+          //  var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new { Message = "User not found" });
+            }
 
+            var result = await _authService.Logout(userId);
+
+            if (result.StatusCode == 200)
+            {
+                return Ok(new { Message = result });
+            }
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpGet("refreshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken =  Request.Cookies["refreshToken"];
+            if (refreshToken == null)
+            {
+                return BadRequest(new { Message = "Refresh token is required" });
+            }
+
+            var result = await _authService.RefreshToken(refreshToken);
+
+            if (result.StatusCode == 200)
+            {
+                return Ok(new { Message = result });
+            }
+            return StatusCode(result.StatusCode, result);
+        }
     }
 }

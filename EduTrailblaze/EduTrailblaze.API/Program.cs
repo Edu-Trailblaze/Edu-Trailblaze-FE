@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.Builder;
 
 namespace EduTrailblaze.API
 {
@@ -29,25 +30,30 @@ namespace EduTrailblaze.API
         {
             var builder = WebApplication.CreateBuilder(args);
             
-    //        builder.Configuration
-    //.SetBasePath(Directory.GetCurrentDirectory())
-    //.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
             // Add services to the container.
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 options.JsonSerializerOptions.WriteIndented = true; 
-            }
-            )
-            ;
+            });
+            // Add Caching for response Middleware 
+            builder.Services.AddResponseCaching();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Add DbContext
-            builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
+            // Kestrel Config (hide in Header Request)
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.AddServerHeader = false;
+            });
+
+
+
+            // Add DbContext Pool
+            builder.Services.AddDbContextPool<EduTrailblazeDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
@@ -115,9 +121,8 @@ namespace EduTrailblaze.API
             
             
 
-            builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("RedisConfig"));
-            var redisConfigurationSection = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<ConnectionStrings>>().Value;
-           // var redisConfigurationSection = builder.Configuration.GetSection("RedisConfig");
+            builder.Services.Configure<RedisConfig>(builder.Configuration.GetSection("RedisConfig"));
+            var redisConfigurationSection = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<RedisConfig>>().Value;
            
             var redisConfiguration = new ConfigurationOptions
             {
@@ -138,6 +143,7 @@ namespace EduTrailblaze.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -149,9 +155,36 @@ namespace EduTrailblaze.API
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
                 });
             }
+            
+            
 
             app.UseHttpsRedirection();
+            
+            app.UseHsts();
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                await next();
+            });
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["Referrer-Policy"] = "no-referrer";
+                await next();
+            });
 
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+                await next();
+            });
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-Frame-Options"] = "DENY";
+                await next();
+            });
+
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -160,7 +193,7 @@ namespace EduTrailblaze.API
 
             app.Run();
         }
-        private class ConnectionStrings
+        private class RedisConfig
         {
             public string Host { get; set; }
             public string Port { get; set; }

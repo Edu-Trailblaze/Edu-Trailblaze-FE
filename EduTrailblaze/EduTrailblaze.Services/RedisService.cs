@@ -21,6 +21,6 @@ namespace EduTrailblaze.Services
             _database = _redisService.GetDatabase();
         }
         public async Task<bool> AcquireLock(string lockKey, string lockValue) =>  _database.StringSet(lockKey, lockValue, TimeSpan.FromMinutes(30), When.NotExists);
-        
+        public async Task<bool> ReleaseLock(string lockKey) => await _database.KeyDeleteAsync(lockKey);
     }
 }

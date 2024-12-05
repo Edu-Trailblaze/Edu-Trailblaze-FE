@@ -1,4 +1,5 @@
-﻿using EduTrailblaze.Entities;
+﻿        
+using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Helper;
 using Microsoft.AspNetCore.Identity;
 using EduTrailblaze.Services.Interface;
@@ -91,6 +92,9 @@ namespace EduTrailblaze.Services
                 if (!result.Succeeded)
                 {
                     if (result.IsLockedOut) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Your account is locked. Please contact support." };
+                    if(result.IsNotAllowed) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Your account is not allowed to login. Please contact support." };
+                    if (result.RequiresTwoFactor) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Your account requires two factor authentication." };
+                    return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Invalid login attempt." };
                 }
                 
                
@@ -110,9 +114,7 @@ namespace EduTrailblaze.Services
                         AccessToken = token,
                         RefreshToken = refreshToken
                     } };
-
-
-            }
+                }
             catch (Exception ex)
             {
                 return new ApiResponse
@@ -122,7 +124,70 @@ namespace EduTrailblaze.Services
                 };
             }
         }
-       
+        //public async Task<ApiResponse> Logout(string userId)
+        //{
+        //    try
+        //    {
+        //        await _redisService.ReleaseLock(userId);
+        //        return new ApiResponse 
+        //        { 
+        //            StatusCode = StatusCodes.Status200OK,
+        //            Message = "Logged out successfully"
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ApiResponse
+        //        {
+        //            StatusCode = StatusCodes.Status500InternalServerError,
+        //            Message = $"Error during logout: {ex.Message}"
+        //        };
+        //    }
+        //}
+        public async Task<ApiResponse> Logout(string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return new ApiResponse
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Message = "User ID is required"
+                    };
+                }
+
+              var isReleaseLockSuccess =  await _redisService.ReleaseLock(userId);
+                if (isReleaseLockSuccess is false)
+                {
+                    return new ApiResponse
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Message = "User not found"
+                    };
+                }
+
+                return new ApiResponse
+                { 
+                StatusCode = StatusCodes.Status200OK,
+                Message = "Logged out successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = $"Error during logout: {ex.Message}"
+                };
+            }
+        }
+
+        public Task<ApiResponse> RefreshToken(string refreshToken)
+        {
+           
+        }
+
         public async Task<ApiResponse> Register(RegisterModel model)
         {
             try
