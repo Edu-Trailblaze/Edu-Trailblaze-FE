@@ -24,7 +24,7 @@ namespace EduTrailblaze.Entities
 
         [Required]
         [StringLength(50)]
-        public string DifficultyLevel { get; set; }
+        public string DifficultyLevel { get; set; } // Beginner, Intermediate, Advanced
 
         [Required, StringLength(int.MaxValue)]
         public string Prerequisites { get; set; }

@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,13 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateCourse(Course course);
 
         Task DeleteCourse(Course course);
+
+        Task<List<CourseDTO>?> GetCoursesByConditions(GetCoursesRequest request);
+
+        Task<decimal> CalculateEffectivePrice(int courseId);
+
+        Task<int?> GetMaxDiscountId(int courseId);
+
+        Task<List<CourseCardResponse>> GetCourseInformation(GetCoursesRequest request);
     }
 }

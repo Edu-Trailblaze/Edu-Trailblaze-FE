@@ -74,15 +74,25 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task<CourseReviewResponse> GetAverageRatingAndNumberOfRatings(int courseId)
+        public async Task<CourseReviewInformation> GetAverageRatingAndNumberOfRatings(int courseId)
         {
             try
             {
                 var reviews = await _reviewRepository.GetAllAsync();
                 var courseReviews = reviews.Where(r => r.CourseId == courseId);
+
+                if (courseReviews.Count() == 0)
+                {
+                    return new CourseReviewInformation
+                    {
+                        AverageRating = 0,
+                        TotalRatings = 0
+                    };
+                }
+
                 var averageRating = courseReviews.Average(r => r.Rating);
                 var numberOfRatings = courseReviews.Count();
-                return new CourseReviewResponse
+                return new CourseReviewInformation
                 {
                     AverageRating = averageRating,
                     TotalRatings = numberOfRatings

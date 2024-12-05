@@ -18,7 +18,12 @@ namespace EduTrailblaze.Repositories
         {
             try
             {
-                return Task.FromResult(_dbSet.AsQueryable());
+                var dbSet = Task.FromResult(_dbSet.AsQueryable());
+                if (dbSet == null)
+                {
+                    throw new InvalidOperationException("DbSet returned null.");
+                }
+                return dbSet;
             }
             catch (Exception ex)
             {
@@ -30,7 +35,7 @@ namespace EduTrailblaze.Repositories
         {
             try
             {
-                return await _dbSet.ToListAsync();
+                return await _dbSet.AsQueryable().ToListAsync();
             }
             catch (Exception ex)
             {

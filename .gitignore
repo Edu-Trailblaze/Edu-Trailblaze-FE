@@ -9,9 +9,9 @@
 .env
 
 # Environment appsettings
-# appsettings.Development.json
-# appsettings.Production.json
-# appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.json
 
 # User-specific files
 *.suo
