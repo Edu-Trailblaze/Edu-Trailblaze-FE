@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using EduTrailblaze.Entities;
-using IdentityAPI.Entities;
+ using IdentityAPI.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -53,7 +53,7 @@ namespace EduTrailblaze.API
 
 
             // Add DbContext Pool
-            builder.Services.AddDbContextPool<EduTrailblazeDbContext>(options =>
+            builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
@@ -164,22 +164,8 @@ namespace EduTrailblaze.API
             app.Use(async (context, next) =>
             {
                 context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-                await next();
-            });
-            app.Use(async (context, next) =>
-            {
                 context.Response.Headers["Referrer-Policy"] = "no-referrer";
-                await next();
-            });
-
-            app.Use(async (context, next) =>
-            {
                 context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
-                await next();
-            });
-
-            app.Use(async (context, next) =>
-            {
                 context.Response.Headers["X-Frame-Options"] = "DENY";
                 await next();
             });

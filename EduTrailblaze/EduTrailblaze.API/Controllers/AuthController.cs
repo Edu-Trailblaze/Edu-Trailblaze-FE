@@ -81,6 +81,9 @@ namespace EduTrailblaze.API.Controllers
         [HttpGet("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
+            
+            var user = await _userManager.GetUserAsync(User);
+            var id = user.Id;
             var refreshToken =  Request.Cookies["refreshToken"];
             if (refreshToken == null)
             {
