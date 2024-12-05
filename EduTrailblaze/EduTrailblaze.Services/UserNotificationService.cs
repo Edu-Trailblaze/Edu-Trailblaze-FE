@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class UserNotificationService : IUserNotificationService
     {
-        private readonly IRepository<UserNotification, int> _userNotificationRepository;
+        private readonly IRepository<UserNotification> _userNotificationRepository;
 
-        public UserNotificationService(IRepository<UserNotification, int> userNotificationRepository)
+        public UserNotificationService(IRepository<UserNotification> userNotificationRepository)
         {
             _userNotificationRepository = userNotificationRepository;
         }

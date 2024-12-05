@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class EnrollmentService : IEnrollmentService
     {
-        private readonly IRepository<Enrollment, int> _enrollmentRepository;
+        private readonly IRepository<Enrollment> _enrollmentRepository;
 
-        public EnrollmentService(IRepository<Enrollment, int> enrollmentRepository)
+        public EnrollmentService(IRepository<Enrollment> enrollmentRepository)
         {
             _enrollmentRepository = enrollmentRepository;
         }
@@ -70,19 +70,6 @@ namespace EduTrailblaze.Services
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while deleting the enrollment.", ex);
-            }
-        }
-
-        public async Task<int> GetNumberOfStudentsEnrolledInCourse(int courseId)
-        {
-            try
-            {
-                var enrollments = await _enrollmentRepository.GetAllAsync();
-                return enrollments.Count(e => e.CourseId == courseId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while getting the number of students enrolled in the course.", ex);
             }
         }
     }

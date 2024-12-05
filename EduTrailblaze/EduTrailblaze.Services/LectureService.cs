@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class LectureService : ILectureService
     {
-        private readonly IRepository<Lecture, int> _lectureRepository;
+        private readonly IRepository<Lecture> _lectureRepository;
 
-        public LectureService(IRepository<Lecture, int> lectureRepository)
+        public LectureService(IRepository<Lecture> lectureRepository)
         {
             _lectureRepository = lectureRepository;
         }

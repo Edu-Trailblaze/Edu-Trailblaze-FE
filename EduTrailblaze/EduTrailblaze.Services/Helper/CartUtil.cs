@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Net;
+﻿using System.Net;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace EduTrailblaze.Services.Helper
 {

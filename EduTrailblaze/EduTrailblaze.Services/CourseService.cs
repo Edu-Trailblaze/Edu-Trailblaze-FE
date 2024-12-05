@@ -1,14 +1,14 @@
-﻿using EduTrailblaze.Entities;
-using EduTrailblaze.Repositories.Interfaces;
+﻿using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
 {
     public class CourseService : ICourseService
     {
-        private readonly IRepository<Course, int> _courseRepository;
+        private readonly IRepository<Course> _courseRepository;
 
-        public CourseService(IRepository<Course, int> courseRepository)
+        public CourseService(IRepository<Course> courseRepository)
         {
             _courseRepository = courseRepository;
         }
@@ -24,7 +24,7 @@ namespace EduTrailblaze.Services
                 throw new Exception("An error occurred while getting the course.", ex);
             }
         }
-
+        
         public async Task<IEnumerable<Course>> GetCourses()
         {
             try

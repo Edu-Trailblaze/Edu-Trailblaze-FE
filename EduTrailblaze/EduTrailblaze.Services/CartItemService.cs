@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class CartItemService : ICartItemService
     {
-        private readonly IRepository<CartItem, int> _cartItemRepository;
+        private readonly IRepository<CartItem> _cartItemRepository;
 
-        public CartItemService(IRepository<CartItem, int> cartItemRepository)
+        public CartItemService(IRepository<CartItem> cartItemRepository)
         {
             _cartItemRepository = cartItemRepository;
         }

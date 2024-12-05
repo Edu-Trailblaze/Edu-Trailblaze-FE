@@ -1,4 +1,10 @@
-﻿namespace EduTrailblaze.Services.DTOs
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EduTrailblaze.Services.DTOs
 {
     public class Paging
     {
