@@ -100,7 +100,7 @@ namespace EduTrailblaze.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while getting the average rating.", ex);
+                throw new Exception("An error occurred while getting the average rating: " + ex.Message);
             }
         }
     }

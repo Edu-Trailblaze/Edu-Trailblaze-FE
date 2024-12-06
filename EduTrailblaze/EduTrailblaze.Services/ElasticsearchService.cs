@@ -28,6 +28,19 @@ namespace EduTrailblaze.Services
             return pingResponse.IsValid; // Returns true if the ping is successful
         }
 
+        public async Task DeleteIndexAsync(string indexName)
+        {
+            var deleteIndexResponse = await _client.Indices.DeleteAsync(indexName);
+            if (!deleteIndexResponse.IsValid)
+            {
+                throw new Exception($"Error deleting index: {deleteIndexResponse.ServerError.Error.Reason}");
+            }
+            else
+            {
+                Console.WriteLine($"Index {indexName} deleted successfully.");
+            }
+        }
+
         public async Task CreateIndexAsync(string indexName)
         {
             // Check if the index exists
@@ -83,7 +96,7 @@ namespace EduTrailblaze.Services
                 .Map(m => m
                     .Properties(ps => ps
                         .Text(t => t
-                            .Name("CourseName")
+                            .Name("Title")
                             .Analyzer("my_custom_analyzer")
                             .Fields(f => f
                                 .Keyword(k => k
@@ -131,7 +144,6 @@ namespace EduTrailblaze.Services
 
                     if (!indexResponse.IsValid)
                     {
-                        // Log error message if indexing fails
                         Console.WriteLine($"Error indexing course {course.CourseId}: {indexResponse.ServerError.Error.Reason}");
                     }
                     else
@@ -139,12 +151,20 @@ namespace EduTrailblaze.Services
                         Console.WriteLine($"Course {course.CourseId} indexed successfully");
                     }
                 }
+
+                // Force a refresh on the index
+                var refreshResponse = await _client.Indices.RefreshAsync("courses");
+                if (!refreshResponse.IsValid)
+                {
+                    Console.WriteLine($"Error refreshing index: {refreshResponse.ServerError.Error.Reason}");
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while indexing courses.", ex);
             }
         }
+
 
         public async Task<List<CourseDTO>> SearchCoursesByNameAsync(string name)
         {
@@ -182,6 +202,10 @@ namespace EduTrailblaze.Services
             if (!response.IsValid)
             {
                 throw new Exception($"Search failed: {response.ServerError.Error.Reason}");
+            }
+            if (!response.Documents.Any())
+            {
+                Console.WriteLine($"No courses found for title: {name}");
             }
 
             return response.Documents.ToList();

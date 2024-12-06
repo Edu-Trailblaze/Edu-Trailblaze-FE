@@ -281,7 +281,7 @@ namespace EduTrailblaze.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while getting the courses.", ex);
+                throw new Exception("An error occurred while getting the courses: " + ex.Message);
             }
         }
 
@@ -292,7 +292,7 @@ namespace EduTrailblaze.Services
                 var courseCard = new List<CourseCardResponse>();
                 var courses = await GetCoursesByConditions(request);
 
-                if (courses == null)
+                if (courses == null || courses.Count == 0)
                 {
                     throw new Exception("No courses found.");
                 }
@@ -302,24 +302,28 @@ namespace EduTrailblaze.Services
                     var discountId = await GetMaxDiscountId(course.CourseId);
                     var discount = discountId != null ? await _discountService.GetDiscount((int)discountId) : null;
 
-                    var instructors = await (await _courseInstructorRepository.GetDbSet())
+                    var instructorDbset = await _courseInstructorRepository.GetDbSet();
+                    var instructors = await instructorDbset
                         .Where(ci => ci.CourseId == course.CourseId)
                         .Select(ci => ci.Instructor)
                         .ToListAsync();
 
-                    var numberOfEnrollment = (await _enrollment.GetDbSet())
+                    var enrollmentDbset = await _enrollment.GetDbSet();
+                    var numberOfEnrollment = await enrollmentDbset
                         .Where(e => e.CourseId == course.CourseId)
                         .CountAsync();
+
+                    var reviewInformation = await _reviewService.GetAverageRatingAndNumberOfRatings(course.CourseId);
 
                     var courseCardResponse = new CourseCardResponse
                     {
                         Course = _mapper.Map<CoursesResponse>(course),
-                        Review = await _reviewService.GetAverageRatingAndNumberOfRatings(course.CourseId),
+                        Review = reviewInformation,
                         Discount = _mapper.Map<DiscountInformation>(discount),
                         Instructors = _mapper.Map<List<InstructorInformation>>(instructors),
                         Enrollment = new EnrollmentInformation
                         {
-                            TotalEnrollments = await numberOfEnrollment
+                            TotalEnrollments = numberOfEnrollment
                         }
                     };
                     courseCard.Add(courseCardResponse);
@@ -329,7 +333,7 @@ namespace EduTrailblaze.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while getting the course information.", ex);
+                throw new Exception("An error occurred while getting the course information: " + ex.Message);
             }
         }
     }

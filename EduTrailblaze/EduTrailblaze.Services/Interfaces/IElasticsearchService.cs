@@ -10,5 +10,6 @@ namespace EduTrailblaze.Services.Interfaces
         Task IndexCoursesAsync(List<CourseDTO> courses);
         Task<List<CourseDTO>> SearchCoursesByNameAsync(string name);
         Task ClearIndexAsync(string indexName);
+        Task DeleteIndexAsync(string indexName);
     }
 }
