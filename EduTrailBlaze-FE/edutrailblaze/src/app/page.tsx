@@ -2,6 +2,7 @@ import WebFooter from "@/components/footer";
 import WebHeader from "@/components/header";
 import HomeCourses from "@/components/home_courses";
 import HomeFeedbacks from "@/components/home_feedbacks";
+import HomeSupporter from "@/components/home_supporter";
 import HomeTeacherArea from "@/components/home_teacher_area";
 import ImageSlider from "@/components/image_slider";
 import MakeDiffer from "@/components/make_different";
@@ -18,6 +19,7 @@ export default function Home() {
       <HomeFeedbacks></HomeFeedbacks>
       </div>
       <HomeTeacherArea></HomeTeacherArea>
+      <HomeSupporter></HomeSupporter>
       <WebFooter></WebFooter>
     </div>
   );
