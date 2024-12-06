@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class CourseTagService : ICourseTagService
     {
-        private readonly IRepository<CourseTag, int> _courseTagRepository;
+        private readonly IRepository<CourseTag> _courseTagRepository;
 
-        public CourseTagService(IRepository<CourseTag, int> courseTagRepository)
+        public CourseTagService(IRepository<CourseTag> courseTagRepository)
         {
             _courseTagRepository = courseTagRepository;
         }

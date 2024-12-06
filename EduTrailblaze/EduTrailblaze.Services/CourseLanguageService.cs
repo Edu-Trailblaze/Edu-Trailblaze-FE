@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class CourseLanguageService : ICourseLanguageService
     {
-        private readonly IRepository<CourseLanguage, int> _courseLanguageRepository;
+        private readonly IRepository<CourseLanguage> _courseLanguageRepository;
 
-        public CourseLanguageService(IRepository<CourseLanguage, int> courseLanguageRepository)
+        public CourseLanguageService(IRepository<CourseLanguage> courseLanguageRepository)
         {
             _courseLanguageRepository = courseLanguageRepository;
         }

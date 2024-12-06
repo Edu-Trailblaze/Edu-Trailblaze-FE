@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class NotificationService : INotificationService
     {
-        private readonly IRepository<Notification, int> _notificationRepository;
+        private readonly IRepository<Notification> _notificationRepository;
 
-        public NotificationService(IRepository<Notification, int> notificationRepository)
+        public NotificationService(IRepository<Notification> notificationRepository)
         {
             _notificationRepository = notificationRepository;
         }

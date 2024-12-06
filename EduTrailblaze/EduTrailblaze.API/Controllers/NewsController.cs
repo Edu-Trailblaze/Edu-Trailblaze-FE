@@ -34,12 +34,6 @@ namespace EduTrailblaze.API.Controllers
             try
             {
                 var news = await _newsService.GetNews(newsId);
-
-                if (news == null)
-                {
-                    return NotFound();
-                }
-
                 return Ok(news);
             }
             catch (Exception ex)

@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IRepository<Order, int> _courseRepository;
+        private readonly IRepository<Order> _courseRepository;
 
-        public OrderService(IRepository<Order, int> courseRepository)
+        public OrderService(IRepository<Order> courseRepository)
         {
             _courseRepository = courseRepository;
         }

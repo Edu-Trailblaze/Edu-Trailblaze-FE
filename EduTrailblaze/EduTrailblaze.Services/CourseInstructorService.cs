@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class CourseInstructorService : ICourseInstructorService
     {
-        private readonly IRepository<CourseInstructor, int> _courseInstructorRepository;
+        private readonly IRepository<CourseInstructor> _courseInstructorRepository;
 
-        public CourseInstructorService(IRepository<CourseInstructor, int> courseInstructorRepository)
+        public CourseInstructorService(IRepository<CourseInstructor> courseInstructorRepository)
         {
             _courseInstructorRepository = courseInstructorRepository;
         }

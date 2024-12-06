@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class PaymentService : IPaymentService
     {
-        private readonly IRepository<Payment, int> _paymentRepository;
+        private readonly IRepository<Payment> _paymentRepository;
 
-        public PaymentService(IRepository<Payment, int> paymentRepository)
+        public PaymentService(IRepository<Payment> paymentRepository)
         {
             _paymentRepository = paymentRepository;
         }

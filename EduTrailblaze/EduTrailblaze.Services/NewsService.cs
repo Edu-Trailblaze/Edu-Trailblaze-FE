@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class NewsService : INewsService
     {
-        private readonly IRepository<News, int> _newsRepository;
+        private readonly IRepository<News> _newsRepository;
 
-        public NewsService(IRepository<News, int> newsRepository)
+        public NewsService(IRepository<News> newsRepository)
         {
             _newsRepository = newsRepository;
         }

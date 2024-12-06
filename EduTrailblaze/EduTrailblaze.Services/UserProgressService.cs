@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class UserProgressService : IUserProgressService
     {
-        private readonly IRepository<UserProgress, int> _userProgressRepository;
+        private readonly IRepository<UserProgress> _userProgressRepository;
 
-        public UserProgressService(IRepository<UserProgress, int> userProgressRepository)
+        public UserProgressService(IRepository<UserProgress> userProgressRepository)
         {
             _userProgressRepository = userProgressRepository;
         }

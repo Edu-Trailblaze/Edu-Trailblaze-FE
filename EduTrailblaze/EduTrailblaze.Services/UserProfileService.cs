@@ -6,14 +6,14 @@ namespace EduTrailblaze.Services
 {
     public class UserProfileService : IUserProfileService
     {
-        private readonly IRepository<UserProfile, string> _userProfileRepository;
+        private readonly IRepository<UserProfile> _userProfileRepository;
 
-        public UserProfileService(IRepository<UserProfile, string> userProfileRepository)
+        public UserProfileService(IRepository<UserProfile> userProfileRepository)
         {
             _userProfileRepository = userProfileRepository;
         }
 
-        public async Task<UserProfile?> GetUserProfile(string userProfileId)
+        public async Task<UserProfile?> GetUserProfile(int userProfileId)
         {
             try
             {
