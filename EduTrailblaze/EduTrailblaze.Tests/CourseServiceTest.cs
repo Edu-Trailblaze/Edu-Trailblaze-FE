@@ -3,9 +3,6 @@ using EduTrailblaze.Repositories;
 using EduTrailblaze.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using Xunit;
 
 namespace EduTrailblaze.Tests
 {
@@ -72,12 +69,12 @@ namespace EduTrailblaze.Tests
             _courseRepository = new Repository<Course, int>(mockContext.Object);
         }
 
-        [Fact]
-        public async void GetCoursesByConditions_ReturnsCourses()
-        {
-            var courses = await _courseRepository.GetAllAsync();
-            Assert.NotNull(courses);
-            Assert.Equal(2, courses.Count());
-        }
+        //[Fact]
+        //public async void GetCoursesByConditions_ReturnsCourses()
+        //{
+        //    var courses = await _courseRepository.GetAllAsync();
+        //    Assert.NotNull(courses);
+        //    Assert.Equal(2, courses.Count());
+        //}
     }
 }

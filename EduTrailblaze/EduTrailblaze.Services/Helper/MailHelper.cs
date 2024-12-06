@@ -1,7 +1,7 @@
-﻿using MailKit.Security;
+﻿using EduTrailblaze.Services.DTOs;
+using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Helper
 {

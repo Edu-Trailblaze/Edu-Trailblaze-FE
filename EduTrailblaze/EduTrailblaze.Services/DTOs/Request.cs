@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Nest;
 
 namespace EduTrailblaze.Services.DTOs
 {

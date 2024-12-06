@@ -104,7 +104,7 @@ namespace EduTrailblaze.Repositories
             builder.Entity<Question>()
                 .Property(n => n.UpdatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
-            
+
             builder.Entity<Review>()
                 .Property(n => n.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");

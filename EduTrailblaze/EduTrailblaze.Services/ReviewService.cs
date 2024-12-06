@@ -1,7 +1,7 @@
-﻿using EduTrailblaze.Repositories.Interfaces;
-using EduTrailblaze.Entities;
-using EduTrailblaze.Services.Interfaces;
+﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
 {
@@ -25,7 +25,7 @@ namespace EduTrailblaze.Services
                 throw new Exception("An error occurred while getting the review.", ex);
             }
         }
-        
+
         public async Task<IEnumerable<Review>> GetReviews()
         {
             try

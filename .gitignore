@@ -8,10 +8,10 @@
 # Environment .env
 .env
 
-# Environment appsettings
+# Ignore appsettings files
+appsettings.json
 appsettings.Development.json
 appsettings.Production.json
-appsettings.json
 
 # User-specific files
 *.suo
@@ -750,3 +750,5 @@ sketch
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp,react,aspnetcore
+/EduTrailblaze/EduTrailblaze.API/appsettings.json
+/EduTrailblaze/EduTrailblaze.API/appsettings.Development.json
