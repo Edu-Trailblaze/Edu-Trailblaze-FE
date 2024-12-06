@@ -4,8 +4,19 @@ import React from "react";
 export default function HomeCourses() {
   return (
     <>
-    {/** Premium courses layout */}
-    <div className="bg-[#F4F4F4] px-[150px]">
+    <div>
+      <div>
+        <ul className="flex justify-between w-[1200px] px-[150px] py-[5px]">
+          <li className="focus:font-bold border-b-2 border-b-black"><button>Data Science</button></li>
+          <li><button>IT Certifications</button></li>
+          <li><button>Leadership</button></li>
+          <li><button>Web Development</button></li>
+          <li><button>Communication</button></li>
+          <li><button>Business Analytics and Intelligence</button></li>
+        </ul>
+      </div>
+    <div className="bg-[#F4F4F4] px-[150px] py-[20px]">
+      {/** Premium courses layout */}
       <div>
         <div className="mb-[30px]">
           <p className="mb-[10px] font-bold">Invest in Yourself</p>
@@ -184,6 +195,7 @@ export default function HomeCourses() {
             View all
           </button>
         </div>
+      </div>
       </div>
       </div>
     </>
