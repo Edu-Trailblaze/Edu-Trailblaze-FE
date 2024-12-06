@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class CouponService : ICouponService
     {
-        private readonly IRepository<Coupon> _couponRepository;
+        private readonly IRepository<Coupon, int> _couponRepository;
 
-        public CouponService(IRepository<Coupon> couponRepository)
+        public CouponService(IRepository<Coupon, int> couponRepository)
         {
             _couponRepository = couponRepository;
         }

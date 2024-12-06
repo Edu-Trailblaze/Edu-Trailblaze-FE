@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class VideoService : IVideoService
     {
-        private readonly IRepository<Video> _videoRepository;
+        private readonly IRepository<Video, int> _videoRepository;
 
-        public VideoService(IRepository<Video> videoRepository)
+        public VideoService(IRepository<Video, int> videoRepository)
         {
             _videoRepository = videoRepository;
         }

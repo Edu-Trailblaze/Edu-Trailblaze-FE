@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class DiscountService : IDiscountService
     {
-        private readonly IRepository<Discount> _dscountRepository;
+        private readonly IRepository<Discount, int> _dscountRepository;
 
-        public DiscountService(IRepository<Discount> dscountRepository)
+        public DiscountService(IRepository<Discount, int> dscountRepository)
         {
             _dscountRepository = dscountRepository;
         }

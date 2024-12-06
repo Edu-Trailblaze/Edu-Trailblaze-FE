@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class QuizService : IQuizService
     {
-        private readonly IRepository<Quiz> _quizRepository;
+        private readonly IRepository<Quiz, int> _quizRepository;
 
-        public QuizService(IRepository<Quiz> quizRepository)
+        public QuizService(IRepository<Quiz, int> quizRepository)
         {
             _quizRepository = quizRepository;
         }
