@@ -4,7 +4,7 @@ namespace EduTrailblaze.Services.Interfaces
 {
     public interface IUserProfileService
     {
-        Task<UserProfile?> GetUserProfile(int userProfileId);
+        Task<UserProfile?> GetUserProfile(string userProfileId);
 
         Task<IEnumerable<UserProfile>> GetUserProfiles();
 

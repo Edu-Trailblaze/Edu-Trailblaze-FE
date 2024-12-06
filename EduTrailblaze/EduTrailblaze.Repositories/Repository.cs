@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduTrailblaze.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T, TKey> : IRepository<T, TKey> where T : class
     {
         private readonly EduTrailblazeDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -14,11 +14,16 @@ namespace EduTrailblaze.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public Task<IQueryable<T>> GetDbSet()
         {
             try
             {
-                return await _dbSet.ToListAsync();
+                var dbSet = Task.FromResult(_dbSet.AsQueryable());
+                if (dbSet == null)
+                {
+                    throw new InvalidOperationException("DbSet returned null.");
+                }
+                return dbSet;
             }
             catch (Exception ex)
             {
@@ -26,7 +31,19 @@ namespace EduTrailblaze.Repositories
             }
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            try
+            {
+                return await _dbSet.AsQueryable().ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
+            }
+        }
+
+        public async Task<T?> GetByIdAsync(TKey id)
         {
             try
             {
@@ -78,3 +95,4 @@ namespace EduTrailblaze.Repositories
         }
     }
 }
+

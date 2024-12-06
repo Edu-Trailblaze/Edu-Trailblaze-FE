@@ -27,39 +27,39 @@ namespace EduTrailblaze.Repositories
             optionsBuilder.UseSqlServer(configurationRoot.GetConnectionString("DefaultConnection"));
         }
 
-        public DbSet<Answer> Answers { get; set; }
-        public DbSet<Cart> Carts { get; set; }
-        public DbSet<CartItem> CartItems { get; set; }
-        public DbSet<Certificate> Certificates { get; set; }
-        public DbSet<Coupon> Coupons { get; set; }
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<CourseCoupon> CourseCoupons { get; set; }
-        public DbSet<CourseDiscount> CourseDiscounts { get; set; }
-        public DbSet<CourseInstructor> CourseInstructors { get; set; }
-        public DbSet<CourseLanguage> CourseLanguages { get; set; }
-        public DbSet<CourseTag> CourseTags { get; set; }
-        public DbSet<Discount> Discounts { get; set; }
-        public DbSet<Enrollment> Enrollments { get; set; }
-        public DbSet<Language> Languages { get; set; }
-        public DbSet<Lecture> Lectures { get; set; }
-        public DbSet<News> News { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Payment> Payments { get; set; }
-        public DbSet<Question> Questions { get; set; }
-        public DbSet<Quiz> Quizzes { get; set; }
-        public DbSet<QuizAnswer> QuizAnswers { get; set; }
-        public DbSet<QuizHistory> QuizHistories { get; set; }
-        public DbSet<Review> Reviews { get; set; }
-        public DbSet<Section> Sections { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<UserCertificate> UserCertificates { get; set; }
-        public DbSet<UserNotification> UserNotifications { get; set; }
-        public DbSet<UserProgress> UserProgresses { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; }
-        public DbSet<Video> Videos { get; set; }
-        public DbSet<Voucher> Vouchers { get; set; }
+        public virtual DbSet<Answer> Answers { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<CartItem> CartItems { get; set; }
+        public virtual DbSet<Certificate> Certificates { get; set; }
+        public virtual DbSet<Coupon> Coupons { get; set; }
+        public virtual DbSet<Course> Courses { get; set; }
+        public virtual DbSet<CourseCoupon> CourseCoupons { get; set; }
+        public virtual DbSet<CourseDiscount> CourseDiscounts { get; set; }
+        public virtual DbSet<CourseInstructor> CourseInstructors { get; set; }
+        public virtual DbSet<CourseLanguage> CourseLanguages { get; set; }
+        public virtual DbSet<CourseTag> CourseTags { get; set; }
+        public virtual DbSet<Discount> Discounts { get; set; }
+        public virtual DbSet<Enrollment> Enrollments { get; set; }
+        public virtual DbSet<Language> Languages { get; set; }
+        public virtual DbSet<Lecture> Lectures { get; set; }
+        public virtual DbSet<News> News { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
+        public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<Quiz> Quizzes { get; set; }
+        public virtual DbSet<QuizAnswer> QuizAnswers { get; set; }
+        public virtual DbSet<QuizHistory> QuizHistories { get; set; }
+        public virtual DbSet<Review> Reviews { get; set; }
+        public virtual DbSet<Section> Sections { get; set; }
+        public virtual DbSet<Tag> Tags { get; set; }
+        public virtual DbSet<UserCertificate> UserCertificates { get; set; }
+        public virtual DbSet<UserNotification> UserNotifications { get; set; }
+        public virtual DbSet<UserProgress> UserProgresses { get; set; }
+        public virtual DbSet<UserProfile> UserProfiles { get; set; }
+        public virtual DbSet<Video> Videos { get; set; }
+        public virtual DbSet<Voucher> Vouchers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -104,6 +104,18 @@ namespace EduTrailblaze.Repositories
             builder.Entity<Question>()
                 .Property(n => n.UpdatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
+            
+            builder.Entity<Review>()
+                .Property(n => n.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Entity<Review>()
+                .Property(n => n.UpdatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.Entity<Review>()
+                .Property(n => n.IsDeleted)
+                .HasDefaultValue(false);
 
             builder.Entity<Certificate>()
                 .Property(n => n.CreatedAt)

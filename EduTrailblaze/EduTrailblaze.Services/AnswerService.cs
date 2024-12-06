@@ -6,9 +6,9 @@ namespace EduTrailblaze.Services
 {
     public class AnswerService : IAnswerService
     {
-        private readonly IRepository<Answer> _answerRepository;
+        private readonly IRepository<Answer, int> _answerRepository;
 
-        public AnswerService(IRepository<Answer> answerRepository)
+        public AnswerService(IRepository<Answer, int> answerRepository)
         {
             _answerRepository = answerRepository;
         }

@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EduTrailblaze.Services.DTOs
+﻿namespace EduTrailblaze.Services.DTOs
 {
     public class Paging
     {
-        public int PageIndex { get; }
-        public int PageSize { get; }
-        public string? Sort { get; }
-        public string? SortDirection { get; }
+        public int? PageIndex { get; set; }
+        public int? PageSize { get; set; }
+        public string? Sort { get; set; } // Field name
+        public string? SortDirection { get; set; } // ASC or DESC
     }
 
     public class PaginatedList<T>
     {
-        public List<T> Items { get; }
-        public int PageIndex { get; }
-        public int PageSize { get; }
-        public int TotalCount { get; }
+        public List<T> Items { get; set; }
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+        public int TotalCount { get; set; }
         public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
 
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
