@@ -20,6 +20,8 @@ namespace EduTrailblaze.Services.DTOs
         public string DifficultyLevel { get; set; }
 
         public string CreatedBy { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 
     public class DiscountInformation

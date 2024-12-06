@@ -127,5 +127,19 @@ namespace EduTrailblaze.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet("get-paging-course-information")]
+        public async Task<IActionResult> GetPagingCourseInformation([FromQuery] GetCoursesRequest request, [FromQuery] Paging paging)
+        {
+            try
+            {
+                var res = await _courseService.GetPagingCourseInformation(request, paging);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }

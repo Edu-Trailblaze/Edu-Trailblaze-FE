@@ -336,5 +336,49 @@ namespace EduTrailblaze.Services
                 throw new Exception("An error occurred while getting the course information: " + ex.Message);
             }
         }
+
+        public async Task<PaginatedList<CourseCardResponse>> GetPagingCourseInformation(GetCoursesRequest request, Paging paging)
+        {
+            try
+            {
+                var courseCards = await GetCourseInformation(request);
+
+                if (!paging.PageSize.HasValue || paging.PageSize <= 0)
+                {
+                    paging.PageSize = 10;
+                }
+
+                if (!paging.PageIndex.HasValue || paging.PageIndex <= 0)
+                {
+                    paging.PageIndex = 1;
+                }
+
+                var totalCount = courseCards.Count;
+                var skip = (paging.PageIndex.Value - 1) * paging.PageSize.Value;
+                var take = paging.PageSize.Value;
+
+                var validSortOptions = new[] { "most_popular", "highest_rated", "newest" };
+                if (string.IsNullOrEmpty(paging.Sort) || !validSortOptions.Contains(paging.Sort))
+                {
+                    paging.Sort = "most_popular";
+                }
+
+                courseCards = paging.Sort switch
+                {
+                    "most_popular" => courseCards.OrderByDescending(p => p.Enrollment.TotalEnrollments).ToList(),
+                    "highest_rated" => courseCards.OrderByDescending(p => p.Review.AverageRating).ToList(),
+                    "newest" => courseCards.OrderByDescending(p => p.Course.CreatedAt).ToList(),
+                    _ => courseCards
+                };
+
+                var paginatedCourseCards = courseCards.Skip(skip).Take(take).ToList();
+
+                return new PaginatedList<CourseCardResponse>(paginatedCourseCards, totalCount, paging.PageIndex.Value, paging.PageSize.Value);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the course information: " + ex.Message);
+            }
+        }
     }
 }

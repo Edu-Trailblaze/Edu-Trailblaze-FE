@@ -22,5 +22,7 @@ namespace EduTrailblaze.Services.Interfaces
         Task<int?> GetMaxDiscountId(int courseId);
 
         Task<List<CourseCardResponse>> GetCourseInformation(GetCoursesRequest request);
+
+        Task<PaginatedList<CourseCardResponse>> GetPagingCourseInformation(GetCoursesRequest request, Paging paging);
     }
 }
