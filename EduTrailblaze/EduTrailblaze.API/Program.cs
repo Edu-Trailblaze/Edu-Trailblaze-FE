@@ -1,3 +1,27 @@
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using EduTrailblaze.Entities;
+ using IdentityAPI.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using EduTrailblaze.Services.Helper;
+using System.Text.Json;
+using Polly;
+using Polly.Retry;
+using Polly.CircuitBreaker;
+using EduTrailblaze.Services.Interface;
+using EduTrailblaze.API.Controllers;
+using EduTrailblaze.Services;
+using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.Builder;
+using SendGrid.Extensions.DependencyInjection;
+using SendGrid;
 using EduTrailblaze.API.Middlewares;
 using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories;
@@ -21,7 +45,17 @@ namespace EduTrailblaze.API
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);            
+            // Add services to the container.
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.WriteIndented = true; 
+            });
+            // Add Caching for response Middleware 
+            builder.Services.AddResponseCaching();
+
 
             builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
             {
@@ -151,17 +185,141 @@ namespace EduTrailblaze.API
                     });
             });
 
+            // Kestrel Config (hide in Header Request)
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.AddServerHeader = false;
+            });
+
+
+
+            // Add DbContext Pool
+            builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),sqlOption =>
+                sqlOption.EnableRetryOnFailure());
+            });
+
+            // Identity Configuration
+            builder.Services.AddIdentity<User, IdentityRole>(option =>
+            {
+                option.Lockout.MaxFailedAccessAttempts = 2;
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(1);
+                option.Password.RequireUppercase = false;
+                option.Password.RequireNonAlphanumeric = false;
+                option.Password.RequireDigit = false;
+                option.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+            }
+            ).AddEntityFrameworkStores<EduTrailblazeDbContext>().AddDefaultTokenProviders(); 
+
+            // JWT Configuration
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["JwtToken:Issuer"],
+                        ValidAudience = builder.Configuration["JwtToken:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtToken:Key"]))
+                    };
+                });
+
+            //Prevent CSRF
+            builder.Services.AddAntiforgery(options =>
+            {
+                
+                options.Cookie.Name = "AntiForgeryCookie";
+                options.HeaderName = "X-XSRF-TOKEN";
+            });
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Description = "Enter 'Bearer' [space] and then your token"
+                });
+            });
+
+            //sendgrid Configuration
+          
+            builder.Services.AddSingleton<ISendGridClient, SendGridClient>(provider =>
+            {
+                var apiKey = builder.Configuration["SendGrid:ApiKey"]; 
+                return new SendGridClient(apiKey);
+            });
+
+            // Add services to Dependency Container
+            builder.Services.AddTransient<TokenGenerator>(); 
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+            builder.Services.AddScoped<IRedisService, RedisService>();
+            builder.Services.AddScoped<ISendMail, SendMail>();
+
+            //redis Configuration
+            builder.Services.Configure<RedisConfig>(builder.Configuration.GetSection("RedisConfig"));
+            var redisConfigurationSection = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<RedisConfig>>().Value;
+           
+            var redisConfiguration = new ConfigurationOptions
+            {
+                EndPoints = { $"{redisConfigurationSection.Host}:{redisConfigurationSection.Port}" },
+                Password = redisConfigurationSection.Password,
+                Ssl = bool.Parse(redisConfigurationSection.Ssl),
+                AbortOnConnectFail = bool.Parse(redisConfigurationSection.AbortOnConnectFail),
+                ConnectRetry = 5,
+                ConnectTimeout = 5000,
+                SyncTimeout = 5000,
+                KeepAlive = 180
+
+            };
+            builder.Services.AddSingleton(redisConfiguration);
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var configuration = sp.GetRequiredService<ConfigurationOptions>();
+                return ConnectionMultiplexer.Connect(configuration);
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+                });
             }
+            
+            
 
             app.UseHttpsRedirection();
 
+            app.UseHsts();
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                context.Response.Headers["Referrer-Policy"] = "no-referrer";
+                context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+                context.Response.Headers["X-Frame-Options"] = "DENY";
+                await next();
+            });
+
+            app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<RequestResponseMiddleware>();
@@ -169,5 +327,14 @@ namespace EduTrailblaze.API
 
             app.Run();
         }
+        private class RedisConfig
+        {
+            public string Host { get; set; }
+            public string Port { get; set; }
+            public string Password { get; set; }
+            public string Ssl { get; set; }
+            public string AbortOnConnectFail { get; set; }
+        }
     }
+   
 }
