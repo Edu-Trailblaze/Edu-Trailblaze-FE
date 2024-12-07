@@ -27,8 +27,6 @@ namespace EduTrailblaze.Services.Helper
             }
             mailText = mailText.Replace("{resetPasswordUrl}", resetPasswordUrl);
             var from_email = new EmailAddress("halinh150@gmail.com");
-            // var plainTextContent = "and easy to do anywhere, even with C#";
-            // var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
             var msg = MailHelper.CreateSingleEmail(from_email, new EmailAddress(to_email), subject, "", mailText);
             var response = await _sendGridClient.SendEmailAsync(msg).ConfigureAwait(false);
             if (response.IsSuccessStatusCode) return true;
