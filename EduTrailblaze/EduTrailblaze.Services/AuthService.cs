@@ -103,10 +103,14 @@ namespace EduTrailblaze.Services
                 {
                     if (result.IsLockedOut) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account is locked. Please contact support." };
                     if (result.IsNotAllowed) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account is not allowed to login. Please contact support." };
-                    if (result.RequiresTwoFactor) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account requires two factor authentication." };
+                    if (result.RequiresTwoFactor) return new ApiResponse
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) }
+                    };
                     return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Invalid login attempt." };
                 }
-                if (await _userManager.GetTwoFactorEnabledAsync(user) is true) return new ApiResponse { StatusCode = StatusCodes.Status200OK, Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) } };
+                //if (await _userManager.GetTwoFactorEnabledAsync(user) is true) return new ApiResponse { StatusCode = StatusCodes.Status200OK, Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) } };
                 var claims = await _userManager.GetClaimsAsync(user);
                 var firstNameClaim = claims.FirstOrDefault(u => u.Type == "FirstName");
                 if (firstNameClaim != null)
