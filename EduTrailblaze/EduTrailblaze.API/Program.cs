@@ -1,43 +1,28 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using EduTrailblaze.Entities;
- using IdentityAPI.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using EduTrailblaze.Services.Helper;
-using System.Text.Json;
-using Polly;
-using Polly.Retry;
-using Polly.CircuitBreaker;
-using EduTrailblaze.Services.Interface;
-using EduTrailblaze.API.Controllers;
-using EduTrailblaze.Services;
-using Microsoft.Extensions.Options;
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.Configuration;
-using StackExchange.Redis;
-using Microsoft.AspNetCore.Builder;
-using SendGrid.Extensions.DependencyInjection;
-using SendGrid;
-using EduTrailblaze.API.Middlewares;
+﻿using EduTrailblaze.API.Middlewares;
 using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
+using EduTrailblaze.Services.Interface;
 using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Mappings;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Nest;
 using Polly;
+using SendGrid;
 using StackExchange.Redis;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace EduTrailblaze.API
 {
@@ -45,31 +30,31 @@ namespace EduTrailblaze.API
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);            
+            var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                options.JsonSerializerOptions.WriteIndented = true; 
+                options.JsonSerializerOptions.WriteIndented = true;
             });
             // Add Caching for response Middleware 
             builder.Services.AddResponseCaching();
 
 
-            builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+            //builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
+            //{
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            //});
 
-            builder.Services.AddIdentity<User, IdentityRole>(options =>
-            {
-                options.SignIn.RequireConfirmedEmail = true;
-                options.User.RequireUniqueEmail = true;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-            })
-                    .AddEntityFrameworkStores<EduTrailblazeDbContext>()
-                    .AddDefaultTokenProviders();
+            //builder.Services.AddIdentity<User, IdentityRole>(options =>
+            //{
+            //    options.SignIn.RequireConfirmedEmail = true;
+            //    options.User.RequireUniqueEmail = true;
+            //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+            //})
+            //        .AddEntityFrameworkStores<EduTrailblazeDbContext>()
+            //        .AddDefaultTokenProviders();
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -80,32 +65,32 @@ namespace EduTrailblaze.API
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please enter a valid token",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                       {
-                           {
-                               new OpenApiSecurityScheme
-                               {
-                                   Reference = new OpenApiReference
-                                   {
-                                       Type = ReferenceType.SecurityScheme,
-                                       Id = "Bearer"
-                                   }
-                               },
-                               new string[] { }
-                           }
-                       });
-            });
+            //builder.Services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            //    {
+            //        In = ParameterLocation.Header,
+            //        Description = "Please enter a valid token",
+            //        Name = "Authorization",
+            //        Type = SecuritySchemeType.ApiKey,
+            //        Scheme = "Bearer"
+            //    });
+            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            //           {
+            //               {
+            //                   new OpenApiSecurityScheme
+            //                   {
+            //                       Reference = new OpenApiReference
+            //                       {
+            //                           Type = ReferenceType.SecurityScheme,
+            //                           Id = "Bearer"
+            //                       }
+            //                   },
+            //                   new string[] { }
+            //               }
+            //           });
+            //});
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
@@ -114,25 +99,6 @@ namespace EduTrailblaze.API
             builder.Services.AddScoped<ICourseService, CourseService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IDiscountService, DiscountService>();
-
-            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-            {
-                var configurationOptions = new ConfigurationOptions
-                {
-                    EndPoints = { "localhost:6379" },
-                    ConnectTimeout = 5000,
-                    AbortOnConnectFail = false
-                };
-
-                var retryPolicy = Polly.Policy
-                    .Handle<RedisConnectionException>()
-                    .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(retryAttempt), (exception, timeSpan, retryCount, context) =>
-                    {
-                        Console.WriteLine($"Retrying Redis connection. Attempt {retryCount}. Error: {exception.Message}");
-                    });
-
-                return retryPolicy.Execute(() => ConnectionMultiplexer.Connect(configurationOptions));
-            });
 
             builder.Services.AddSingleton<IElasticClient>(sp =>
             {
@@ -196,7 +162,7 @@ namespace EduTrailblaze.API
             // Add DbContext Pool
             builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),sqlOption =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlOption =>
                 sqlOption.EnableRetryOnFailure());
             });
 
@@ -210,7 +176,7 @@ namespace EduTrailblaze.API
                 option.Password.RequireDigit = false;
                 option.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
             }
-            ).AddEntityFrameworkStores<EduTrailblazeDbContext>().AddDefaultTokenProviders(); 
+            ).AddEntityFrameworkStores<EduTrailblazeDbContext>().AddDefaultTokenProviders();
 
             // JWT Configuration
             builder.Services.AddAuthentication(options =>
@@ -236,7 +202,7 @@ namespace EduTrailblaze.API
             //Prevent CSRF
             builder.Services.AddAntiforgery(options =>
             {
-                
+
                 options.Cookie.Name = "AntiForgeryCookie";
                 options.HeaderName = "X-XSRF-TOKEN";
             });
@@ -254,15 +220,15 @@ namespace EduTrailblaze.API
             });
 
             //sendgrid Configuration
-          
+
             builder.Services.AddSingleton<ISendGridClient, SendGridClient>(provider =>
             {
-                var apiKey = builder.Configuration["SendGrid:ApiKey"]; 
+                var apiKey = builder.Configuration["SendGrid:ApiKey"];
                 return new SendGridClient(apiKey);
             });
 
             // Add services to Dependency Container
-            builder.Services.AddTransient<TokenGenerator>(); 
+            builder.Services.AddTransient<TokenGenerator>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
             builder.Services.AddScoped<IRedisService, RedisService>();
@@ -271,7 +237,7 @@ namespace EduTrailblaze.API
             //redis Configuration
             builder.Services.Configure<RedisConfig>(builder.Configuration.GetSection("RedisConfig"));
             var redisConfigurationSection = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<RedisConfig>>().Value;
-           
+
             var redisConfiguration = new ConfigurationOptions
             {
                 EndPoints = { $"{redisConfigurationSection.Host}:{redisConfigurationSection.Port}" },
@@ -303,8 +269,8 @@ namespace EduTrailblaze.API
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
                 });
             }
-            
-            
+
+
 
             app.UseHttpsRedirection();
 
@@ -322,7 +288,7 @@ namespace EduTrailblaze.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMiddleware<RequestResponseMiddleware>();
+            //app.UseMiddleware<RequestResponseMiddleware>();
             app.MapControllers();
 
             app.Run();
@@ -336,5 +302,5 @@ namespace EduTrailblaze.API
             public string AbortOnConnectFail { get; set; }
         }
     }
-   
+
 }

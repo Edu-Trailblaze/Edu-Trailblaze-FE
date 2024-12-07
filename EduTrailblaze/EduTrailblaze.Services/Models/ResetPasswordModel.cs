@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EduTrailblaze.Services.Models
 {
@@ -12,7 +7,7 @@ namespace EduTrailblaze.Services.Models
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
-        
+
         [Required]
         public string? Token { get; set; }
 

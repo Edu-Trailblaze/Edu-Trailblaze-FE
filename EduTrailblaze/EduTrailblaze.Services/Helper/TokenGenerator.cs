@@ -7,7 +7,7 @@ using System.Text;
 
 namespace EduTrailblaze.Services.Helper
 {
-    
+
     public class TokenGenerator : ITokenGenerator
     {
         private readonly IConfiguration _configuration;
@@ -17,7 +17,7 @@ namespace EduTrailblaze.Services.Helper
             _configuration = configuration;
         }
 
-        public async Task<string> GenerateJwtToken(User user,string role)
+        public async Task<string> GenerateJwtToken(User user, string role)
         {
             var claims = new[]
             {
@@ -25,7 +25,7 @@ namespace EduTrailblaze.Services.Helper
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName.ToString()),
                 new Claim(ClaimTypes.Role, role)
             };
-              var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtToken:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtToken:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
             issuer: _configuration["JwtToken:Issuer"],
@@ -39,7 +39,7 @@ namespace EduTrailblaze.Services.Helper
 
         }
 
-        public Task<string> GenerateRefreshToken() =>  Task.FromResult(Guid.NewGuid().ToString());
-        
+        public Task<string> GenerateRefreshToken() => Task.FromResult(Guid.NewGuid().ToString());
+
     }
 }

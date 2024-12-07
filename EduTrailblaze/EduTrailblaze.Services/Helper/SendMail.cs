@@ -1,10 +1,5 @@
 ﻿using SendGrid;
 using SendGrid.Helpers.Mail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduTrailblaze.Services.Helper
 {
@@ -27,7 +22,7 @@ namespace EduTrailblaze.Services.Helper
             }
             mailText = mailText.Replace("{resetPasswordUrl}", resetPasswordUrl);
             var from_email = new EmailAddress("halinh150@gmail.com");
-            var msg = MailHelper.CreateSingleEmail(from_email, new EmailAddress(to_email), subject, "", mailText);
+            var msg = SendGrid.Helpers.Mail.MailHelper.CreateSingleEmail(from_email, new EmailAddress(to_email), subject, "", mailText);
             var response = await _sendGridClient.SendEmailAsync(msg).ConfigureAwait(false);
             if (response.IsSuccessStatusCode) return true;
             return false;

@@ -1,15 +1,9 @@
 ﻿using EduTrailblaze.Entities;
-using EduTrailblaze.Services;
 using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interface;
 using EduTrailblaze.Services.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using SendGrid;
-using StackExchange.Redis;
 
 namespace EduTrailblaze.API.Controllers
 {
@@ -29,7 +23,7 @@ namespace EduTrailblaze.API.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
-            
+
         }
 
         [HttpPost("register")]
@@ -40,15 +34,15 @@ namespace EduTrailblaze.API.Controllers
             if (result.StatusCode == 200)
             {
                 return Ok(new { Message = result });
-                
+
             }
-            return StatusCode(result.StatusCode, result); 
+            return StatusCode(result.StatusCode, result);
 
         }
 
         [HttpPost("login")]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([FromBody]  LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var result = await _authService.Login(model);
 
@@ -61,10 +55,10 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPost("logout")]
-        
+
         public async Task<IActionResult> Logout(string userId)
         {
-          //  var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //  var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return BadRequest(new { Message = "User not found" });
@@ -83,10 +77,10 @@ namespace EduTrailblaze.API.Controllers
         [HttpGet("refreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
-            
+
             var user = await _userManager.GetUserAsync(User);
             var id = user.Id;
-            var refreshToken =  Request.Cookies["refreshToken"];
+            var refreshToken = Request.Cookies["refreshToken"];
             if (refreshToken == null)
             {
                 return BadRequest(new { Message = "Refresh token is required" });
@@ -116,15 +110,15 @@ namespace EduTrailblaze.API.Controllers
         [HttpPost("forgot-Password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model)
         {
-           
+
             var result = await _authService.ForgotPassword(model);
-          
+
             if (result.StatusCode == 200)
             {
                 return Ok(new { Message = result });
             }
-           return StatusCode(result.StatusCode, result);
-           
+            return StatusCode(result.StatusCode, result);
+
         }
 
         [HttpPost("reset-password")]

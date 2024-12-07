@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EduTrailblaze.Services.Models;
+﻿using EduTrailblaze.Services.Models;
 using Microsoft.Identity.Client;
 
 namespace EduTrailblaze.Services.Interface

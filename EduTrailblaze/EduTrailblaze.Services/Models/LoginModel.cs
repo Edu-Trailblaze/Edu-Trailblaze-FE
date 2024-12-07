@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 namespace EduTrailblaze.Services.Models
 {
-    public class LoginModel 
+    public class LoginModel
     {
         /// <summary>
         /// The user's email address which acts as a user name.

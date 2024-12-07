@@ -1,24 +1,17 @@
-﻿        
+﻿
 using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Helper;
-using Microsoft.AspNetCore.Identity;
 using EduTrailblaze.Services.Interface;
 using EduTrailblaze.Services.Models;
-using Microsoft.Identity.Client;
 using Microsoft.AspNetCore.Http;
-using System.Security.Policy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Polly;
 using Polly.Retry;
 using Polly.Timeout;
 using Polly.Wrap;
-using Microsoft.Data.SqlClient;
-using StackExchange.Redis;
-using Microsoft.Extensions.Options;
-using SendGrid;
-using SendGrid.Helpers.Mail;
-using Microsoft.AspNetCore.Authentication;
-using System.Reflection.Metadata.Ecma335;
 
 namespace EduTrailblaze.Services
 {
@@ -73,18 +66,18 @@ namespace EduTrailblaze.Services
 
         public async Task<ApiResponse> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
-            var user = await _dbPolicyWrap.ExecuteAsync(async ()=> await _userManager.FindByEmailAsync(forgotPasswordModel.Email));
+            var user = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.FindByEmailAsync(forgotPasswordModel.Email));
             if (user == null)
             {
                 return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
             }
-            var token = await _dbPolicyWrap.ExecuteAsync(async ()=> await _userManager.GeneratePasswordResetTokenAsync(user));
-            
+            var token = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.GeneratePasswordResetTokenAsync(user));
+
             var resetPasswordUrl = $"https://localhost:7034/reset-password?email={user.Email}&token={token}";
 
             var isSendMailSuccess = await _sendMail.SendForgotEmailAsync(forgotPasswordModel.Email, "Reset Password", resetPasswordUrl);
             return (isSendMailSuccess is true) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Email sent successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error sending email." };
-            
+
         }
 
         public async Task<ApiResponse> Login(LoginModel loginModel)
@@ -249,7 +242,7 @@ namespace EduTrailblaze.Services
                 var userLogin = await _userManager.FindByEmailAsync(model.Email);
 
                 await _userManager.ResetAuthenticatorKeyAsync(newUser);
-                
+
 
                 var token = await _jwtToken.GenerateJwtToken(userLogin, model.RoleSelected);
                 var refreshToken = await _jwtToken.GenerateRefreshToken();
@@ -287,8 +280,8 @@ namespace EduTrailblaze.Services
             {
                 return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
             }
-            var result = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.ResetPasswordAsync(user,resetPasswordModel.Token, resetPasswordModel.Password));
-          return (result.Succeeded) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Password reset successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error when reset password." };   
+            var result = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password));
+            return (result.Succeeded) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Password reset successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error when reset password." };
         }
 
         public async Task<ApiResponse> VerifyAuthenticatorCode(string userId, string code)
