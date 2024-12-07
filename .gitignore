@@ -753,4 +753,5 @@ sketch
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp,react,aspnetcore
-/EduTrailblaze/EduTrailblaze.API/appsettings.json
+/EduTrailblaze/EduTrailblaze.API/appsettings.Development.json
+

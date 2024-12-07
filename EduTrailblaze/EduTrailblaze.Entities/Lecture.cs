@@ -20,7 +20,7 @@ namespace EduTrailblaze.Entities
         [Required, StringLength(int.MaxValue)]
         public string Description { get; set; }
 
-        [Required] 
+        [Required]
         public int Duration { get; set; }
 
         public bool IsDeleted { get; set; } = false;

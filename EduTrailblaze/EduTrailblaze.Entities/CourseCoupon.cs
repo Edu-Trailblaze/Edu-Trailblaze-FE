@@ -5,15 +5,18 @@ namespace EduTrailblaze.Entities
 {
     public class CourseCoupon
     {
-        [Key, ForeignKey("Course")]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int CourseCouponId { get; set; }
+
+        [ForeignKey("Course")]
         public int CourseId { get; set; }
 
-        [Key, ForeignKey("Coupon")]
+        [ForeignKey("Coupon")]
         public int CouponId { get; set; }
 
 
         // Navigation properties
         public virtual Course Course { get; set; }
-        public virtual Coupon Coupon { get; set; }  
+        public virtual Coupon Coupon { get; set; }
     }
 }
