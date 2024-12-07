@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using EduTrailblaze.Entities;
  using IdentityAPI.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -10,7 +10,6 @@ using Microsoft.OpenApi.Models;
 using EduTrailblaze.Services.Helper;
 using System.Text.Json;
 using Polly;
-
 using Polly.Retry;
 using Polly.CircuitBreaker;
 using EduTrailblaze.Services.Interface;
@@ -21,6 +20,8 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.Builder;
+using SendGrid.Extensions.DependencyInjection;
+using SendGrid;
 
 namespace EduTrailblaze.API
 {
@@ -55,7 +56,8 @@ namespace EduTrailblaze.API
             // Add DbContext Pool
             builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),sqlOption =>
+                sqlOption.EnableRetryOnFailure());
             });
 
             // Identity Configuration
@@ -66,6 +68,7 @@ namespace EduTrailblaze.API
                 option.Password.RequireUppercase = false;
                 option.Password.RequireNonAlphanumeric = false;
                 option.Password.RequireDigit = false;
+                option.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
             }
             ).AddEntityFrameworkStores<EduTrailblazeDbContext>().AddDefaultTokenProviders(); 
 
@@ -110,17 +113,25 @@ namespace EduTrailblaze.API
                 });
             });
 
+            //sendgrid Configuration
+           // builder.Services.AddSendGrid(options =>
+            //{
+               // options.ApiKey = builder.Configuration.GetSection("SendGrid:Api_Key").Value;
+           // });
+            builder.Services.AddSingleton<ISendGridClient, SendGridClient>(provider =>
+            {
+                var apiKey = builder.Configuration["SendGrid:ApiKey"]; 
+                return new SendGridClient(apiKey);
+            });
 
             // Add services to Dependency Container
             builder.Services.AddTransient<TokenGenerator>(); 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
             builder.Services.AddScoped<IRedisService, RedisService>();
+            builder.Services.AddScoped<ISendMail, SendMail>();
 
             //redis Configuration
-            
-            
-
             builder.Services.Configure<RedisConfig>(builder.Configuration.GetSection("RedisConfig"));
             var redisConfigurationSection = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<RedisConfig>>().Value;
            
@@ -143,7 +154,7 @@ namespace EduTrailblaze.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
-            
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -159,16 +170,16 @@ namespace EduTrailblaze.API
             
 
             app.UseHttpsRedirection();
-            
-            app.UseHsts();
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-                context.Response.Headers["Referrer-Policy"] = "no-referrer";
-                context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
-                context.Response.Headers["X-Frame-Options"] = "DENY";
-                await next();
-            });
+
+            //app.UseHsts();
+            //app.Use(async (context, next) =>
+            //{
+            //    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+            //    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+            //    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+            //    context.Response.Headers["X-Frame-Options"] = "DENY";
+            //    await next();
+            //});
 
             app.UseStaticFiles();
             app.UseAuthentication();

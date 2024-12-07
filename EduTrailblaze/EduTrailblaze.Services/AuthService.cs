@@ -14,6 +14,11 @@ using Polly.Timeout;
 using Polly.Wrap;
 using Microsoft.Data.SqlClient;
 using StackExchange.Redis;
+using Microsoft.Extensions.Options;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using Microsoft.AspNetCore.Authentication;
+using System.Reflection.Metadata.Ecma335;
 
 namespace EduTrailblaze.Services
 {
@@ -27,8 +32,9 @@ namespace EduTrailblaze.Services
         private readonly AsyncPolicyWrap _dbPolicyWrap;
         private readonly AsyncRetryPolicy _dbRetryPolicy;
         private readonly AsyncTimeoutPolicy _dbTimeoutPolicy;
+        private readonly ISendMail _sendMail;
 
-        public AuthService(ITokenGenerator authService, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager, IRedisService redisService)
+        public AuthService(ITokenGenerator authService, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager, IRedisService redisService, ISendMail sendMail)
         {
             _jwtToken = authService;
             _userManager = userManager;
@@ -47,6 +53,7 @@ namespace EduTrailblaze.Services
             });
             _dbPolicyWrap = Policy.WrapAsync(_dbRetryPolicy, _dbTimeoutPolicy);
             _redisService = redisService;
+            _sendMail = sendMail;
         }
 
         public Task EnableAuthenticator(TwoFactorAuthenticationModel twoFactorAuthenticationViewModel)
@@ -64,9 +71,20 @@ namespace EduTrailblaze.Services
             throw new NotImplementedException();
         }
 
-        public Task ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+        public async Task<ApiResponse> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
-            throw new NotImplementedException();
+            var user = await _dbPolicyWrap.ExecuteAsync(async ()=> await _userManager.FindByEmailAsync(forgotPasswordModel.Email));
+            if (user == null)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
+            }
+            var token = await _dbPolicyWrap.ExecuteAsync(async ()=> await _userManager.GeneratePasswordResetTokenAsync(user));
+            
+            var resetPasswordUrl = $"https://localhost:7034/reset-password?email={user.Email}&token={token}";
+
+            var isSendMailSuccess = await _sendMail.SendForgotEmailAsync(forgotPasswordModel.Email, "Reset Password", resetPasswordUrl);
+            return (isSendMailSuccess is true) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Email sent successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error sending email." };
+            
         }
 
         public async Task<ApiResponse> Login(LoginModel loginModel)
@@ -83,19 +101,19 @@ namespace EduTrailblaze.Services
 
                 if (!result.Succeeded)
                 {
-                    if (result.IsLockedOut) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Your account is locked. Please contact support." };
-                    if (result.IsNotAllowed) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Your account is not allowed to login. Please contact support." };
-                    if (result.RequiresTwoFactor) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Your account requires two factor authentication." };
+                    if (result.IsLockedOut) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account is locked. Please contact support." };
+                    if (result.IsNotAllowed) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account is not allowed to login. Please contact support." };
+                    if (result.RequiresTwoFactor) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account requires two factor authentication." };
                     return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Invalid login attempt." };
                 }
-
+                if (await _userManager.GetTwoFactorEnabledAsync(user) is true) return new ApiResponse { StatusCode = StatusCodes.Status200OK, Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) } };
                 var claims = await _userManager.GetClaimsAsync(user);
                 var firstNameClaim = claims.FirstOrDefault(u => u.Type == "FirstName");
                 if (firstNameClaim != null)
                 {
                     await _userManager.RemoveClaimAsync(user, firstNameClaim);
                 }
-                await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FirstName", user.UserName));
+                await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("Username", user.UserName));
 
                 var token = await _jwtToken.GenerateJwtToken(user, "Admin");
                 var refreshToken = await _jwtToken.GenerateRefreshToken();
@@ -126,15 +144,6 @@ namespace EduTrailblaze.Services
         {
             try
             {
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return new ApiResponse
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "User ID is required"
-                    };
-                }
-
                 var isReleaseLockSuccess = await _redisService.ReleaseLock(userId);
                 if (!isReleaseLockSuccess)
                 {
@@ -230,12 +239,13 @@ namespace EduTrailblaze.Services
                 }
                 await _userManager.AddToRoleAsync(newUser, model.RoleSelected);
 
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                await _userManager.SetTwoFactorEnabledAsync(newUser, true);
+                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
 
                 var userLogin = await _userManager.FindByEmailAsync(model.Email);
 
                 await _userManager.ResetAuthenticatorKeyAsync(newUser);
-                await _userManager.GetAuthenticatorKeyAsync(newUser);
+                
 
                 var token = await _jwtToken.GenerateJwtToken(userLogin, model.RoleSelected);
                 var refreshToken = await _jwtToken.GenerateRefreshToken();
@@ -266,14 +276,58 @@ namespace EduTrailblaze.Services
             throw new NotImplementedException();
         }
 
-        public Task ResetPassword(ResetPasswordModel resetPasswordModel)
+        public async Task<ApiResponse> ResetPassword(ResetPasswordModel resetPasswordModel)
         {
-            throw new NotImplementedException();
+            var user = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.FindByEmailAsync(resetPasswordModel.Email));
+            if (user == null)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
+            }
+            var result = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.ResetPasswordAsync(user,resetPasswordModel.Token, resetPasswordModel.Password));
+          return (result.Succeeded) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Password reset successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error when reset password." };   
         }
 
-        public Task VerifyAuthenticatorCode(string email, string code)
+        public async Task<ApiResponse> VerifyAuthenticatorCode(string userId, string code)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ApiResponse
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Message = "User not found."
+                };
+            }
+            if (!await _userManager.GetTwoFactorEnabledAsync(user))
+            {
+                return new ApiResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Two-factor authentication is not enabled for this user."
+                };
+            }
+
+            var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, code);
+
+            if (!isValid)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Invalid 2FA code." };
+            }
+
+            var token = await _jwtToken.GenerateJwtToken(user, "Admin");
+            var refreshToken = await _jwtToken.GenerateRefreshToken();
+            await _redisService.AcquireLock(user.Id, refreshToken);
+
+            return new ApiResponse
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Message = "Login successful.",
+                Data = new
+                {
+                    AccessToken = token,
+                    RefreshToken = refreshToken
+                }
+            };
         }
     }
 }

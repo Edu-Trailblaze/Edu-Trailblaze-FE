@@ -12,10 +12,10 @@ namespace EduTrailblaze.Services.Interface
     {
         Task<ApiResponse> Register(RegisterModel registerModel);
         Task<ApiResponse> Login(LoginModel loginModel);
-        Task VerifyAuthenticatorCode(string email, string code);
+        Task<ApiResponse> VerifyAuthenticatorCode(string userId, string code);
         Task RemoveAuthenticator();
-        Task ForgotPassword(ForgotPasswordModel forgotPasswordModel);
-        Task ResetPassword(ResetPasswordModel resetPasswordModel);
+        Task<ApiResponse> ForgotPassword(ForgotPasswordModel forgotPasswordModel);
+        Task<ApiResponse> ResetPassword(ResetPasswordModel resetPasswordModel);
 
         Task EnableAuthenticator(TwoFactorAuthenticationModel twoFactorAuthenticationViewModel);
         Task ExternalLoginCallback(AuthenticationResult authenticationResult);
