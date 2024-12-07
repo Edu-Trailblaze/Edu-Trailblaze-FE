@@ -1,4 +1,3 @@
-using EduTrailblaze.API.Middlewares;
 using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories;
 using EduTrailblaze.Repositories.Interfaces;
@@ -76,10 +75,41 @@ namespace EduTrailblaze.API
 
             builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 
-            builder.Services.AddScoped<INewsService, NewsService>();
+            //builder.Services.AddScoped<IAIService, AIService>();
+            builder.Services.AddScoped<IAnswerService, AnswerService>();
+            builder.Services.AddScoped<ICartItemService, CartItemService>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<ICertificateService, CertificateService>();
+            builder.Services.AddScoped<ICouponService, CouponService>();
+            builder.Services.AddScoped<ICourseCouponService, CourseCouponService>();
+            builder.Services.AddScoped<ICourseDiscountService, CourseDiscountService>();
+            builder.Services.AddScoped<ICourseInstructorService, CourseInstructorService>();
+            builder.Services.AddScoped<ICourseLanguageService, CourseLanguageService>();
             builder.Services.AddScoped<ICourseService, CourseService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<ICourseTagService, CourseTagService>();
             builder.Services.AddScoped<IDiscountService, DiscountService>();
+            builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+            builder.Services.AddScoped<ILanguageService, LanguageService>();
+            builder.Services.AddScoped<ILectureService, LectureService>();
+            builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<INewsService, NewsService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
+            builder.Services.AddScoped<IQuizAnswerService, QuizAnswerService>();
+            builder.Services.AddScoped<IQuizHistoryService, QuizHistoryService>();
+            builder.Services.AddScoped<IQuizService, QuizService>();
+            builder.Services.AddScoped<IRedisLock, RedisLock>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<ISectionService, SectionService>();
+            builder.Services.AddScoped<ITagService, TagService>();
+            builder.Services.AddScoped<IUserCertificateService, UserCertificateService>();
+            builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+            builder.Services.AddScoped<IUserProgressService, UserProgressService>();
+            builder.Services.AddScoped<IVideoService, VideoService>();
+            builder.Services.AddScoped<IVoucherService, VoucherService>();
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
@@ -164,7 +194,7 @@ namespace EduTrailblaze.API
 
             app.UseAuthorization();
 
-            app.UseMiddleware<RequestResponseMiddleware>();
+            //app.UseMiddleware<RequestResponseMiddleware>();
             app.MapControllers();
 
             app.Run();

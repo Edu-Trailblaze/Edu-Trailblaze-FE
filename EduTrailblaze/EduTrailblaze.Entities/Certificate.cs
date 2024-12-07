@@ -14,9 +14,11 @@ namespace EduTrailblaze.Entities
         [Required, StringLength(int.MaxValue)]
         public string CertificateTemplateUrl { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; } = false;
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
 
 
         // Navigation properties

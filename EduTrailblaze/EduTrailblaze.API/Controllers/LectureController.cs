@@ -6,22 +6,26 @@ namespace EduTrailblaze.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NewsController : ControllerBase
+    public class LectureController : ControllerBase
     {
-        private readonly INewsService _newsService;
+        private readonly ILectureService _lectureService;
 
-        public NewsController(INewsService newsService)
+        public LectureController(ILectureService lectureService)
         {
-            _newsService = newsService;
+            _lectureService = lectureService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetNews()
+        [HttpGet("{lectureId}")]
+        public async Task<IActionResult> GetLecture(int lectureId)
         {
             try
             {
-                var news = await _newsService.GetNews();
-                return Ok(news);
+                var lecture = await _lectureService.GetLecture(lectureId);
+                if (lecture == null)
+                {
+                    return NotFound();
+                }
+                return Ok(lecture);
             }
             catch (Exception ex)
             {
@@ -29,19 +33,13 @@ namespace EduTrailblaze.API.Controllers
             }
         }
 
-        [HttpGet("{newsId}")]
-        public async Task<IActionResult> GetNews(int newsId)
+        [HttpGet]
+        public async Task<IActionResult> GetLectures()
         {
             try
             {
-                var news = await _newsService.GetNews(newsId);
-
-                if (news == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(news);
+                var lectures = await _lectureService.GetLectures();
+                return Ok(lectures);
             }
             catch (Exception ex)
             {
@@ -50,11 +48,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNews([FromBody] CreateNewsRequest news)
+        public async Task<IActionResult> AddLecture([FromBody] CreateLectureRequest lecture)
         {
             try
             {
-                await _newsService.AddNews(news);
+                await _lectureService.AddLecture(lecture);
                 return Ok();
             }
             catch (Exception ex)
@@ -64,11 +62,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateNews([FromBody] UpdateNewsRequest news)
+        public async Task<IActionResult> UpdateLecture([FromBody] UpdateLectureRequest lecture)
         {
             try
             {
-                await _newsService.UpdateNews(news);
+                await _lectureService.UpdateLecture(lecture);
                 return Ok();
             }
             catch (Exception ex)
@@ -77,12 +75,12 @@ namespace EduTrailblaze.API.Controllers
             }
         }
 
-        [HttpDelete("{newsId}")]
-        public async Task<IActionResult> DeleteNews(int newsId)
+        [HttpDelete("{lectureId}")]
+        public async Task<IActionResult> DeleteLecture(int lectureId)
         {
             try
             {
-                await _newsService.DeleteNews(newsId);
+                await _lectureService.DeleteLecture(lectureId);
                 return Ok();
             }
             catch (Exception ex)

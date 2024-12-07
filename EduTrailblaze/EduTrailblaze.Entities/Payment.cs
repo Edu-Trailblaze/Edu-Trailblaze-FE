@@ -22,7 +22,7 @@ namespace EduTrailblaze.Entities
         public string PaymentStatus { get; set; } = "Pending";
         //'Success', 'Failed', 'Pending'
 
-        public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
+        public DateTime PaymentDate { get; set; }
 
 
         // Navigation property

@@ -24,5 +24,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task<List<CourseCardResponse>> GetCourseInformation(GetCoursesRequest request);
 
         Task<PaginatedList<CourseCardResponse>> GetPagingCourseInformation(GetCoursesRequest request, Paging paging);
+
+        Task AddCourse(CreateCourseRequest course);
+
+        Task UpdateCourse(UpdateCourseRequest req);
+
+        Task DeleteCourse(int courtId);
     }
 }

@@ -2,7 +2,9 @@
 using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduTrailblaze.Services
@@ -13,11 +15,12 @@ namespace EduTrailblaze.Services
         private readonly IRepository<CourseInstructor, int> _courseInstructorRepository;
         private readonly IRepository<Enrollment, int> _enrollment;
         private readonly IReviewService _reviewService;
+        private readonly UserManager<User> _userManager;
         private readonly IElasticsearchService _elasticsearchService;
         private readonly IDiscountService _discountService;
         private readonly IMapper _mapper;
 
-        public CourseService(IRepository<Course, int> courseRepository, IReviewService reviewService, IElasticsearchService elasticsearchService, IMapper mapper, IDiscountService discountService, IRepository<CourseInstructor, int> courseInstructorRepository, IRepository<Enrollment, int> enrollment)
+        public CourseService(IRepository<Course, int> courseRepository, IReviewService reviewService, IElasticsearchService elasticsearchService, IMapper mapper, IDiscountService discountService, IRepository<CourseInstructor, int> courseInstructorRepository, IRepository<Enrollment, int> enrollment, UserManager<User> userManager)
         {
             _courseRepository = courseRepository;
             _reviewService = reviewService;
@@ -26,6 +29,7 @@ namespace EduTrailblaze.Services
             _discountService = discountService;
             _courseInstructorRepository = courseInstructorRepository;
             _enrollment = enrollment;
+            _userManager = userManager;
         }
 
         public async Task<Course?> GetCourse(int courseId)
@@ -64,6 +68,94 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task AddCourse(CreateCourseRequest req)
+        {
+            try
+            {
+                var instructor = await _userManager.FindByIdAsync(req.CreatedBy);
+
+                if (instructor == null)
+                {
+                    throw new ArgumentException("Invalid instructor ID");
+                }
+
+                var newCourse = new Course
+                {
+                    Title = req.Title,
+                    ImageURL = req.ImageURL,
+                    Description = req.Description,
+                    Price = req.Price,
+                    CreatedBy = req.CreatedBy,
+                    DifficultyLevel = req.DifficultyLevel,
+                    Prerequisites = req.Prerequisites,
+                    UpdatedBy = req.CreatedBy,
+
+                    CourseInstructors = new List<CourseInstructor>
+                    {
+                        new CourseInstructor
+                        {
+                            InstructorId = instructor.Id,
+                            IsPrimaryInstructor = true
+                        }
+                    }
+                };
+
+                await _courseRepository.AddAsync(newCourse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the course: " + ex.Message);
+            }
+        }
+
+        public async Task UpdateCourse(UpdateCourseRequest req)
+        {
+            try
+            {
+                var course = await _courseRepository.GetByIdAsync(req.CourseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+
+                var instructor = await _userManager.FindByIdAsync(req.UpdatedBy);
+
+                // check if the instructor has permission to update the course
+                var courseInstructorDbSet = await _courseInstructorRepository.GetDbSet();
+                var isCourseInstructor = await courseInstructorDbSet.AnyAsync(ci => ci.CourseId == req.CourseId && ci.InstructorId == instructor.Id);
+
+                if (!isCourseInstructor)
+                {
+                    throw new Exception("Instructor does not have permission to update the course.");
+                }
+
+                var newCourse = new Course
+                {
+                    CourseId = req.CourseId,
+                    Title = req.Title,
+                    ImageURL = req.ImageURL,
+                    Description = req.Description,
+                    Price = req.Price,
+                    Duration = course.Duration,
+                    DifficultyLevel = req.DifficultyLevel,
+                    Prerequisites = req.Prerequisites,
+                    EstimatedCompletionTime = course.EstimatedCompletionTime,
+                    CreatedAt = course.CreatedAt,
+                    UpdatedAt = DateTimeHelper.GetVietnamTime(),
+                    CreatedBy = course.CreatedBy,
+                    UpdatedBy = req.UpdatedBy,
+                    IsPublished = req.IsPublished,
+                    IsDeleted = req.IsDeleted
+                };
+
+                await _courseRepository.UpdateAsync(newCourse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the course: " + ex.Message);
+            }
+        }
+
         public async Task UpdateCourse(Course course)
         {
             try
@@ -81,6 +173,27 @@ namespace EduTrailblaze.Services
             try
             {
                 await _courseRepository.DeleteAsync(course);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the course.", ex);
+            }
+        }
+
+        public async Task DeleteCourse(int courtId)
+        {
+            try
+            {
+                var course = await _courseRepository.GetByIdAsync(courtId);
+
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+
+                course.IsDeleted = true;
+
+                await _courseRepository.UpdateAsync(course);
             }
             catch (Exception ex)
             {
@@ -107,8 +220,8 @@ namespace EduTrailblaze.Services
             {
                 var maxDiscount = course.CourseDiscounts
                     .Where(d => d.Discount.IsActive &&
-                                d.Discount.StartDate <= DateTime.UtcNow &&
-                                d.Discount.EndDate >= DateTime.UtcNow)
+                                d.Discount.StartDate <= DateTimeHelper.GetVietnamTime() &&
+                                d.Discount.EndDate >= DateTimeHelper.GetVietnamTime())
                     .Max(d => d.Discount.DiscountType == "Percentage"
                         ? course.Price * d.Discount.DiscountValue / 100
                         : d.Discount.DiscountValue);
@@ -135,8 +248,8 @@ namespace EduTrailblaze.Services
 
             var maxDiscount = course.CourseDiscounts
                 .Where(d => d.Discount.IsActive &&
-                            d.Discount.StartDate <= DateTime.UtcNow &&
-                            d.Discount.EndDate >= DateTime.UtcNow)
+                            d.Discount.StartDate <= DateTimeHelper.GetVietnamTime() &&
+                            d.Discount.EndDate >= DateTimeHelper.GetVietnamTime())
                 .OrderByDescending(d => d.Discount.DiscountType == "Percentage"
                     ? course.Price * d.Discount.DiscountValue / 100
                     : d.Discount.DiscountValue)

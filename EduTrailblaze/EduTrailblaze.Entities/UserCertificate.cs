@@ -14,7 +14,7 @@ namespace EduTrailblaze.Entities
         [Required, ForeignKey("Certificate")]
         public int CertificateId { get; set; }
 
-        public DateTime IssuedAt { get; set; } = DateTime.UtcNow;
+        public DateTime IssuedAt { get; set; }
 
         [Required]
         public string CertificateUrl { get; set; }

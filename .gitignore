@@ -8,6 +8,9 @@
 # Environment .env
 .env
 
+# Ignore Migrations files
+Migrations
+
 # Ignore appsettings files
 appsettings.json
 appsettings.Development.json

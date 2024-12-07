@@ -6,22 +6,22 @@ namespace EduTrailblaze.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NewsController : ControllerBase
+    public class NotificationController : ControllerBase
     {
-        private readonly INewsService _newsService;
+        private readonly INotificationService _notificationService;
 
-        public NewsController(INewsService newsService)
+        public NotificationController(INotificationService notificationService)
         {
-            _newsService = newsService;
+            _notificationService = notificationService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetNews()
+        public async Task<IActionResult> GetNotifications()
         {
             try
             {
-                var news = await _newsService.GetNews();
-                return Ok(news);
+                var notifications = await _notificationService.GetNotifications();
+                return Ok(notifications);
             }
             catch (Exception ex)
             {
@@ -29,19 +29,13 @@ namespace EduTrailblaze.API.Controllers
             }
         }
 
-        [HttpGet("{newsId}")]
-        public async Task<IActionResult> GetNews(int newsId)
+        [HttpGet("{notificationId}")]
+        public async Task<IActionResult> GetNotification(int notificationId)
         {
             try
             {
-                var news = await _newsService.GetNews(newsId);
-
-                if (news == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(news);
+                var notification = await _notificationService.GetNotification(notificationId);
+                return Ok(notification);
             }
             catch (Exception ex)
             {
@@ -50,11 +44,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNews([FromBody] CreateNewsRequest news)
+        public async Task<IActionResult> AddNotification([FromBody] CreateNotificationRequest notification)
         {
             try
             {
-                await _newsService.AddNews(news);
+                await _notificationService.AddNotification(notification);
                 return Ok();
             }
             catch (Exception ex)
@@ -64,11 +58,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateNews([FromBody] UpdateNewsRequest news)
+        public async Task<IActionResult> UpdateNotification([FromBody] UpdateNotificationRequest notification)
         {
             try
             {
-                await _newsService.UpdateNews(news);
+                await _notificationService.UpdateNotification(notification);
                 return Ok();
             }
             catch (Exception ex)
@@ -77,12 +71,12 @@ namespace EduTrailblaze.API.Controllers
             }
         }
 
-        [HttpDelete("{newsId}")]
-        public async Task<IActionResult> DeleteNews(int newsId)
+        [HttpDelete("{notificationId}")]
+        public async Task<IActionResult> DeleteNotification(int notificationId)
         {
             try
             {
-                await _newsService.DeleteNews(newsId);
+                await _notificationService.DeleteNotification(notificationId);
                 return Ok();
             }
             catch (Exception ex)

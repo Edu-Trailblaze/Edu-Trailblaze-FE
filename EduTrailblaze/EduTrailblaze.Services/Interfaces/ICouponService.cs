@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,9 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateCoupon(Coupon coupon);
 
         Task DeleteCoupon(Coupon coupon);
+
+        Task AddCoupon(CreateCouponRequest coupon);
+
+        Task UpdateCoupon(UpdateCouponRequest coupon);
     }
 }

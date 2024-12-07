@@ -6,42 +6,26 @@ namespace EduTrailblaze.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NewsController : ControllerBase
+    public class AnswerController : ControllerBase
     {
-        private readonly INewsService _newsService;
+        private readonly IAnswerService _answerService;
 
-        public NewsController(INewsService newsService)
+        public AnswerController(IAnswerService answerService)
         {
-            _newsService = newsService;
+            _answerService = answerService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetNews()
+        [HttpGet("{answerId}")]
+        public async Task<IActionResult> GetAnswer(int answerId)
         {
             try
             {
-                var news = await _newsService.GetNews();
-                return Ok(news);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("{newsId}")]
-        public async Task<IActionResult> GetNews(int newsId)
-        {
-            try
-            {
-                var news = await _newsService.GetNews(newsId);
-
-                if (news == null)
+                var answer = await _answerService.GetAnswer(answerId);
+                if (answer == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(news);
+                return Ok(answer);
             }
             catch (Exception ex)
             {
@@ -50,11 +34,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNews([FromBody] CreateNewsRequest news)
+        public async Task<IActionResult> AddAnswer([FromBody] CreateAnswerRequest answer)
         {
             try
             {
-                await _newsService.AddNews(news);
+                await _answerService.AddAnswer(answer);
                 return Ok();
             }
             catch (Exception ex)
@@ -64,11 +48,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateNews([FromBody] UpdateNewsRequest news)
+        public async Task<IActionResult> UpdateAnswer([FromBody] UpdateAnswerRequest answer)
         {
             try
             {
-                await _newsService.UpdateNews(news);
+                await _answerService.UpdateAnswer(answer);
                 return Ok();
             }
             catch (Exception ex)
@@ -77,12 +61,12 @@ namespace EduTrailblaze.API.Controllers
             }
         }
 
-        [HttpDelete("{newsId}")]
-        public async Task<IActionResult> DeleteNews(int newsId)
+        [HttpDelete("{answerId}")]
+        public async Task<IActionResult> DeleteAnswer(int answerId)
         {
             try
             {
-                await _newsService.DeleteNews(newsId);
+                await _answerService.DeleteAnswer(answerId);
                 return Ok();
             }
             catch (Exception ex)

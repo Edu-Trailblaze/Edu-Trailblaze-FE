@@ -1,6 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.Interfaces;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services
 {
@@ -38,6 +39,18 @@ namespace EduTrailblaze.Services
         }
 
         public async Task AddPayment(Payment payment)
+        {
+            try
+            {
+                await _paymentRepository.AddAsync(payment);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the payment.", ex);
+            }
+        }
+        
+        public async Task AddPayment(CreatePaymentRequest payment)
         {
             try
             {
