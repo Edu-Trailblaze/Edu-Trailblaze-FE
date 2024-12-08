@@ -16,5 +16,6 @@ namespace EduTrailblaze.Services.Interface
         Task ExternalLoginCallback(AuthenticationResult authenticationResult);
         Task<ApiResponse> Logout(string userId);
         Task<ApiResponse> RefreshToken(string refreshToken);
+        Task<ApiResponse> AssignRole(AssignRoleModel model);
     }
 }

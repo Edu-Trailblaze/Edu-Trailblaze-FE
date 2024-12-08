@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -39,7 +40,7 @@ namespace EduTrailblaze.API
                 options.JsonSerializerOptions.WriteIndented = true;
             });
             // Add Caching for response Middleware 
-            builder.Services.AddResponseCaching();
+           builder.Services.AddResponseCaching();
 
 
             //builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
@@ -65,86 +66,24 @@ namespace EduTrailblaze.API
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            //    {
-            //        In = ParameterLocation.Header,
-            //        Description = "Please enter a valid token",
-            //        Name = "Authorization",
-            //        Type = SecuritySchemeType.ApiKey,
-            //        Scheme = "Bearer"
-            //    });
-            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            //           {
-            //               {
-            //                   new OpenApiSecurityScheme
-            //                   {
-            //                       Reference = new OpenApiReference
-            //                       {
-            //                           Type = ReferenceType.SecurityScheme,
-            //                           Id = "Bearer"
-            //                       }
-            //                   },
-            //                   new string[] { }
-            //               }
-            //           });
-            //});
+            
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-            builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
-
-            builder.Services.AddScoped<INewsService, NewsService>();
-            builder.Services.AddScoped<ICourseService, CourseService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
-            builder.Services.AddScoped<IDiscountService, DiscountService>();
-
-            builder.Services.AddSingleton<IElasticClient>(sp =>
-            {
-                var settings = new ConnectionSettings(new Uri("http://localhost:9200"))
-                .DefaultIndex("courses");
-
-                var retryPolicy = Polly.Policy
-                    .Handle<Exception>() // Handle any exception, or you can be more specific
-                    .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                        (exception, timeSpan, retryCount, context) =>
-                        {
-                            Console.WriteLine($"Attempt {retryCount} to connect to Elasticsearch failed. Error: {exception.Message}");
-                        });
-
-                IElasticClient client = null;
-                try
-                {
-                    retryPolicy.ExecuteAsync(async () =>
-                    {
-                        client = new ElasticClient(settings);
-                        var pingResponse = await client.PingAsync();
-                        if (!pingResponse.IsValid)
-                        {
-                            throw new Exception("Elasticsearch ping failed.");
-                        }
-                    }).Wait();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Elasticsearch connection failed after retries: {ex.Message}");
-                }
-
-                return client ?? new ElasticClient(settings);
-            });
-
-            builder.Services.AddSingleton<IElasticsearchService, ElasticsearchService>();
+            
 
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin",
                     policy =>
                     {
-                        policy.WithOrigins(
+                        policy.
+                        WithOrigins(
                             "https://localhost:3000",
-                            "http://localhost:3000"
-                        )
+                            "http://localhost:3000",
+                            "http://localhost:5148",
+                            "https://localhost:7034"
+                        ).
+                        AllowAnyOrigin()
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
@@ -160,11 +99,11 @@ namespace EduTrailblaze.API
 
 
             // Add DbContext Pool
-            builder.Services.AddDbContext<EduTrailblazeDbContext>(options =>
+            builder.Services.AddDbContextPool<EduTrailblazeDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlOption =>
-                sqlOption.EnableRetryOnFailure());
-            });
+                sqlOption.EnableRetryOnFailure()).ConfigureWarnings(w => w.Ignore(CoreEventId.DetachedLazyLoadingWarning)).EnableDetailedErrors();
+            },poolSize:50);
 
             // Identity Configuration
             builder.Services.AddIdentity<User, IdentityRole>(option =>
@@ -206,33 +145,87 @@ namespace EduTrailblaze.API
                 options.Cookie.Name = "AntiForgeryCookie";
                 options.HeaderName = "X-XSRF-TOKEN";
             });
-
+            // add authorization for swagger 
             builder.Services.AddSwaggerGen(c =>
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     BearerFormat = "JWT",
-                    Description = "Enter 'Bearer' [space] and then your token"
+                    Description = "Enter 'Bearer' [space] and then your token",
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = JwtBearerDefaults.AuthenticationScheme
+                            },
+                            Scheme = "Oauth2",
+                            Name = JwtBearerDefaults.AuthenticationScheme,
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
                 });
             });
 
-            //sendgrid Configuration
-
-            builder.Services.AddSingleton<ISendGridClient, SendGridClient>(provider =>
-            {
-                var apiKey = builder.Configuration["SendGrid:ApiKey"];
-                return new SendGridClient(apiKey);
-            });
-
+           
             // Add services to Dependency Container
             builder.Services.AddTransient<TokenGenerator>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
             builder.Services.AddScoped<IRedisService, RedisService>();
             builder.Services.AddScoped<ISendMail, SendMail>();
+            builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            builder.Services.AddScoped<INewsService, NewsService>();
+            builder.Services.AddScoped<ICourseService, CourseService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IDiscountService, DiscountService>();
+
+            //Elasticsearch Configuration
+            builder.Services.AddSingleton<IElasticClient>(sp =>
+            {
+                var settings = new ConnectionSettings(new Uri("http://localhost:9200"))
+                .DefaultIndex("courses");
+
+                var retryPolicy = Polly.Policy
+                    .Handle<Exception>() // Handle any exception, or you can be more specific
+                    .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                        (exception, timeSpan, retryCount, context) =>
+                        {
+                            Console.WriteLine($"Attempt {retryCount} to connect to Elasticsearch failed. Error: {exception.Message}");
+                        });
+
+                IElasticClient client = null;
+                try
+                {
+                    retryPolicy.ExecuteAsync(async () =>
+                    {
+                        client = new ElasticClient(settings);
+                        var pingResponse = await client.PingAsync();
+                        if (!pingResponse.IsValid)
+                        {
+                            throw new Exception("Elasticsearch ping failed.");
+                        }
+                    }).Wait();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Elasticsearch connection failed after retries: {ex.Message}");
+                }
+
+                return client ?? new ElasticClient(settings);
+            });
+
+            builder.Services.AddSingleton<IElasticsearchService, ElasticsearchService>();
 
             //redis Configuration
             builder.Services.Configure<RedisConfig>(builder.Configuration.GetSection("RedisConfig"));
@@ -257,6 +250,13 @@ namespace EduTrailblaze.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
+            //sendgrid Configuration
+
+            builder.Services.AddSingleton<ISendGridClient, SendGridClient>(provider =>
+            {
+                var apiKey = builder.Configuration["SendGrid:ApiKey"];
+                return new SendGridClient(apiKey);
+            });
 
             var app = builder.Build();
 
@@ -270,10 +270,8 @@ namespace EduTrailblaze.API
                 });
             }
 
-
-
             app.UseHttpsRedirection();
-
+            app.UseCors("AllowSpecificOrigin");
             app.UseHsts();
             app.Use(async (context, next) =>
             {
@@ -290,7 +288,6 @@ namespace EduTrailblaze.API
 
             //app.UseMiddleware<RequestResponseMiddleware>();
             app.MapControllers();
-
             app.Run();
         }
         private class RedisConfig

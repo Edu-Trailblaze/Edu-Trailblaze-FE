@@ -2,6 +2,7 @@
 using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interface;
 using EduTrailblaze.Services.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -126,6 +127,19 @@ namespace EduTrailblaze.API.Controllers
         {
 
             var result = await _authService.ResetPassword(model);
+
+            if (result.StatusCode == 200)
+            {
+                return Ok(new { Message = result });
+            }
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("admin/assign-role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleModel model)
+        {
+            var result = await _authService.AssignRole(model);
 
             if (result.StatusCode == 200)
             {

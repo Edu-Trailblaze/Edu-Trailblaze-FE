@@ -17,15 +17,15 @@ namespace EduTrailblaze.Repositories
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    var builder = new ConfigurationBuilder()
+        //        .SetBasePath(Directory.GetCurrentDirectory())
+        //        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            IConfigurationRoot configurationRoot = builder.Build();
-            optionsBuilder.UseSqlServer(configurationRoot.GetConnectionString("DefaultConnection"));
-        }
+        //    IConfigurationRoot configurationRoot = builder.Build();
+        //    optionsBuilder.UseSqlServer(configurationRoot.GetConnectionString("DefaultConnection"));
+        //}
 
         public virtual DbSet<Answer> Answers { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }

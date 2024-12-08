@@ -25,8 +25,8 @@ namespace EduTrailblaze.Services.Models
 
         //không chắc đúng
         public IEnumerable<IdentityRole>? RoleList { get; set; }
-        [Display(Name = "Role")]
-        public string RoleSelected { get; set; }
+        //[Display(Name = "Role")]
+        //public string RoleSelected { get; set; }
 
 
     }

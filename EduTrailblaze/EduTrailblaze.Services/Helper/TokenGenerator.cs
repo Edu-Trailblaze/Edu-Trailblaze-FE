@@ -17,9 +17,13 @@ namespace EduTrailblaze.Services.Helper
             _configuration = configuration;
         }
 
-        public async Task<string> GenerateJwtToken(User user, string role)
+        public async Task<string> GenerateJwtToken(User user,string role)
         {
-            var claims = new[]
+            var date = DateTime.UtcNow;
+            TimeZoneInfo asianZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            date = TimeZoneInfo.ConvertTimeFromUtc(date, asianZone);
+            Console.WriteLine(date);
+            var claims = new []
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName.ToString()),
@@ -31,7 +35,7 @@ namespace EduTrailblaze.Services.Helper
             issuer: _configuration["JwtToken:Issuer"],
             audience: _configuration["JwtToken:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddHours(1),
+            expires: date.AddMinutes(10),
             signingCredentials: creds
         );
 

@@ -49,6 +49,27 @@ namespace EduTrailblaze.Services
             _sendMail = sendMail;
         }
 
+        public async Task<ApiResponse> AssignRole(AssignRoleModel model)
+        {
+            var user = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.FindByIdAsync(model.UserId));
+            if (user == null)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
+            }
+            var role = await _dbPolicyWrap.ExecuteAsync(async () => await _roleManager.FindByNameAsync(model.RoleNameFormat));
+            if (role == null)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "Role not found." };
+            }
+            var isUserInRole = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.IsInRoleAsync(user, role.Name));
+            if (isUserInRole)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status400BadRequest, Message = "User already in role." };
+            }
+            await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.AddToRoleAsync(user, role.Name));
+            return new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Role assigned successfully." };
+        }
+
         public Task EnableAuthenticator(TwoFactorAuthenticationModel twoFactorAuthenticationViewModel)
         {
             throw new NotImplementedException();
@@ -104,7 +125,13 @@ namespace EduTrailblaze.Services
                     return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Invalid login attempt." };
                 }
                 //if (await _userManager.GetTwoFactorEnabledAsync(user) is true) return new ApiResponse { StatusCode = StatusCodes.Status200OK, Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) } };
-                var claims = await _userManager.GetClaimsAsync(user);
+                var claimsasync = _userManager.GetClaimsAsync(user);
+                var tokenasync = _jwtToken.GenerateJwtToken(user, "Admin");
+                Task.WhenAll(claimsasync, tokenasync);
+                var claims = await claimsasync;
+                var token =  await tokenasync;
+
+
                 var firstNameClaim = claims.FirstOrDefault(u => u.Type == "FirstName");
                 if (firstNameClaim != null)
                 {
@@ -112,7 +139,7 @@ namespace EduTrailblaze.Services
                 }
                 await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("Username", user.UserName));
 
-                var token = await _jwtToken.GenerateJwtToken(user, "Admin");
+                
                 var refreshToken = await _jwtToken.GenerateRefreshToken();
                 await _redisService.AcquireLock(user.Id, refreshToken);
 
@@ -176,20 +203,6 @@ namespace EduTrailblaze.Services
         {
             try
             {
-                var roleChecked = await _roleManager.Roles.AnyAsync(r => r.Name == model.RoleSelected);
-                if (model.RoleSelected != null)
-                {
-                    model.RoleSelected = char.ToUpper(model.RoleSelected[0]) + model.RoleSelected.Substring(1).ToLower();
-                }
-                if (model.RoleSelected == null || !roleChecked)
-                {
-                    return new ApiResponse
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = $"Invalid role '{model.RoleSelected}'"
-                    };
-                }
-
                 if (model == null)
                 {
                     return new ApiResponse
@@ -234,7 +247,7 @@ namespace EduTrailblaze.Services
                         Message = $"Registration failed: {string.Join(", ", result.Errors.Select(e => e.Description))}"
                     };
                 }
-                await _userManager.AddToRoleAsync(newUser, model.RoleSelected);
+                await _userManager.AddToRoleAsync(newUser, "Student");
 
                 await _userManager.SetTwoFactorEnabledAsync(newUser, true);
                 //var code = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
@@ -244,7 +257,7 @@ namespace EduTrailblaze.Services
                 await _userManager.ResetAuthenticatorKeyAsync(newUser);
 
 
-                var token = await _jwtToken.GenerateJwtToken(userLogin, model.RoleSelected);
+                var token = await _jwtToken.GenerateJwtToken(userLogin, "Student");
                 var refreshToken = await _jwtToken.GenerateRefreshToken();
 
                 return new ApiResponse
