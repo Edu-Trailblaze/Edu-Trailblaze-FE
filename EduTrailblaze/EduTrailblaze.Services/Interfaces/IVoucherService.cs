@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -11,6 +12,10 @@ namespace EduTrailblaze.Services.Interfaces
         Task AddVoucher(Voucher voucher);
 
         Task UpdateVoucher(Voucher voucher);
+
+        Task AddVoucher(CreateVoucherRequest voucher);
+
+        Task UpdateVoucher(UpdateVoucherRequest voucher);
 
         Task DeleteVoucher(Voucher voucher);
     }

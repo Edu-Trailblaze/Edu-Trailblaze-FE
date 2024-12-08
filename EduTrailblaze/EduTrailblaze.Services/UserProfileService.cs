@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -54,6 +55,41 @@ namespace EduTrailblaze.Services
             try
             {
                 await _userProfileRepository.UpdateAsync(userProfile);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the userProfile.", ex);
+            }
+        }
+
+        public async Task AddUserProfile(CreateUserProfileRequest userProfile)
+        {
+            try
+            {
+                var newUserProfile = new UserProfile
+                {
+                    UserId = userProfile.UserId,
+                };
+                await _userProfileRepository.AddAsync(newUserProfile);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the userProfile.", ex);
+            }
+        }
+
+        public async Task UpdateUserProfile(UpdateUserProfileRequest userProfile)
+        {
+            try
+            {
+                var existingUserProfile = await _userProfileRepository.GetByIdAsync(userProfile.UserId);
+                if (existingUserProfile == null)
+                {
+                    throw new Exception("UserProfile not found.");
+                }
+                existingUserProfile.Address = userProfile.Address;
+                existingUserProfile.ProfilePictureUrl = userProfile.ProfilePictureUrl;
+                await _userProfileRepository.UpdateAsync(existingUserProfile);
             }
             catch (Exception ex)
             {

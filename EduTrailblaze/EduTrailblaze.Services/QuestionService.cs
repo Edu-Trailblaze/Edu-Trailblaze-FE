@@ -1,5 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -61,10 +63,63 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task AddQuestion(CreateQuestionRequest question)
+        {
+            try
+            {
+                var newQuestion = new Question
+                {
+                    QuizzId = question.QuizzId,
+                    QuestionText = question.QuestionText
+                };
+                await _questionRepository.AddAsync(newQuestion);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the question.", ex);
+            }
+        }
+
+        public async Task UpdateQuestion(UpdateQuestionRequest question)
+        {
+            try
+            {
+                var questionToUpdate = await _questionRepository.GetByIdAsync(question.QuestionId);
+                if (questionToUpdate == null)
+                {
+                    throw new Exception("Question not found.");
+                }
+                questionToUpdate.QuestionText = question.QuestionText;
+                questionToUpdate.UpdatedAt = DateTimeHelper.GetVietnamTime();
+                await _questionRepository.UpdateAsync(questionToUpdate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the question.", ex);
+            }
+        }
+
         public async Task DeleteQuestion(Question question)
         {
             try
             {
+                await _questionRepository.DeleteAsync(question);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the question.", ex);
+            }
+        }
+
+        public async Task DeleteQuestion(int questionId)
+        {
+            try
+            {
+                var question = await _questionRepository.GetByIdAsync(questionId);
+                if (question == null)
+                {
+                    throw new Exception("Question not found.");
+                }
                 await _questionRepository.DeleteAsync(question);
             }
             catch (Exception ex)

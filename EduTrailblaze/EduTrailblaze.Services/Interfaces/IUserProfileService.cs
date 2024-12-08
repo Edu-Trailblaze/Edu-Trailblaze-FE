@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -11,6 +12,8 @@ namespace EduTrailblaze.Services.Interfaces
         Task AddUserProfile(UserProfile userProfile);
 
         Task UpdateUserProfile(UserProfile userProfile);
+
+        Task UpdateUserProfile(UpdateUserProfileRequest userProfile);
 
         Task DeleteUserProfile(UserProfile userProfile);
     }

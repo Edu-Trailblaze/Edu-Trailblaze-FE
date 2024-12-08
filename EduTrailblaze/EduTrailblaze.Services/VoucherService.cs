@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -54,6 +55,46 @@ namespace EduTrailblaze.Services
             try
             {
                 await _voucherRepository.UpdateAsync(voucher);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the voucher.", ex);
+            }
+        }
+
+        public async Task AddVoucher(CreateVoucherRequest voucher)
+        {
+            try
+            {
+                var newVoucher = new Voucher
+                {
+                    DiscountType = voucher.DiscountType,
+                    DiscountValue = voucher.DiscountValue,
+                    ExpiryDate = voucher.ExpiryDate
+                };
+                await _voucherRepository.AddAsync(newVoucher);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the voucher.", ex);
+            }
+        }
+
+        public async Task UpdateVoucher(UpdateVoucherRequest voucher)
+        {
+            try
+            {
+                var voucherToUpdate = await _voucherRepository.GetByIdAsync(voucher.VoucherId);
+                if (voucherToUpdate == null)
+                {
+                    throw new Exception("Voucher not found.");
+                }
+                voucherToUpdate.DiscountType = voucher.DiscountType;
+                voucherToUpdate.DiscountValue = voucher.DiscountValue;
+                voucherToUpdate.ExpiryDate = voucher.ExpiryDate;
+                voucherToUpdate.IsUsed = voucher.IsUsed;
+
+                await _voucherRepository.UpdateAsync(voucherToUpdate);
             }
             catch (Exception ex)
             {

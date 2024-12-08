@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateTag(Tag tag);
 
         Task DeleteTag(Tag tag);
+
+        Task AddTag(CreateTagRequest tag);
+
+        Task UpdateTag(UpdateTagRequest tag);
+
+        Task DeleteTag(int tag);
     }
 }

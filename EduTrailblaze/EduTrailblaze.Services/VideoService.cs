@@ -1,5 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -66,6 +68,64 @@ namespace EduTrailblaze.Services
             try
             {
                 await _videoRepository.DeleteAsync(video);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the video.", ex);
+            }
+        }
+
+        public async Task AddVideo(CreateVideoRequest video)
+        {
+            try
+            {
+                var newVideo = new Video
+                {
+                    LectureId = video.LectureId,
+                    Title = video.Title,
+                    VideoUrl = video.VideoUrl,
+                    Transcript = video.Transcript,
+                };
+                await _videoRepository.AddAsync(newVideo);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the video.", ex);
+            }
+        }
+
+        public async Task UpdateVideo(UpdateVideoRequest video)
+        {
+            try
+            {
+                var existingVideo = await _videoRepository.GetByIdAsync(video.VideoId);
+                if (existingVideo == null)
+                {
+                    throw new Exception("Video not found.");
+                }
+                existingVideo.Title = video.Title;
+                existingVideo.VideoUrl = video.VideoUrl;
+                existingVideo.Transcript = video.Transcript;
+                existingVideo.UpdatedAt = DateTimeHelper.GetVietnamTime();
+                await _videoRepository.UpdateAsync(existingVideo);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the video.", ex);
+            }
+        }
+
+        public async Task DeleteVideo(int video)
+        {
+            try
+            {
+                var existingVideo = await _videoRepository.GetByIdAsync(video);
+                if (existingVideo == null)
+                {
+                    throw new Exception("Video not found.");
+                }
+                existingVideo.IsDeleted = true;
+                await _videoRepository.UpdateAsync(existingVideo);
             }
             catch (Exception ex)
             {

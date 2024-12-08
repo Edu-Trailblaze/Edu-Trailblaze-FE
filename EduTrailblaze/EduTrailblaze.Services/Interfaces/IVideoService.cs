@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateVideo(Video video);
 
         Task DeleteVideo(Video video);
+
+        Task AddVideo(CreateVideoRequest video);
+
+        Task UpdateVideo(UpdateVideoRequest video);
+
+        Task DeleteVideo(int video);
     }
 }
