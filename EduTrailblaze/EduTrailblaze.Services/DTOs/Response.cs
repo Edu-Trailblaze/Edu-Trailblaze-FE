@@ -21,13 +21,21 @@
         public DateTime CreatedAt { get; set; }
     }
 
-    public class DiscountInformation
+    public class DiscountInformationResponse
     {
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
         public decimal PriceAfterDiscount { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        //public DateTime StartDate { get; set; }
+        //public DateTime EndDate { get; set; }
+    }
+    
+    public class CouponInformationResponse
+    {
+        public string CouponCode { get; set; }
+        public string DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+        public decimal PriceAfterDiscount { get; set; }
     }
 
     public class CourseReviewInformation
@@ -50,9 +58,42 @@
     public class CourseCardResponse
     {
         public CoursesResponse Course { get; set; }
-        public DiscountInformation? Discount { get; set; }
+        public DiscountInformationResponse? Discount { get; set; }
         public CourseReviewInformation Review { get; set; }
         public List<InstructorInformation> Instructors { get; set; }
         public EnrollmentInformation Enrollment { get; set; }
+    }
+
+    public class PaymentResponse
+    {
+        public bool IsSuccessful { get; set; }
+        public string RedirectUrl { get; set; }
+    }
+
+    public class CartInformation
+    {
+        public List<CartItemInformation> CartItems { get; set; }
+        public decimal TotalPrice { get; set; }
+    }
+
+    public class CartItemInformation
+    {
+        public CartCourseInformation CourseInformation { get; set; }
+        public CourseReviewInformation CourseReviewInformation { get; set; }
+        public DiscountInformationResponse DiscountInformations { get; set; }
+        public CouponInformationResponse CouponInformation { get; set; }
+        public decimal TotalPrice { get; set; }
+    }
+
+    public class CartCourseInformation
+    {
+        public int CourseId { get; set; }
+        public string Title { get; set; }
+        public decimal Price { get; set; }
+        public string Intructor { get; set; }
+        public string ImageURL { get; set; }
+        public int Duration { get; set; }
+        public string DifficultyLevel { get; set; }
+        public int TotalLectures { get; set; }
     }
 }

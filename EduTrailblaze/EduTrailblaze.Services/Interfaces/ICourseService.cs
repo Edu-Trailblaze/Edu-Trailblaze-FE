@@ -30,5 +30,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateCourse(UpdateCourseRequest req);
 
         Task DeleteCourse(int courtId);
+
+        Task<int> NumberOfEnrollments(int courseId);
+
+        Task<List<InstructorInformation>> InstructorInformation(int courseId);
+
+        Task<DiscountInformationResponse> DiscountInformationResponse(int courseId);
     }
 }

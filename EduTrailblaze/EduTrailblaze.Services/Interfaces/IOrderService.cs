@@ -13,5 +13,7 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateOrder(Order order);
 
         Task DeleteOrder(Order order);
+
+        Task AutomaticFailedOrder(int orderId);
     }
 }

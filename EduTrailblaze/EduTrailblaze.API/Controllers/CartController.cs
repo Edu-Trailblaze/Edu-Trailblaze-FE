@@ -19,7 +19,7 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                var cart = await _cartService.GetUserCart(userId);
+                var cart = await _cartService.GetSystemCart(userId);
                 return Ok(cart);
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                await _cartService.AddItemToCart(courseId, userId);
+                await _cartService.AddItemToSystemCart(courseId, userId);
                 return Ok(new { message = "Successfully" });
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                await _cartService.RemoveItemFromCart(courseId, userId);
+                await _cartService.RemoveItemFromSystemCart(courseId, userId);
                 return Ok(new { message = "Successfully" });
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                var numberOfItems = _cartService.NumberOfItemsInCart(userId);
+                var numberOfItems = _cartService.NumberOfItemsInCookieCart(userId);
                 return Ok(numberOfItems);
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                var cart = _cartService.GetCart(userId);
+                var cart = _cartService.GetCookieCart(userId);
                 return Ok(cart);
             }
             catch (Exception ex)

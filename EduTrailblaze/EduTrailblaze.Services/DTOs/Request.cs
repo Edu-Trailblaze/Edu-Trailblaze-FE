@@ -261,7 +261,10 @@ namespace EduTrailblaze.Services.DTOs
         public string Code { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public int? UsageCount { get; set; }
+        public int? MaxUsage { get; set; }
     }
 
     public class CreateCouponRequestValidator : AbstractValidator<CreateCouponRequest>
@@ -278,9 +281,14 @@ namespace EduTrailblaze.Services.DTOs
             RuleFor(x => x.DiscountValue)
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
             RuleFor(x => x.ExpiryDate)
-                .NotEmpty().WithMessage("ExpiryDate is required")
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("ExpiryDate must be greater than the current date");
+                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+            RuleFor(x => x.UsageCount)
+                .GreaterThanOrEqualTo(0).WithMessage("UsageCount must be greater than or equal to 0");
+            RuleFor(x => x.MaxUsage)
+                .GreaterThanOrEqualTo(0).WithMessage("MaxUsage must be greater than 0");
         }
     }
 
@@ -290,8 +298,11 @@ namespace EduTrailblaze.Services.DTOs
         public string Code { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
         public bool IsActive { get; set; }
+        public int? UsageCount { get; set; }
+        public int? MaxUsage { get; set; }
     }
 
     public class UpdateCouponRequestValidator : AbstractValidator<UpdateCouponRequest>
@@ -310,9 +321,16 @@ namespace EduTrailblaze.Services.DTOs
             RuleFor(x => x.DiscountValue)
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
             RuleFor(x => x.ExpiryDate)
-                .NotEmpty().WithMessage("ExpiryDate is required")
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("ExpiryDate must be greater than the current date");
+                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+            RuleFor(x => x.UsageCount)
+                .GreaterThanOrEqualTo(0).WithMessage("UsageCount must be greater than or equal to 0");
+            RuleFor(x => x.MaxUsage)
+                .GreaterThanOrEqualTo(0).WithMessage("MaxUsage must be greater than 0");
+            RuleFor(x => x.IsActive)
+                .NotEmpty().WithMessage("IsActive is required");
         }
     }
 
@@ -320,8 +338,10 @@ namespace EduTrailblaze.Services.DTOs
     {
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public DateTime StartDate { get; set; } = DateTimeHelper.GetVietnamTime();
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public int? MaxUsage { get; set; }
+        public int? UsageCount { get; set; }
     }
 
     public class CreateDiscountRequestValidator : AbstractValidator<CreateDiscountRequest>
@@ -340,6 +360,10 @@ namespace EduTrailblaze.Services.DTOs
             RuleFor(x => x.EndDate)
                 .NotEmpty().WithMessage("EndDate is required")
                 .GreaterThan(x => x.StartDate).WithMessage("EndDate must be greater than StartDate");
+            RuleFor(x => x.MaxUsage)
+                .GreaterThanOrEqualTo(0).WithMessage("MaxUsage must be greater than 0");
+            RuleFor(x => x.UsageCount)
+                .GreaterThanOrEqualTo(0).WithMessage("UsageCount must be greater than or equal to 0");
         }
     }
 
@@ -348,9 +372,11 @@ namespace EduTrailblaze.Services.DTOs
         public int DiscountId { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public bool IsActive { get; set; }
+        public int? MaxUsage { get; set; }
+        public int? UsageCount { get; set; }
     }
 
     public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRequest>
@@ -371,6 +397,10 @@ namespace EduTrailblaze.Services.DTOs
             RuleFor(x => x.EndDate)
                 .NotEmpty().WithMessage("EndDate is required")
                 .GreaterThan(x => x.StartDate).WithMessage("EndDate must be greater than StartDate");
+            RuleFor(x => x.MaxUsage)
+                .GreaterThanOrEqualTo(0).WithMessage("MaxUsage must be greater than 0");
+            RuleFor(x => x.UsageCount)
+                .GreaterThanOrEqualTo(0).WithMessage("UsageCount must be greater than or equal to 0");
         }
     }
 
@@ -608,6 +638,7 @@ namespace EduTrailblaze.Services.DTOs
     {
         public int OrderId { get; set; }
         public decimal Amount { get; set; }
+        public string PaymentStatus { get; set; }
         public string PaymentMethod { get; set; }
     }
 
@@ -919,7 +950,7 @@ namespace EduTrailblaze.Services.DTOs
     public class UpdateUserProfileRequest
     {
         public string UserId { get; set; }
-        public string Address { get; set; }
+        public string FullName { get; set; }
         public string ProfilePictureUrl { get; set; }
     }
 
@@ -929,8 +960,8 @@ namespace EduTrailblaze.Services.DTOs
         {
             RuleFor(x => x.UserId)
                 .NotEmpty().WithMessage("UserId is required");
-            RuleFor(x => x.Address)
-                .MaximumLength(255).WithMessage("Address cannot be longer than 255 characters");
+            RuleFor(x => x.FullName)
+                .MaximumLength(255).WithMessage("FullName cannot be longer than 255 characters");
             RuleFor(x => x.ProfilePictureUrl)
                 .MaximumLength(255).WithMessage("ProfilePictureUrl cannot be longer than 255 characters");
         }
@@ -988,7 +1019,9 @@ namespace EduTrailblaze.Services.DTOs
     {
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public decimal? MinimumOrderValue { get; set; }
     }
 
     public class CreateVoucherRequestValidator : AbstractValidator<CreateVoucherRequest>
@@ -1001,9 +1034,12 @@ namespace EduTrailblaze.Services.DTOs
             RuleFor(x => x.DiscountValue)
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
             RuleFor(x => x.ExpiryDate)
-                .NotEmpty().WithMessage("ExpiryDate is required")
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("ExpiryDate must be greater than the current date");
+                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+            RuleFor(x => x.MinimumOrderValue)
+                .GreaterThanOrEqualTo(0).WithMessage("MinimumOrderValue must be greater than or equal to 0");
         }
     }
 
@@ -1012,7 +1048,9 @@ namespace EduTrailblaze.Services.DTOs
         public int VoucherId { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public decimal? MinimumOrderValue { get; set; }
         public bool IsUsed { get; set; }
     }
 
@@ -1028,9 +1066,116 @@ namespace EduTrailblaze.Services.DTOs
             RuleFor(x => x.DiscountValue)
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
             RuleFor(x => x.ExpiryDate)
-                .NotEmpty().WithMessage("ExpiryDate is required")
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("ExpiryDate must be greater than the current date");
+                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+            RuleFor(x => x.MinimumOrderValue)
+                .GreaterThanOrEqualTo(0).WithMessage("MinimumOrderValue must be greater than or equal to 0");
+            RuleFor(x => x.IsUsed)
+                .NotEmpty().WithMessage("IsUsed is required");
         }
+    }
+
+    public class DiscountInformation
+    {
+        public string DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+        public decimal CalculateDiscount(decimal price)
+        {
+            if (DiscountType == "Percentage")
+            {
+                return price * DiscountValue / 100;
+            }
+            return DiscountValue;
+        }
+        public decimal CalculatePrice(decimal price)
+        {
+            return price - CalculateDiscount(price);
+        }
+    }
+
+    public class CouponInformation
+    {
+        public string DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+        public decimal CalculateDiscount(decimal price)
+        {
+            if (DiscountType == "Percentage")
+            {
+                return price * DiscountValue / 100;
+            }
+            return DiscountValue;
+        }
+        public decimal CalculatePrice(decimal price)
+        {
+            return price - CalculateDiscount(price);
+        }
+    }
+
+    public class VoucherInformation
+    {
+        public string DiscountType { get; set; }
+        public decimal DiscountValue { get; set; }
+        public decimal CalculateDiscount(decimal price)
+        {
+            if (DiscountType == "Percentage")
+            {
+                return price * DiscountValue / 100;
+            }
+            return DiscountValue;
+        }
+        public decimal CalculatePrice(decimal price)
+        {
+            return price - CalculateDiscount(price);
+        }
+    }
+
+    public class OrderItemInfomation
+    {
+        public string Title { get; set; }
+
+        public string Instructor { get; set; }
+
+        public string BasePrice { get; set; }
+
+        public DiscountInformation DiscountInformation { get; set; }
+
+        public CouponInformation CouponInformation { get; set; }
+    }
+
+    public class MailReceiptRequest
+    {
+        public string UserName { get; set; }
+        public string InvoiceId { get; set; }
+        public string OrderId { get; set; }
+        public string OrderDate { get; set; }
+        public string UserMail { get; set; }
+        public string Source { get; set; } = "Edu Trailblaze";
+        public List<OrderItemInfomation> OrderItems { get; set; }
+        public VoucherInformation VoucherInformation { get; set; }
+        public string TotalPrice { get; set; }
+    }
+
+    public class PlaceOrderRequest
+    {
+        public string UserId { get; set; }
+        public string PaymentMethod { get; set; }
+        public string CouponCode { get; set; }
+        public string VoucherCode { get; set; }
+    }
+
+    public class ApplyCouponRequest
+    {
+        public string CouponCode { get; set; }
+        public string UserId { get; set; }
+        public int CourseId { get; set; }
+    }
+
+    public class RemoveCouponRequest
+    {
+        public string CouponCode { get; set; }
+        public string UserId { get; set; }
+        public int CourseId { get; set; }
     }
 }

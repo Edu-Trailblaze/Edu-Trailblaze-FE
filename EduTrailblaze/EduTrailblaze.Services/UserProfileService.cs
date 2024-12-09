@@ -87,7 +87,7 @@ namespace EduTrailblaze.Services
                 {
                     throw new Exception("UserProfile not found.");
                 }
-                existingUserProfile.Address = userProfile.Address;
+                existingUserProfile.Fullname = userProfile.FullName;
                 existingUserProfile.ProfilePictureUrl = userProfile.ProfilePictureUrl;
                 await _userProfileRepository.UpdateAsync(existingUserProfile);
             }

@@ -20,14 +20,14 @@ namespace EduTrailblaze.Services.Helper
                 {
                     string[] arrItemDetail = strItem.Split(',');
                     int itemId = int.Parse(arrItemDetail[0].Trim());
-                    string itemName = arrItemDetail[1].Trim();
+                    //string itemName = arrItemDetail[1].Trim();
                     //int quantity = int.Parse(arrItemDetail[2].Trim());
                     //decimal unitPrice = decimal.Parse(arrItemDetail[3].Trim());
 
                     CartItemDTO item = new CartItemDTO()
                     {
                         ItemId = itemId,
-                        ItemName = itemName,
+                        //ItemName = itemName,
                         //Price = unitPrice
                     };
                     cart[itemId] = item;
@@ -77,7 +77,7 @@ namespace EduTrailblaze.Services.Helper
             StringBuilder strItemsInCart = new StringBuilder();
             foreach (CartItemDTO item in itemsList)
             {
-                strItemsInCart.Append($"{item.ItemId},{item.ItemName}|");
+                strItemsInCart.Append($"{item.ItemId}|");
             }
             string encodedString = Convert.ToBase64String(Encoding.UTF8.GetBytes(strItemsInCart.ToString()));
             return encodedString;

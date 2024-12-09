@@ -201,10 +201,6 @@ namespace EduTrailblaze.Repositories
                 .HasDefaultValue(false);
 
             builder.Entity<Discount>()
-                .Property(n => n.StartDate)
-                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
-
-            builder.Entity<Discount>()
                 .Property(n => n.IsActive)
                 .HasDefaultValue(true);
 
@@ -236,6 +232,14 @@ namespace EduTrailblaze.Repositories
                 .Property(n => n.IsDeleted)
                 .HasDefaultValue(false);
 
+            builder.Entity<UserCourseCoupon>()
+                .Property(n => n.UsageDate)
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
+
+            builder.Entity<UserCourseCoupon>()
+                .Property(n => n.IsRedeemed)
+                .HasDefaultValue(false);
+
             builder.Entity<Order>()
                 .Property(n => n.OrderDate)
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
@@ -250,7 +254,7 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<Payment>()
                 .Property(n => n.PaymentStatus)
-                .HasDefaultValue("Pending");
+                .HasDefaultValue("Processing");
 
             builder.Entity<QuizAnswer>()
                 .HasOne(q => q.QuizHistory)

@@ -21,20 +21,24 @@ namespace EduTrailblaze.Services.Interfaces
 
         void DeleteCartInCookie(string? userId);
 
-        int NumberOfItemsInCart(string? userId);
+        int NumberOfItemsInCookieCart(string? userId);
 
-        List<CartItemDTO> GetCart(string? userId);
+        List<CartItemDTO> GetCookieCart(string? userId);
 
         Task SaveCartToCookie(int courseId, string? userId);
 
-        Task<Cart> GetUserCart(string userId);
+        Task<Cart> GetSystemCart(string userId);
 
-        Task CreateUserCart(string userId);
+        Task CreateSystemCart(string userId);
 
-        Task RemoveItemFromCart(int courseId, string userId);
+        Task RemoveItemFromSystemCart(int courseId, string userId);
 
-        Task AddItemToCart(int courseId, string userId);
+        Task AddItemToSystemCart(int courseId, string userId);
 
         Task<int> NumberOfItemInSystemCart(string userId);
+
+        Task<List<CartItemDTO>> GetCart(string? userId);
+
+        Task<int> NumberOfItemsInCart(string? userId);
     }
 }

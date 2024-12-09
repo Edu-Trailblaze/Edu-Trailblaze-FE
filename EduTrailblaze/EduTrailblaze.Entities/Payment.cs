@@ -16,11 +16,11 @@ namespace EduTrailblaze.Entities
 
         [Required, StringLength(50)]
         public string PaymentMethod { get; set; }
-        //'VnPay', 'MoMo', 'PayPal', 'SystemBalance'
+        //'VNPAY', 'MoMo', 'PayPal', 'SystemBalance'
 
         [StringLength(20)]
-        public string PaymentStatus { get; set; } = "Pending";
-        //'Success', 'Failed', 'Pending'
+        public string PaymentStatus { get; set; } = "Processing";
+        //'Success', 'Failed', 'Processing'
 
         public DateTime PaymentDate { get; set; }
 

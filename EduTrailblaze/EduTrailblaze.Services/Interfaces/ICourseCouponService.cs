@@ -6,6 +6,8 @@ namespace EduTrailblaze.Services.Interfaces
     {
         Task<CourseCoupon?> GetCourseCoupon(int courseCouponId);
 
+        Task<CourseCoupon?> GetCourseCoupon(int courseId, int couponId);
+
         Task<IEnumerable<CourseCoupon>> GetCourseCoupons();
 
         Task AddCourseCoupon(CourseCoupon courseCoupon);

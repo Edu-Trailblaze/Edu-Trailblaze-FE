@@ -138,7 +138,7 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public int NumberOfItemsInCart(string? userId)
+        public int NumberOfItemsInCookieCart(string? userId)
         {
             try
             {
@@ -168,13 +168,11 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public List<CartItemDTO> GetCart(string? userId)
+        public List<CartItemDTO> GetCookieCart(string? userId)
         {
             try
             {
-                string savedCart;
-
-                savedCart = _httpContextAccessor.HttpContext.Request.Cookies[$"Cart_{userId}"];
+                string savedCart = _httpContextAccessor.HttpContext.Request.Cookies[$"Cart_{userId}"];
 
                 if (!string.IsNullOrEmpty(savedCart))
                 {
@@ -199,13 +197,6 @@ namespace EduTrailblaze.Services
                 Dictionary<int, CartItemDTO> cartItems = new Dictionary<int, CartItemDTO>();
                 CartItemDTO item = null;
 
-                var selectedCourse = await _courseService.GetCourse(courseId);
-
-                if (selectedCourse == null)
-                {
-                    throw new Exception("Course not found.");
-                }
-
                 var savedCart = _httpContextAccessor.HttpContext?.Request.Cookies[$"Cart_{userId}"] ?? string.Empty;
 
                 if (!string.IsNullOrEmpty(savedCart))
@@ -222,8 +213,6 @@ namespace EduTrailblaze.Services
                 item = new CartItemDTO
                 {
                     ItemId = courseId,
-                    ItemName = selectedCourse.Title,
-                    //Price = selectedCourse.Price
                 };
                 cartItems[courseId] = item;
 
@@ -238,7 +227,7 @@ namespace EduTrailblaze.Services
         }
 
         // System cart
-        public async Task<Cart> GetUserCart(string userId)
+        public async Task<Cart> GetSystemCart(string userId)
         {
             try
             {
@@ -260,9 +249,9 @@ namespace EduTrailblaze.Services
                     return cart;
                 }
 
-                await CreateUserCart(userId);
+                await CreateSystemCart(userId);
 
-                return await GetUserCart(userId);
+                return await GetSystemCart(userId);
             }
             catch (Exception ex)
             {
@@ -270,7 +259,7 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task CreateUserCart(string userId)
+        public async Task CreateSystemCart(string userId)
         {
             try
             {
@@ -286,11 +275,11 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task RemoveItemFromCart(int courseId, string userId)
+        public async Task RemoveItemFromSystemCart(int courseId, string userId)
         {
             try
             {
-                var cart = await GetUserCart(userId);
+                var cart = await GetSystemCart(userId);
                 var cartItem = cart.CartItems.FirstOrDefault(ci => ci.CourseId == courseId);
                 if (cartItem == null)
                 {
@@ -305,11 +294,11 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task AddItemToCart(int courseId, string userId)
+        public async Task AddItemToSystemCart(int courseId, string userId)
         {
             try
             {
-                var cart = await GetUserCart(userId);
+                var cart = await GetSystemCart(userId);
                 var cartItem = cart.CartItems.FirstOrDefault(ci => ci.CourseId == courseId);
                 if (cartItem != null)
                 {
@@ -332,8 +321,83 @@ namespace EduTrailblaze.Services
         {
             try
             {
-                var cart = await GetUserCart(userId);
+                var cart = await GetSystemCart(userId);
                 return cart.CartItems.Count;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the number of items in the cart: " + ex.Message);
+            }
+        }
+
+        // Combined cart
+
+        public async Task<List<CartItemDTO>> GetCart(string? userId)
+        {
+            try
+            {
+                var cookieCart = GetCookieCart(userId);
+
+                if (cookieCart != null)
+                {
+                    return cookieCart;
+                }
+
+                if (userId == null)
+                {
+                    return new List<CartItemDTO>();
+                }
+
+                var systemCart = await GetSystemCart(userId);
+
+                var cartItems = systemCart.CartItems.Select(ci => new CartItemDTO
+                {
+                    ItemId = ci.CourseId,
+                }).ToList();
+
+                return cartItems;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while viewing the cart: " + ex.Message);
+            }
+        }
+
+        //public async Task<CartInformation?> ViewCart(string? userId)
+        //{
+        //    try
+        //    {
+        //        var cartItems = await GetCart(userId);
+
+        //        if (cartItems.Count == 0)
+        //        {
+        //            return null;
+        //        }
+
+        //        foreach (var item in cartItems)
+        //        {
+        //            var course = await _courseService.GetCourse(item.ItemId);
+
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("An error occurred while viewing the cart: " + ex.Message);
+        //    }
+        //}
+
+        public async Task<int> NumberOfItemsInCart(string? userId)
+        {
+            try
+            {
+                var num = NumberOfItemsInCookieCart(userId);
+
+                if (userId != null && num == 0)
+                {
+                    num = await NumberOfItemInSystemCart(userId);
+                }
+
+                return num;
             }
             catch (Exception ex)
             {

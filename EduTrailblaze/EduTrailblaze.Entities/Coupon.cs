@@ -19,10 +19,15 @@ namespace EduTrailblaze.Entities
         [Required]
         public decimal DiscountValue { get; set; }
 
-        [Required]
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? StartDate { get; set; }
+
+        public DateTime? ExpiryDate { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public int? UsageCount { get; set; }
+
+        public int? MaxUsage { get; set; }
 
         // Navigation properties
         public virtual ICollection<CourseCoupon> CourseCoupons { get; set; }

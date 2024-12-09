@@ -19,7 +19,11 @@ namespace EduTrailblaze.Entities
         [Required]
         public bool IsUsed { get; set; } = false;
 
+        public DateTime? StartDate { get; set; }
+
         public DateTime? ExpiryDate { get; set; }
+
+        public decimal? MinimumOrderValue { get; set; }
 
         [ForeignKey("Order")]
         public int? OrderId { get; set; }

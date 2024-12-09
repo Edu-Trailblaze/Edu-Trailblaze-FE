@@ -18,7 +18,7 @@ namespace EduTrailblaze.Entities
 
         [StringLength(20)]
         public string OrderStatus { get; set; } = "Pending";
-        //'Pending', 'Processing', 'Cancelled'
+        //'Pending', 'Processing', 'Cancelled', 'Completed', 'Refunded', 'Failed'
 
         // Navigation properties
         public virtual User User { get; set; }

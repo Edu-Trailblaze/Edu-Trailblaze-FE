@@ -108,8 +108,12 @@ namespace EduTrailblaze.API
             builder.Services.AddScoped<IUserCertificateService, UserCertificateService>();
             builder.Services.AddScoped<IUserProfileService, UserProfileService>();
             builder.Services.AddScoped<IUserProgressService, UserProgressService>();
+            builder.Services.AddScoped<IUserCourseCouponService, UserCourseCouponService>();
             builder.Services.AddScoped<IVideoService, VideoService>();
             builder.Services.AddScoped<IVoucherService, VoucherService>();
+
+            builder.Services.AddScoped<IVNPAYService, VNPAYService>();
+            builder.Services.AddScoped<IMoMoService, MoMoService>();
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {

@@ -56,5 +56,33 @@ namespace EduTrailblaze.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [HttpPost("apply-coupon")]
+        public async Task<IActionResult> ApplyCoupon([FromBody] ApplyCouponRequest applyCouponRequest)
+        {
+            try
+            {
+                await _couponService.ApplyCoupon(applyCouponRequest.CouponCode, applyCouponRequest.UserId, applyCouponRequest.CourseId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        
+        [HttpPost("remove-coupon")]
+        public async Task<IActionResult> RemoveCoupon([FromBody] RemoveCouponRequest removeCouponRequest)
+        {
+            try
+            {
+                await _couponService.RemoveCoupon(removeCouponRequest.CouponCode, removeCouponRequest.UserId, removeCouponRequest.CourseId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }

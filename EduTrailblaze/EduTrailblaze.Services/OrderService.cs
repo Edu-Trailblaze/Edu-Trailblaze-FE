@@ -7,22 +7,27 @@ namespace EduTrailblaze.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IRepository<Order, int> _courseRepository;
+        private readonly IRepository<Order, int> _orderRepository;
+        private readonly IMailService _mailService;
+        private readonly IPaymentService _paymentService;
+        private readonly ICartService _cartService;
 
-        public OrderService(IRepository<Order, int> courseRepository)
+        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService)
         {
-            _courseRepository = courseRepository;
+            _orderRepository = orderRepository;
+            _paymentService = paymentService;
+            _cartService = cartService;
         }
 
-        public async Task<Order?> GetOrder(int courseId)
+        public async Task<Order?> GetOrder(int orderId)
         {
             try
             {
-                return await _courseRepository.GetByIdAsync(courseId);
+                return await _orderRepository.GetByIdAsync(orderId);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while getting the course.", ex);
+                throw new Exception("An error occurred while getting the order.", ex);
             }
         }
 
@@ -30,82 +35,150 @@ namespace EduTrailblaze.Services
         {
             try
             {
-                return await _courseRepository.GetAllAsync();
+                return await _orderRepository.GetAllAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while getting the course.", ex);
+                throw new Exception("An error occurred while getting the order.", ex);
             }
         }
 
-        public async Task AddOrder(Order course)
+        public async Task AddOrder(Order order)
         {
             try
             {
-                await _courseRepository.AddAsync(course);
+                await _orderRepository.AddAsync(order);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the course.", ex);
+                throw new Exception("An error occurred while adding the order.", ex);
             }
         }
 
-        public async Task AddOrder(CreateOrderRequest course)
+        public async Task AddOrder(CreateOrderRequest order)
         {
             try
             {
-                var newCourse = new Order
+                var newOrder = new Order
                 {
-                    UserId = course.UserId,
-                    OrderAmount = course.OrderAmount,
+                    UserId = order.UserId,
+                    OrderAmount = order.OrderAmount,
                 };
-                await _courseRepository.AddAsync(newCourse);
+                await _orderRepository.AddAsync(newOrder);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the course.", ex);
+                throw new Exception("An error occurred while adding the order.", ex);
             }
         }
 
-        public async Task UpdateOrder(Order course)
+        public async Task UpdateOrder(Order order)
         {
             try
             {
-                await _courseRepository.UpdateAsync(course);
+                await _orderRepository.UpdateAsync(order);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the course.", ex);
+                throw new Exception("An error occurred while updating the order.", ex);
             }
         }
 
-        public async Task UpdateOrder(UpdateOrderRequest course)
+        public async Task UpdateOrder(UpdateOrderRequest order)
         {
             try
             {
-                var existingCourse = await _courseRepository.GetByIdAsync(course.OrderId);
+                var existingCourse = await _orderRepository.GetByIdAsync(order.OrderId);
                 if (existingCourse == null)
                 {
                     throw new Exception("Course not found.");
                 }
-                existingCourse.OrderStatus = course.OrderStatus;
-                await _courseRepository.UpdateAsync(existingCourse);
+                existingCourse.OrderStatus = order.OrderStatus;
+                await _orderRepository.UpdateAsync(existingCourse);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the course.", ex);
+                throw new Exception("An error occurred while updating the order.", ex);
             }
         }
 
-        public async Task DeleteOrder(Order course)
+        public async Task DeleteOrder(Order order)
         {
             try
             {
-                await _courseRepository.DeleteAsync(course);
+                await _orderRepository.DeleteAsync(order);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the course.", ex);
+                throw new Exception("An error occurred while deleting the order.", ex);
+            }
+        }
+
+        public async Task OrderProcessing(CreateOrderRequest createOrderRequest)
+        {
+            try
+            {
+                var cart = await _cartService.GetSystemCart(createOrderRequest.UserId);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the order: " + ex.Message);
+            }
+        }
+
+        public async Task PaymentProcessing(Payment payment)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while processing the payment: " + ex.Message);
+            }
+        }
+
+        public async Task AutomaticFailedOrder(int orderId)
+        {
+            try
+            {
+                var order = await GetOrder(orderId);
+
+                if (order == null)
+                {
+                    throw new Exception("Order not found.");
+                }
+
+                if (order.OrderStatus == "Pending")
+                {
+                    order.OrderStatus = "Failed";
+                    await UpdateOrder(order);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while automatically failing the order.", ex);
+            }
+        }
+
+        public async Task CancelOrder(int orderId)
+        {
+            try
+            {
+                var order = await _orderRepository.GetByIdAsync(orderId);
+
+                if (order == null)
+                {
+                    throw new Exception("Order not found.");
+                }
+                order.OrderStatus = "Cancelled";
+
+                await UpdateOrder(order);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while canceling the order.", ex);
             }
         }
     }

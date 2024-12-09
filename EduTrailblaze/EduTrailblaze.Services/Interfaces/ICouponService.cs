@@ -18,5 +18,13 @@ namespace EduTrailblaze.Services.Interfaces
         Task AddCoupon(CreateCouponRequest coupon);
 
         Task UpdateCoupon(UpdateCouponRequest coupon);
+
+        Task<List<Coupon>> GetValidCoupons();
+
+        Task<Coupon?> GetCouponByCouponCode(string couponCode);
+
+        Task ApplyCoupon(string couponCode, string userId, int courseId);
+
+        Task RemoveCoupon(string couponCode, string userId, int courseId);
     }
 }

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+            .header h1 {
+                margin: 0;
+                color: #4CAF50;
+            }
+
+        .order-details, .item-details, .summary {
+            margin: 20px 0;
+        }
+
+        .item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .summary {
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .price {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Receipt</h1>
+            <p>Thank you for your order from <strong>{{Source}}</strong>!</p>
+        </div>
+        <div class="order-details">
+            <p><strong>Name:</strong> {{UserName}}</p>
+            <p><strong>Email:</strong> {{UserMail}}</p>
+            <p><strong>Order ID:</strong> {{OrderId}}</p>
+            <p><strong>Invoice ID:</strong> {{InvoiceId}}</p>
+            <p><strong>Order Date:</strong> {{OrderDate}}</p>
+        </div>
+        <div class="item-details">
+            <h3>Order Items:</h3>
+            {{#each OrderItems}}
+            <div class="item">
+                <p><strong>Item:</strong> {{Title}}</p>
+                <p><strong>Instructor:</strong> {{Instructor}}</p>
+                <p><strong>Base Price:</strong> ${{BasePrice}}</p>
+                <p><strong>Discount Applied:</strong> -${{DiscountInformation.CalculateDiscount(BasePrice)}} ({{DiscountInformation.DiscountType}})</p>
+                <p><strong>Coupon Applied:</strong> -${{CouponInformation.CalculateDiscount(BasePrice - DiscountInformation.CalculateDiscount(BasePrice))}} ({{CouponInformation.DiscountType}})</p>
+                <p class="price"><strong>Final Item Price:</strong> ${{CouponInformation.CalculatePrice(DiscountInformation.CalculatePrice(BasePrice))}}</p>
+            </div>
+            {{/each}}
+        </div>
+        <div class="summary">
+            <p><strong>Order Total:</strong> ${{TotalPrice}}</p>
+            <p><strong>Voucher Applied:</strong> -${{VoucherInformation.CalculateDiscount(TotalPrice)}} ({{VoucherInformation.DiscountType}})</p>
+            <p class="price"><strong>Final Order Price:</strong> ${{VoucherInformation.CalculatePrice(TotalPrice)}}</p>
+        </div>
+        <div class="footer">
+            <p>If you have any questions about your order, please contact us at support@edutrailblaze.com.</p>
+        </div>
+    </div>
+</body>
+</html>

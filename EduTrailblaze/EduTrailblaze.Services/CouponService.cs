@@ -1,17 +1,23 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduTrailblaze.Services
 {
     public class CouponService : ICouponService
     {
         private readonly IRepository<Coupon, int> _couponRepository;
+        private readonly IRepository<CourseCoupon, int> _courseCouponRepository;
+        private readonly IRepository<UserCourseCoupon, int> _userCourseCouponRepository;
 
-        public CouponService(IRepository<Coupon, int> couponRepository)
+        public CouponService(IRepository<Coupon, int> couponRepository, IRepository<CourseCoupon, int> courseCouponRepository, IRepository<UserCourseCoupon, int> userCourseCouponRepository)
         {
             _couponRepository = couponRepository;
+            _courseCouponRepository = courseCouponRepository;
+            _userCourseCouponRepository = userCourseCouponRepository;
         }
 
         public async Task<Coupon?> GetCoupon(int couponId)
@@ -113,6 +119,108 @@ namespace EduTrailblaze.Services
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while deleting the coupon.", ex);
+            }
+        }
+
+        public async Task<List<Coupon>> GetValidCoupons()
+        {
+            try
+            {
+                var dbSet = await _couponRepository.GetDbSet();
+                var currentDate = DateTimeHelper.GetVietnamTime();
+
+                var list = await dbSet
+                    .Where(c => c.IsActive
+                                && (c.ExpiryDate == null || c.ExpiryDate >= currentDate)
+                                && (c.StartDate == null || c.StartDate <= currentDate)
+                                && (c.MaxUsage == null || c.MaxUsage > c.UsageCount))
+                    .ToListAsync();
+                return list;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the coupon.", ex);
+            }
+        }
+
+        public async Task<Coupon?> GetCouponByCouponCode(string couponCode)
+        {
+            try
+            {
+                var validCoupons = await GetValidCoupons();
+                return validCoupons.FirstOrDefault(c => c.Code == couponCode);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the coupon.", ex);
+            }
+        }
+
+        public async Task ApplyCoupon(string couponCode, string userId, int courseId)
+        {
+            try
+            {
+                var userCourseCoupon = await _userCourseCouponRepository.GetDbSet();
+                var userCourseCouponExist = await userCourseCoupon.AnyAsync(x => x.UserId == userId && x.CourseCoupon.CourseId == courseId && x.CourseCoupon.Coupon.Code == couponCode);
+
+                if (userCourseCouponExist)
+                {
+                    throw new Exception("Coupon already applied.");
+                }
+
+                var coupon = await GetCouponByCouponCode(couponCode);
+
+                if (coupon == null)
+                {
+                    throw new Exception("Invalid coupon code.");
+                }
+
+                var courseCouponDbSet = await _courseCouponRepository.GetDbSet();
+
+                var courseCoupon = await courseCouponDbSet.FirstOrDefaultAsync(x => x.CourseId == courseId && x.CouponId == coupon.CouponId);
+
+                if (courseCoupon == null)
+                {
+                    throw new Exception("Coupon is not valid for this course.");
+                }
+
+                await _userCourseCouponRepository.AddAsync(new UserCourseCoupon
+                {
+                    CourseCouponId = courseCoupon.CourseCouponId,
+                    UserId = userId,
+                });
+
+                coupon.UsageCount++;
+                await UpdateCoupon(coupon);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while applying the coupon: " + ex.Message);
+            }
+        }
+
+        public async Task RemoveCoupon(string couponCode, string userId, int courseId)
+        {
+            try
+            {
+                var userCourseCoupon = await _userCourseCouponRepository.GetDbSet();
+                var userCourseCouponExist = await userCourseCoupon.FirstOrDefaultAsync(x => x.UserId == userId && x.CourseCoupon.CourseId == courseId && x.CourseCoupon.Coupon.Code == couponCode);
+
+                if (userCourseCouponExist == null)
+                {
+                    throw new Exception("Coupon not applied.");
+                }
+                await _userCourseCouponRepository.DeleteAsync(userCourseCouponExist);
+                var coupon = await GetCouponByCouponCode(couponCode);
+                if (coupon != null)
+                {
+                    coupon.UsageCount--;
+                    await UpdateCoupon(coupon);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while removing the coupon: " + ex.Message);
             }
         }
     }
