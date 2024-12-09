@@ -82,8 +82,7 @@ namespace EduTrailblaze.API
                             "http://localhost:3000",
                             "http://localhost:5148",
                             "https://localhost:7034"
-                        ).
-                        AllowAnyOrigin()
+                        )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
@@ -134,7 +133,8 @@ namespace EduTrailblaze.API
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = builder.Configuration["JwtToken:Issuer"],
                         ValidAudience = builder.Configuration["JwtToken:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtToken:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtToken:Key"])),
+                        ClockSkew = TimeSpan.FromHours(7)
                     };
                 });
 

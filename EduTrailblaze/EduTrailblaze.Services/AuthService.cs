@@ -125,14 +125,14 @@ namespace EduTrailblaze.Services
                     return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Invalid login attempt." };
                 }
                 //if (await _userManager.GetTwoFactorEnabledAsync(user) is true) return new ApiResponse { StatusCode = StatusCodes.Status200OK, Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) } };
-                var claimsasync = _userManager.GetClaimsAsync(user);
-                var tokenasync = _jwtToken.GenerateJwtToken(user, "Admin");
-                Task.WhenAll(claimsasync, tokenasync);
-                var claims = await claimsasync;
-                var token =  await tokenasync;
+                var claims = _userManager.GetClaimsAsync(user);
+                var token = _jwtToken.GenerateJwtToken(user, "Admin");
+                Task.WhenAll(claims, token);
+                var claimsasync = await claims;
+                var tokenasync =  await token;
 
 
-                var firstNameClaim = claims.FirstOrDefault(u => u.Type == "FirstName");
+                var firstNameClaim = claimsasync.FirstOrDefault(u => u.Type == "FirstName");
                 if (firstNameClaim != null)
                 {
                     await _userManager.RemoveClaimAsync(user, firstNameClaim);
@@ -149,7 +149,7 @@ namespace EduTrailblaze.Services
                     Message = "Login successful.",
                     Data = new
                     {
-                        AccessToken = token,
+                        AccessToken = tokenasync,
                         RefreshToken = refreshToken
                     }
                 };
@@ -194,9 +194,35 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public Task<ApiResponse> RefreshToken(string refreshToken)
+        public async Task<ApiResponse> RefreshToken(string userId,string refreshToken)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
+            }
+
+            var isValidRefreshToken = await _redisService.CheckRefreshToken(userId, refreshToken);
+          if (!isValidRefreshToken)
+            {
+                return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Invalid refresh token." };
+            }
+
+            var token = _jwtToken.GenerateJwtToken(user, "Student");
+            var newRefreshToken = _jwtToken.GenerateRefreshToken();
+            Task.WhenAll();
+            var tokenAsync = await token;
+            var newRefreshTokenAsync = await newRefreshToken;
+            return new ApiResponse
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Message = "Token refreshed successfully.",
+                Data = new
+                {
+                    AccessToken = tokenAsync,
+                    RefreshToken = newRefreshTokenAsync
+                }
+            };
         }
 
         public async Task<ApiResponse> Register(RegisterModel model)

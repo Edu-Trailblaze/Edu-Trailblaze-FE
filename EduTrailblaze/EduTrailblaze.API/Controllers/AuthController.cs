@@ -75,19 +75,18 @@ namespace EduTrailblaze.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("refreshToken")]
-        public async Task<IActionResult> RefreshToken()
+        [HttpPost("refreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel model)
         {
 
-            var user = await _userManager.GetUserAsync(User);
-            var id = user.Id;
-            var refreshToken = Request.Cookies["refreshToken"];
-            if (refreshToken == null)
-            {
-                return BadRequest(new { Message = "Refresh token is required" });
-            }
+            
+            //var refreshToken = Request.Cookies["refreshToken"];
+            //if (refreshToken == null)
+            //{
+            //    return BadRequest(new { Message = "Refresh token is required" });
+            //}
 
-            var result = await _authService.RefreshToken(refreshToken);
+            var result = await _authService.RefreshToken(model.UserId, model.Token);
 
             if (result.StatusCode == 200)
             {

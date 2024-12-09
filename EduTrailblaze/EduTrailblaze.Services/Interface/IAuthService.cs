@@ -15,7 +15,7 @@ namespace EduTrailblaze.Services.Interface
         Task EnableAuthenticator(TwoFactorAuthenticationModel twoFactorAuthenticationViewModel);
         Task ExternalLoginCallback(AuthenticationResult authenticationResult);
         Task<ApiResponse> Logout(string userId);
-        Task<ApiResponse> RefreshToken(string refreshToken);
+        Task<ApiResponse> RefreshToken(string userId,string refreshToken);
         Task<ApiResponse> AssignRole(AssignRoleModel model);
     }
 }
