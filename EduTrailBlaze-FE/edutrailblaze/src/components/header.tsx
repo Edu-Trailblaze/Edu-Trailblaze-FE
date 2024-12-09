@@ -30,6 +30,7 @@ import {
   MdOutlineShoppingCart,
   MdLanguage,
 } from "react-icons/md";
+import Link from "next/link";
 
 const products = [
   {
@@ -95,15 +96,16 @@ export default function WebHeader() {
 
   return (
     <header className="bg-white">
-      <nav
-        aria-label="Global"
-        className="mx-auto flex items-center lg:px-8"
-      >
+      <nav aria-label="Global" className="mx-auto flex items-center lg:px-8">
         <div className="flex mr-20">
-          <a href="#" className="-m-1.5 p-1.5">
+          <Link href={"/"} className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
-            <img alt="" src="/assets/logos/ETB_Logo.png" className="w-40 h-30" />
-          </a>
+            <img
+              alt=""
+              src="/assets/logos/ETB_Logo.png"
+              className="w-40 h-30"
+            />
+          </Link>
         </div>
         <div className="flex lg:hidden">
           <button
@@ -203,9 +205,12 @@ export default function WebHeader() {
           </div>
 
           <div>
-            <a href="#">
+            {/* <a href="#">
               <MdOutlineShoppingCart className="w-8 h-8 ml-10" />
-            </a>
+            </a> */}
+            <Link href={"/shopping_cart"}>
+              <MdOutlineShoppingCart className="w-8 h-8 ml-10" />
+            </Link>
           </div>
         </PopoverGroup>
 
@@ -230,51 +235,51 @@ export default function WebHeader() {
             </button>
           </div>
 
-        <PopoverGroup className="flex justify-evenly items-center">
-          <div>
-            <button
-              onClick={() => setLanguageModalOpen(true)}
-              className="outline select-none rounded-lg bg-white py-3 px-3 text-center font-bold text-blue-500 shadow-md shadow-blue-500/90 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            >
-              <MdLanguage className="text-lg" />
-            </button>
-          </div>
-        </PopoverGroup>
+          <PopoverGroup className="flex justify-evenly items-center">
+            <div>
+              <button
+                onClick={() => setLanguageModalOpen(true)}
+                className="outline select-none rounded-lg bg-white py-3 px-3 text-center font-bold text-blue-500 shadow-md shadow-blue-500/90 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              >
+                <MdLanguage className="text-lg" />
+              </button>
+            </div>
+          </PopoverGroup>
 
-        <Dialog
-          open={languageModalOpen}
-          onClose={() => setLanguageModalOpen(false)}
-          className="relative z-50"
-        >
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          <div className="fixed inset-0 flex items-center justify-center">
-            <DialogPanel className="w-full max-w-md rounded bg-white p-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Choose a language</h2>
-                <button
-                  onClick={() => setLanguageModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-700"
-                >
-                  <XMarkIcon className="w-6 h-6" />
-                </button>
-              </div>
-              <ul className="mt-4 grid grid-cols-2 gap-4">
-                {languageOptions.map((language) => (
-                  <li
-                    key={language}
-                    className="cursor-pointer rounded p-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-100"
-                    onClick={() => {
-                      console.log(`Language selected: ${language}`);
-                      setLanguageModalOpen(false);
-                    }}
+          <Dialog
+            open={languageModalOpen}
+            onClose={() => setLanguageModalOpen(false)}
+            className="relative z-50"
+          >
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            <div className="fixed inset-0 flex items-center justify-center">
+              <DialogPanel className="w-full max-w-md rounded bg-white p-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Choose a language</h2>
+                  <button
+                    onClick={() => setLanguageModalOpen(false)}
+                    className="text-gray-400 hover:text-gray-700"
                   >
-                    {language}
-                  </li>
-                ))}
-              </ul>
-            </DialogPanel>
-          </div>
-        </Dialog>
+                    <XMarkIcon className="w-6 h-6" />
+                  </button>
+                </div>
+                <ul className="mt-4 grid grid-cols-2 gap-4">
+                  {languageOptions.map((language) => (
+                    <li
+                      key={language}
+                      className="cursor-pointer rounded p-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-100"
+                      onClick={() => {
+                        console.log(`Language selected: ${language}`);
+                        setLanguageModalOpen(false);
+                      }}
+                    >
+                      {language}
+                    </li>
+                  ))}
+                </ul>
+              </DialogPanel>
+            </div>
+          </Dialog>
         </div>
       </nav>
 
