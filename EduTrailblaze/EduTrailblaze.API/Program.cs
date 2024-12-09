@@ -5,7 +5,6 @@ using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services;
 using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Helper;
-using EduTrailblaze.Services.Interface;
 using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Mappings;
 using FluentValidation;
@@ -189,6 +188,7 @@ namespace EduTrailblaze.API
             builder.Services.AddScoped<ICourseService, CourseService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IDiscountService, DiscountService>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
 
             //Elasticsearch Configuration
             builder.Services.AddSingleton<IElasticClient>(sp =>

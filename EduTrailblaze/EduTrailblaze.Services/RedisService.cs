@@ -1,4 +1,4 @@
-﻿using EduTrailblaze.Services.Interface;
+﻿using EduTrailblaze.Services.Interfaces;
 using StackExchange.Redis;
 
 namespace EduTrailblaze.Services

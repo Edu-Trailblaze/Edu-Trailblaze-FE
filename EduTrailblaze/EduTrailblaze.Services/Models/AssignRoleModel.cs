@@ -15,35 +15,14 @@ namespace EduTrailblaze.Services.Models
         public string UserId { get; set; }
         [Display(Name = "Role Name")]
         [Required]
-        public string RoleName { get; set; }
-        // [Required]
-        public string? RoleNameFormat
+        public string RoleNameFormat { get; set; }
+      
+        public string? RoleName
         { 
-        get => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(RoleName?.ToLower());
-        set => RoleName = value;
+        get => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(RoleNameFormat?.ToLower());
+        set => RoleNameFormat = value;
         }
     }
 
-    //internal class CapitalizeFirstLetterAttribute : ValidationAttribute
-    //{
-    //    public override bool IsValid(object value)
-    //    {
-    //        if (value is string roleName)
-    //        {
-               
-    //            var formattedRoleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(roleName.ToLower());
-
-                
-    //            value = formattedRoleName;
-
-    //            return true;
-    //        }
-
-    //        return false;
-    //    }
-    //    public override string FormatErrorMessage(string name)
-    //    {
-    //        return $"{name} must be a valid role name.";
-    //    }
-    //}
+  
 }

@@ -1,4 +1,4 @@
-﻿namespace EduTrailblaze.Services.Interface
+﻿namespace EduTrailblaze.Services.Interfaces
 {
     public interface IRedisService
     {

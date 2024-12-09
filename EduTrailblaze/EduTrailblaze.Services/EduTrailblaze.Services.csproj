@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Helper\" />
+    <Folder Include="Interface\" />
   </ItemGroup>
 
   <ItemGroup>

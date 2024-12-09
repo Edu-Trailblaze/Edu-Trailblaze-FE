@@ -1,6 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Helper;
-using EduTrailblaze.Services.Interface;
+using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,14 +17,15 @@ namespace EduTrailblaze.API.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
+        private readonly IRoleService _roleService;
 
-        public AuthController(TokenGenerator tokenGenerator, UserManager<User> userManager, SignInManager<User> signInManager, IAuthService authService)
+        public AuthController(TokenGenerator tokenGenerator, UserManager<User> userManager, SignInManager<User> signInManager, IAuthService authService, IRoleService roleService)
         {
             _jwtToken = tokenGenerator;
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
-
+            _roleService = roleService;
         }
 
         [HttpPost("register")]
@@ -138,7 +139,7 @@ namespace EduTrailblaze.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleModel model)
         {
-            var result = await _authService.AssignRole(model);
+            var result = await _roleService.AssignRole(model);
 
             if (result.StatusCode == 200)
             {

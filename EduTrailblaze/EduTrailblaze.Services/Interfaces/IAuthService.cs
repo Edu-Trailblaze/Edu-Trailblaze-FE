@@ -1,7 +1,7 @@
 ﻿using EduTrailblaze.Services.Models;
 using Microsoft.Identity.Client;
 
-namespace EduTrailblaze.Services.Interface
+namespace EduTrailblaze.Services.Interfaces
 {
     public interface IAuthService
     {
@@ -15,7 +15,6 @@ namespace EduTrailblaze.Services.Interface
         Task EnableAuthenticator(TwoFactorAuthenticationModel twoFactorAuthenticationViewModel);
         Task ExternalLoginCallback(AuthenticationResult authenticationResult);
         Task<ApiResponse> Logout(string userId);
-        Task<ApiResponse> RefreshToken(string userId,string refreshToken);
-        Task<ApiResponse> AssignRole(AssignRoleModel model);
+        Task<ApiResponse> RefreshToken(string userId, string refreshToken);
     }
 }
