@@ -1,17 +1,13 @@
-import WebFooter from "@/components/footer";
-import WebHeader from "@/components/header";
-import HomeCourses from "@/components/home_courses";
-import HomeFeedbacks from "@/components/home_feedbacks";
-import HomeSupporter from "@/components/home_supporter";
-import HomeTeacherArea from "@/components/home_teacher_area";
-import ImageSlider from "@/components/image_slider";
-import MakeDiffer from "@/components/make_different";
-import Image from "next/image";
+import HomeCourses from "@/components/home_components/home_courses";
+import HomeFeedbacks from "@/components/home_components/home_feedbacks";
+import HomeSupporter from "@/components/home_components/home_supporter";
+import HomeTeacherArea from "@/components/home_components/home_teacher_area";
+import ImageSlider from "@/components/home_components/image_slider";
+import MakeDiffer from "@/components/home_components/make_different";
 
 export default function Home() {
   return (
     <div>
-      <WebHeader></WebHeader>
       <ImageSlider></ImageSlider>
       <HomeCourses></HomeCourses>
       <MakeDiffer></MakeDiffer>
@@ -20,7 +16,6 @@ export default function Home() {
       </div>
       <HomeTeacherArea></HomeTeacherArea>
       <HomeSupporter></HomeSupporter>
-      <WebFooter></WebFooter>
     </div>
   );
 }
