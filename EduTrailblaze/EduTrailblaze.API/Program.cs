@@ -7,12 +7,14 @@ using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Mappings;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Nest;
 using Polly;
 using StackExchange.Redis;
+using StreamingService.Services;
 
 namespace EduTrailblaze.API
 {
@@ -75,11 +77,16 @@ namespace EduTrailblaze.API
 
             builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 
-            //builder.Services.AddScoped<IAIService, AIService>();
+            builder.Services.AddScoped<IAIService, AIService>();
+            builder.Services.AddHttpClient<IAIService, AIService>(client =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(60);
+            });
             builder.Services.AddScoped<IAnswerService, AnswerService>();
             builder.Services.AddScoped<ICartItemService, CartItemService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICertificateService, CertificateService>();
+            builder.Services.AddScoped<IClamAVService, ClamAVService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
             builder.Services.AddScoped<ICourseCouponService, CourseCouponService>();
             builder.Services.AddScoped<ICourseDiscountService, CourseDiscountService>();
@@ -110,10 +117,14 @@ namespace EduTrailblaze.API
             builder.Services.AddScoped<IUserProgressService, UserProgressService>();
             builder.Services.AddScoped<IUserCourseCouponService, UserCourseCouponService>();
             builder.Services.AddScoped<IVideoService, VideoService>();
+            builder.Services.AddScoped<IVimeoService, VimeoService>();
             builder.Services.AddScoped<IVoucherService, VoucherService>();
 
             builder.Services.AddScoped<IVNPAYService, VNPAYService>();
             builder.Services.AddScoped<IMoMoService, MoMoService>();
+
+            builder.Services.AddHangfire(config => config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddHangfireServer();
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
@@ -186,6 +197,8 @@ namespace EduTrailblaze.API
             });
 
             var app = builder.Build();
+
+            app.UseHangfireDashboard();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

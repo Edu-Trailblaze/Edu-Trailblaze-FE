@@ -29,7 +29,7 @@
         //public DateTime StartDate { get; set; }
         //public DateTime EndDate { get; set; }
     }
-    
+
     public class CouponInformationResponse
     {
         public string CouponCode { get; set; }
@@ -81,8 +81,8 @@
         public CartCourseInformation CartCourseInformation { get; set; }
         public List<InstructorInformation> InstructorInformation { get; set; }
         public CourseReviewInformation CourseReviewInformation { get; set; }
-        public DiscountInformationResponse DiscountInformationResponse { get; set; }
-        public CouponInformation CouponInformation { get; set; }
+        public DiscountInformation? DiscountInformation { get; set; }
+        public CouponInformation? CouponInformation { get; set; }
         public decimal TotalPrice { get; set; }
     }
 
@@ -95,5 +95,11 @@
         public int Duration { get; set; }
         public string DifficultyLevel { get; set; }
         public int TotalLectures { get; set; }
+    }
+
+    public class UploadVideoResponse
+    {
+        public string VideoUri { get; set; }
+        public TimeSpan Duration { get; set; }
     }
 }

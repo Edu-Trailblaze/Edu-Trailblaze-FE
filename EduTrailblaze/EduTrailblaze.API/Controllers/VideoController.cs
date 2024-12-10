@@ -33,19 +33,19 @@ namespace EduTrailblaze.API.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddVideo([FromBody] CreateVideoRequest video)
-        {
-            try
-            {
-                await _videoService.AddVideo(video);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> AddVideo([FromBody] CreateVideoRequest video)
+        //{
+        //    try
+        //    {
+        //        await _videoService.AddVideo(video);
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        //    }
+        //}
 
         [HttpPut]
         public async Task<IActionResult> UpdateVideo([FromBody] UpdateVideoRequest video)
@@ -67,6 +67,20 @@ namespace EduTrailblaze.API.Controllers
             try
             {
                 await _videoService.DeleteVideo(videoId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadVideo([FromForm] UploadVideoRequest video)
+        {
+            try
+            {
+                await _videoService.UploadVideoAsync(video);
                 return Ok();
             }
             catch (Exception ex)

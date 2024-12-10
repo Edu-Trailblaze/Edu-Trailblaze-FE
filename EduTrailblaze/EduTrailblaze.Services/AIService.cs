@@ -14,6 +14,7 @@ namespace EduTrailblaze.Services
         private readonly string _localAiImageUrl;
         private readonly string _googleAiUrl;
         private readonly string _googleAiAndDbUrl;
+        private readonly string _whisperUrl;
 
         public AIService(HttpClient httpClient, IConfiguration configuration)
         {
@@ -23,6 +24,7 @@ namespace EduTrailblaze.Services
             _localAiImageUrl = configuration["LocalAI:Image"];
             _googleAiUrl = configuration["LocalAI:Google"];
             _googleAiAndDbUrl = configuration["LocalAI:GoogleDb"];
+            _whisperUrl = configuration["LocalAI:Whisper"];
         }
 
         public async Task<string> GetResponseAsyncUsingLocalImageGenerationAI(GetResponseAsyncUsingLocalImageGenerationAIRequest requestBody)
@@ -129,6 +131,28 @@ namespace EduTrailblaze.Services
 
                 var result = await response.Content.ReadFromJsonAsync<GoogleChatResponse>();
                 return result ?? throw new Exception("No GetResponseAsyncUsingGoogleAIAndDb received");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<WhisperChatResponse> GenerateTranscriptUsingWhisper(WhisperChatRequest request)
+        {
+            try
+            {
+                using var content = new MultipartFormDataContent();
+                using var fileStream = request.file.OpenReadStream();
+                using var streamContent = new StreamContent(fileStream);
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.file.ContentType);
+                content.Add(streamContent, "file", request.file.FileName);
+
+                var response = await _httpClient.PostAsync(_whisperUrl, content);
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadFromJsonAsync<WhisperChatResponse>();
+                return result ?? throw new Exception("No GenerateTranscriptUsingWhisper received");
             }
             catch (Exception ex)
             {

@@ -20,5 +20,7 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateVideo(UpdateVideoRequest video);
 
         Task DeleteVideo(int video);
+
+        Task<UploadVideoResponse> UploadVideoAsync(UploadVideoRequest video);
     }
 }

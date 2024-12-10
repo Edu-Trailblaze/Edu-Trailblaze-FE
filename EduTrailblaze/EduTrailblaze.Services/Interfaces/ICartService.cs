@@ -17,7 +17,7 @@ namespace EduTrailblaze.Services.Interfaces
 
         Task DisableCart(int cartId);
 
-        void RemoveCourseFromCart(int courseId, string? userId);
+        void RemoveCourseFromCookieCart(int courseId, string? userId);
 
         void DeleteCartInCookie(string? userId);
 
@@ -40,5 +40,13 @@ namespace EduTrailblaze.Services.Interfaces
         Task<List<CartItemDTO>> GetCart(string? userId);
 
         Task<int> NumberOfItemsInCart(string? userId);
+
+        Task<CartInformation?> ViewCart(string? userId);
+
+        Task AddToCart(string? userId, int courseId);
+
+        Task RemoveFromCart(string? userId, int courseId);
+
+        Task ClearCart(string? userId);
     }
 }

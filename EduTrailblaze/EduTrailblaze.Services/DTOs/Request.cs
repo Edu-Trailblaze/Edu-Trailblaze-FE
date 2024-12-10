@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Services.Helper;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace EduTrailblaze.Services.DTOs
 {
@@ -1096,17 +1097,13 @@ namespace EduTrailblaze.Services.DTOs
         public string Code { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public decimal CalculateDiscount(decimal price)
+        public decimal CalculatedDiscount { get; private set; }
+        public decimal CalculatedPrice { get; private set; }
+
+        public void CalculateDiscountAndPrice(decimal price)
         {
-            if (DiscountType == "Percentage")
-            {
-                return price * DiscountValue / 100;
-            }
-            return DiscountValue;
-        }
-        public decimal CalculatePrice(decimal price)
-        {
-            return price - CalculateDiscount(price);
+            CalculatedDiscount = DiscountType == "Percentage" ? price * DiscountValue / 100 : DiscountValue;
+            CalculatedPrice = price - CalculatedDiscount;
         }
     }
 
@@ -1158,7 +1155,6 @@ namespace EduTrailblaze.Services.DTOs
     {
         public string UserId { get; set; }
         public string PaymentMethod { get; set; }
-        public string CouponCode { get; set; }
         public string VoucherCode { get; set; }
     }
 
@@ -1174,5 +1170,25 @@ namespace EduTrailblaze.Services.DTOs
         public string CouponCode { get; set; }
         public string UserId { get; set; }
         public int CourseId { get; set; }
+    }
+
+    public class UploadVideoRequest
+    {
+        public IFormFile File { get; set; }
+        public int LectureId { get; set; }
+        public string Title { get; set; }
+    }
+
+    public class UploadVideoRequestValidator : AbstractValidator<UploadVideoRequest>
+    {
+        public UploadVideoRequestValidator()
+        {
+            RuleFor(x => x.File)
+                .NotEmpty().WithMessage("File is required");
+            RuleFor(x => x.LectureId)
+                .NotEmpty().WithMessage("LectureId is required");
+            RuleFor(x => x.Title)
+                .NotEmpty().WithMessage("Title is required");
+        }
     }
 }

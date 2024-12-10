@@ -85,7 +85,7 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpGet("number-of-items-in-cookie-cart")]
-        public IActionResult NumberOfItemsInCart(string? userId)
+        public IActionResult NumberOfItemsInCookieCart(string? userId)
         {
             try
             {
@@ -131,7 +131,77 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                _cartService.RemoveCourseFromCart(courseId, userId);
+                _cartService.RemoveCourseFromCookieCart(courseId, userId);
+                return Ok(new { message = "Successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("number-of-items-in-cart")]
+        public async Task<IActionResult> NumberOfItemsInCart(string? userId)
+        {
+            try
+            {
+                var numberOfItems = await _cartService.NumberOfItemsInCart(userId);
+                return Ok(numberOfItems);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("view-cart")]
+        public async Task<IActionResult> ViewCart(string? userId)
+        {
+            try
+            {
+                var cart = await _cartService.ViewCart(userId);
+                return Ok(cart);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("add-to-cart")]
+        public async Task<IActionResult> AddToCart(string? userId, int courseId)
+        {
+            try
+            {
+                await _cartService.AddToCart(userId, courseId);
+                return Ok(new { message = "Successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("remove-from-cart")]
+        public async Task<IActionResult> RemoveFromCart(string? userId, int courseId)
+        {
+            try
+            {
+                await _cartService.RemoveFromCart(userId, courseId);
+                return Ok(new { message = "Successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("clear-cart")]
+        public async Task<IActionResult> ClearCart(string? userId)
+        {
+            try
+            {
+                await _cartService.ClearCart(userId);
                 return Ok(new { message = "Successfully" });
             }
             catch (Exception ex)

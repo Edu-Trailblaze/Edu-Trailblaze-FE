@@ -15,13 +15,15 @@ namespace EduTrailblaze.Services
         private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICourseService _courseService;
+        private readonly IReviewService _reviewService;
 
-        public CartService(IRepository<Cart, int> cartRepository, IHttpContextAccessor httpContextAccessor, ICourseService courseService, UserManager<User> userManager)
+        public CartService(IRepository<Cart, int> cartRepository, IHttpContextAccessor httpContextAccessor, ICourseService courseService, UserManager<User> userManager, IReviewService reviewService)
         {
             _cartRepository = cartRepository;
             _httpContextAccessor = httpContextAccessor;
             _courseService = courseService;
             _userManager = userManager;
+            _reviewService = reviewService;
         }
 
         public async Task<Cart?> GetCart(int cartId)
@@ -104,7 +106,7 @@ namespace EduTrailblaze.Services
         }
 
         // Cookie cart
-        public void RemoveCourseFromCart(int courseId, string? userId)
+        public void RemoveCourseFromCookieCart(int courseId, string? userId)
         {
             try
             {
@@ -363,50 +365,66 @@ namespace EduTrailblaze.Services
             }
         }
 
-        //public async Task<CartInformation?> ViewCart(string? userId)
-        //{
-        //    try
-        //    {
-        //        var cartItems = await GetCart(userId);
+        public async Task<CartInformation?> ViewCart(string? userId)
+        {
+            try
+            {
+                var cartItems = await GetCart(userId);
 
-        //        if (cartItems.Count == 0)
-        //        {
-        //            return null;
-        //        }
+                if (cartItems.Count == 0)
+                {
+                    return null;
+                }
 
-        //        var cartInformation = new CartInformation();
+                var cartInformation = new CartInformation
+                {
+                    CartItems = new List<CartItemInformation>()
+                };
+                decimal totalPrice = 0;
 
-        //        foreach (var item in cartItems)
-        //        {
-        //            var course = await _courseService.GetCartCourseInformationAsync(item.ItemId);
-        //            var price = course.Price;
+                foreach (var item in cartItems)
+                {
+                    var course = await _courseService.GetCartCourseInformationAsync(item.ItemId);
+                    var coursePrice = course.Price;
 
-        //            var instructors = await _courseService.InstructorInformation(item.ItemId);
+                    var instructors = await _courseService.InstructorInformation(item.ItemId);
 
-        //            var discount = await _courseService.DiscountInformationResponse(item.ItemId);
-        //            discount.DiscountValue = price;
-        //            discount.PriceAfterDiscount = price - discount.DiscountValue;
+                    var discount = await _courseService.DiscountInformationResponse(item.ItemId);
+                    if (discount != null)
+                    {
+                        discount.CalculateDiscountAndPrice(coursePrice);
+                        coursePrice = discount.CalculatedPrice;
+                    }
 
-        //            var coupon = await _courseService.CouponInformation(item.ItemId, userId);
+                    var coupon = await _courseService.CouponInformation(item.ItemId, userId);
+                    if (coupon != null)
+                    {
+                        coupon.CalculateDiscountAndPrice(coursePrice);
+                        coursePrice = coupon.CalculatedPrice;
+                    }
 
-        //            cartInformation.CartItems.Add(
+                    totalPrice += coursePrice;
 
-        //                new CartItemInformation
-        //                {
-        //                    CartCourseInformation = course,
-        //                    InstructorInformation = instructors,
-        //                    CouponInformation = coupon,
-        //                    DiscountInformationResponse = discount,
-        //                }
-        //            );
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("An error occurred while viewing the cart: " + ex.Message);
-        //    }
-        //}
+                    cartInformation.CartItems.Add(
+                        new CartItemInformation
+                        {
+                            CartCourseInformation = course,
+                            InstructorInformation = instructors,
+                            CouponInformation = coupon,
+                            DiscountInformation = discount,
+                            CourseReviewInformation = await _reviewService.GetAverageRatingAndNumberOfRatings(item.ItemId),
+                            TotalPrice = coursePrice
+                        }
+                    );
+                }
+                cartInformation.TotalPrice = totalPrice;
+                return cartInformation;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while viewing the cart: " + ex.Message);
+            }
+        }
 
         public async Task<int> NumberOfItemsInCart(string? userId)
         {
@@ -424,6 +442,56 @@ namespace EduTrailblaze.Services
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while getting the number of items in the cart: " + ex.Message);
+            }
+        }
+
+        public async Task AddToCart(string? userId, int courseId)
+        {
+            try
+            {
+                await SaveCartToCookie(courseId, userId);
+                if (userId != null)
+                {
+                    await AddItemToSystemCart(courseId, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the course to the cart: " + ex.Message);
+            }
+        }
+
+        public async Task RemoveFromCart(string? userId, int courseId)
+        {
+            try
+            {
+                RemoveCourseFromCookieCart(courseId, userId);
+
+                if (userId != null)
+                {
+                    await RemoveItemFromSystemCart(courseId, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while removing the course from the cart: " + ex.Message);
+            }
+        }
+
+        public async Task ClearCart(string? userId)
+        {
+            try
+            {
+                DeleteCartInCookie(userId);
+                if (userId != null)
+                {
+                    var cart = await GetSystemCart(userId);
+                    await DeleteCart(cart);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while clearing the cart: " + ex.Message);
             }
         }
     }

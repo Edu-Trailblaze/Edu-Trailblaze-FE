@@ -70,7 +70,7 @@ namespace EduTrailblaze.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        
+
         [HttpPost("remove-coupon")]
         public async Task<IActionResult> RemoveCoupon([FromBody] RemoveCouponRequest removeCouponRequest)
         {
