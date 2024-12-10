@@ -12,8 +12,14 @@ namespace EduTrailblaze.Services.Mappings
             CreateMap<Course, CourseDTO>();
             CreateMap<CreateCourseRequest, Course>();
             CreateMap<CourseDTO, CoursesResponse>();
+            CreateMap<Course, CartCourseInformation>();
+
             CreateMap<Discount, DiscountInformationResponse>();
+            CreateMap<Discount, DiscountInformation>();
+
             CreateMap<User, InstructorInformation>();
+
+            CreateMap<Coupon, CouponInformation>();
         }
     }
 }

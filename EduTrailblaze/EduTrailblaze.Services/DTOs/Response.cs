@@ -58,7 +58,7 @@
     public class CourseCardResponse
     {
         public CoursesResponse Course { get; set; }
-        public DiscountInformationResponse? Discount { get; set; }
+        public DiscountInformation? Discount { get; set; }
         public CourseReviewInformation Review { get; set; }
         public List<InstructorInformation> Instructors { get; set; }
         public EnrollmentInformation Enrollment { get; set; }
@@ -78,10 +78,11 @@
 
     public class CartItemInformation
     {
-        public CartCourseInformation CourseInformation { get; set; }
+        public CartCourseInformation CartCourseInformation { get; set; }
+        public List<InstructorInformation> InstructorInformation { get; set; }
         public CourseReviewInformation CourseReviewInformation { get; set; }
-        public DiscountInformationResponse DiscountInformations { get; set; }
-        public CouponInformationResponse CouponInformation { get; set; }
+        public DiscountInformationResponse DiscountInformationResponse { get; set; }
+        public CouponInformation CouponInformation { get; set; }
         public decimal TotalPrice { get; set; }
     }
 
@@ -90,7 +91,6 @@
         public int CourseId { get; set; }
         public string Title { get; set; }
         public decimal Price { get; set; }
-        public string Intructor { get; set; }
         public string ImageURL { get; set; }
         public int Duration { get; set; }
         public string DifficultyLevel { get; set; }

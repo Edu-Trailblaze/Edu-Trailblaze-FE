@@ -249,8 +249,9 @@ namespace EduTrailblaze.Services
 
             var maxDiscount = course.CourseDiscounts
                 .Where(d => d.Discount.IsActive &&
-                            d.Discount.StartDate <= DateTimeHelper.GetVietnamTime() &&
-                            d.Discount.EndDate >= DateTimeHelper.GetVietnamTime())
+                            (d.Discount.StartDate == null || d.Discount.StartDate <= DateTimeHelper.GetVietnamTime()) &&
+                            (d.Discount.EndDate == null || d.Discount.EndDate >= DateTimeHelper.GetVietnamTime()) &&
+                            (d.Discount.MaxUsage == null || d.Discount.UsageCount == null || d.Discount.MaxUsage > d.Discount.UsageCount))
                 .OrderByDescending(d => d.Discount.DiscountType == "Percentage"
                     ? course.Price * d.Discount.DiscountValue / 100
                     : d.Discount.DiscountValue)
@@ -258,6 +259,7 @@ namespace EduTrailblaze.Services
 
             return maxDiscount?.DiscountId;
         }
+
 
         public async Task<List<CourseDTO>?> GetCoursesByConditions(GetCoursesRequest request)
         {
@@ -398,13 +400,13 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task<DiscountInformationResponse> DiscountInformationResponse(int courseId)
+        public async Task<DiscountInformation> DiscountInformationResponse(int courseId)
         {
             try
             {
                 var discountId = await GetMaxDiscountId(courseId);
                 var discount = discountId != null ? await _discountService.GetDiscount((int)discountId) : null;
-                return _mapper.Map<DiscountInformationResponse>(discount);
+                return _mapper.Map<DiscountInformation>(discount);
             }
             catch (Exception ex)
             {
@@ -445,6 +447,47 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task<int> TotalLectures(int courseId)
+        {
+            try
+            {
+                var dbSet = await _courseRepository.GetDbSet();
+                var course = await dbSet
+                    .Include(c => c.Sections)
+                    .ThenInclude(s => s.Lectures)
+                    .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+                return course.Sections.Sum(s => s.Lectures.Count);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the total number of lectures: " + ex.Message);
+            }
+        }
+
+        public async Task<int> TotalInstructors(int courseId)
+        {
+            try
+            {
+                var dbSet = await _courseRepository.GetDbSet();
+                var course = await dbSet
+                    .Include(c => c.CourseInstructors)
+                    .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+                return course.CourseInstructors.Count;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the total number of instructors: " + ex.Message);
+            }
+        }
+
         public async Task<List<CourseCardResponse>> GetCourseInformation(GetCoursesRequest request)
         {
             try
@@ -459,11 +502,18 @@ namespace EduTrailblaze.Services
 
                 foreach (var course in courses)
                 {
+                    var discount = await DiscountInformationResponse(course.CourseId);
+
+                    if (discount != null)
+                    {
+                        discount.CalculateDiscountAndPrice(course.Price);
+                    }
+
                     var courseCardResponse = new CourseCardResponse
                     {
                         Course = _mapper.Map<CoursesResponse>(course),
                         Review = await _reviewService.GetAverageRatingAndNumberOfRatings(course.CourseId),
-                        Discount = await DiscountInformationResponse(course.CourseId),
+                        Discount = discount,
                         Instructors = await InstructorInformation(course.CourseId),
                         Enrollment = new EnrollmentInformation
                         {
@@ -525,21 +575,60 @@ namespace EduTrailblaze.Services
             }
         }
 
-        //public async Task<CouponInformation> CouponInformation(int courseId, string userId)
-        //{
-        //    try
-        //    {
-        //        var couponDbset = await _couponRepository.GetDbSet();
-        //        var coupons = 
-        //        return new CouponInformation
-        //        {
-        //            Coupons = _mapper.Map<List<CouponResponse>>(coupons)
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("An error occurred while getting the coupon information: " + ex.Message);
-        //    }
-        //}
+        public async Task<CouponInformation?> CouponInformation(int courseId, string? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return null;
+                }
+
+                var dbSet = await _couponRepository.GetDbSet();
+                var currentDate = DateTimeHelper.GetVietnamTime();
+
+                var coupon = await dbSet
+                    .Where(c => c.IsActive
+                                && (c.ExpiryDate == null || c.ExpiryDate >= currentDate)
+                                && (c.StartDate == null || c.StartDate <= currentDate)
+                                && (c.MaxUsage == null || c.MaxUsage > c.UsageCount)
+                                && c.CourseCoupons.Any(cc => cc.CourseId == courseId)
+                                && c.CourseCoupons.Any(cc => cc.UserCourseCoupons.Any(ucc => ucc.UserId == userId)))
+                                .FirstOrDefaultAsync();
+
+                if (coupon == null)
+                {
+                    return null;
+                }
+
+                return _mapper.Map<CouponInformation>(coupon);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the coupon information: " + ex.Message);
+            }
+        }
+
+        public async Task<CartCourseInformation> GetCartCourseInformationAsync(int courseId)
+        {
+            try
+            {
+                var course = await GetCourse(courseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+
+                var cartCourseInformation = _mapper.Map<CartCourseInformation>(course);
+
+                cartCourseInformation.TotalLectures = await TotalLectures(courseId);
+
+                return cartCourseInformation;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the cart course information: " + ex.Message);
+            }
+        }
     }
 }

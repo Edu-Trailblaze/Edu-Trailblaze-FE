@@ -1081,22 +1081,19 @@ namespace EduTrailblaze.Services.DTOs
     {
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
-        public decimal CalculateDiscount(decimal price)
+        public decimal CalculatedDiscount { get; private set; }
+        public decimal CalculatedPrice { get; private set; }
+
+        public void CalculateDiscountAndPrice(decimal price)
         {
-            if (DiscountType == "Percentage")
-            {
-                return price * DiscountValue / 100;
-            }
-            return DiscountValue;
-        }
-        public decimal CalculatePrice(decimal price)
-        {
-            return price - CalculateDiscount(price);
+            CalculatedDiscount = DiscountType == "Percentage" ? price * DiscountValue / 100 : DiscountValue;
+            CalculatedPrice = price - CalculatedDiscount;
         }
     }
 
     public class CouponInformation
     {
+        public string Code { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
         public decimal CalculateDiscount(decimal price)

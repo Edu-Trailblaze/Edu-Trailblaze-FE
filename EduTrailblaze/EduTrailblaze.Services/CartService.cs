@@ -374,9 +374,31 @@ namespace EduTrailblaze.Services
         //            return null;
         //        }
 
+        //        var cartInformation = new CartInformation();
+
         //        foreach (var item in cartItems)
         //        {
-        //            var course = await _courseService.GetCourse(item.ItemId);
+        //            var course = await _courseService.GetCartCourseInformationAsync(item.ItemId);
+        //            var price = course.Price;
+
+        //            var instructors = await _courseService.InstructorInformation(item.ItemId);
+
+        //            var discount = await _courseService.DiscountInformationResponse(item.ItemId);
+        //            discount.DiscountValue = price;
+        //            discount.PriceAfterDiscount = price - discount.DiscountValue;
+
+        //            var coupon = await _courseService.CouponInformation(item.ItemId, userId);
+
+        //            cartInformation.CartItems.Add(
+
+        //                new CartItemInformation
+        //                {
+        //                    CartCourseInformation = course,
+        //                    InstructorInformation = instructors,
+        //                    CouponInformation = coupon,
+        //                    DiscountInformationResponse = discount,
+        //                }
+        //            );
 
         //        }
         //    }
