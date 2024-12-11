@@ -20,7 +20,7 @@ const ListItemsWithIcon = (prop: ListItemProps) => {
 
 export default function CourseAbout() {
   return (
-    <div className='container mb-10'>
+    <div className='container mb-32'>
       <h1 className=' font-bold text-xl mb-5'>What you'll learn</h1>
       {[...Array(3)].map((_, index) => (
         <div className='flex mt-5' key={index}>
