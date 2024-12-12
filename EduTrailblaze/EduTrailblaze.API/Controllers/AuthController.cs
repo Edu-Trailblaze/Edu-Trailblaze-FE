@@ -48,9 +48,14 @@ namespace EduTrailblaze.API.Controllers
         {
             var result = await _authService.Login(model);
 
-            if (result.StatusCode == 200)
+            if (result.StatusCode == 200 )
             {
-                return Ok(new { Message = result });
+                //if (result.Data is null)
+                //{
+                //    return File(QrcodeGenerator.GenerateQRCode(result.Message), "image/png");
+                    
+                //}
+                 return Ok(new { Message = result });
             }
             return StatusCode(result.StatusCode, result);
 

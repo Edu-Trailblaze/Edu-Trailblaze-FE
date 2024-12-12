@@ -12,6 +12,7 @@ using Polly;
 using Polly.Retry;
 using Polly.Timeout;
 using Polly.Wrap;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EduTrailblaze.Services
 {
@@ -98,10 +99,11 @@ namespace EduTrailblaze.Services
                     {
                         if (result.IsLockedOut) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account is locked. Please contact support." };
                         if (result.IsNotAllowed) return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Message = "Your account is not allowed to login. Please contact support." };
-                        if (result.RequiresTwoFactor) return new ApiResponse
+                    if (result.RequiresTwoFactor)
+                        return new ApiResponse
                         {
                             StatusCode = StatusCodes.Status200OK,
-                            Data = new { QrCode = await _userManager.GetAuthenticatorKeyAsync(user) }
+                            Message = await _userManager.GetAuthenticatorKeyAsync(user)
                         };
                         return new ApiResponse { StatusCode = StatusCodes.Status401Unauthorized, Data = "Invalid login attempt." };
                     }
@@ -191,7 +193,7 @@ namespace EduTrailblaze.Services
 
                 var token = _jwtToken.GenerateJwtToken(user, "Student");
                 var newRefreshToken = _jwtToken.GenerateRefreshToken();
-                Task.WhenAll();
+                Task.WhenAll(token, newRefreshToken);
                 var tokenAsync = await token;
                 var newRefreshTokenAsync = await newRefreshToken;
                 return new ApiResponse
