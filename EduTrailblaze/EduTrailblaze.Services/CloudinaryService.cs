@@ -1,7 +1,9 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Xabe.FFmpeg;
 
 namespace StreamingService.Services
 {
@@ -19,7 +21,7 @@ namespace StreamingService.Services
             );
         }
 
-        public async Task<string> UploadVideoAsync(string filePath, string publicId)
+        public async Task<UploadVideoResponse> UploadVideoAsync(string filePath, string publicId)
         {
             try
             {
@@ -32,7 +34,14 @@ namespace StreamingService.Services
 
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-                return uploadResult.SecureUrl.ToString();
+                IMediaInfo mediaInfo = await FFmpeg.GetMediaInfo(filePath);
+                var duration = mediaInfo.Duration;
+
+                return new UploadVideoResponse
+                {
+                    VideoUri = uploadResult.Uri.ToString(),
+                    Duration = duration
+                };
             }
             catch (Exception ex)
             {

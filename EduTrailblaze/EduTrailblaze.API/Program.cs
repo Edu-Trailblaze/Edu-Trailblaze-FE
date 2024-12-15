@@ -87,6 +87,7 @@ namespace EduTrailblaze.API
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<ICertificateService, CertificateService>();
             builder.Services.AddScoped<IClamAVService, ClamAVService>();
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
             builder.Services.AddScoped<ICourseCouponService, CourseCouponService>();
             builder.Services.AddScoped<ICourseDiscountService, CourseDiscountService>();

@@ -80,7 +80,7 @@ namespace EduTrailblaze.API.Controllers
         {
             try
             {
-                await _videoService.UploadVideoAsync(video);
+                await _videoService.UploadVideoWithCloudinaryAsync(video);
                 return Ok();
             }
             catch (Exception ex)

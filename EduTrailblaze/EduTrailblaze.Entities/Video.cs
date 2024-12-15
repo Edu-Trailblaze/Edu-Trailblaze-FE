@@ -14,13 +14,13 @@ namespace EduTrailblaze.Entities
         [Required, StringLength(50)]
         public string Title { get; set; }
 
-        [Required, StringLength(int.MaxValue)]
+        [StringLength(int.MaxValue)]
         public string VideoUrl { get; set; }
 
         [StringLength(int.MaxValue)]
         public string? Transcript { get; set; }
 
-        public TimeSpan Duration { get; set; }
+        public TimeSpan? Duration { get; set; }
 
         [Required]
         public bool IsDeleted { get; set; } = false;
