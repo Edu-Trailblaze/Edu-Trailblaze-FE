@@ -9,7 +9,11 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontSize: {
+        'md': '1rem'
+      }
+    },
     fontWeight: {
       hairline: 100,
       'extra-light': 100,
@@ -25,8 +29,11 @@ module.exports = {
     },
     container: {
       center: true,
+      padding: '5rem',
+      
     }
   },
+  
   plugins: [],
 }
 
