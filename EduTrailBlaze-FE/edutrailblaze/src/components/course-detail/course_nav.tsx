@@ -1,5 +1,9 @@
 import CourseDetails from './course_details';
-export default function Navigation() {
+interface NavigationProps {
+  selected: string;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
+}
+export default function Navigation( {selected, setSelected}: NavigationProps) {
   return (
     <div className='bg-white h-[160px]'>
       <div className='container'>
@@ -17,8 +21,8 @@ export default function Navigation() {
             <p className='text-sm'>Starts Dec 2</p>
           </button>
         </div>
-        <CourseDetails/>
       </div>
+        <CourseDetails selected={selected} setSelected={setSelected}/>
     </div>
   );
 }

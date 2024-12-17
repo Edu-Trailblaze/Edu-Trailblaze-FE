@@ -177,7 +177,7 @@ export default function CourseSuggestion() {
       {/* Show more / Show less */}
       <button
         onClick={handleShowCourses}
-        className='text-white font-semibold hover:bg-cyan-600 transition-colors duration-500 bg-blue-600 container h-12 mt-2 mb-2 row-span-12unded'
+        className='text-white font-semibold hover:bg-cyan-600 transition-colors duration-500 bg-blue-600 container h-12 mt-7 mb-2 row-span-12unded'
       >
         {visibleCourse < courses.length ? 'Show more' : 'Show less'}
       </button>
