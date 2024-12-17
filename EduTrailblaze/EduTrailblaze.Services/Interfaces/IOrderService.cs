@@ -18,5 +18,9 @@ namespace EduTrailblaze.Services.Interfaces
         Task AutomaticFailedOrder(int orderId);
 
         Task<string> PlaceOrder(PlaceOrderRequest orderProcessingRequest);
+
+        Task<string> PaymentProcessing(int orderId, string paymentMethod);
+
+        Task CancelOrder(int orderId);
     }
 }

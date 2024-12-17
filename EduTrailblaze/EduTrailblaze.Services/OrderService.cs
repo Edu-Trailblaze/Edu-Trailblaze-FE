@@ -257,5 +257,16 @@ namespace EduTrailblaze.Services
                 throw new Exception("An error occurred while canceling the order.", ex);
             }
         }
+
+        //public async Task<Order> GetOrdersByCondition()
+        //{
+        //    try
+        //    {
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("An error occurred while getting the orders.", ex);
+        //    }
+        //}
     }
 }
