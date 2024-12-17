@@ -15,7 +15,7 @@ export default function CourseOutcome() {
   return (
     <>
       {/* Text */}
-      <div className='container mb-32 flex relative '>
+      <div className='container mb-32 flex relative'>
         <div className='w-[1375px]'>
           <p className='mb-3 text-3xl font-semibold'>Advance your subject-matter expertise</p>
           <ul className='ml-7'>

@@ -49,20 +49,20 @@ export default function CourseHeader() {
             <p className='text-gray-500 text-md'>Get in-depth knowledge of a subject</p>
           </div>
           <div className='flex-1 relative border-r-2 border-stone-400'>
-            <p className='text-blue-700 tracking-wide text-xl font-semibold pl-5'>4.7 ★</p>
-            <p className='text-gray-500 pl-5'>(2,629 reviews)</p>
+            <p className='text-blue-700 tracking-wide text-xl font-semibold'>4.7 ★</p>
+            <p className='text-gray-500'>(2,629 reviews)</p>
           </div>
           <div className='flex-1 relative border-r-2 border-stone-400'>
-            <p className='text-xl font-semibold pl-5'>Beginner level</p>
-            <p className='text-gray-500 pl-5'>No prior experience required</p>
+            <p className='text-xl font-semibold'>Beginner level</p>
+            <p className='text-gray-500'>No prior experience required</p>
           </div>
           <div className='flex-1 relative border-r-2 border-stone-400'>
-            <p className='text-xl font-semibold pl-5'>1 month</p>
-            <p className='text-gray-500 pl-5'>at 10 hours a week</p>
+            <p className='text-xl font-semibold'>1 month</p>
+            <p className='text-gray-500'>at 10 hours a week</p>
           </div>
           <div className='flex-1'>
-            <p className='text-xl font-semibold pl-5'>Flexible schedule</p>
-            <p className='text-gray-500 pl-5'>Learn at your own pace</p>
+            <p className='text-xl font-semibold'>Flexible schedule</p>
+            <p className='text-gray-500'>Learn at your own pace</p>
           </div>
         </div>
       </div>
