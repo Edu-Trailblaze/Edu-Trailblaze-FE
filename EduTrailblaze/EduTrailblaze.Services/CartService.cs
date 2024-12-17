@@ -413,7 +413,7 @@ namespace EduTrailblaze.Services
                             CouponInformation = coupon,
                             DiscountInformation = discount,
                             CourseReviewInformation = await _reviewService.GetAverageRatingAndNumberOfRatings(item.ItemId),
-                            TotalPrice = coursePrice
+                            TotalCoursePrice = coursePrice
                         }
                     );
                 }

@@ -16,6 +16,9 @@ namespace EduTrailblaze.Entities
         [Required]
         public decimal DiscountValue { get; set; }
 
+        [Required, StringLength(50)]
+        public string VoucherCode { get; set; }
+
         [Required]
         public bool IsUsed { get; set; } = false;
 

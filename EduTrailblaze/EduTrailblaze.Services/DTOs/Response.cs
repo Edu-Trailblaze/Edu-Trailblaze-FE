@@ -83,7 +83,7 @@
         public CourseReviewInformation CourseReviewInformation { get; set; }
         public DiscountInformation? DiscountInformation { get; set; }
         public CouponInformation? CouponInformation { get; set; }
-        public decimal TotalPrice { get; set; }
+        public decimal TotalCoursePrice { get; set; }
     }
 
     public class CartCourseInformation

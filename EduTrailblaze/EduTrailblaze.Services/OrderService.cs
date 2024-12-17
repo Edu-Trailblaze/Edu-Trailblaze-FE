@@ -11,12 +11,18 @@ namespace EduTrailblaze.Services
         private readonly IMailService _mailService;
         private readonly IPaymentService _paymentService;
         private readonly ICartService _cartService;
+        private readonly IOrderDetailService _orderDetailService;
+        private readonly IMoMoService _moMoService;
+        private readonly IVNPAYService _vNPAYService;
 
-        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService)
+        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService, IOrderDetailService orderDetailService, IMoMoService moMoService, IVNPAYService vNPAYService)
         {
             _orderRepository = orderRepository;
             _paymentService = paymentService;
             _cartService = cartService;
+            _orderDetailService = orderDetailService;
+            _moMoService = moMoService;
+            _vNPAYService = vNPAYService;
         }
 
         public async Task<Order?> GetOrder(int orderId)
@@ -114,12 +120,38 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task OrderProcessing(CreateOrderRequest createOrderRequest)
+        public async Task<Order> OrderProcessing(string userId)
         {
             try
             {
-                var cart = await _cartService.GetSystemCart(createOrderRequest.UserId);
+                var cart = await _cartService.ViewCart(userId);
 
+                if (cart == null || cart.CartItems == null || cart.CartItems.Count == 0)
+                {
+                    throw new Exception("Cart is empty.");
+                }
+
+                var order = new Order
+                {
+                    UserId = userId,
+                    OrderAmount = cart.TotalPrice,
+                };
+
+                await AddOrder(order);
+
+                foreach (var cartItem in cart.CartItems)
+                {
+                    var orderDetail = new OrderDetailRequest
+                    {
+                        OrderId = order.OrderId,
+                        CourseId = cartItem.CartCourseInformation.CourseId,
+                        Price = cartItem.TotalCoursePrice,
+                    };
+
+                    await _orderDetailService.AddOrderDetail(orderDetail);
+                }
+
+                return order;
             }
             catch (Exception ex)
             {
@@ -127,15 +159,59 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task PaymentProcessing(Payment payment)
+        public async Task<string> PaymentProcessing(int orderId, string paymentMethod)
         {
             try
             {
+                var order = await GetOrder(orderId);
+                if (order == null) {
+                    throw new Exception("Order not found.");
+                }
 
+                CreatePaymentRequest createPaymentRequest = new CreatePaymentRequest
+                {
+                    OrderId = orderId,
+                    PaymentMethod = paymentMethod,
+                    Amount = order.OrderAmount,
+                };
+
+                var payment = await _paymentService.AddPayment(createPaymentRequest);
+
+                string paymentUrl = "";
+
+                if (paymentMethod == "MoMo")
+                {
+                     paymentUrl = await _moMoService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                }
+                else if (paymentMethod == "VnPay")
+                {
+                    paymentUrl = _vNPAYService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                }
+                return paymentUrl;
             }
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while processing the payment: " + ex.Message);
+            }
+        }
+
+        public async Task<string> PlaceOrder(PlaceOrderRequest placeOrderRequest)
+        {
+            try
+            {
+                var order = await OrderProcessing(placeOrderRequest.UserId);
+
+                if (order == null) {
+                    throw new Exception("Order not found.");
+                }
+
+                var paymentResponse = await PaymentProcessing(order.OrderId, placeOrderRequest.PaymentMethod);
+
+                return paymentResponse;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while placing the order: " + ex.Message);
             }
         }
 

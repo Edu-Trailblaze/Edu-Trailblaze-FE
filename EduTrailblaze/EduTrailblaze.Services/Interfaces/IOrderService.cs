@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -15,5 +16,7 @@ namespace EduTrailblaze.Services.Interfaces
         Task DeleteOrder(Order order);
 
         Task AutomaticFailedOrder(int orderId);
+
+        Task<string> PlaceOrder(PlaceOrderRequest orderProcessingRequest);
     }
 }

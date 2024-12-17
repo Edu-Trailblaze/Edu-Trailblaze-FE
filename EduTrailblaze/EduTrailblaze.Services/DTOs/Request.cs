@@ -1,6 +1,8 @@
 ﻿using EduTrailblaze.Services.Helper;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace EduTrailblaze.Services.DTOs
 {
@@ -616,6 +618,47 @@ namespace EduTrailblaze.Services.DTOs
         }
     }
 
+    public class OrderDetailRequest
+    {
+        public int OrderId { get; set; }
+        public int CourseId { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    public class OrderDetailRequestValidator : AbstractValidator<OrderDetailRequest>
+    {
+        public OrderDetailRequestValidator()
+        {
+            RuleFor(x => x.OrderId)
+                .NotEmpty().WithMessage("OrderId is required");
+            RuleFor(x => x.CourseId)
+                .NotEmpty().WithMessage("CourseId is required");
+            RuleFor(x => x.Price)
+                .NotEmpty().WithMessage("Price is required")
+                .GreaterThanOrEqualTo(0).WithMessage("Price must be greater than or equal to 0");
+        }
+    }
+
+    public class PlaceOrderRequest
+    {
+        public string UserId { get; set; }
+        public string PaymentMethod { get; set; }
+        public int VoucherCode { get; set; }
+    }
+
+    public class PlaceOrderRequestValidator : AbstractValidator<PlaceOrderRequest>
+    {
+        public PlaceOrderRequestValidator()
+        {
+            RuleFor(x => x.UserId)
+                .NotEmpty().WithMessage("UserId is required");
+            RuleFor(x => x.PaymentMethod)
+                .NotEmpty().WithMessage("PaymentMethod is required")
+                .Must(method => new[] { "VnPay", "MoMo", "PayPal", "SystemBalance" }.Contains(method))
+                .WithMessage("PaymentMethod must be VnPay, MoMo, or PayPal");
+        }
+    }
+
     public class UpdateOrderRequest
     {
         public int OrderId { get; set; }
@@ -639,7 +682,6 @@ namespace EduTrailblaze.Services.DTOs
     {
         public int OrderId { get; set; }
         public decimal Amount { get; set; }
-        public string PaymentStatus { get; set; }
         public string PaymentMethod { get; set; }
     }
 
@@ -1018,6 +1060,7 @@ namespace EduTrailblaze.Services.DTOs
 
     public class CreateVoucherRequest
     {
+        public string VoucherCode { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
         public DateTime? StartDate { get; set; }
@@ -1029,6 +1072,9 @@ namespace EduTrailblaze.Services.DTOs
     {
         public CreateVoucherRequestValidator()
         {
+            RuleFor(x => x.VoucherCode)
+                .NotEmpty().WithMessage("VoucherCode is required")
+                .MaximumLength(50).WithMessage("VoucherCode cannot be longer than 50 characters");
             RuleFor(x => x.DiscountType)
                 .NotEmpty().WithMessage("DiscountType is required")
                 .MaximumLength(50).WithMessage("DiscountType cannot be longer than 50 characters");
@@ -1047,6 +1093,7 @@ namespace EduTrailblaze.Services.DTOs
     public class UpdateVoucherRequest
     {
         public int VoucherId { get; set; }
+        public string VoucherCode { get; set; }
         public string DiscountType { get; set; }
         public decimal DiscountValue { get; set; }
         public DateTime? StartDate { get; set; }
@@ -1061,6 +1108,9 @@ namespace EduTrailblaze.Services.DTOs
         {
             RuleFor(x => x.VoucherId)
                 .NotEmpty().WithMessage("VoucherId is required");
+            RuleFor(x => x.VoucherCode)
+                .NotEmpty().WithMessage("VoucherCode is required")
+                .MaximumLength(50).WithMessage("VoucherCode cannot be longer than 50 characters");
             RuleFor(x => x.DiscountType)
                 .NotEmpty().WithMessage("DiscountType is required")
                 .MaximumLength(50).WithMessage("DiscountType cannot be longer than 50 characters");
@@ -1149,13 +1199,6 @@ namespace EduTrailblaze.Services.DTOs
         public List<OrderItemInfomation> OrderItems { get; set; }
         public VoucherInformation VoucherInformation { get; set; }
         public string TotalPrice { get; set; }
-    }
-
-    public class PlaceOrderRequest
-    {
-        public string UserId { get; set; }
-        public string PaymentMethod { get; set; }
-        public string VoucherCode { get; set; }
     }
 
     public class ApplyCouponRequest

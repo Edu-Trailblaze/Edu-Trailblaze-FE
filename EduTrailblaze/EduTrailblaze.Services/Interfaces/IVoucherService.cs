@@ -18,5 +18,7 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateVoucher(UpdateVoucherRequest voucher);
 
         Task DeleteVoucher(Voucher voucher);
+
+        Task<Voucher?> CheckVoucherValidity(string voucherCode, decimal orderPrice);
     }
 }

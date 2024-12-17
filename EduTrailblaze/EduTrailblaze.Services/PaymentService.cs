@@ -50,7 +50,7 @@ namespace EduTrailblaze.Services
             }
         }
 
-        public async Task AddPayment(CreatePaymentRequest payment)
+        public async Task<Payment> AddPayment(CreatePaymentRequest payment)
         {
             try
             {
@@ -61,6 +61,7 @@ namespace EduTrailblaze.Services
                     PaymentMethod = payment.PaymentMethod
                 };
                 await _paymentRepository.AddAsync(newPayment);
+                return newPayment;
             }
             catch (Exception ex)
             {

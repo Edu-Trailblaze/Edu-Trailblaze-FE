@@ -13,7 +13,7 @@ namespace EduTrailblaze.Services.Interfaces
 
         Task UpdatePayment(Payment payment);
 
-        Task AddPayment(CreatePaymentRequest payment);
+        Task<Payment> AddPayment(CreatePaymentRequest payment);
 
         Task UpdatePayment(UpdatePaymentRequest payment);
 
