@@ -1,4 +1,8 @@
-﻿namespace EduTrailblaze.Services.DTOs
+﻿using EduTrailblaze.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace EduTrailblaze.Services.DTOs
 {
     public class CourseDTO
     {
@@ -40,5 +44,18 @@
         //public string ItemName { get; set; }
 
         //public decimal Price { get; set; }
+    }
+
+    public class OrderDTO
+    {
+        public int OrderId { get; set; }
+
+        public string UserId { get; set; }
+
+        public decimal OrderAmount { get; set; }
+
+        public DateTime OrderDate { get; set; }
+
+        public string OrderStatus { get; set; }
     }
 }

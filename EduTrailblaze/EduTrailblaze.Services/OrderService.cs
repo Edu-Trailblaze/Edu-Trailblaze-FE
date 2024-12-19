@@ -1,7 +1,9 @@
-﻿using EduTrailblaze.Entities;
+﻿using AutoMapper;
+using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduTrailblaze.Services
 {
@@ -14,8 +16,9 @@ namespace EduTrailblaze.Services
         private readonly IOrderDetailService _orderDetailService;
         private readonly IMoMoService _moMoService;
         private readonly IVNPAYService _vNPAYService;
+        private readonly IMapper _mapper;
 
-        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService, IOrderDetailService orderDetailService, IMoMoService moMoService, IVNPAYService vNPAYService)
+        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService, IOrderDetailService orderDetailService, IMoMoService moMoService, IVNPAYService vNPAYService, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _paymentService = paymentService;
@@ -23,6 +26,7 @@ namespace EduTrailblaze.Services
             _orderDetailService = orderDetailService;
             _moMoService = moMoService;
             _vNPAYService = vNPAYService;
+            _mapper = mapper;
         }
 
         public async Task<Order?> GetOrder(int orderId)
@@ -258,15 +262,105 @@ namespace EduTrailblaze.Services
             }
         }
 
-        //public async Task<Order> GetOrdersByCondition()
-        //{
-        //    try
-        //    {
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception("An error occurred while getting the orders.", ex);
-        //    }
-        //}
+        public async Task<IQueryable<Order>> GetByCondition(GetOrdersRequest req)
+        {
+            try
+            {
+                var orderDbSet = await _orderRepository.GetDbSet();
+
+                if (!string.IsNullOrEmpty(req.UserId))
+                {
+                    orderDbSet = orderDbSet.Where(x => x.UserId == req.UserId);
+                }
+
+                if (!string.IsNullOrEmpty(req.OrderStatus))
+                {
+                    orderDbSet = orderDbSet.Where(x => x.OrderStatus == req.OrderStatus);
+                }
+
+                if (req.MinOrderAmount.HasValue)
+                {
+                    orderDbSet = orderDbSet.Where(x => x.OrderAmount >= req.MinOrderAmount);
+                }
+
+                if (req.MaxOrderAmount.HasValue)
+                {
+                    orderDbSet = orderDbSet.Where(x => x.OrderAmount <= req.MaxOrderAmount);
+                }
+
+                if (req.OrderDateFrom.HasValue)
+                {
+                    orderDbSet = orderDbSet.Where(x => x.OrderDate >= req.OrderDateFrom);
+                }
+
+                if (req.OrderDateTo.HasValue)
+                {
+                    orderDbSet = orderDbSet.Where(x => x.OrderDate <= req.OrderDateTo);
+                }
+
+                return orderDbSet;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the orders.", ex);
+            }
+        }
+
+        public async Task<List<Order>> GetOrdersByCondition(GetOrdersRequest req)
+        {
+            try
+            {
+                var orders = await GetByCondition(req);
+                return await orders.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the orders.", ex);
+            }
+        }
+
+        public async Task<PaginatedList<OrderDTO>> GetPagingOrders(GetOrdersRequest req, Paging paging)
+        {
+            try
+            {
+                var orders = await GetByCondition(req);
+                if (!paging.PageSize.HasValue || paging.PageSize <= 0)
+                {
+                    paging.PageSize = 10;
+                }
+
+                if (!paging.PageIndex.HasValue || paging.PageIndex <= 0)
+                {
+                    paging.PageIndex = 1;
+                }
+
+                var totalCount = orders.Count();
+                var skip = (paging.PageIndex.Value - 1) * paging.PageSize.Value;
+                var take = paging.PageSize.Value;
+
+                var validSortOptions = new[] { "status", "highest_price", "newest" };
+                if (string.IsNullOrEmpty(paging.Sort) || !validSortOptions.Contains(paging.Sort))
+                {
+                    paging.Sort = "newest";
+                }
+
+                orders = paging.Sort switch
+                {
+                    "status" => orders.OrderByDescending(p => p.OrderStatus),
+                    "highest_price" => orders.OrderByDescending(p => p.OrderAmount),
+                    "newest" => orders.OrderByDescending(p => p.OrderDate),
+                    _ => orders
+                };
+
+                var orderList = orders.Skip(skip).Take(take).ToList();
+                var orderDTOList = _mapper.Map<List<OrderDTO>>(orderList);
+
+                return new PaginatedList<OrderDTO>(orderDTOList, totalCount, paging.PageIndex.Value, paging.PageSize.Value);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the orders.", ex);
+            }
+        }
     }
 }

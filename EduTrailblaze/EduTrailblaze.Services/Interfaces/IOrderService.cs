@@ -22,5 +22,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task<string> PaymentProcessing(int orderId, string paymentMethod);
 
         Task CancelOrder(int orderId);
+
+        Task<IQueryable<Order>> GetByCondition(GetOrdersRequest req);
+
+        Task<List<Order>> GetOrdersByCondition(GetOrdersRequest req);
+
+        Task<PaginatedList<OrderDTO>> GetPagingOrders(GetOrdersRequest req, Paging paging);
     }
 }

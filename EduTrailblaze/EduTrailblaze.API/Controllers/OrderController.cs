@@ -60,5 +60,19 @@ namespace EduTrailblaze.API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet("get-paging-order")]
+        public async Task<IActionResult> GetPagingOrders([FromQuery] GetOrdersRequest request, [FromQuery] Paging paging)
+        {
+            try
+            {
+                var orders = await _orderService.GetPagingOrders(request, paging);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

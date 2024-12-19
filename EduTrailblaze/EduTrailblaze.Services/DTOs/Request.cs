@@ -1,8 +1,6 @@
 ﻿using EduTrailblaze.Services.Helper;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace EduTrailblaze.Services.DTOs
 {
@@ -51,6 +49,11 @@ namespace EduTrailblaze.Services.DTOs
                 .GreaterThanOrEqualTo(x => x.MinPrice ?? 0).WithMessage("MaxPrice must be greater than or equal to MinPrice")
                 .When(x => x.MaxPrice.HasValue);
 
+            RuleFor(x => x)
+                .Must(x => !x.MinPrice.HasValue || !x.MaxPrice.HasValue || x.MinPrice <= x.MaxPrice)
+                .WithMessage("MinPrice must be less than or equal to MaxPrice")
+                .When(x => x.MinPrice.HasValue && x.MaxPrice.HasValue);
+
             RuleFor(x => x.MinDuration)
                 .GreaterThanOrEqualTo(0).WithMessage("MinDuration must be greater than or equal to 0")
                 .When(x => x.MinDuration.HasValue);
@@ -59,6 +62,11 @@ namespace EduTrailblaze.Services.DTOs
                 .GreaterThanOrEqualTo(0).WithMessage("MaxDuration must be greater than or equal to 0")
                 .GreaterThanOrEqualTo(x => x.MinDuration ?? 0).WithMessage("MaxDuration must be greater than or equal to MinDuration")
                 .When(x => x.MaxDuration.HasValue);
+
+            RuleFor(x => x)
+                .Must(x => !x.MinDuration.HasValue || !x.MaxDuration.HasValue || x.MinDuration <= x.MaxDuration)
+                .WithMessage("MinDuration must be less than or equal to MaxDuration")
+                .When(x => x.MinDuration.HasValue && x.MaxDuration.HasValue);
 
             RuleFor(x => x.DifficultyLevel)
                 .MaximumLength(50).WithMessage("DifficultyLevel must be Beginner, Intermediate, Advanced")
@@ -285,9 +293,11 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
             RuleFor(x => x.StartDate)
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date")
+                .When(x => x.StartDate.HasValue);
             RuleFor(x => x.ExpiryDate)
-                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+                .GreaterThan(x => x.ExpiryDate.Value).WithMessage("EndDate must be greater than ExpiryDate")
+                .When(x => x.StartDate.HasValue && x.ExpiryDate.HasValue);
             RuleFor(x => x.UsageCount)
                 .GreaterThanOrEqualTo(0).WithMessage("UsageCount must be greater than or equal to 0");
             RuleFor(x => x.MaxUsage)
@@ -325,9 +335,11 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
             RuleFor(x => x.StartDate)
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date")
+                .When(x => x.StartDate.HasValue);
             RuleFor(x => x.ExpiryDate)
-                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+                .GreaterThan(x => x.ExpiryDate.Value).WithMessage("EndDate must be greater than ExpiryDate")
+                .When(x => x.StartDate.HasValue && x.ExpiryDate.HasValue);
             RuleFor(x => x.UsageCount)
                 .GreaterThanOrEqualTo(0).WithMessage("UsageCount must be greater than or equal to 0");
             RuleFor(x => x.MaxUsage)
@@ -358,11 +370,11 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
             RuleFor(x => x.StartDate)
-                .NotEmpty().WithMessage("StartDate is required")
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date")
+                .When(x => x.StartDate.HasValue);
             RuleFor(x => x.EndDate)
-                .NotEmpty().WithMessage("EndDate is required")
-                .GreaterThan(x => x.StartDate).WithMessage("EndDate must be greater than StartDate");
+                .GreaterThan(x => x.StartDate.Value).WithMessage("EndDate must be greater than StartDate")
+                .When(x => x.StartDate.HasValue && x.EndDate.HasValue);
             RuleFor(x => x.MaxUsage)
                 .GreaterThanOrEqualTo(0).WithMessage("MaxUsage must be greater than 0");
             RuleFor(x => x.UsageCount)
@@ -395,11 +407,11 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
             RuleFor(x => x.StartDate)
-                .NotEmpty().WithMessage("StartDate is required")
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date")
+                .When(x => x.StartDate.HasValue);
             RuleFor(x => x.EndDate)
-                .NotEmpty().WithMessage("EndDate is required")
-                .GreaterThan(x => x.StartDate).WithMessage("EndDate must be greater than StartDate");
+                .GreaterThan(x => x.StartDate.Value).WithMessage("EndDate must be greater than StartDate")
+                .When(x => x.StartDate.HasValue && x.EndDate.HasValue);
             RuleFor(x => x.MaxUsage)
                 .GreaterThanOrEqualTo(0).WithMessage("MaxUsage must be greater than 0");
             RuleFor(x => x.UsageCount)
@@ -1082,9 +1094,11 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
             RuleFor(x => x.StartDate)
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date")
+                .When(x => x.StartDate.HasValue);
             RuleFor(x => x.ExpiryDate)
-                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+                .GreaterThan(x => x.StartDate.Value).WithMessage("ExpiryDate must be greater than StartDate")
+                .When(x => x.StartDate.HasValue && x.ExpiryDate.HasValue);
             RuleFor(x => x.MinimumOrderValue)
                 .GreaterThanOrEqualTo(0).WithMessage("MinimumOrderValue must be greater than or equal to 0");
         }
@@ -1118,9 +1132,11 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("DiscountValue is required")
                 .GreaterThanOrEqualTo(0).WithMessage("DiscountValue must be greater than or equal to 0");
             RuleFor(x => x.StartDate)
-                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date");
+                .GreaterThan(DateTimeHelper.GetVietnamTime()).WithMessage("StartDate must be greater than the current date")
+                .When(x => x.StartDate.HasValue);
             RuleFor(x => x.ExpiryDate)
-                .GreaterThan(x => x.StartDate).WithMessage("ExpiryDate must be greater than StartDate");
+                .GreaterThan(x => x.StartDate.Value).WithMessage("ExpiryDate must be greater than StartDate")
+                .When(x => x.StartDate.HasValue && x.ExpiryDate.HasValue);
             RuleFor(x => x.MinimumOrderValue)
                 .GreaterThanOrEqualTo(0).WithMessage("MinimumOrderValue must be greater than or equal to 0");
             RuleFor(x => x.IsUsed)
@@ -1232,6 +1248,47 @@ namespace EduTrailblaze.Services.DTOs
                 .NotEmpty().WithMessage("LectureId is required");
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Title is required");
+        }
+    }
+
+    public class GetOrdersRequest
+    {
+        public string? UserId { get; set; }
+        public string? OrderStatus { get; set; }
+        public decimal? MinOrderAmount { get; set; }
+        public decimal? MaxOrderAmount { get; set; }
+        public DateTime? OrderDateFrom { get; set; }
+        public DateTime? OrderDateTo { get; set; }
+    }
+
+    public class GetOrdersRequestValidator : AbstractValidator<GetOrdersRequest>
+    {
+        public GetOrdersRequestValidator()
+        {
+            RuleFor(x => x.UserId)
+                .MaximumLength(450).WithMessage("UserId cannot be longer than 450 characters");
+
+            RuleFor(x => x.OrderStatus)
+                .MaximumLength(50).WithMessage("OrderStatus cannot be longer than 50 characters");
+
+            RuleFor(x => x.MinOrderAmount)
+                .GreaterThanOrEqualTo(0).WithMessage("MinOrderAmount must be greater than or equal to 0");
+
+            RuleFor(x => x.MaxOrderAmount)
+                .GreaterThanOrEqualTo(0).WithMessage("MaxOrderAmount must be greater than or equal to 0");
+
+            RuleFor(x => x)
+            .Must(x => !x.MinOrderAmount.HasValue || !x.MaxOrderAmount.HasValue || x.MinOrderAmount <= x.MaxOrderAmount)
+            .WithMessage("MinOrderAmount must be less than or equal to MaxOrderAmount")
+            .When(x => x.MinOrderAmount.HasValue && x.MaxOrderAmount.HasValue);
+
+            RuleFor(x => x.OrderDateFrom)
+                .LessThanOrEqualTo(x => x.OrderDateTo.Value).WithMessage("OrderDateFrom must be less than or equal to OrderDateTo")
+                .When(x => x.OrderDateFrom.HasValue && x.OrderDateTo.HasValue);
+
+            RuleFor(x => x.OrderDateTo)
+                .GreaterThanOrEqualTo(x => x.OrderDateFrom.Value).WithMessage("OrderDateTo must be greater than or equal to OrderDateFrom")
+                .When(x => x.OrderDateFrom.HasValue && x.OrderDateTo.HasValue);
         }
     }
 }
