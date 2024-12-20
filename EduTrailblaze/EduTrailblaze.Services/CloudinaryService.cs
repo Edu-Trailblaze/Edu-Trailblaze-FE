@@ -5,7 +5,7 @@ using EduTrailblaze.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Xabe.FFmpeg;
 
-namespace StreamingService.Services
+namespace EduTrailblaze.Services
 {
     public class CloudinaryService : ICloudinaryService
     {

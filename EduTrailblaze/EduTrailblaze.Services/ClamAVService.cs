@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using nClam;
 
-namespace StreamingService.Services
+namespace EduTrailblaze.Services
 {
     //docker run -d -p 3310:3310 mkodockx/docker-clamav
     public class ClamAVService : IClamAVService

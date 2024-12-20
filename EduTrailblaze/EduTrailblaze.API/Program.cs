@@ -1,4 +1,3 @@
-using EduTrailblaze.API.Middlewares;
 using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories;
 using EduTrailblaze.Repositories.Interfaces;
@@ -22,7 +21,6 @@ using Nest;
 using Polly;
 using SendGrid;
 using StackExchange.Redis;
-using StreamingService.Services;
 using System.Text;
 using System.Text.Json.Serialization;
 

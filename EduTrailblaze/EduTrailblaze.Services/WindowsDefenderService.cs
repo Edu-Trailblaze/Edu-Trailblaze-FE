@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 
-namespace StreamingService.Services
+namespace EduTrailblaze.Services
 {
     public class WindowsDefenderService : IWindowsDefenderService
     {

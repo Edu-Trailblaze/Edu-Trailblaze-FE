@@ -6,7 +6,7 @@ using VimeoDotNet.Models;
 using VimeoDotNet.Net;
 using Xabe.FFmpeg;
 
-namespace StreamingService.Services
+namespace EduTrailblaze.Services
 {
     public class VimeoService : IVimeoService
     {
