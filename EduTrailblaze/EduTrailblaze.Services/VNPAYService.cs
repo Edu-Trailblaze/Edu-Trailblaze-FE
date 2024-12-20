@@ -1,4 +1,6 @@
-﻿using EduTrailblaze.Services.DTOs;
+﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Services.Helper;
@@ -9,13 +11,13 @@ namespace EduTrailblaze.Services
 {
     public class VNPAYService : IVNPAYService
     {
-        private readonly IOrderService _orderService;
+        private readonly IRepository<Order, int> _orderRepository;
         private readonly IPaymentService _paymentService;
         private readonly VNPAYSettings _VNPAYSettings;
 
-        public VNPAYService(IOrderService orderService, IPaymentService paymentService, IConfiguration configuration)
+        public VNPAYService(IRepository<Order, int> orderRepository, IPaymentService paymentService, IConfiguration configuration)
         {
-            _orderService = orderService;
+            _orderRepository = orderRepository;
             _paymentService = paymentService;
             _VNPAYSettings = configuration.GetSection("VNPAYSettings").Get<VNPAYSettings>();
         }
@@ -37,11 +39,10 @@ namespace EduTrailblaze.Services
                 pay.AddRequestData("vnp_CurrCode", "VND");
                 pay.AddRequestData("vnp_IpAddr", clientIPAddress);
                 pay.AddRequestData("vnp_Locale", "vn");
-                pay.AddRequestData("vnp_OrderInfo", "EduTrailblaze");
+                pay.AddRequestData("vnp_OrderInfo", $"PaymentId:{paymentId}");
                 pay.AddRequestData("vnp_OrderType", "other");
                 pay.AddRequestData("vnp_ReturnUrl", _VNPAYSettings.VnPayReturnUrl);
                 pay.AddRequestData("vnp_TxnRef", "O-" + orderId.ToString() + "-" + Guid.NewGuid().ToString()); // Use OrderId as vnp_TxnRef
-                pay.AddRequestData("vnp_PaymentId", paymentId.ToString()); // Custom field for PaymentId
 
                 string paymentUrl = pay.CreateRequestUrl(_VNPAYSettings.VnPayUrl, _VNPAYSettings.VnPayHashSecret);
                 return paymentUrl;
@@ -59,7 +60,7 @@ namespace EduTrailblaze.Services
                 var json = HttpUtility.ParseQueryString(queryString);
                 var orderId = int.Parse(json["vnp_TxnRef"].Split('-')[1]);
 
-                var order = await _orderService.GetOrder(orderId);
+                var order = await _orderRepository.GetByIdAsync(orderId);
                 if (order == null)
                 {
                     return new PaymentResponse
@@ -69,7 +70,10 @@ namespace EduTrailblaze.Services
                     };
                 }
 
-                var paymentId = int.Parse(json["vnp_PaymentId"]);
+                // Extract PaymentId from vnp_OrderInfo
+                var orderInfo = json["vnp_OrderInfo"];
+                var paymentId = int.Parse(orderInfo.Split(':')[1]);
+
                 string vnp_ResponseCode = json["vnp_ResponseCode"].ToString();
                 string vnp_SecureHash = json["vnp_SecureHash"].ToString();
                 var pos = queryString.IndexOf("&vnp_SecureHash");
@@ -96,7 +100,7 @@ namespace EduTrailblaze.Services
                         await _paymentService.UpdatePayment(updatePaymentRequest);
 
                         order.OrderStatus = "Completed";
-                        await _orderService.UpdateOrder(order);
+                        await _orderRepository.UpdateAsync(order);
 
                         return new PaymentResponse
                         {

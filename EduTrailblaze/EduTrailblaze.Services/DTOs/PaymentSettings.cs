@@ -21,6 +21,5 @@
         public string MoMoPartnerName { get; set; }
         public string MoMoStoreId { get; set; }
         public string MoMoLang { get; set; }
-        public string MoMoExtraData { get; set; }
     }
 }
