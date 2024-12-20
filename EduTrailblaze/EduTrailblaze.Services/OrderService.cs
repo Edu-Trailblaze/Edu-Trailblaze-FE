@@ -168,7 +168,8 @@ namespace EduTrailblaze.Services
             try
             {
                 var order = await GetOrder(orderId);
-                if (order == null) {
+                if (order == null)
+                {
                     throw new Exception("Order not found.");
                 }
 
@@ -185,7 +186,7 @@ namespace EduTrailblaze.Services
 
                 if (paymentMethod == "MoMo")
                 {
-                     paymentUrl = await _moMoService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                    paymentUrl = await _moMoService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
                 }
                 else if (paymentMethod == "VnPay")
                 {
@@ -205,7 +206,8 @@ namespace EduTrailblaze.Services
             {
                 var order = await OrderProcessing(placeOrderRequest.UserId);
 
-                if (order == null) {
+                if (order == null)
+                {
                     throw new Exception("Order not found.");
                 }
 

@@ -1,7 +1,4 @@
-﻿using EduTrailblaze.Services.Interfaces;
-using EduTrailblaze.Services.DTOs;
-
-namespace EduTrailblaze.Services
+﻿namespace EduTrailblaze.Services
 {
     //public class SearchService : ISearchService
     //{

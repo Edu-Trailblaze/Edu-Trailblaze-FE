@@ -1,7 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
-using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
 {
