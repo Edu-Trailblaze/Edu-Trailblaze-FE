@@ -1,7 +1,7 @@
 ﻿using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 using MailKit.Security;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 
 namespace EduTrailblaze.Services
@@ -10,9 +10,9 @@ namespace EduTrailblaze.Services
     {
         private readonly MailSettings _mailSettings;
 
-        public MailService(IOptions<MailSettings> mailSettings)
+        public MailService(IConfiguration configuration)
         {
-            _mailSettings = mailSettings.Value;
+            _mailSettings = configuration.GetSection("MailSettings").Get<MailSettings>();
         }
 
         public async Task SendEmailAsync(MailRequest mailRequest)

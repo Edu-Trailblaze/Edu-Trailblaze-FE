@@ -1,6 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduTrailblaze.Services
 {
@@ -18,6 +19,20 @@ namespace EduTrailblaze.Services
             try
             {
                 return await _courseCouponRepository.GetByIdAsync(courseCouponId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the courseCoupon.", ex);
+            }
+        }
+
+        public async Task<CourseCoupon?> GetCourseCoupon(int courseId, int couponId)
+        {
+            try
+            {
+                var dbSet = await _courseCouponRepository.GetDbSet();
+                var courseCoupon = await dbSet.FirstOrDefaultAsync(x => x.CourseId == courseId && x.CouponId == couponId);
+                return courseCoupon;
             }
             catch (Exception ex)
             {

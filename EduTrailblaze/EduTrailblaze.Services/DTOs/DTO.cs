@@ -1,4 +1,8 @@
-﻿namespace EduTrailblaze.Services.DTOs
+﻿using EduTrailblaze.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace EduTrailblaze.Services.DTOs
 {
     public class CourseDTO
     {
@@ -20,9 +24,9 @@
 
         public decimal EstimatedCompletionTime { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
         public string CreatedBy { get; set; }
 
@@ -31,5 +35,27 @@
         public bool IsPublished { get; set; }
 
         public bool IsDeleted { get; set; } = false;
+    }
+
+    public class CartItemDTO
+    {
+        public int ItemId { get; set; }
+
+        //public string ItemName { get; set; }
+
+        //public decimal Price { get; set; }
+    }
+
+    public class OrderDTO
+    {
+        public int OrderId { get; set; }
+
+        public string UserId { get; set; }
+
+        public decimal OrderAmount { get; set; }
+
+        public DateTime OrderDate { get; set; }
+
+        public string OrderStatus { get; set; }
     }
 }

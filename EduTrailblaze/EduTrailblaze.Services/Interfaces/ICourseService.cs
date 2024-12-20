@@ -24,5 +24,25 @@ namespace EduTrailblaze.Services.Interfaces
         Task<List<CourseCardResponse>> GetCourseInformation(GetCoursesRequest request);
 
         Task<PaginatedList<CourseCardResponse>> GetPagingCourseInformation(GetCoursesRequest request, Paging paging);
+
+        Task AddCourse(CreateCourseRequest course);
+
+        Task UpdateCourse(UpdateCourseRequest req);
+
+        Task DeleteCourse(int courtId);
+
+        Task<int> NumberOfEnrollments(int courseId);
+
+        Task<List<InstructorInformation>> InstructorInformation(int courseId);
+
+        Task<DiscountInformation> DiscountInformationResponse(int courseId);
+
+        Task<CouponInformation?> CouponInformation(int courseId, string? userId);
+
+        Task<int> TotalLectures(int courseId);
+
+        Task<int> TotalInstructors(int courseId);
+
+        Task<CartCourseInformation> GetCartCourseInformationAsync(int courseId);
     }
 }

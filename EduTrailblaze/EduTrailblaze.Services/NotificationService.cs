@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -66,6 +67,66 @@ namespace EduTrailblaze.Services
             try
             {
                 await _notificationRepository.DeleteAsync(notification);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the notification.", ex);
+            }
+        }
+
+        public async Task AddNotification(CreateNotificationRequest notification)
+        {
+            try
+            {
+                var notificationEntity = new Notification
+                {
+                    Title = notification.Title,
+                    Message = notification.Message,
+                    IsGlobal = notification.IsGlobal,
+                };
+                await _notificationRepository.AddAsync(notificationEntity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the notification.", ex);
+            }
+        }
+
+        public async Task UpdateNotification(UpdateNotificationRequest notification)
+        {
+            try
+            {
+                var notificationEntity = await _notificationRepository.GetByIdAsync(notification.NotificationId);
+                if (notificationEntity == null)
+                {
+                    throw new Exception("Notification not found.");
+                }
+                notificationEntity.Title = notification.Title;
+                notificationEntity.Message = notification.Message;
+                notificationEntity.IsGlobal = notification.IsGlobal;
+                notificationEntity.IsActive = notification.IsActive;
+
+                await _notificationRepository.UpdateAsync(notificationEntity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the notification.", ex);
+            }
+        }
+
+        public async Task DeleteNotification(int notificationId)
+        {
+            try
+            {
+                var notificationEntity = await _notificationRepository.GetByIdAsync(notificationId);
+                if (notificationEntity == null)
+                {
+                    throw new Exception("Notification not found.");
+                }
+
+                notificationEntity.IsActive = false;
+
+                await _notificationRepository.UpdateAsync(notificationEntity);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -67,6 +68,64 @@ namespace EduTrailblaze.Services
             try
             {
                 await _reviewRepository.DeleteAsync(review);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the review.", ex);
+            }
+        }
+
+        public async Task AddReview(CreateReviewRequest review)
+        {
+            try
+            {
+                var newReview = new Review
+                {
+                    CourseId = review.CourseId,
+                    UserId = review.UserId,
+                    Rating = review.Rating,
+                    ReviewText = review.ReviewText
+                };
+                await _reviewRepository.AddAsync(newReview);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the review.", ex);
+            }
+        }
+
+        public async Task UpdateReview(UpdateReviewRequest review)
+        {
+            try
+            {
+                var existingReview = await _reviewRepository.GetByIdAsync(review.ReviewId);
+                if (existingReview == null)
+                {
+                    throw new Exception("Review not found.");
+                }
+                existingReview.Rating = review.Rating;
+                existingReview.ReviewText = review.ReviewText;
+                existingReview.UpdatedAt = DateTimeHelper.GetVietnamTime();
+                await _reviewRepository.UpdateAsync(existingReview);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the review.", ex);
+            }
+        }
+
+        public async Task DeleteReview(int reviewId)
+        {
+            try
+            {
+                var review = await _reviewRepository.GetByIdAsync(reviewId);
+                if (review == null)
+                {
+                    throw new Exception("Review not found.");
+                }
+                review.IsDeleted = true;
+
+                await _reviewRepository.UpdateAsync(review);
             }
             catch (Exception ex)
             {

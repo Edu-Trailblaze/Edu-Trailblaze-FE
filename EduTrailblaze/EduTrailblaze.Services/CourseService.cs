@@ -2,7 +2,9 @@
 using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduTrailblaze.Services
@@ -11,13 +13,15 @@ namespace EduTrailblaze.Services
     {
         private readonly IRepository<Course, int> _courseRepository;
         private readonly IRepository<CourseInstructor, int> _courseInstructorRepository;
-        private readonly IRepository<Enrollment, int> _enrollment;
+        private readonly IRepository<Enrollment, int> _enrollmentRepository;
+        private readonly IRepository<Coupon, int> _couponRepository;
         private readonly IReviewService _reviewService;
+        private readonly UserManager<User> _userManager;
         private readonly IElasticsearchService _elasticsearchService;
         private readonly IDiscountService _discountService;
         private readonly IMapper _mapper;
 
-        public CourseService(IRepository<Course, int> courseRepository, IReviewService reviewService, IElasticsearchService elasticsearchService, IMapper mapper, IDiscountService discountService, IRepository<CourseInstructor, int> courseInstructorRepository, IRepository<Enrollment, int> enrollment)
+        public CourseService(IRepository<Course, int> courseRepository, IReviewService reviewService, IElasticsearchService elasticsearchService, IMapper mapper, IDiscountService discountService, IRepository<CourseInstructor, int> courseInstructorRepository, IRepository<Enrollment, int> enrollment, UserManager<User> userManager)
         {
             _courseRepository = courseRepository;
             _reviewService = reviewService;
@@ -25,7 +29,8 @@ namespace EduTrailblaze.Services
             _mapper = mapper;
             _discountService = discountService;
             _courseInstructorRepository = courseInstructorRepository;
-            _enrollment = enrollment;
+            _enrollmentRepository = enrollment;
+            _userManager = userManager;
         }
 
         public async Task<Course?> GetCourse(int courseId)
@@ -64,6 +69,94 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task AddCourse(CreateCourseRequest req)
+        {
+            try
+            {
+                var instructor = await _userManager.FindByIdAsync(req.CreatedBy);
+
+                if (instructor == null)
+                {
+                    throw new ArgumentException("Invalid instructor ID");
+                }
+
+                var newCourse = new Course
+                {
+                    Title = req.Title,
+                    ImageURL = req.ImageURL,
+                    Description = req.Description,
+                    Price = req.Price,
+                    CreatedBy = req.CreatedBy,
+                    DifficultyLevel = req.DifficultyLevel,
+                    Prerequisites = req.Prerequisites,
+                    UpdatedBy = req.CreatedBy,
+
+                    CourseInstructors = new List<CourseInstructor>
+                    {
+                        new CourseInstructor
+                        {
+                            InstructorId = instructor.Id,
+                            IsPrimaryInstructor = true
+                        }
+                    }
+                };
+
+                await _courseRepository.AddAsync(newCourse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the course: " + ex.Message);
+            }
+        }
+
+        public async Task UpdateCourse(UpdateCourseRequest req)
+        {
+            try
+            {
+                var course = await _courseRepository.GetByIdAsync(req.CourseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+
+                var instructor = await _userManager.FindByIdAsync(req.UpdatedBy);
+
+                // check if the instructor has permission to update the course
+                var courseInstructorDbSet = await _courseInstructorRepository.GetDbSet();
+                var isCourseInstructor = await courseInstructorDbSet.AnyAsync(ci => ci.CourseId == req.CourseId && ci.InstructorId == instructor.Id);
+
+                if (!isCourseInstructor)
+                {
+                    throw new Exception("Instructor does not have permission to update the course.");
+                }
+
+                var newCourse = new Course
+                {
+                    CourseId = req.CourseId,
+                    Title = req.Title,
+                    ImageURL = req.ImageURL,
+                    Description = req.Description,
+                    Price = req.Price,
+                    Duration = course.Duration,
+                    DifficultyLevel = req.DifficultyLevel,
+                    Prerequisites = req.Prerequisites,
+                    EstimatedCompletionTime = course.EstimatedCompletionTime,
+                    CreatedAt = course.CreatedAt,
+                    UpdatedAt = DateTimeHelper.GetVietnamTime(),
+                    CreatedBy = course.CreatedBy,
+                    UpdatedBy = req.UpdatedBy,
+                    IsPublished = req.IsPublished,
+                    IsDeleted = req.IsDeleted
+                };
+
+                await _courseRepository.UpdateAsync(newCourse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the course: " + ex.Message);
+            }
+        }
+
         public async Task UpdateCourse(Course course)
         {
             try
@@ -81,6 +174,27 @@ namespace EduTrailblaze.Services
             try
             {
                 await _courseRepository.DeleteAsync(course);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the course.", ex);
+            }
+        }
+
+        public async Task DeleteCourse(int courtId)
+        {
+            try
+            {
+                var course = await _courseRepository.GetByIdAsync(courtId);
+
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+
+                course.IsDeleted = true;
+
+                await _courseRepository.UpdateAsync(course);
             }
             catch (Exception ex)
             {
@@ -107,8 +221,8 @@ namespace EduTrailblaze.Services
             {
                 var maxDiscount = course.CourseDiscounts
                     .Where(d => d.Discount.IsActive &&
-                                d.Discount.StartDate <= DateTime.UtcNow &&
-                                d.Discount.EndDate >= DateTime.UtcNow)
+                                d.Discount.StartDate <= DateTimeHelper.GetVietnamTime() &&
+                                d.Discount.EndDate >= DateTimeHelper.GetVietnamTime())
                     .Max(d => d.Discount.DiscountType == "Percentage"
                         ? course.Price * d.Discount.DiscountValue / 100
                         : d.Discount.DiscountValue);
@@ -135,8 +249,9 @@ namespace EduTrailblaze.Services
 
             var maxDiscount = course.CourseDiscounts
                 .Where(d => d.Discount.IsActive &&
-                            d.Discount.StartDate <= DateTime.UtcNow &&
-                            d.Discount.EndDate >= DateTime.UtcNow)
+                            (d.Discount.StartDate == null || d.Discount.StartDate <= DateTimeHelper.GetVietnamTime()) &&
+                            (d.Discount.EndDate == null || d.Discount.EndDate >= DateTimeHelper.GetVietnamTime()) &&
+                            (d.Discount.MaxUsage == null || d.Discount.UsageCount == null || d.Discount.MaxUsage > d.Discount.UsageCount))
                 .OrderByDescending(d => d.Discount.DiscountType == "Percentage"
                     ? course.Price * d.Discount.DiscountValue / 100
                     : d.Discount.DiscountValue)
@@ -144,6 +259,7 @@ namespace EduTrailblaze.Services
 
             return maxDiscount?.DiscountId;
         }
+
 
         public async Task<List<CourseDTO>?> GetCoursesByConditions(GetCoursesRequest request)
         {
@@ -284,6 +400,94 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task<DiscountInformation> DiscountInformationResponse(int courseId)
+        {
+            try
+            {
+                var discountId = await GetMaxDiscountId(courseId);
+                var discount = discountId != null ? await _discountService.GetDiscount((int)discountId) : null;
+                return _mapper.Map<DiscountInformation>(discount);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the discount information: " + ex.Message);
+            }
+        }
+
+        public async Task<List<InstructorInformation>> InstructorInformation(int courseId)
+        {
+            try
+            {
+                var instructorDbset = await _courseInstructorRepository.GetDbSet();
+                var instructors = await instructorDbset
+                    .Where(ci => ci.CourseId == courseId)
+                    .Select(ci => ci.Instructor)
+                    .ToListAsync();
+
+                return _mapper.Map<List<InstructorInformation>>(instructors);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the instructor information: " + ex.Message);
+            }
+        }
+
+        public async Task<int> NumberOfEnrollments(int courseId)
+        {
+            try
+            {
+                var enrollmentDbset = await _enrollmentRepository.GetDbSet();
+                return await enrollmentDbset
+                    .Where(e => e.CourseId == courseId)
+                    .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the number of enrollments: " + ex.Message);
+            }
+        }
+
+        public async Task<int> TotalLectures(int courseId)
+        {
+            try
+            {
+                var dbSet = await _courseRepository.GetDbSet();
+                var course = await dbSet
+                    .Include(c => c.Sections)
+                    .ThenInclude(s => s.Lectures)
+                    .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+                return course.Sections.Sum(s => s.Lectures.Count);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the total number of lectures: " + ex.Message);
+            }
+        }
+
+        public async Task<int> TotalInstructors(int courseId)
+        {
+            try
+            {
+                var dbSet = await _courseRepository.GetDbSet();
+                var course = await dbSet
+                    .Include(c => c.CourseInstructors)
+                    .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+                return course.CourseInstructors.Count;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the total number of instructors: " + ex.Message);
+            }
+        }
+
         public async Task<List<CourseCardResponse>> GetCourseInformation(GetCoursesRequest request)
         {
             try
@@ -298,31 +502,22 @@ namespace EduTrailblaze.Services
 
                 foreach (var course in courses)
                 {
-                    var discountId = await GetMaxDiscountId(course.CourseId);
-                    var discount = discountId != null ? await _discountService.GetDiscount((int)discountId) : null;
+                    var discount = await DiscountInformationResponse(course.CourseId);
 
-                    var instructorDbset = await _courseInstructorRepository.GetDbSet();
-                    var instructors = await instructorDbset
-                        .Where(ci => ci.CourseId == course.CourseId)
-                        .Select(ci => ci.Instructor)
-                        .ToListAsync();
-
-                    var enrollmentDbset = await _enrollment.GetDbSet();
-                    var numberOfEnrollment = await enrollmentDbset
-                        .Where(e => e.CourseId == course.CourseId)
-                        .CountAsync();
-
-                    var reviewInformation = await _reviewService.GetAverageRatingAndNumberOfRatings(course.CourseId);
+                    if (discount != null)
+                    {
+                        discount.CalculateDiscountAndPrice(course.Price);
+                    }
 
                     var courseCardResponse = new CourseCardResponse
                     {
                         Course = _mapper.Map<CoursesResponse>(course),
-                        Review = reviewInformation,
-                        Discount = _mapper.Map<DiscountInformation>(discount),
-                        Instructors = _mapper.Map<List<InstructorInformation>>(instructors),
+                        Review = await _reviewService.GetAverageRatingAndNumberOfRatings(course.CourseId),
+                        Discount = discount,
+                        Instructors = await InstructorInformation(course.CourseId),
                         Enrollment = new EnrollmentInformation
                         {
-                            TotalEnrollments = numberOfEnrollment
+                            TotalEnrollments = await NumberOfEnrollments(course.CourseId)
                         }
                     };
                     courseCard.Add(courseCardResponse);
@@ -377,6 +572,62 @@ namespace EduTrailblaze.Services
             catch (Exception ex)
             {
                 throw new Exception("An error occurred while getting the course information: " + ex.Message);
+            }
+        }
+
+        public async Task<CouponInformation?> CouponInformation(int courseId, string? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return null;
+                }
+
+                var dbSet = await _couponRepository.GetDbSet();
+                var currentDate = DateTimeHelper.GetVietnamTime();
+
+                var coupon = await dbSet
+                    .Where(c => c.IsActive
+                                && (c.ExpiryDate == null || c.ExpiryDate >= currentDate)
+                                && (c.StartDate == null || c.StartDate <= currentDate)
+                                && (c.MaxUsage == null || c.MaxUsage > c.UsageCount)
+                                && c.CourseCoupons.Any(cc => cc.CourseId == courseId)
+                                && c.CourseCoupons.Any(cc => cc.UserCourseCoupons.Any(ucc => ucc.UserId == userId)))
+                                .FirstOrDefaultAsync();
+
+                if (coupon == null)
+                {
+                    return null;
+                }
+
+                return _mapper.Map<CouponInformation>(coupon);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the coupon information: " + ex.Message);
+            }
+        }
+
+        public async Task<CartCourseInformation> GetCartCourseInformationAsync(int courseId)
+        {
+            try
+            {
+                var course = await GetCourse(courseId);
+                if (course == null)
+                {
+                    throw new ArgumentException("Invalid course ID");
+                }
+
+                var cartCourseInformation = _mapper.Map<CartCourseInformation>(course);
+
+                cartCourseInformation.TotalLectures = await TotalLectures(courseId);
+
+                return cartCourseInformation;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the cart course information: " + ex.Message);
             }
         }
     }

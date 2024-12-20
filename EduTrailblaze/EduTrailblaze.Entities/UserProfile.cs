@@ -3,13 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-
     public class UserProfile
     {
         [Key, ForeignKey("User")]
         public string UserId { get; set; } // Primary and Foreign Key
 
-        public string Address { get; set; }
+        public string? Fullname { get; set; }
 
         public decimal Balance { get; set; } = 0;
 

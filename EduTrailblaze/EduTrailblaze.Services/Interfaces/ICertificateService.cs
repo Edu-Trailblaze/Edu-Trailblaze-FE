@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateCertificate(Certificate certificate);
 
         Task DeleteCertificate(Certificate certificate);
+
+        Task DeleteCertificate(int certificateId);
+
+        Task AddCertificate(CreateCertificateRequest certificate);
+
+        Task UpdateCertificate(UpdateCertificateRequest certificate);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -12,6 +13,12 @@ namespace EduTrailblaze.Services.Interfaces
 
         Task UpdateQuestion(Question question);
 
+        Task AddQuestion(CreateQuestionRequest question);
+
+        Task UpdateQuestion(UpdateQuestionRequest question);
+
         Task DeleteQuestion(Question question);
+
+        Task DeleteQuestion(int question);
     }
 }

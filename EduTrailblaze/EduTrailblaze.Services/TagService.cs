@@ -1,5 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -66,6 +68,60 @@ namespace EduTrailblaze.Services
             try
             {
                 await _tagRepository.DeleteAsync(tag);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the tag.", ex);
+            }
+        }
+
+        public async Task AddTag(CreateTagRequest tag)
+        {
+            try
+            {
+                var newTag = new Tag
+                {
+                    Name = tag.Name,
+                    Description = tag.Description
+                };
+                await _tagRepository.AddAsync(newTag);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the tag.", ex);
+            }
+        }
+
+        public async Task UpdateTag(UpdateTagRequest tag)
+        {
+            try
+            {
+                var existingTag = await _tagRepository.GetByIdAsync(tag.TagId);
+                if (existingTag == null)
+                {
+                    throw new Exception("Tag not found.");
+                }
+                existingTag.Name = tag.Name;
+                existingTag.Description = tag.Description;
+                existingTag.UpdatedAt = DateTimeHelper.GetVietnamTime();
+                await _tagRepository.UpdateAsync(existingTag);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the tag.", ex);
+            }
+        }
+
+        public async Task DeleteTag(int tag)
+        {
+            try
+            {
+                var existingTag = await _tagRepository.GetByIdAsync(tag);
+                if (existingTag == null)
+                {
+                    throw new Exception("Tag not found.");
+                }
+                await _tagRepository.DeleteAsync(existingTag);
             }
             catch (Exception ex)
             {

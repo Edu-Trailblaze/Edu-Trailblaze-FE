@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateSection(Section section);
 
         Task DeleteSection(Section section);
+
+        Task AddSection(CreateSectionRequest section);
+
+        Task UpdateSection(UpdateSectionRequest section);
+
+        Task DeleteSection(int section);
     }
 }

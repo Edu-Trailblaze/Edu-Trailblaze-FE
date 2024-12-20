@@ -18,5 +18,7 @@ namespace EduTrailblaze.Entities
         // Navigation properties
         public virtual Course Course { get; set; }
         public virtual Coupon Coupon { get; set; }
+
+        public virtual List<UserCourseCoupon> UserCourseCoupons { get; set; }
     }
 }

@@ -17,7 +17,10 @@ namespace EduTrailblaze.Entities
         [Required]
         public bool IsGlobal { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [Required]
+        public bool IsActive { get; set; }
+
+        public DateTime CreatedAt { get; set; }
 
 
         // Navigation properties

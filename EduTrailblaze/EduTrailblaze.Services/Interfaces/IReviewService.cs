@@ -15,6 +15,12 @@ namespace EduTrailblaze.Services.Interfaces
 
         Task DeleteReview(Review review);
 
+        Task AddReview(CreateReviewRequest review);
+
+        Task UpdateReview(UpdateReviewRequest review);
+
+        Task DeleteReview(int review);
+
         Task<CourseReviewInformation> GetAverageRatingAndNumberOfRatings(int courseId);
     }
 }

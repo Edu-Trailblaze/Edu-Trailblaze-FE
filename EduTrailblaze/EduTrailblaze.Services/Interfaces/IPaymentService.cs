@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -11,6 +12,10 @@ namespace EduTrailblaze.Services.Interfaces
         Task AddPayment(Payment payment);
 
         Task UpdatePayment(Payment payment);
+
+        Task<Payment> AddPayment(CreatePaymentRequest payment);
+
+        Task UpdatePayment(UpdatePaymentRequest payment);
 
         Task DeletePayment(Payment payment);
     }

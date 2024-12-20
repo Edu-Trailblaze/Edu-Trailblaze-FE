@@ -19,7 +19,7 @@ namespace EduTrailblaze.Entities
         [Required]
         public bool IsPrimaryInstructor { get; set; }
 
-        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+        public DateTime AssignedAt { get; set; }
 
 
         // Navigation properties

@@ -11,10 +11,10 @@
 # Ignore Migrations files
 Migrations
 
-# Environment appsettings
- appsettings.Development.json
- appsettings.Production.json
- appsettings.json
+# Ignore appsettings files
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
 
 # User-specific files
 *.suo
