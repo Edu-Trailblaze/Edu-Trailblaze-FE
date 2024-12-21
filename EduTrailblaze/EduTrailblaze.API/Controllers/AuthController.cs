@@ -1,7 +1,8 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Helper;
-using EduTrailblaze.Services.Interface;
+using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,14 +17,15 @@ namespace EduTrailblaze.API.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AuthController> _logger;
         private readonly IAuthService _authService;
+        private readonly IRoleService _roleService;
 
-        public AuthController(TokenGenerator tokenGenerator, UserManager<User> userManager, SignInManager<User> signInManager, IAuthService authService)
+        public AuthController(TokenGenerator tokenGenerator, UserManager<User> userManager, SignInManager<User> signInManager, IAuthService authService, IRoleService roleService)
         {
             _jwtToken = tokenGenerator;
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
-
+            _roleService = roleService;
         }
 
         [HttpPost("register")]
@@ -46,9 +48,14 @@ namespace EduTrailblaze.API.Controllers
         {
             var result = await _authService.Login(model);
 
-            if (result.StatusCode == 200)
+            if (result.StatusCode == 200 )
             {
-                return Ok(new { Message = result });
+                //if (result.Data is null)
+                //{
+                //    return File(QrcodeGenerator.GenerateQRCode(result.Message), "image/png");
+                    
+                //}
+                 return Ok(new { Message = result });
             }
             return StatusCode(result.StatusCode, result);
 
@@ -74,19 +81,18 @@ namespace EduTrailblaze.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("refreshToken")]
-        public async Task<IActionResult> RefreshToken()
+        [HttpPost("refreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel model)
         {
 
-            var user = await _userManager.GetUserAsync(User);
-            var id = user.Id;
-            var refreshToken = Request.Cookies["refreshToken"];
-            if (refreshToken == null)
-            {
-                return BadRequest(new { Message = "Refresh token is required" });
-            }
+            
+            //var refreshToken = Request.Cookies["refreshToken"];
+            //if (refreshToken == null)
+            //{
+            //    return BadRequest(new { Message = "Refresh token is required" });
+            //}
 
-            var result = await _authService.RefreshToken(refreshToken);
+            var result = await _authService.RefreshToken(model.UserId, model.Token);
 
             if (result.StatusCode == 200)
             {
@@ -126,6 +132,19 @@ namespace EduTrailblaze.API.Controllers
         {
 
             var result = await _authService.ResetPassword(model);
+
+            if (result.StatusCode == 200)
+            {
+                return Ok(new { Message = result });
+            }
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("admin/assign-role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleModel model)
+        {
+            var result = await _roleService.AssignRole(model);
 
             if (result.StatusCode == 200)
             {
