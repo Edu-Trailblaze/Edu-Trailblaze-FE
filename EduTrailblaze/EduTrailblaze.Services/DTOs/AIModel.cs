@@ -1,4 +1,6 @@
-﻿namespace EduTrailblaze.Services.DTOs
+﻿using Microsoft.AspNetCore.Http;
+
+namespace EduTrailblaze.Services.DTOs
 {
     public class ChatMessage
     {
@@ -50,5 +52,15 @@
     public class GoogleChatRequest
     {
         public string user_message { get; set; }
+    }
+
+    public class WhisperChatRequest
+    {
+        public IFormFile file { get; set; }
+    }
+
+    public class WhisperChatResponse
+    {
+        public string transcript { get; set; }
     }
 }

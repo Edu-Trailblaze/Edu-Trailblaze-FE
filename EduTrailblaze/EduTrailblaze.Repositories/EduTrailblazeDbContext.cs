@@ -67,51 +67,51 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<UserCertificate>()
                 .Property(n => n.IssuedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<CourseInstructor>()
                 .Property(n => n.AssignedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Tag>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Tag>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<UserProgress>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<UserProgress>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Quiz>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Quiz>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Question>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Question>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Review>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Review>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Review>()
                 .Property(n => n.IsDeleted)
@@ -119,23 +119,35 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<Certificate>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Certificate>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
+
+            builder.Entity<Certificate>()
+                .Property(n => n.IsDeleted)
+                .HasDefaultValue(false);
+
+            builder.Entity<Notification>()
+                .Property(n => n.IsActive)
+                .HasDefaultValue(true);
 
             builder.Entity<Notification>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Course>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Course>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
+
+            builder.Entity<Course>()
+                .Property(n => n.IsPublished)
+                .HasDefaultValue(false);
 
             builder.Entity<Course>()
                 .Property(n => n.IsDeleted)
@@ -147,11 +159,11 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<Video>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Video>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Video>()
                 .Property(n => n.IsDeleted)
@@ -159,11 +171,11 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<Lecture>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Lecture>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Lecture>()
                 .Property(n => n.IsDeleted)
@@ -171,11 +183,11 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<Enrollment>()
                 .Property(n => n.EnrolledAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Enrollment>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Enrollment>()
                 .Property(n => n.ProgressPercentage)
@@ -189,20 +201,16 @@ namespace EduTrailblaze.Repositories
                 .HasDefaultValue(false);
 
             builder.Entity<Discount>()
-                .Property(n => n.StartDate)
-                .HasDefaultValueSql("GETUTCDATE()");
-
-            builder.Entity<Discount>()
                 .Property(n => n.IsActive)
                 .HasDefaultValue(true);
 
             builder.Entity<Cart>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Cart>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Cart>()
                 .Property(n => n.IsActive)
@@ -214,19 +222,27 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<News>()
                 .Property(n => n.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<News>()
                 .Property(n => n.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<News>()
                 .Property(n => n.IsDeleted)
                 .HasDefaultValue(false);
 
+            builder.Entity<UserCourseCoupon>()
+                .Property(n => n.UsageDate)
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
+
+            builder.Entity<UserCourseCoupon>()
+                .Property(n => n.IsRedeemed)
+                .HasDefaultValue(false);
+
             builder.Entity<Order>()
                 .Property(n => n.OrderDate)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Order>()
                 .Property(n => n.OrderStatus)
@@ -234,11 +250,11 @@ namespace EduTrailblaze.Repositories
 
             builder.Entity<Payment>()
                 .Property(n => n.PaymentDate)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Payment>()
                 .Property(n => n.PaymentStatus)
-                .HasDefaultValue("Pending");
+                .HasDefaultValue("Processing");
 
             builder.Entity<QuizAnswer>()
                 .HasOne(q => q.QuizHistory)

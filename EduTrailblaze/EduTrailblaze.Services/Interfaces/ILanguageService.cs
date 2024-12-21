@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,9 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateLanguage(Language language);
 
         Task DeleteLanguage(Language language);
+
+        Task UpdateLanguage(UpdateLanguageRequest language);
+
+        Task AddLanguage(CreateLanguageRequest language);
     }
 }

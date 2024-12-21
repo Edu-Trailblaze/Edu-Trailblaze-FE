@@ -1,4 +1,5 @@
-﻿using EduTrailblaze.Services.Interfaces;
+﻿using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduTrailblaze.API.Controllers
@@ -12,20 +13,6 @@ namespace EduTrailblaze.API.Controllers
         public ReviewController(IReviewService reviewService)
         {
             _reviewService = reviewService;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetReviews()
-        {
-            try
-            {
-                var reviews = await _reviewService.GetReviews();
-                return Ok(reviews);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
         }
 
         [HttpGet("{reviewId}")]
@@ -49,6 +36,48 @@ namespace EduTrailblaze.API.Controllers
             {
                 var courseReviewResponse = await _reviewService.GetAverageRatingAndNumberOfRatings(courseId);
                 return Ok(courseReviewResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddReview([FromBody] CreateReviewRequest review)
+        {
+            try
+            {
+                await _reviewService.AddReview(review);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateReview([FromBody] UpdateReviewRequest review)
+        {
+            try
+            {
+                await _reviewService.UpdateReview(review);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete("{reviewId}")]
+        public async Task<IActionResult> DeleteReview(int reviewId)
+        {
+            try
+            {
+                await _reviewService.DeleteReview(reviewId);
+                return Ok();
             }
             catch (Exception ex)
             {

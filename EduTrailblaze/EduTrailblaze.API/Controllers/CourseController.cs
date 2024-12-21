@@ -1,5 +1,4 @@
-﻿using EduTrailblaze.Entities;
-using EduTrailblaze.Services.DTOs;
+﻿using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +44,7 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCourse([FromBody] Course course)
+        public async Task<IActionResult> AddCourse([FromBody] CreateCourseRequest course)
         {
             try
             {
@@ -59,7 +58,7 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCourse([FromBody] Course course)
+        public async Task<IActionResult> UpdateCourse([FromBody] UpdateCourseRequest course)
         {
             try
             {
@@ -73,11 +72,11 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteCourse([FromBody] Course course)
+        public async Task<IActionResult> DeleteCourse(int courseId)
         {
             try
             {
-                await _courseService.DeleteCourse(course);
+                await _courseService.DeleteCourse(courseId);
                 return Ok();
             }
             catch (Exception ex)

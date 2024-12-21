@@ -14,16 +14,15 @@ namespace EduTrailblaze.Entities
         [Required]
         public decimal OrderAmount { get; set; }
 
-        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+        public DateTime OrderDate { get; set; }
 
         [StringLength(20)]
         public string OrderStatus { get; set; } = "Pending";
-        //'Pending', 'Processing', 'Cancelled'
+        //'Pending', 'Processing', 'Cancelled', 'Completed', 'Refunded', 'Failed'
 
         // Navigation properties
         public virtual User User { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
-
     }
 }

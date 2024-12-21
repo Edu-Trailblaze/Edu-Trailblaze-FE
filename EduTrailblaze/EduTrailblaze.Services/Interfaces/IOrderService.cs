@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,19 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateOrder(Order order);
 
         Task DeleteOrder(Order order);
+
+        Task AutomaticFailedOrder(int orderId);
+
+        Task<string> PlaceOrder(PlaceOrderRequest orderProcessingRequest);
+
+        Task<string> PaymentProcessing(int orderId, string paymentMethod);
+
+        Task CancelOrder(int orderId);
+
+        Task<IQueryable<Order>> GetByCondition(GetOrdersRequest req);
+
+        Task<List<Order>> GetOrdersByCondition(GetOrdersRequest req);
+
+        Task<PaginatedList<OrderDTO>> GetPagingOrders(GetOrdersRequest req, Paging paging);
     }
 }

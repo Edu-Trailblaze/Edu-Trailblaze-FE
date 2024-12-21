@@ -14,18 +14,20 @@ namespace EduTrailblaze.Entities
         [Required, StringLength(50)]
         public string Title { get; set; }
 
-        [Required, StringLength(int.MaxValue)]
+        [StringLength(int.MaxValue)]
         public string VideoUrl { get; set; }
 
-        [Required, StringLength(int.MaxValue)]
-        public string Transcript { get; set; }
+        [StringLength(int.MaxValue)]
+        public string? Transcript { get; set; }
+
+        public TimeSpan? Duration { get; set; }
 
         [Required]
         public bool IsDeleted { get; set; } = false;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
 
         // Navigation properties

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EduTrailblaze.Services.DTOs;
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text;
 
@@ -7,16 +8,9 @@ namespace EduTrailblaze.Services.Helper
 
     public class CartUtil
     {
-        public class CartItem
+        public static Dictionary<int, CartItemDTO> GetCartFromCookie(string cookieValue)
         {
-            public string ItemId { get; set; }
-            public string ItemName { get; set; }
-            public decimal Price { get; set; }
-        }
-
-        public static Dictionary<string, CartItem> GetCartFromCookie(string cookieValue)
-        {
-            Dictionary<string, CartItem> cart = new Dictionary<string, CartItem>();
+            Dictionary<int, CartItemDTO> cart = new Dictionary<int, CartItemDTO>();
             string decodedString = Encoding.UTF8.GetString(Convert.FromBase64String(cookieValue));
             string[] itemsList = decodedString.Split('|');
 
@@ -25,16 +19,16 @@ namespace EduTrailblaze.Services.Helper
                 if (!string.IsNullOrEmpty(strItem))
                 {
                     string[] arrItemDetail = strItem.Split(',');
-                    string itemId = arrItemDetail[0].Trim();
-                    string itemName = arrItemDetail[1].Trim();
-                    int quantity = int.Parse(arrItemDetail[2].Trim());
-                    decimal unitPrice = decimal.Parse(arrItemDetail[3].Trim());
+                    int itemId = int.Parse(arrItemDetail[0].Trim());
+                    //string itemName = arrItemDetail[1].Trim();
+                    //int quantity = int.Parse(arrItemDetail[2].Trim());
+                    //decimal unitPrice = decimal.Parse(arrItemDetail[3].Trim());
 
-                    CartItem item = new CartItem()
+                    CartItemDTO item = new CartItemDTO()
                     {
                         ItemId = itemId,
-                        ItemName = itemName,
-                        Price = unitPrice
+                        //ItemName = itemName,
+                        //Price = unitPrice
                     };
                     cart[itemId] = item;
                 }
@@ -78,12 +72,12 @@ namespace EduTrailblaze.Services.Helper
             response.Cookies.Delete(cookieName, options);
         }
 
-        public static string ConvertCartToString(List<CartItem> itemsList)
+        public static string ConvertCartToString(List<CartItemDTO> itemsList)
         {
             StringBuilder strItemsInCart = new StringBuilder();
-            foreach (CartItem item in itemsList)
+            foreach (CartItemDTO item in itemsList)
             {
-                strItemsInCart.Append($"{item.ItemId},{item.ItemName},{item.Price}|");
+                strItemsInCart.Append($"{item.ItemId}|");
             }
             string encodedString = Convert.ToBase64String(Encoding.UTF8.GetBytes(strItemsInCart.ToString()));
             return encodedString;

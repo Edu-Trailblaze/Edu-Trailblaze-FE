@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -49,11 +50,48 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task<Payment> AddPayment(CreatePaymentRequest payment)
+        {
+            try
+            {
+                var newPayment = new Payment
+                {
+                    OrderId = payment.OrderId,
+                    Amount = payment.Amount,
+                    PaymentMethod = payment.PaymentMethod
+                };
+                await _paymentRepository.AddAsync(newPayment);
+                return newPayment;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the payment.", ex);
+            }
+        }
+
         public async Task UpdatePayment(Payment payment)
         {
             try
             {
                 await _paymentRepository.UpdateAsync(payment);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the payment.", ex);
+            }
+        }
+
+        public async Task UpdatePayment(UpdatePaymentRequest payment)
+        {
+            try
+            {
+                var existingPayment = await _paymentRepository.GetByIdAsync(payment.PaymentId);
+                if (existingPayment == null)
+                {
+                    throw new Exception("Payment not found.");
+                }
+                existingPayment.PaymentStatus = payment.PaymentStatus;
+                await _paymentRepository.UpdateAsync(existingPayment);
             }
             catch (Exception ex)
             {

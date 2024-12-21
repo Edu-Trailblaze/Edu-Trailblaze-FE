@@ -14,13 +14,13 @@ namespace EduTrailblaze.Entities
         [Required, ForeignKey("User")]
         public string StudentId { get; set; }
 
-        public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
+        public DateTime EnrolledAt { get; set; }
 
         public decimal ProgressPercentage { get; set; } = 0;
 
         public bool IsCompleted { get; set; } = false;
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
 
         // Navigation properties

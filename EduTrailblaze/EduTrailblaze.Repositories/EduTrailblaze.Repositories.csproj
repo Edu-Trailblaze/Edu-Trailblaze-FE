@@ -11,9 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EduTrailblaze.Entities\EduTrailblaze.Entities.csproj">
-      <Private>True</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\EduTrailblaze.Entities\EduTrailblaze.Entities.csproj" />
   </ItemGroup>
 
 </Project>

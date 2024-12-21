@@ -1,5 +1,7 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -65,6 +67,61 @@ namespace EduTrailblaze.Services
         {
             try
             {
+                await _quizRepository.DeleteAsync(quiz);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the quiz.", ex);
+            }
+        }
+
+        public async Task AddQuiz(CreateQuizRequest quiz)
+        {
+            try
+            {
+                var newQuiz = new Quiz
+                {
+                    LectureId = quiz.LectureId,
+                    Title = quiz.Title,
+                    PassingScore = quiz.PassingScore
+                };
+                await _quizRepository.AddAsync(newQuiz);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the quiz.", ex);
+            }
+        }
+
+        public async Task UpdateQuiz(UpdateQuizRequest quiz)
+        {
+            try
+            {
+                var quizToUpdate = await _quizRepository.GetByIdAsync(quiz.QuizzId);
+                if (quizToUpdate == null)
+                {
+                    throw new Exception("Quiz not found.");
+                }
+                quizToUpdate.Title = quiz.Title;
+                quizToUpdate.PassingScore = quiz.PassingScore;
+                quizToUpdate.UpdatedAt = DateTimeHelper.GetVietnamTime();
+                await _quizRepository.UpdateAsync(quizToUpdate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the quiz.", ex);
+            }
+        }
+
+        public async Task DeleteQuiz(int quizId)
+        {
+            try
+            {
+                var quiz = await _quizRepository.GetByIdAsync(quizId);
+                if (quiz == null)
+                {
+                    throw new Exception("Quiz not found.");
+                }
                 await _quizRepository.DeleteAsync(quiz);
             }
             catch (Exception ex)

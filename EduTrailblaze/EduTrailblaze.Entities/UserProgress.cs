@@ -34,9 +34,9 @@ namespace EduTrailblaze.Entities
         [Required]
         public DateTime LastAccessed { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
 
 

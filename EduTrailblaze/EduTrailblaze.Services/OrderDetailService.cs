@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -42,6 +43,24 @@ namespace EduTrailblaze.Services
             try
             {
                 await _orderDetailRepository.AddAsync(orderDetail);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the orderDetail.", ex);
+            }
+        }
+
+        public async Task AddOrderDetail(OrderDetailRequest orderDetail)
+        {
+            try
+            {
+                var newOrderDetail = new OrderDetail
+                {
+                    OrderId = orderDetail.OrderId,
+                    CourseId = orderDetail.CourseId,
+                    Price = orderDetail.Price
+                };
+                await _orderDetailRepository.AddAsync(newOrderDetail);
             }
             catch (Exception ex)
             {

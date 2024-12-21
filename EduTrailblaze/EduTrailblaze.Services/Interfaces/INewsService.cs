@@ -1,4 +1,5 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.DTOs;
 
 namespace EduTrailblaze.Services.Interfaces
 {
@@ -13,5 +14,11 @@ namespace EduTrailblaze.Services.Interfaces
         Task UpdateNews(News news);
 
         Task DeleteNews(News news);
+
+        Task AddNews(CreateNewsRequest news);
+
+        Task UpdateNews(UpdateNewsRequest news);
+
+        Task DeleteNews(int newsId);
     }
 }

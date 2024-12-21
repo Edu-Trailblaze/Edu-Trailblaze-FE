@@ -14,10 +14,13 @@ namespace EduTrailblaze.Entities
         [Required]
         public decimal DiscountValue { get; set; }
 
-        public DateTime StartDate { get; set; } = DateTime.UtcNow;
+        public DateTime? StartDate { get; set; }
 
-        [Required]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
+
+        public int? UsageCount { get; set; }
+
+        public int? MaxUsage { get; set; }
 
         public bool IsActive { get; set; } = true;
 

@@ -1,5 +1,6 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services.DTOs;
 using EduTrailblaze.Services.Interfaces;
 
 namespace EduTrailblaze.Services
@@ -61,10 +62,65 @@ namespace EduTrailblaze.Services
             }
         }
 
+        public async Task AddAnswer(CreateAnswerRequest answer)
+        {
+            try
+            {
+                var newAnswer = new Answer
+                {
+                    QuestionId = answer.QuestionId,
+                    AnswerText = answer.AnswerText,
+                    IsCorrect = answer.IsCorrect
+                };
+                await _answerRepository.AddAsync(newAnswer);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while adding the Answer.", ex);
+            }
+        }
+
+        public async Task UpdateAnswer(UpdateAnswerRequest answer)
+        {
+            try
+            {
+                var existingAnswer = await _answerRepository.GetByIdAsync(answer.AnswerId);
+                if (existingAnswer == null)
+                {
+                    throw new Exception("Answer not found.");
+                }
+                existingAnswer.QuestionId = answer.QuestionId;
+                existingAnswer.AnswerText = answer.AnswerText;
+                existingAnswer.IsCorrect = answer.IsCorrect;
+                await _answerRepository.UpdateAsync(existingAnswer);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the Answer.", ex);
+            }
+        }
+
         public async Task DeleteAnswer(Answer answer)
         {
             try
             {
+                await _answerRepository.DeleteAsync(answer);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the Answer.", ex);
+            }
+        }
+
+        public async Task DeleteAnswer(int answerId)
+        {
+            try
+            {
+                var answer = await _answerRepository.GetByIdAsync(answerId);
+                if (answer == null)
+                {
+                    throw new Exception("Answer not found.");
+                }
                 await _answerRepository.DeleteAsync(answer);
             }
             catch (Exception ex)
