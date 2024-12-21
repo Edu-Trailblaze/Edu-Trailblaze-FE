@@ -12,6 +12,7 @@ using System.Text;
 using Serilog;
 using EduTrailblaze.API.Logging;
 using EduTrailblaze.API.Extensions;
+using EduTrailblaze.Repositories;
 
 namespace EduTrailblaze.API
 {
@@ -43,6 +44,7 @@ namespace EduTrailblaze.API
                 //if (app.Environment.IsDevelopment())
                 //{}
                 app.MapControllers();
+                app.MigrateDatabase<EduTrailblazeDbContext>();
                 app.Run();
             }
 

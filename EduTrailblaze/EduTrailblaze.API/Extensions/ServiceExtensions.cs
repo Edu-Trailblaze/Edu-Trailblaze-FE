@@ -41,7 +41,7 @@ namespace EduTrailblaze.API.Extensions
             });
 
             // Add DbContext
-            services.AddDbContext<EduTrailblazeDbContext>(options =>
+            services.AddDbContextPool<EduTrailblazeDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sqlOption =>
                 sqlOption.EnableRetryOnFailure());
