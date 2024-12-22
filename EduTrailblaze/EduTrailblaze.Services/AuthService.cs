@@ -76,7 +76,7 @@ namespace EduTrailblaze.Services
                 }
                 var token = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.GeneratePasswordResetTokenAsync(user));
 
-                var resetPasswordUrl = $"https://localhost:7034/reset-password?email={user.Email}&token={token}";
+                var resetPasswordUrl = $"https://localhost:7034/api/Auth/reset-password?email={user.Email}&token={token}";
 
                 var isSendMailSuccess = await _sendMail.SendForgotEmailAsync(forgotPasswordModel.Email, "Reset Password", resetPasswordUrl);
                 return (isSendMailSuccess is true) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Email sent successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error sending email." };

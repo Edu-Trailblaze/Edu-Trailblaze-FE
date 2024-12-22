@@ -17,12 +17,10 @@ using Hangfire;
 using StackExchange.Redis;
 using Nest;
 using Polly;
+using EduTrailblaze.Services.Options;
 using EduTrailblaze.Repositories.Interfaces;
-
-
 using System.Text.Json.Serialization;
 using EduTrailblaze.Services.Helper;
-using EduTrailblaze.Services.Interface;
 using SendGrid;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -142,6 +140,7 @@ namespace EduTrailblaze.API.Extensions
             services.AddScoped<ICourseInstructorService, CourseInstructorService>();
             services.AddScoped<ICourseLanguageService, CourseLanguageService>();
             services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ICourseTagService, CourseTagService>();
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IEnrollmentService, EnrollmentService>();
@@ -223,6 +222,9 @@ namespace EduTrailblaze.API.Extensions
                 return new SendGridClient(apiKey);
             });
 
+            //Email Configuration
+            services.Configure<EmailConfig>(configuration.GetSection("EmailConfig"));
+
             //Prevent CSRF
             services.AddAntiforgery(options =>
             {
@@ -230,6 +232,7 @@ namespace EduTrailblaze.API.Extensions
                 options.Cookie.Name = "AntiForgeryCookie";
                 options.HeaderName = "X-XSRF-TOKEN";
             });
+
 
             //redis Configuration
             services.Configure<RedisConfig>(configuration.GetSection("RedisConfig"));
@@ -271,14 +274,9 @@ namespace EduTrailblaze.API.Extensions
             });
             return services;
         }
-        private class RedisConfig
-        {
-            public string Host { get; set; }
-            public string Port { get; set; }
-            public string Password { get; set; }
-            public string Ssl { get; set; }
-            public string AbortOnConnectFail { get; set; }
-        }
+        
+
     }
+   
 }
 

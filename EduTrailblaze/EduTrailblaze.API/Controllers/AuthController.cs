@@ -126,6 +126,32 @@ namespace EduTrailblaze.API.Controllers
             return StatusCode(result.StatusCode, result);
 
         }
+        
+        [HttpGet]
+        [Route("reset-password")]
+        public async Task<IActionResult> ResetPassword(string token, string email)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Invalid password reset token or email.");
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            var isTokenValid = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", token);
+            if (!isTokenValid)
+            {
+                return BadRequest("Invalid token.");
+            }
+
+            // Redirect to the React app's reset password page with token and email
+            var resetPasswordUrl = $"https://localhost:3000/reset-password?token={token}&email={email}";
+            return Redirect(resetPasswordUrl);
+        }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel model)

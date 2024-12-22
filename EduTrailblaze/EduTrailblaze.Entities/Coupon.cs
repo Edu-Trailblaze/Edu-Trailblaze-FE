@@ -17,6 +17,7 @@ namespace EduTrailblaze.Entities
         public string DiscountType { get; set; } //'Percentage', 'Value'
 
         [Required]
+        [Precision(18, 3)]
         public decimal DiscountValue { get; set; }
 
         public DateTime? StartDate { get; set; }

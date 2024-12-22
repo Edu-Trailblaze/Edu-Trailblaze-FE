@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interface\**" />
+    <EmbeddedResource Remove="Interface\**" />
+    <None Remove="Interface\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="PayPal" Version="1.9.1" />
     <PackageReference Include="Polly" Version="8.5.0" />
@@ -20,10 +26,6 @@
     <ProjectReference Include="..\EduTrailblaze.Repositories\EduTrailblaze.Repositories.csproj">
       <Private>True</Private>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Interface\" />
   </ItemGroup>
 
   <ItemGroup>
