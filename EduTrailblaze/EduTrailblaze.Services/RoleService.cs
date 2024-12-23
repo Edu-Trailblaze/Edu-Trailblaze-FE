@@ -1,18 +1,13 @@
 ﻿using EduTrailblaze.Entities;
+using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Polly.Wrap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Polly;
 using Polly.Retry;
 using Polly.Timeout;
-using Microsoft.Data.SqlClient;
-using EduTrailblaze.Services.Interfaces;
+using Polly.Wrap;
 
 namespace EduTrailblaze.Services
 {

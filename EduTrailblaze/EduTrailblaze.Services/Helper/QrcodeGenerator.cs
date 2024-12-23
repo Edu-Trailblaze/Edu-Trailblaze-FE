@@ -23,5 +23,5 @@ namespace EduTrailblaze.Services.Helper
                 }
             }
         }
-        }
+    }
 }

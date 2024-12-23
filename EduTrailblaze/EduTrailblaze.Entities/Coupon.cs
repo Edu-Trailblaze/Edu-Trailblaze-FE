@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace EduTrailblaze.Entities
 {
     [Index(nameof(Code), IsUnique = true)]
-    public class Coupon 
+    public class Coupon
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CouponId { get; set; }

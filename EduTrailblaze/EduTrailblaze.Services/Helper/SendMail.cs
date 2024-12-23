@@ -3,11 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EduTrailblaze.Services.Helper
 {
@@ -16,7 +11,7 @@ namespace EduTrailblaze.Services.Helper
         private readonly EmailConfig _emailConfig;
         private readonly ISendGridClient _sendGridClient;
 
-        public SendMail(ISendGridClient sendGridClient,IConfiguration configuration,IOptions<EmailConfig> emailConfig)
+        public SendMail(ISendGridClient sendGridClient, IConfiguration configuration, IOptions<EmailConfig> emailConfig)
         {
             _emailConfig = emailConfig.Value;
             _sendGridClient = sendGridClient;

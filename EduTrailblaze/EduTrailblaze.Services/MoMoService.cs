@@ -13,12 +13,14 @@ namespace EduTrailblaze.Services
         private readonly IRepository<Order, int> _orderRepository;
         private readonly IPaymentService _paymentService;
         private readonly MoMoSettings _momoSettings;
+        private readonly IConfiguration _configuration;
 
         public MoMoService(IRepository<Order, int> orderRepository, IPaymentService paymentService, IConfiguration configuration)
         {
             _orderRepository = orderRepository;
             _paymentService = paymentService;
             _momoSettings = configuration.GetSection("MoMoSettings").Get<MoMoSettings>();
+            _configuration = configuration;
         }
 
         public async Task<string> CreatePaymentUrl(decimal amount, int orderId, int paymentId)
@@ -98,7 +100,7 @@ namespace EduTrailblaze.Services
                 var order = await _orderRepository.GetByIdAsync(orderId);
                 if (order == null || order.OrderStatus != "Processing")
                 {
-                    return new PaymentResponse { IsSuccessful = false, RedirectUrl = "https://localhost:3000/reject" };
+                    return new PaymentResponse { IsSuccessful = false, RedirectUrl = _configuration["FE:Url"] + "/reject" };
                 }
 
                 if (resultCode == "0") // MoMo Success Result Code
@@ -118,7 +120,7 @@ namespace EduTrailblaze.Services
                     return new PaymentResponse
                     {
                         IsSuccessful = true,
-                        RedirectUrl = $"https://localhost:3000/confirm?orderId={orderId}"
+                        RedirectUrl = _configuration["FE:Url"] + $"/confirm?orderId={orderId}"
                     };
                 }
                 else
@@ -134,13 +136,13 @@ namespace EduTrailblaze.Services
                     return new PaymentResponse
                     {
                         IsSuccessful = false,
-                        RedirectUrl = $"https://localhost:3000/reject?orderId={orderId}"
+                        RedirectUrl = _configuration["FE:Url"] + $"/reject?orderId={orderId}"
                     };
                 }
             }
             catch (Exception ex)
             {
-                return new PaymentResponse { IsSuccessful = false, RedirectUrl = "https://localhost:3000/reject" };
+                return new PaymentResponse { IsSuccessful = false, RedirectUrl = _configuration["FE:Url"] + "/reject" };
             }
         }
     }

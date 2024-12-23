@@ -5,21 +5,21 @@ namespace EduTrailblaze.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoMoController : ControllerBase
+    public class PayPalController : ControllerBase
     {
-        private readonly IMoMoService _momoService;
+        private readonly IPayPalService _payPalService;
 
-        public MoMoController(IMoMoService momoService)
+        public PayPalController(IPayPalService payPalService)
         {
-            _momoService = momoService;
+            _payPalService = payPalService;
         }
 
         [HttpGet("payment-url")]
-        public async Task<IActionResult> GetPaymentUrl(decimal amount, int orderId, int paymentId)
+        public IActionResult GetPaymentUrl(decimal amount, int orderId, int paymentId)
         {
             try
             {
-                string paymentUrl = await _momoService.CreatePaymentUrl(amount, orderId, paymentId);
+                string paymentUrl = _payPalService.CreatePaymentUrl(amount, orderId, paymentId);
                 return Ok(paymentUrl);
             }
             catch (Exception ex)
@@ -29,12 +29,12 @@ namespace EduTrailblaze.API.Controllers
         }
 
         [HttpPost("validate")]
-        public async Task<IActionResult> ValidatePaymentResponse([FromQuery] string queryString)
+        public IActionResult ValidatePaymentResponse(string paymentId, string payerId)
         {
             try
             {
-                var response = await _momoService.ValidatePaymentResponse(queryString);
-                return Ok(response);
+                var payment = _payPalService.ExecutePayment(paymentId, payerId);
+                return Ok(payment);
             }
             catch (Exception ex)
             {

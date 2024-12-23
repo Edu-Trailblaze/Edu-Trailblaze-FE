@@ -1,5 +1,4 @@
 ﻿using EduTrailblaze.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduTrailblaze.API.Controllers
@@ -18,15 +17,29 @@ namespace EduTrailblaze.API.Controllers
         [HttpGet("payment-url")]
         public IActionResult GetPaymentUrl(decimal amount, int orderId, int paymentId)
         {
-            string paymentUrl = _vnpayService.CreatePaymentUrl(amount, orderId, paymentId);
-            return Ok(paymentUrl);
+            try
+            {
+                string paymentUrl = _vnpayService.CreatePaymentUrl(amount, orderId, paymentId);
+                return Ok(paymentUrl);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("validate")]
         public async Task<IActionResult> ValidatePaymentResponse([FromQuery] string queryString)
         {
-            var response = await _vnpayService.ValidatePaymentResponse(queryString);
-            return Ok(response);
+            try
+            {
+                var response = await _vnpayService.ValidatePaymentResponse(queryString);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
