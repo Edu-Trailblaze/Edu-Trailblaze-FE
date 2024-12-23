@@ -1,33 +1,7 @@
-
-using EduTrailblaze.Services;
-using EduTrailblaze.Services.Helper;
-
-using EduTrailblaze.Services.Interfaces;
-using EduTrailblaze.Services.Mappings;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-
-
-using Hangfire;
-
-using Microsoft.Extensions.Options;
-
-using SendGrid;
-using StackExchange.Redis;
-using System.Text;
-
-using System.Text.Json.Serialization;
-using Serilog;
-
-using Serilog;
-using EduTrailblaze.API.Logging;
 using EduTrailblaze.API.Extensions;
+using EduTrailblaze.API.Logging;
 using EduTrailblaze.Repositories;
+using Serilog;
 
 
 namespace EduTrailblaze.API

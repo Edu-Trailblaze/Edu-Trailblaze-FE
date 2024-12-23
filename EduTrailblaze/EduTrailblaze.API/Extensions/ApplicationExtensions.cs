@@ -29,7 +29,7 @@ namespace EduTrailblaze.API.Extensions
             app.UseAuthorization();
 
             //app.UseMiddleware<RequestResponseMiddleware>();
-            
+
         }
     }
 }
