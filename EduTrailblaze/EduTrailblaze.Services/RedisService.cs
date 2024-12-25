@@ -17,7 +17,7 @@ namespace EduTrailblaze.Services
         public async Task<bool> AcquireLock(string lockKey, string lockValue) => _database.StringSet(lockKey, lockValue, TimeSpan.FromMinutes(30), When.NotExists);
         public async Task<bool> ReleaseLock(string lockKey) => await _database.KeyDeleteAsync(lockKey);
 
-        public async Task<bool> CheckRefreshToken(string userId, string token) 
+        public async Task<bool> CheckRefreshToken(string userId, string token)
         {
             var refreshTokenInRedis = await _database.StringGetAsync(userId);
             return refreshTokenInRedis == token ? true : false;

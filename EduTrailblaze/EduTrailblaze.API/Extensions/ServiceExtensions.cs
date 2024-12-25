@@ -1,29 +1,28 @@
 ﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Repositories;
+using EduTrailblaze.Repositories.Interfaces;
+using EduTrailblaze.Services;
 using EduTrailblaze.Services.DTOs;
+using EduTrailblaze.Services.Helper;
+using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Mappings;
+using EduTrailblaze.Services.Options;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using EduTrailblaze.Services.Interfaces;
-using EduTrailblaze.Services;
-using Hangfire;
-using StackExchange.Redis;
 using Nest;
 using Polly;
-using EduTrailblaze.Services.Options;
-using EduTrailblaze.Repositories.Interfaces;
-using System.Text.Json.Serialization;
-using EduTrailblaze.Services.Helper;
 using SendGrid;
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using System.Text;
+using System.Text.Json.Serialization;
 
 namespace EduTrailblaze.API.Extensions
 {
@@ -174,6 +173,7 @@ namespace EduTrailblaze.API.Extensions
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<ISendMail, SendMail>();
+            services.AddScoped<IPayPalService, PayPalService>();
 
             services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfireServer();
@@ -260,23 +260,23 @@ namespace EduTrailblaze.API.Extensions
             // Add CORS
             services.AddCors(options =>
                 {
-                options.AddPolicy("AllowSpecificOrigin",
-                    policy =>
-                    {
-                        policy.WithOrigins(
-                            "https://localhost:3000",
-                            "http://localhost:3000"
-                        )
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                    });
-            });
+                    options.AddPolicy("AllowSpecificOrigin",
+                        policy =>
+                        {
+                            policy.WithOrigins(
+                                "https://localhost:3000",
+                                "http://localhost:3000"
+                            )
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                        });
+                });
             return services;
         }
-        
+
 
     }
-   
+
 }
 

@@ -17,8 +17,9 @@ namespace EduTrailblaze.Services
         private readonly IMoMoService _moMoService;
         private readonly IVNPAYService _vNPAYService;
         private readonly IMapper _mapper;
+        private readonly IPayPalService _payPalService;
 
-        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService, IOrderDetailService orderDetailService, IMoMoService moMoService, IVNPAYService vNPAYService, IMapper mapper)
+        public OrderService(IRepository<Order, int> orderRepository, IPaymentService paymentService, ICartService cartService, IOrderDetailService orderDetailService, IMoMoService moMoService, IVNPAYService vNPAYService, IMapper mapper, IPayPalService payPalService)
         {
             _orderRepository = orderRepository;
             _paymentService = paymentService;
@@ -27,6 +28,7 @@ namespace EduTrailblaze.Services
             _moMoService = moMoService;
             _vNPAYService = vNPAYService;
             _mapper = mapper;
+            _payPalService = payPalService;
         }
 
         public async Task<Order?> GetOrder(int orderId)
@@ -191,6 +193,10 @@ namespace EduTrailblaze.Services
                 else if (paymentMethod == "VnPay")
                 {
                     paymentUrl = _vNPAYService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                }
+                else if (paymentMethod == "PayPal")
+                {
+                    paymentUrl = _payPalService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
                 }
                 return paymentUrl;
             }

@@ -48,14 +48,14 @@ namespace EduTrailblaze.API.Controllers
         {
             var result = await _authService.Login(model);
 
-            if (result.StatusCode == 200 )
+            if (result.StatusCode == 200)
             {
                 //if (result.Data is null)
                 //{
                 //    return File(QrcodeGenerator.GenerateQRCode(result.Message), "image/png");
-                    
+
                 //}
-                 return Ok(new { Message = result });
+                return Ok(new { Message = result });
             }
             return StatusCode(result.StatusCode, result);
 
@@ -85,7 +85,7 @@ namespace EduTrailblaze.API.Controllers
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel model)
         {
 
-            
+
             //var refreshToken = Request.Cookies["refreshToken"];
             //if (refreshToken == null)
             //{
@@ -126,7 +126,7 @@ namespace EduTrailblaze.API.Controllers
             return StatusCode(result.StatusCode, result);
 
         }
-        
+
         [HttpGet]
         [Route("reset-password")]
         public async Task<IActionResult> ResetPassword(string token, string email)

@@ -17,13 +17,13 @@ namespace EduTrailblaze.Services.Helper
             _configuration = configuration;
         }
 
-        public async Task<string> GenerateJwtToken(User user,string role)
+        public async Task<string> GenerateJwtToken(User user, string role)
         {
             var date = DateTime.UtcNow;
             TimeZoneInfo asianZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
             date = TimeZoneInfo.ConvertTimeFromUtc(date, asianZone);
             Console.WriteLine(date);
-            var claims = new []
+            var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName.ToString()),

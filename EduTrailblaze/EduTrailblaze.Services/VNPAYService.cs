@@ -14,9 +14,11 @@ namespace EduTrailblaze.Services
         private readonly IRepository<Order, int> _orderRepository;
         private readonly IPaymentService _paymentService;
         private readonly VNPAYSettings _VNPAYSettings;
+        private readonly IConfiguration _configuration;
 
         public VNPAYService(IRepository<Order, int> orderRepository, IPaymentService paymentService, IConfiguration configuration)
         {
+            _configuration = configuration;
             _orderRepository = orderRepository;
             _paymentService = paymentService;
             _VNPAYSettings = configuration.GetSection("VNPAYSettings").Get<VNPAYSettings>();
@@ -105,7 +107,7 @@ namespace EduTrailblaze.Services
                         return new PaymentResponse
                         {
                             IsSuccessful = true,
-                            RedirectUrl = $"https://localhost:3000/confirm?orderId={json["vnp_TxnRef"].ToString()}"
+                            RedirectUrl = _configuration["FE:Url"] + $"/confirm?orderId={json["vnp_TxnRef"].ToString()}"
                         };
                     }
                     else
@@ -123,7 +125,7 @@ namespace EduTrailblaze.Services
                         return new PaymentResponse
                         {
                             IsSuccessful = false,
-                            RedirectUrl = $"https://localhost:3000/reject?orderId={json["vnp_TxnRef"].ToString()}"
+                            RedirectUrl = _configuration["FE:Url"] + $"/reject?orderId={json["vnp_TxnRef"].ToString()}"
                         };
                     }
                 }
