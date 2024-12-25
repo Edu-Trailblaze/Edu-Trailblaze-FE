@@ -15,6 +15,18 @@ namespace EduTrailblaze.Services
             _reviewRepository = reviewRepository;
         }
 
+        public async Task<IQueryable<Review>> GetDbSetReview()
+        {
+            try
+            {
+                return await _reviewRepository.GetDbSet();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the review.", ex);
+            }
+        }
+
         public async Task<Review?> GetReview(int reviewId)
         {
             try

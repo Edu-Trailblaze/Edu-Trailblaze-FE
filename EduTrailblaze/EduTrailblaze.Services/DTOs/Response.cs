@@ -107,4 +107,22 @@
     {
         public Dictionary<string, decimal> Rates { get; set; }
     }
+
+    public class CourseRecommendation
+    {
+        public int CourseId { get; set; }
+        public decimal Score { get; set; }
+    }
+
+    public class RatingPrediction
+    {
+        public float Score { get; set; }
+    }
+
+    public class UserCourseRating
+    {
+        public string UserId { get; set; }
+        public int CourseId { get; set; }
+        public decimal Rating { get; set; }
+    }
 }
