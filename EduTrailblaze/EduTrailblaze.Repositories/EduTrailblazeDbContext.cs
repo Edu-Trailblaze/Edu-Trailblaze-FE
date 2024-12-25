@@ -1,4 +1,5 @@
-﻿using EduTrailblaze.Entities;
+﻿using EduTrailblaze.API.Domain.Interfaces;
+using EduTrailblaze.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +61,36 @@ namespace EduTrailblaze.Repositories
         public virtual DbSet<Video> Videos { get; set; }
         public virtual DbSet<Voucher> Vouchers { get; set; }
 
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            var modifiedEntries = ChangeTracker
+                .Entries()
+                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified || x.State == EntityState.Deleted);
+
+            foreach (var entry in modifiedEntries)
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        //auto add created date
+                        if (entry.Entity is IDateTracking addedEntity)
+                        {
+                            entry.State = EntityState.Added;
+                            addedEntity.CreatedDate = DateTime.UtcNow;
+                        }
+                        break;
+                    case EntityState.Modified:
+                        Entry(entry.Entity).Property("Id").IsModified = false; //cannot change Id
+                        if (entry.Entity is IDateTracking modifiedEntities)
+                        {
+                            entry.State = EntityState.Modified;
+                            modifiedEntities.LastModifiedDate = DateTime.UtcNow;
+                        }
+                        break;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
