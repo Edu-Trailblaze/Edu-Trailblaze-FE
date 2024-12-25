@@ -70,9 +70,9 @@ namespace EduTrailblaze.Services
             public async Task<ApiResponse> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
             {
                 var user = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.FindByEmailAsync(forgotPasswordModel.Email));
-                if (user == null)
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false)))
                 {
-                    return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "User not found." };
+                    return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "Please verify your email address." };
                 }
                 var token = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.GeneratePasswordResetTokenAsync(user));
 
