@@ -35,12 +35,14 @@ namespace EduTrailblaze.API
                 //if (app.Environment.IsDevelopment())
                 //{}
                 app.MapControllers();
-                app.MigrateDatabase<EduTrailblazeDbContext>();
-                app.Run();
+                app.MigrateDatabase<EduTrailblazeDbContext>().Run();
+                
             }
 
             catch (Exception ex)
             {
+                string type = ex.GetType().ToString();
+                if (type.Equals("StopTheHostException", StringComparison.Ordinal)) throw;
                 Log.Fatal(ex, "Unhandled Exception");
             }
             finally
