@@ -18,6 +18,8 @@ namespace EduTrailblaze.Services
         private readonly IRepository<Coupon, int> _couponRepository;
         private readonly IRepository<CourseLanguage, int> _courseLanguageRepository;
         private readonly IRepository<CourseTag, int> _courseTagRepository;
+        private readonly IRepository<Order, int> _orderRepository;
+        private readonly IRepository<OrderDetail, int> _orderDetailRepository;
         private readonly IReviewService _reviewService;
         private readonly UserManager<User> _userManager;
         private readonly IElasticsearchService _elasticsearchService;
@@ -718,6 +720,146 @@ namespace EduTrailblaze.Services
 
             // Sort by score descending
             return recommendations.OrderByDescending(r => r.Score).ToList();
+        }
+
+        public async Task<List<CourseRecommendation>> PredictRecommendationsByPersonalLatestOrder(string userId)
+        {
+            var orders = await _orderRepository.GetDbSet();
+            var latestOrder = await orders
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .FirstOrDefaultAsync();
+
+            if (latestOrder == null)
+            {
+                return new List<CourseRecommendation>();
+            }
+
+            var orderDetails = await _orderDetailRepository.GetDbSet();
+            var orderDetailsInLatestOrder = await orderDetails
+                .Where(od => od.OrderId == latestOrder.OrderId)
+                .ToListAsync();
+            var courseIdsInLatestOrder = orderDetailsInLatestOrder
+                .Select(od => od.CourseId)
+                .ToList();
+
+            // Prepare hybrid recommendations
+            var recommendations = new List<CourseRecommendation>();
+            var courseDbSet = await _courseRepository.GetDbSet();
+            var courses = await courseDbSet.Where(p => p.IsPublished).ToListAsync();
+            var filteredCourses = courses
+                .Where(p => !courseIdsInLatestOrder.Contains(p.CourseId))
+                .ToList();
+
+            var courseVectors = await GetCourseFeatureVectors(courses);
+
+            foreach (var course in filteredCourses)
+            {
+                double contentScore = 0;
+                if (courseVectors.ContainsKey(course.CourseId))
+                {
+                    foreach (var courseId in courseIdsInLatestOrder)
+                    {
+                        var similarity = CalculateCosineSimilarity(
+                            courseVectors[course.CourseId],
+                            courseVectors[courseId]);
+                        contentScore += similarity;
+
+                    }
+                    contentScore /= courses.Count - 1;
+                }
+
+                // Add to recommendations
+                recommendations.Add(new CourseRecommendation
+                {
+                    CourseId = course.CourseId,
+                    Score = (decimal)contentScore
+                });
+            }
+
+            // Sort by score descending
+            return recommendations.OrderByDescending(r => r.Score).ToList();
+        }
+
+        public async Task<List<string>> GetTrendingCourseInNumberOfPrviousDays(int days, int numberOfCourses)
+        {
+            var orders = await _orderRepository.GetDbSet();
+            var orderDetails = await _orderDetailRepository.GetDbSet();
+            var courses = await _courseRepository.GetDbSet();
+            var startDate = DateTimeHelper.GetVietnamTime().AddDays(-days);
+            var endDate = DateTimeHelper.GetVietnamTime();
+            var trendingCourses = await orders
+                .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .Join(orderDetails, o => o.OrderId, od => od.OrderId, (o, od) => od)
+                .GroupBy(od => od.CourseId)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key)
+                .Take(numberOfCourses)
+                .ToListAsync();
+            return await courses
+                .Where(c => trendingCourses.Contains(c.CourseId))
+                .Select(c => c.Title)
+                .ToListAsync();
+        }
+
+        public async Task<List<CourseRecommendation>> PredictHybridRecommendations(string userId, int days, int numberOfCourses)
+        {
+            double weightCF = 0.5; // Collaborative Filtering weight
+            double weightCBF = 0.3; // Content-Based Filtering weight
+            double weightTrending = 0.2; // Trending weight
+
+            // Get CF Recommendations
+            var collaborativeRecommendations = await PredictHybridRecommendationsByRating(userId);
+
+            // Get CBF Recommendations from the latest order
+            var contentBasedRecommendations = await PredictRecommendationsByPersonalLatestOrder(userId);
+
+            // Get Trending Courses
+            var trendingCourseTitles = await GetTrendingCourseInNumberOfPrviousDays(days, numberOfCourses);
+            var trendingRecommendations = (await _courseRepository.GetDbSet())
+                .Where(c => trendingCourseTitles.Contains(c.Title))
+                .Select(c => new CourseRecommendation
+                {
+                    CourseId = c.CourseId,
+                    Score = 1 // Assign equal score for all trending courses
+                })
+                .ToList();
+
+            // Merge scores
+            var recommendationDictionary = new Dictionary<int, double>();
+
+            void AddOrUpdateScore(int courseId, double score, double weight)
+            {
+                if (!recommendationDictionary.ContainsKey(courseId))
+                    recommendationDictionary[courseId] = 0;
+
+                recommendationDictionary[courseId] += score * weight;
+            }
+
+            // Add CF scores
+            foreach (var rec in collaborativeRecommendations)
+                AddOrUpdateScore(rec.CourseId, (double)rec.Score, weightCF);
+
+            // Add CBF scores
+            foreach (var rec in contentBasedRecommendations)
+                AddOrUpdateScore(rec.CourseId, (double)rec.Score, weightCBF);
+
+            // Add Trending scores
+            foreach (var rec in trendingRecommendations)
+                AddOrUpdateScore(rec.CourseId, (double)rec.Score, weightTrending);
+
+            // Prepare final recommendations
+            var finalRecommendations = recommendationDictionary
+                .Select(kvp => new CourseRecommendation
+                {
+                    CourseId = kvp.Key,
+                    Score = (decimal)kvp.Value
+                })
+                .OrderByDescending(r => r.Score)
+                .Take(numberOfCourses) // Limit to requested number of courses
+                .ToList();
+
+            return finalRecommendations;
         }
 
         private async Task<Dictionary<int, float[]>> GetCourseFeatureVectors(IEnumerable<Course> courses)
