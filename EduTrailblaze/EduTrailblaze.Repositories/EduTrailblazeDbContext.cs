@@ -76,7 +76,7 @@ namespace EduTrailblaze.Repositories
                         if (entry.Entity is IDateTracking addedEntity)
                         {
                             entry.State = EntityState.Added;
-                            addedEntity.CreatedDate = DateTime.UtcNow;
+                            addedEntity.CreatedAt = DateTime.UtcNow;
                         }
                         break;
                     case EntityState.Modified:
@@ -84,7 +84,7 @@ namespace EduTrailblaze.Repositories
                         if (entry.Entity is IDateTracking modifiedEntities)
                         {
                             entry.State = EntityState.Modified;
-                            modifiedEntities.LastModifiedDate = DateTime.UtcNow;
+                            modifiedEntities.UpdatedAt = DateTime.UtcNow;
                         }
                         break;
                 }
