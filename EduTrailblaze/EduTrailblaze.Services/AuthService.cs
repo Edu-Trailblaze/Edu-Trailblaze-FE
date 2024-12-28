@@ -6,6 +6,7 @@ using EduTrailblaze.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Polly;
 using Polly.Retry;
@@ -74,7 +75,7 @@ namespace EduTrailblaze.Services
             }
             var token = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.GeneratePasswordResetTokenAsync(user));
 
-            var resetPasswordUrl = $"https://localhost:7034/api/Auth/reset-password?email={user.Email}&token={token}";
+            var resetPasswordUrl = $"https://localhost:7034/reset-password?email={user.Email}&token={token}";
 
             var isSendMailSuccess = await _sendMail.SendForgotEmailAsync(forgotPasswordModel.Email, "Reset Password", resetPasswordUrl);
             return (isSendMailSuccess is true) ? new ApiResponse { StatusCode = StatusCodes.Status200OK, Message = "Email sent successfully." } : new ApiResponse { StatusCode = StatusCodes.Status500InternalServerError, Message = "Error sending email." };
@@ -85,27 +86,10 @@ namespace EduTrailblaze.Services
         {
             try
             {
-
-                throw new NotImplementedException();
-            }
-
-            public Task ExternalLoginCallback()
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task ExternalLoginCallback(AuthenticationResult authenticationResult)
-            {
-                throw new NotImplementedException();
-            }
-
-            public async Task<ApiResponse> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
-            {
-                var user = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.FindByEmailAsync(forgotPasswordModel.Email));
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false)))
+                var user = await _dbPolicyWrap.ExecuteAsync(async () => await _userManager.FindByEmailAsync(loginModel.Email));
+                if (user == null)
                 {
-                    return new ApiResponse { StatusCode = StatusCodes.Status404NotFound, Message = "Please verify your email address." };
-
+                    return new ApiResponse { StatusCode = StatusCodes.Status400BadRequest, Data = "Does not have that account in the Application" };
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(loginModel.Email, loginModel.Password, loginModel.RememberMe, lockoutOnFailure: true);
