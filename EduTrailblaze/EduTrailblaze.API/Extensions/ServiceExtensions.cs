@@ -185,7 +185,7 @@ namespace EduTrailblaze.API.Extensions
 
                 var retryPolicy = Polly.Policy
                     .Handle<Exception>() // Handle any exception, or you can be more specific
-                    .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                         (exception, timeSpan, retryCount, context) =>
                         {
                             Console.WriteLine($"Attempt {retryCount} to connect to Elasticsearch failed. Error: {exception.Message}");

@@ -73,6 +73,7 @@ namespace EduTrailblaze.Services
         {
             try
             {
+                // dòng này hơi ngố về return instructor
                 var instructor = await _userManager.FindByIdAsync(req.CreatedBy);
 
                 if (instructor == null)

@@ -1,9 +1,11 @@
-﻿using EduTrailblaze.Repositories.Interfaces;
+﻿using EduTrailblaze.API.Domain;
+using EduTrailblaze.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EduTrailblaze.Repositories
 {
-    public class Repository<T, TKey> : IRepository<T, TKey> where T : class
+    public class Repository<T, TKey> : IRepository<T, TKey> where T : EntityAuditBase<TKey>
     {
         private readonly EduTrailblazeDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -92,6 +94,31 @@ namespace EduTrailblaze.Repositories
             {
                 throw new Exception($"Couldn't delete entity: {ex.Message}");
             }
+        }
+
+        public IQueryable<T> FindAll(bool trackChanges = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<T> FindAll(bool trackChanges = false, params Expression<Func<T, object>>[] includeProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges = false, params Expression<Func<T, object>>[] includeProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includeProperty)
+        {
+            throw new NotImplementedException();
         }
     }
 }
