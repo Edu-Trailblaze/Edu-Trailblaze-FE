@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.ML" Version="4.0.0" />
+    <PackageReference Include="Microsoft.ML.Recommender" Version="0.22.0" />
     <PackageReference Include="PayPal" Version="1.9.1" />
     <PackageReference Include="Polly" Version="8.5.0" />
     <PackageReference Include="QRCoder" Version="1.4.2" />

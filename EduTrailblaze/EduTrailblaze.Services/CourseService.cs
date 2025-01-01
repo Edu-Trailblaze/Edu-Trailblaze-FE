@@ -6,6 +6,7 @@ using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML;
 
 namespace EduTrailblaze.Services
 {
@@ -15,13 +16,15 @@ namespace EduTrailblaze.Services
         private readonly IRepository<CourseInstructor, int> _courseInstructorRepository;
         private readonly IRepository<Enrollment, int> _enrollmentRepository;
         private readonly IRepository<Coupon, int> _couponRepository;
+        private readonly IRepository<CourseLanguage, int> _courseLanguageRepository;
+        private readonly IRepository<CourseTag, int> _courseTagRepository;
         private readonly IReviewService _reviewService;
         private readonly UserManager<User> _userManager;
         private readonly IElasticsearchService _elasticsearchService;
         private readonly IDiscountService _discountService;
         private readonly IMapper _mapper;
 
-        public CourseService(IRepository<Course, int> courseRepository, IReviewService reviewService, IElasticsearchService elasticsearchService, IMapper mapper, IDiscountService discountService, IRepository<CourseInstructor, int> courseInstructorRepository, IRepository<Enrollment, int> enrollment, UserManager<User> userManager)
+        public CourseService(IRepository<Course, int> courseRepository, IReviewService reviewService, IElasticsearchService elasticsearchService, IMapper mapper, IDiscountService discountService, IRepository<CourseInstructor, int> courseInstructorRepository, IRepository<Enrollment, int> enrollment, UserManager<User> userManager, IRepository<CourseLanguage, int> courseLanguageRepository, IRepository<CourseTag, int> courseTagRepository)
         {
             _courseRepository = courseRepository;
             _reviewService = reviewService;
@@ -31,6 +34,8 @@ namespace EduTrailblaze.Services
             _courseInstructorRepository = courseInstructorRepository;
             _enrollmentRepository = enrollment;
             _userManager = userManager;
+            _courseLanguageRepository = courseLanguageRepository;
+            _courseTagRepository = courseTagRepository;
         }
 
         public async Task<Course?> GetCourse(int courseId)
@@ -630,6 +635,147 @@ namespace EduTrailblaze.Services
             {
                 throw new Exception("An error occurred while getting the cart course information: " + ex.Message);
             }
+        }
+
+        public async Task<List<CourseRecommendation>> PredictHybridRecommendationsByRating(string userId)
+        {
+            double alpha = 0.5; // Weight for collaborative filtering score
+            var mlContext = new MLContext();
+
+            // Load collaborative filtering data
+            var ratings = (await _reviewService.GetDbSetReview())
+                .Select(r => new UserCourseRating
+                {
+                    UserId = r.UserId,
+                    CourseId = r.CourseId,
+                    Rating = r.Rating
+                })
+                .ToList();
+
+            // Load data into IDataView
+            IDataView dataView = mlContext.Data.LoadFromEnumerable(ratings);
+
+            var pipeline = mlContext.Transforms.Conversion
+                .MapValueToKey(
+                    inputColumnName: nameof(UserCourseRating.UserId),
+                    outputColumnName: "UserIdKey")
+                .Append(mlContext.Transforms.Conversion.MapValueToKey(
+                    inputColumnName: nameof(UserCourseRating.CourseId),
+                    outputColumnName: "CourseIdKey"))
+                .Append(mlContext.Recommendation().Trainers.MatrixFactorization(
+                    labelColumnName: nameof(UserCourseRating.Rating),
+                    matrixColumnIndexColumnName: "UserIdKey",
+                    matrixRowIndexColumnName: "CourseIdKey"));
+
+            // Train the model
+            var model = pipeline.Fit(dataView);
+
+            // Create prediction engine
+            var predictionEngine = mlContext.Model.CreatePredictionEngine<UserCourseRating, RatingPrediction>(model);
+
+            // Prepare hybrid recommendations
+            var recommendations = new List<CourseRecommendation>();
+            var courseDbSet = await _courseRepository.GetDbSet();
+            var courses = await courseDbSet.Where(p => p.IsPublished).ToListAsync();
+            var courseVectors = await GetCourseFeatureVectors(courses);
+
+            foreach (var course in courses)
+            {
+                // Collaborative Filtering Score
+                var collaborativePrediction = predictionEngine.Predict(new UserCourseRating
+                {
+                    UserId = userId,
+                    CourseId = course.CourseId
+                });
+                var collaborativeScore = float.IsNaN(collaborativePrediction.Score) ? 0 : collaborativePrediction.Score;
+
+                // Content-Based Filtering Score
+                double contentScore = 0;
+                if (courseVectors.ContainsKey(course.CourseId))
+                {
+                    foreach (var otherCourse in courses)
+                    {
+                        if (otherCourse.CourseId != course.CourseId)
+                        {
+                            var similarity = CalculateCosineSimilarity(
+                                courseVectors[course.CourseId],
+                                courseVectors[otherCourse.CourseId]);
+                            contentScore += similarity;
+                        }
+                    }
+                    contentScore /= courses.Count - 1; // Average similarity
+                }
+
+                // Hybrid Score
+                var hybridScore = alpha * collaborativeScore + (1 - alpha) * contentScore;
+
+                // Add to recommendations
+                recommendations.Add(new CourseRecommendation
+                {
+                    CourseId = course.CourseId,
+                    Score = (decimal)hybridScore
+                });
+            }
+
+            // Sort by score descending
+            return recommendations.OrderByDescending(r => r.Score).ToList();
+        }
+
+        private async Task<Dictionary<int, float[]>> GetCourseFeatureVectors(IEnumerable<Course> courses)
+        {
+            // Step 1: Get a dictionary of course IDs and their associated languages
+            var courseLanguages = (await _courseLanguageRepository.GetDbSet())
+                                          .GroupBy(cl => cl.CourseId)
+                                          .ToDictionary(
+                                              g => g.Key,
+                                              g => g.Select(cl => cl.LanguageId).ToHashSet()
+                                          );
+
+            // Step 2: Get a dictionary of course IDs and their associated tags (optional if needed)
+            var courseTags = (await _courseTagRepository.GetDbSet())
+                                    .GroupBy(ct => ct.CourseId)
+                                    .ToDictionary(
+                                        g => g.Key,
+                                        g => g.Select(ct => ct.TagId).ToHashSet()
+                                    );
+
+            // Step 3: Build the feature vectors
+            return courses.ToDictionary(course => course.CourseId, course =>
+            {
+                // Check if this course shares at least one tag with any other course
+                var hasSharedTags = courses.Any(otherCourse =>
+                    otherCourse.CourseId != course.CourseId &&
+                    courseTags.ContainsKey(course.CourseId) &&
+                    courseTags.ContainsKey(otherCourse.CourseId) &&
+                    courseTags[course.CourseId].Overlaps(courseTags[otherCourse.CourseId]));
+
+                // Check if this course shares at least one language with any other course
+                var hasSharedLanguages = courses.Any(otherCourse =>
+                    otherCourse.CourseId != course.CourseId &&
+                    courseLanguages.ContainsKey(course.CourseId) &&
+                    courseLanguages.ContainsKey(otherCourse.CourseId) &&
+                    courseLanguages[course.CourseId].Overlaps(courseLanguages[otherCourse.CourseId]));
+
+                return new float[]
+                {
+                    (float)course.Price / 1000, // Normalize price to a scale
+                    (float)course.Duration / 100, // Normalize duration
+                    course.DifficultyLevel == "Beginner" ? 1 : 0, // Binary representation of difficulty levels
+                    course.DifficultyLevel == "Intermediate" ? 1 : 0,
+                    course.DifficultyLevel == "Advanced" ? 1 : 0,
+                    (float)course.EstimatedCompletionTime / 100, // Normalize estimated completion time
+                    hasSharedTags ? 1 : 0, // 1 if shares at least one tag, otherwise 0
+                    hasSharedLanguages ? 1 : 0 // 1 if shares at least one language, otherwise 0
+                };
+            });
+        }
+
+        private static double CalculateCosineSimilarity(float[] vectorA, float[] vectorB)
+        {
+            double dotCourse = vectorA.Zip(vectorB, (a, b) => a * b).Sum();
+            double magnitudeA = Math.Sqrt(vectorA.Sum(a => a * a));
+            double magnitudeB = Math.Sqrt(vectorB.Sum(b => b * b));
+            return dotCourse / (magnitudeA * magnitudeB);
         }
     }
 }

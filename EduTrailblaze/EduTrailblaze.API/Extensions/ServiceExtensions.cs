@@ -174,6 +174,7 @@ namespace EduTrailblaze.API.Extensions
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<ISendMail, SendMail>();
             services.AddScoped<IPayPalService, PayPalService>();
+            services.AddHttpClient<ICurrencyExchangeService, CurrencyExchangeService>();
 
             services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfireServer();
@@ -185,7 +186,9 @@ namespace EduTrailblaze.API.Extensions
 
                 var retryPolicy = Polly.Policy
                     .Handle<Exception>() // Handle any exception, or you can be more specific
+
                     .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+
                         (exception, timeSpan, retryCount, context) =>
                         {
                             Console.WriteLine($"Attempt {retryCount} to connect to Elasticsearch failed. Error: {exception.Message}");
