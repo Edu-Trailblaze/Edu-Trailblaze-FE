@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Course
+    public class Course : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CourseId { get; set; }
 
         [Required, StringLength(255)]
         public string Title { get; set; }
@@ -31,10 +30,6 @@ namespace EduTrailblaze.Entities
 
         [Required]
         public decimal EstimatedCompletionTime { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
 
         [Required]
         public string CreatedBy { get; set; }

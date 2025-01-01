@@ -78,6 +78,7 @@ namespace EduTrailblaze.Services
         {
             try
             {
+                // dòng này hơi ngố về return instructor
                 var instructor = await _userManager.FindByIdAsync(req.CreatedBy);
 
                 if (instructor == null)
@@ -137,7 +138,7 @@ namespace EduTrailblaze.Services
 
                 var newCourse = new Course
                 {
-                    CourseId = req.CourseId,
+                    Id = req.CourseId,
                     Title = req.Title,
                     ImageURL = req.ImageURL,
                     Description = req.Description,
@@ -214,7 +215,7 @@ namespace EduTrailblaze.Services
             var course = await dbSet
                 .Include(c => c.CourseDiscounts)
                 .ThenInclude(cd => cd.Discount)
-                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                .FirstOrDefaultAsync(c => c.Id == courseId);
 
             if (course == null)
             {
@@ -245,7 +246,7 @@ namespace EduTrailblaze.Services
             var course = await dbSet
                 .Include(c => c.CourseDiscounts)
                 .ThenInclude(cd => cd.Discount)
-                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                .FirstOrDefaultAsync(c => c.Id == courseId);
 
             if (course == null)
             {
@@ -340,7 +341,7 @@ namespace EduTrailblaze.Services
                         .Select(c => new
                         {
                             Course = c,
-                            EffectivePrice = CalculateEffectivePrice(c.CourseId).Result
+                            EffectivePrice = CalculateEffectivePrice(c.Id).Result
                         })
                         .Where(x =>
                             (!request.MinPrice.HasValue || x.EffectivePrice >= request.MinPrice) &&
@@ -460,7 +461,7 @@ namespace EduTrailblaze.Services
                 var course = await dbSet
                     .Include(c => c.Sections)
                     .ThenInclude(s => s.Lectures)
-                    .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                    .FirstOrDefaultAsync(c => c.Id == courseId);
                 if (course == null)
                 {
                     throw new ArgumentException("Invalid course ID");
@@ -480,7 +481,7 @@ namespace EduTrailblaze.Services
                 var dbSet = await _courseRepository.GetDbSet();
                 var course = await dbSet
                     .Include(c => c.CourseInstructors)
-                    .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                    .FirstOrDefaultAsync(c => c.Id == courseId);
                 if (course == null)
                 {
                     throw new ArgumentException("Invalid course ID");

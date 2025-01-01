@@ -1,4 +1,5 @@
-﻿using EduTrailblaze.Entities;
+﻿using EduTrailblaze.API.Domain.Interfaces;
+using EduTrailblaze.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +61,36 @@ namespace EduTrailblaze.Repositories
         public virtual DbSet<Video> Videos { get; set; }
         public virtual DbSet<Voucher> Vouchers { get; set; }
 
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            var modifiedEntries = ChangeTracker
+                .Entries()
+                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified || x.State == EntityState.Deleted);
+
+            foreach (var entry in modifiedEntries)
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        //auto add created date
+                        if (entry.Entity is IDateTracking addedEntity)
+                        {
+                            entry.State = EntityState.Added;
+                            addedEntity.CreatedAt = DateTime.UtcNow;
+                        }
+                        break;
+                    case EntityState.Modified:
+                        Entry(entry.Entity).Property("Id").IsModified = false; //cannot change Id
+                        if (entry.Entity is IDateTracking modifiedEntities)
+                        {
+                            entry.State = EntityState.Modified;
+                            modifiedEntities.UpdatedAt = DateTime.UtcNow;
+                        }
+                        break;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -69,7 +100,7 @@ namespace EduTrailblaze.Repositories
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<CourseInstructor>()
-                .Property(n => n.AssignedAt)
+                .Property(n => n.CreatedAt)
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Tag>()
@@ -181,7 +212,7 @@ namespace EduTrailblaze.Repositories
                 .HasDefaultValue(false);
 
             builder.Entity<Enrollment>()
-                .Property(n => n.EnrolledAt)
+                .Property(n => n.CreatedAt)
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Enrollment>()

@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Review
+    public class Review : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ReviewId { get; set; }
 
         [Required, ForeignKey("Course")]
         public int CourseId { get; set; }
@@ -19,10 +18,6 @@ namespace EduTrailblaze.Entities
 
         [Required, StringLength(int.MaxValue)]
         public string ReviewText { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 

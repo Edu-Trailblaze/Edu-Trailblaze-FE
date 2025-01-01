@@ -309,7 +309,7 @@ namespace EduTrailblaze.Services
                 cart.CartItems.Add(new CartItem
                 {
                     CourseId = courseId,
-                    CartId = cart.CartId
+                    CartId = cart.Id
                 });
                 await _cartRepository.UpdateAsync(cart);
             }

@@ -68,7 +68,7 @@ namespace EduTrailblaze.Services
             {
                 var newUserProfile = new UserProfile
                 {
-                    UserId = userProfile.UserId,
+                    Id = userProfile.UserId,
                 };
                 await _userProfileRepository.AddAsync(newUserProfile);
             }

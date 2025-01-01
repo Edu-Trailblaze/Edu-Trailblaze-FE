@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Enrollment
+    public class Enrollment : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int EnrollmentId { get; set; }
+        
 
         [Required, ForeignKey("Course")]
         public int CourseId { get; set; }
@@ -14,13 +14,11 @@ namespace EduTrailblaze.Entities
         [Required, ForeignKey("User")]
         public string StudentId { get; set; }
 
-        public DateTime EnrolledAt { get; set; }
-
         public decimal ProgressPercentage { get; set; } = 0;
 
         public bool IsCompleted { get; set; } = false;
 
-        public DateTime UpdatedAt { get; set; }
+        
 
 
         // Navigation properties

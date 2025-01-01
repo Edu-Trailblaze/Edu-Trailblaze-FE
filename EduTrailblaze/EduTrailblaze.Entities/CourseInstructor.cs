@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EduTrailblaze.API.Domain;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
     [Index(nameof(InstructorId), nameof(CourseId), IsUnique = true)]
-    public class CourseInstructor
+    public class CourseInstructor : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CourseInstructorId { get; set; }
+        
 
         [ForeignKey("Course")]
         public int CourseId { get; set; }
@@ -19,7 +19,7 @@ namespace EduTrailblaze.Entities
         [Required]
         public bool IsPrimaryInstructor { get; set; }
 
-        public DateTime AssignedAt { get; set; }
+        //
 
 
         // Navigation properties

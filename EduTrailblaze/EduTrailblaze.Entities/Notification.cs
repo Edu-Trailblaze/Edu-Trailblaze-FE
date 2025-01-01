@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Notification
+    public class Notification : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int NotificationId { get; set; }
 
         [Required]
         public string Title { get; set; }
@@ -19,8 +18,6 @@ namespace EduTrailblaze.Entities
 
         [Required]
         public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
 
 
         // Navigation properties

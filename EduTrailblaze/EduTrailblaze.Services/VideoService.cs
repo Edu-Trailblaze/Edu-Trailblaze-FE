@@ -219,7 +219,7 @@ namespace EduTrailblaze.Services
 
 
                 // Upload the video to Vimeo
-                var uploadResponse = await _cloudinaryService.UploadVideoAsync(tempFilePath, "vd-" + newVideo.VideoId);
+                var uploadResponse = await _cloudinaryService.UploadVideoAsync(tempFilePath, "vd-" + newVideo.Id);
 
                 newVideo.Duration = uploadResponse.Duration;
                 newVideo.VideoUrl = uploadResponse.VideoUri;
