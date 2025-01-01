@@ -177,7 +177,7 @@ namespace EduTrailblaze.Services
 
                 var courseCouponDbSet = await _courseCouponRepository.GetDbSet();
 
-                var courseCoupon = await courseCouponDbSet.FirstOrDefaultAsync(x => x.CourseId == courseId && x.CouponId == coupon.CouponId);
+                var courseCoupon = await courseCouponDbSet.FirstOrDefaultAsync(x => x.CourseId == courseId && x.CouponId == coupon.Id);
 
                 if (courseCoupon == null)
                 {
@@ -186,7 +186,7 @@ namespace EduTrailblaze.Services
 
                 await _userCourseCouponRepository.AddAsync(new UserCourseCoupon
                 {
-                    CourseCouponId = courseCoupon.CourseCouponId,
+                    CourseCouponId = courseCoupon.Id,
                     UserId = userId,
                 });
 

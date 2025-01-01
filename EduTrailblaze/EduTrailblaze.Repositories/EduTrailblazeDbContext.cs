@@ -212,7 +212,7 @@ namespace EduTrailblaze.Repositories
                 .HasDefaultValue(false);
 
             builder.Entity<Enrollment>()
-                .Property(n => n.EnrolledAt)
+                .Property(n => n.CreatedAt)
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Enrollment>()

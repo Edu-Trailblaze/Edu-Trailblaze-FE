@@ -149,7 +149,7 @@ namespace EduTrailblaze.Services
                 {
                     var orderDetail = new OrderDetailRequest
                     {
-                        OrderId = order.OrderId,
+                        OrderId = order.Id,
                         CourseId = cartItem.CartCourseInformation.CourseId,
                         Price = cartItem.TotalCoursePrice,
                     };
@@ -188,15 +188,15 @@ namespace EduTrailblaze.Services
 
                 if (paymentMethod == "MoMo")
                 {
-                    paymentUrl = await _moMoService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                    paymentUrl = await _moMoService.CreatePaymentUrl(order.OrderAmount, orderId, payment.Id);
                 }
                 else if (paymentMethod == "VnPay")
                 {
-                    paymentUrl = _vNPAYService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                    paymentUrl = _vNPAYService.CreatePaymentUrl(order.OrderAmount, orderId, payment.Id);
                 }
                 else if (paymentMethod == "PayPal")
                 {
-                    paymentUrl = _payPalService.CreatePaymentUrl(order.OrderAmount, orderId, payment.PaymentId);
+                    paymentUrl = _payPalService.CreatePaymentUrl(order.OrderAmount, orderId, payment.Id);
                 }
                 return paymentUrl;
             }
@@ -217,7 +217,7 @@ namespace EduTrailblaze.Services
                     throw new Exception("Order not found.");
                 }
 
-                var paymentResponse = await PaymentProcessing(order.OrderId, placeOrderRequest.PaymentMethod);
+                var paymentResponse = await PaymentProcessing(order.Id, placeOrderRequest.PaymentMethod);
 
                 return paymentResponse;
             }

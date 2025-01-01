@@ -19,7 +19,7 @@ namespace EduTrailblaze.Entities
         [Required]
         public bool IsPrimaryInstructor { get; set; }
 
-        
+        //
 
 
         // Navigation properties
