@@ -1,15 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EduTrailblaze.API.Domain;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
     [Index(nameof(CartId), nameof(CourseId), IsUnique = true)]
-    public class CartItem
+    public class CartItem : EntityBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CartItemId { get; set; }
-
         [ForeignKey("Cart")]
         public int CartId { get; set; }
 

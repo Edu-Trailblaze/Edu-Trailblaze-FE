@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class UserCertificate
+    public class UserCertificate : EntityBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserCertificateId { get; set; }
 
         [Required, ForeignKey("User")]
         public string UserId { get; set; }
@@ -14,7 +13,7 @@ namespace EduTrailblaze.Entities
         [Required, ForeignKey("Certificate")]
         public int CertificateId { get; set; }
 
-        public DateTime IssuedAt { get; set; }
+        public DateTimeOffset IssuedAt { get; set; }
 
         [Required]
         public string CertificateUrl { get; set; }

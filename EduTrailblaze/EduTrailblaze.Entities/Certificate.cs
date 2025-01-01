@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Certificate
+    public class Certificate : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CertificateId { get; set; }
-
         [Required, ForeignKey("Course")]
         public int CourseId { get; set; }
 
@@ -15,10 +13,6 @@ namespace EduTrailblaze.Entities
         public string CertificateTemplateUrl { get; set; }
 
         public bool IsDeleted { get; set; } = false;
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
 
 
         // Navigation properties

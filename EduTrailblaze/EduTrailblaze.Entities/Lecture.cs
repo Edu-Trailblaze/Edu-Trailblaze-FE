@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Lecture
+    public class Lecture : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int LectureId { get; set; }
-
         [Required, ForeignKey("Section")]
         public int SectionId { get; set; }
 
@@ -25,9 +23,6 @@ namespace EduTrailblaze.Entities
 
         public bool IsDeleted { get; set; } = false;
 
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
 
 
         // Navigation properties

@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class UserProgress
+    public class UserProgress : EntityAuditBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserProgressId { get; set; }
-
         [Required, ForeignKey("User")]
         public string UserId { get; set; }
 
@@ -32,11 +30,7 @@ namespace EduTrailblaze.Entities
         public bool IsCompleted { get; set; } = false;
 
         [Required]
-        public DateTime LastAccessed { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
+        public DateTimeOffset LastAccessed { get; set; }
 
 
 

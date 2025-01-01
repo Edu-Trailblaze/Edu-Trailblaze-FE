@@ -1,15 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EduTrailblaze.API.Domain;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
     [Index(nameof(DiscountId), nameof(CourseId), IsUnique = true)]
-    public class CourseDiscount
+    public class CourseDiscount : EntityBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CourseDiscountId { get; set; }
-
         [ForeignKey("Course")]
         public int CourseId { get; set; }
 

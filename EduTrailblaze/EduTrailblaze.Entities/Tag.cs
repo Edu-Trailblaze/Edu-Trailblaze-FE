@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Tag
+    public class Tag : EntityAuditBase<int> 
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TagId { get; set; }
@@ -13,10 +14,6 @@ namespace EduTrailblaze.Entities
 
         [StringLength(200)]
         public string Description { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
 
 
         // Navigation property
