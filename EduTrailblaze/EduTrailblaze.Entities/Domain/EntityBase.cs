@@ -6,6 +6,6 @@ namespace EduTrailblaze.API.Domain
     public class EntityBase<TKey> : IEntityBase<TKey>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public TKey Id { get; set; }
+        public virtual TKey Id { get; set; }
     }
 }

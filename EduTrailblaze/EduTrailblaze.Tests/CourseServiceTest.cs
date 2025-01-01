@@ -21,7 +21,7 @@ namespace EduTrailblaze.Tests
                 {
                     new Course
                     {
-                        CourseId = 1,
+                        Id = 1,
                         Title = "Course 1",
                         ImageURL = "example.com/image1.jpg",
                         Description = "Description for Course 1",
@@ -39,7 +39,7 @@ namespace EduTrailblaze.Tests
                     },
                     new Course
                     {
-                        CourseId = 2,
+                        Id = 2,
                         Title = "Course 2",
                         ImageURL = "example.com/image2.jpg",
                         Description = "Description for Course 2",

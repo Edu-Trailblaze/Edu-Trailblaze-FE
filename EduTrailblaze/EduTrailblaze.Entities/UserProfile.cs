@@ -1,12 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduTrailblaze.API.Domain;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class UserProfile
+    public class UserProfile : EntityBase<string>
     {
         [Key, ForeignKey("User")]
-        public string UserId { get; set; } // Primary and Foreign Key
+        public override string Id { get; set; } // Primary and Foreign Key
 
         public string? Fullname { get; set; }
 

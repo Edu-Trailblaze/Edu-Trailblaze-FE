@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace EduTrailblaze.Repositories
 {
-    public class Repository<T, TKey> : IRepository<T, TKey> where T : EntityAuditBase<TKey>
+    public class Repository<T, TKey> : IRepository<T, TKey> where T : EntityBase<TKey>
     {
         private readonly EduTrailblazeDbContext _context;
         private readonly DbSet<T> _dbSet;

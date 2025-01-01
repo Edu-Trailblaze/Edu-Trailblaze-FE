@@ -6,8 +6,7 @@ namespace EduTrailblaze.Entities
 {
     public class Answer : EntityBase<int>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int AnswerId { get; set; }
+        
 
         [Required, ForeignKey("Question")]
         public int QuestionId { get; set; }

@@ -100,7 +100,7 @@ namespace EduTrailblaze.Repositories
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<CourseInstructor>()
-                .Property(n => n.AssignedAt)
+                .Property(n => n.CreatedAt)
                 .HasDefaultValueSql("DATEADD(HOUR, 7, GETUTCDATE())");
 
             builder.Entity<Tag>()
