@@ -129,7 +129,7 @@ namespace EduTrailblaze.Services
 
                 // check if the instructor has permission to update the course
                 var courseInstructorDbSet = await _courseInstructorRepository.GetDbSet();
-                var isCourseInstructor = await courseInstructorDbSet.AnyAsync(ci => ci.CourseId == req.CourseId && ci.InstructorId == instructor.Id);
+                var isCourseInstructor = await courseInstructorDbSet.AnyAsync(ci => ci.Id == req.CourseId && ci.InstructorId == instructor.Id);
 
                 if (!isCourseInstructor)
                 {
@@ -426,7 +426,7 @@ namespace EduTrailblaze.Services
             {
                 var instructorDbset = await _courseInstructorRepository.GetDbSet();
                 var instructors = await instructorDbset
-                    .Where(ci => ci.CourseId == courseId)
+                    .Where(ci => ci.Id == courseId)
                     .Select(ci => ci.Instructor)
                     .ToListAsync();
 
@@ -444,7 +444,7 @@ namespace EduTrailblaze.Services
             {
                 var enrollmentDbset = await _enrollmentRepository.GetDbSet();
                 return await enrollmentDbset
-                    .Where(e => e.CourseId == courseId)
+                    .Where(e => e.Id == courseId)
                     .CountAsync();
             }
             catch (Exception ex)
@@ -598,7 +598,7 @@ namespace EduTrailblaze.Services
                                 && (c.ExpiryDate == null || c.ExpiryDate >= currentDate)
                                 && (c.StartDate == null || c.StartDate <= currentDate)
                                 && (c.MaxUsage == null || c.MaxUsage > c.UsageCount)
-                                && c.CourseCoupons.Any(cc => cc.CourseId == courseId)
+                                && c.CourseCoupons.Any(cc => cc.Id == courseId)
                                 && c.CourseCoupons.Any(cc => cc.UserCourseCoupons.Any(ucc => ucc.UserId == userId)))
                                 .FirstOrDefaultAsync();
 
@@ -647,7 +647,7 @@ namespace EduTrailblaze.Services
                 .Select(r => new UserCourseRating
                 {
                     UserId = r.UserId,
-                    CourseId = r.CourseId,
+                    CourseId = r.Id,
                     Rating = r.Rating
                 })
                 .ToList();
@@ -685,21 +685,21 @@ namespace EduTrailblaze.Services
                 var collaborativePrediction = predictionEngine.Predict(new UserCourseRating
                 {
                     UserId = userId,
-                    CourseId = course.CourseId
+                    CourseId = course.Id
                 });
                 var collaborativeScore = float.IsNaN(collaborativePrediction.Score) ? 0 : collaborativePrediction.Score;
 
                 // Content-Based Filtering Score
                 double contentScore = 0;
-                if (courseVectors.ContainsKey(course.CourseId))
+                if (courseVectors.ContainsKey(course.Id))
                 {
                     foreach (var otherCourse in courses)
                     {
-                        if (otherCourse.CourseId != course.CourseId)
+                        if (otherCourse.Id != course.Id)
                         {
                             var similarity = CalculateCosineSimilarity(
-                                courseVectors[course.CourseId],
-                                courseVectors[otherCourse.CourseId]);
+                                courseVectors[course.Id],
+                                courseVectors[otherCourse.Id]);
                             contentScore += similarity;
                         }
                     }
@@ -712,7 +712,7 @@ namespace EduTrailblaze.Services
                 // Add to recommendations
                 recommendations.Add(new CourseRecommendation
                 {
-                    CourseId = course.CourseId,
+                    CourseId = course.Id,
                     Score = (decimal)hybridScore
                 });
             }
@@ -725,7 +725,7 @@ namespace EduTrailblaze.Services
         {
             // Step 1: Get a dictionary of course IDs and their associated languages
             var courseLanguages = (await _courseLanguageRepository.GetDbSet())
-                                          .GroupBy(cl => cl.CourseId)
+                                          .GroupBy(cl => cl.Id)
                                           .ToDictionary(
                                               g => g.Key,
                                               g => g.Select(cl => cl.LanguageId).ToHashSet()
@@ -733,28 +733,28 @@ namespace EduTrailblaze.Services
 
             // Step 2: Get a dictionary of course IDs and their associated tags (optional if needed)
             var courseTags = (await _courseTagRepository.GetDbSet())
-                                    .GroupBy(ct => ct.CourseId)
+                                    .GroupBy(ct => ct.Id)
                                     .ToDictionary(
                                         g => g.Key,
                                         g => g.Select(ct => ct.TagId).ToHashSet()
                                     );
 
             // Step 3: Build the feature vectors
-            return courses.ToDictionary(course => course.CourseId, course =>
+            return courses.ToDictionary(course => course.Id, course =>
             {
                 // Check if this course shares at least one tag with any other course
                 var hasSharedTags = courses.Any(otherCourse =>
-                    otherCourse.CourseId != course.CourseId &&
-                    courseTags.ContainsKey(course.CourseId) &&
-                    courseTags.ContainsKey(otherCourse.CourseId) &&
-                    courseTags[course.CourseId].Overlaps(courseTags[otherCourse.CourseId]));
+                    otherCourse.Id != course.Id &&
+                    courseTags.ContainsKey(course.Id) &&
+                    courseTags.ContainsKey(otherCourse.Id) &&
+                    courseTags[course.Id].Overlaps(courseTags[otherCourse.Id]));
 
                 // Check if this course shares at least one language with any other course
                 var hasSharedLanguages = courses.Any(otherCourse =>
-                    otherCourse.CourseId != course.CourseId &&
-                    courseLanguages.ContainsKey(course.CourseId) &&
-                    courseLanguages.ContainsKey(otherCourse.CourseId) &&
-                    courseLanguages[course.CourseId].Overlaps(courseLanguages[otherCourse.CourseId]));
+                    otherCourse.Id != course.Id &&
+                    courseLanguages.ContainsKey(course.Id) &&
+                    courseLanguages.ContainsKey(otherCourse.Id) &&
+                    courseLanguages[course.Id].Overlaps(courseLanguages[otherCourse.Id]));
 
                 return new float[]
                 {
