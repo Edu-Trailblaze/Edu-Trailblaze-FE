@@ -174,6 +174,8 @@ namespace EduTrailblaze.API.Extensions
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<ISendMail, SendMail>();
             services.AddScoped<IPayPalService, PayPalService>();
+            services.AddScoped<IVoskService, VoskService>();
+
             services.AddHttpClient<ICurrencyExchangeService, CurrencyExchangeService>();
 
             services.AddHangfire(config => config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));

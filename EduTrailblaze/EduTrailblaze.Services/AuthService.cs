@@ -1,5 +1,4 @@
-﻿
-using EduTrailblaze.Entities;
+﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Models;

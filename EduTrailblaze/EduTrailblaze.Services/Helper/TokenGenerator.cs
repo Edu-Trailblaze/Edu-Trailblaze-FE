@@ -32,12 +32,12 @@ namespace EduTrailblaze.Services.Helper
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtToken:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
-            issuer: _configuration["JwtToken:Issuer"],
-            audience: _configuration["JwtToken:Audience"],
-            claims: claims,
-            expires: date.AddMinutes(10),
-            signingCredentials: creds
-        );
+                issuer: _configuration["JwtToken:Issuer"],
+                audience: _configuration["JwtToken:Audience"],
+                claims: claims,
+                expires: date.AddMinutes(10),
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
 
