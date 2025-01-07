@@ -6,7 +6,7 @@ namespace EduTrailblaze.Entities
 {
     public class UserCourseCoupon : EntityBase<int>
     {
-        
+
 
         [Required, ForeignKey("User")]
         public string UserId { get; set; }

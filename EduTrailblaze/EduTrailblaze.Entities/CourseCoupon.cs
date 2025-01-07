@@ -1,12 +1,11 @@
 ﻿using EduTrailblaze.API.Domain;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
     public class CourseCoupon : EntityBase<int>
     {
-        
+
 
         [ForeignKey("Course")]
         public int CourseId { get; set; }

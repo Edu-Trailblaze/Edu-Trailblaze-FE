@@ -6,7 +6,7 @@ namespace EduTrailblaze.Entities
 {
     public class Quiz : EntityAuditBase<int>
     {
-        
+
 
         [Required, ForeignKey("Lecture")]
         public int LectureId { get; set; }

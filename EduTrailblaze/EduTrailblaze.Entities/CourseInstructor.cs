@@ -8,7 +8,7 @@ namespace EduTrailblaze.Entities
     [Index(nameof(InstructorId), nameof(CourseId), IsUnique = true)]
     public class CourseInstructor : EntityAuditBase<int>
     {
-        
+
 
         [ForeignKey("Course")]
         public int CourseId { get; set; }

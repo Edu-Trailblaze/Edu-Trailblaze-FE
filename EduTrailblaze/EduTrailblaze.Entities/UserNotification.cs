@@ -8,7 +8,7 @@ namespace EduTrailblaze.Entities
     [Index(nameof(UserId), nameof(NotificationId), IsUnique = true)]
     public class UserNotification : EntityBase<int>
     {
-        
+
 
         [ForeignKey("User")]
         public string UserId { get; set; }

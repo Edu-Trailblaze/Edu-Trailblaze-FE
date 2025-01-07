@@ -6,7 +6,7 @@ namespace EduTrailblaze.Entities
 {
     public class Answer : EntityBase<int>
     {
-        
+
 
         [Required, ForeignKey("Question")]
         public int QuestionId { get; set; }

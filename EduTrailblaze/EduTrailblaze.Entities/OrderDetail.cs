@@ -8,7 +8,7 @@ namespace EduTrailblaze.Entities
     [Index(nameof(OrderId), nameof(CourseId), IsUnique = true)]
     public class OrderDetail : EntityBase<int>
     {
-        
+
 
         [ForeignKey("Order")]
         public int OrderId { get; set; }
