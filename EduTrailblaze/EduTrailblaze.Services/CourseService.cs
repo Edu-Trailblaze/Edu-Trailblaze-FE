@@ -738,7 +738,7 @@ namespace EduTrailblaze.Services
 
             var orderDetails = await _orderDetailRepository.GetDbSet();
             var orderDetailsInLatestOrder = await orderDetails
-                .Where(od => od.OrderId == latestOrder.OrderId)
+                .Where(od => od.OrderId == latestOrder.Id)
                 .ToListAsync();
             var courseIdsInLatestOrder = orderDetailsInLatestOrder
                 .Select(od => od.CourseId)
@@ -749,7 +749,7 @@ namespace EduTrailblaze.Services
             var courseDbSet = await _courseRepository.GetDbSet();
             var courses = await courseDbSet.Where(p => p.IsPublished).ToListAsync();
             var filteredCourses = courses
-                .Where(p => !courseIdsInLatestOrder.Contains(p.CourseId))
+                .Where(p => !courseIdsInLatestOrder.Contains(p.Id))
                 .ToList();
 
             var courseVectors = await GetCourseFeatureVectors(courses);
@@ -757,12 +757,12 @@ namespace EduTrailblaze.Services
             foreach (var course in filteredCourses)
             {
                 double contentScore = 0;
-                if (courseVectors.ContainsKey(course.CourseId))
+                if (courseVectors.ContainsKey(course.Id))
                 {
                     foreach (var courseId in courseIdsInLatestOrder)
                     {
                         var similarity = CalculateCosineSimilarity(
-                            courseVectors[course.CourseId],
+                            courseVectors[course.Id],
                             courseVectors[courseId]);
                         contentScore += similarity;
 
@@ -773,7 +773,7 @@ namespace EduTrailblaze.Services
                 // Add to recommendations
                 recommendations.Add(new CourseRecommendation
                 {
-                    CourseId = course.CourseId,
+                    CourseId = course.Id,
                     Score = (decimal)contentScore
                 });
             }
@@ -791,14 +791,14 @@ namespace EduTrailblaze.Services
             var endDate = DateTimeHelper.GetVietnamTime();
             var trendingCourses = await orders
                 .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
-                .Join(orderDetails, o => o.OrderId, od => od.OrderId, (o, od) => od)
+                .Join(orderDetails, o => o.Id, od => od.OrderId, (o, od) => od)
                 .GroupBy(od => od.CourseId)
                 .OrderByDescending(g => g.Count())
                 .Select(g => g.Key)
                 .Take(numberOfCourses)
                 .ToListAsync();
             return await courses
-                .Where(c => trendingCourses.Contains(c.CourseId))
+                .Where(c => trendingCourses.Contains(c.Id))
                 .Select(c => c.Title)
                 .ToListAsync();
         }
@@ -821,7 +821,7 @@ namespace EduTrailblaze.Services
                 .Where(c => trendingCourseTitles.Contains(c.Title))
                 .Select(c => new CourseRecommendation
                 {
-                    CourseId = c.CourseId,
+                    CourseId = c.Id,
                     Score = 1 // Assign equal score for all trending courses
                 })
                 .ToList();
