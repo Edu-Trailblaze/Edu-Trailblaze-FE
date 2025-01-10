@@ -37,7 +37,7 @@ export default function Blog() {
         if (section.element) {
           const rect = section.element.getBoundingClientRect();
           if (rect.top >= 0 && rect.top <= window.innerHeight/4) {
-            setSelected(section.id); // Cập nhật trạng thái selected
+            setSelected(section.id);
             break;
           }
         }
