@@ -1,37 +1,47 @@
+interface Lesson {
+  lessonId: number;
+  title: string;
+  duration: string;
+  rating: number;
+  reviews: number;
+  description: string;
+}
 
+interface Instructor {
+  userName: string;
+  email: string;
+  image: string;
+}
 
-interface Intructor {
-  avata: string
-  name: string
-  courseId: number
-  learner: string
+interface Discount {
+  discountType: string;
+  discountValue: number;
+  calculatedDiscount: number;
+  calculatedPrice: number;
+}
+
+interface Review {
+  averageRating: number;
+  totalRatings: number;
+}
+
+interface Enrollment {
+  totalEnrollments: number;
 }
 
 interface Course {
-  courseId: number
-  imageURL?: string
-  title: string
-  duration: number
-  price: number
-  difficultyLevel: string
-  description: string
-  createdBy: string
-  createdAt: string
-  discount: {
-    discountType: string
-    discountValue: number
-    calculatedDiscount: number
-    calculatedPrice: number
-  }
-  review: {
-    averageRating: number
-    totalRatings: number
-  }
-  instructors: {
-    userName: string
-    email: string
-  }[]
-  enrollment: {
-    totalEnrollments: number
-  }
+  courseId: number;
+  imageURL?: string;
+  title: string;
+  duration: number; // in hours
+  price: number;
+  difficultyLevel: string;
+  description: string;
+  createdBy: string;
+  createdAt: string; // ISO 8601 string
+  discount: Discount;
+  review: Review;
+  instructors: Instructor[];
+  enrollment: Enrollment;
+  lessons: Lesson[]; 
 }

@@ -14,7 +14,7 @@ export const courseApi = createApi({
   tagTypes: ['Courses'],
   endpoints: (build) => ({
     getCourses: build.query<Course[], void>({
-      query: () => 'course', //method k có argment
+      query: () => 'course',
       providesTags(result) {
         return result
           ? [...result.map(({ courseId }) => ({ type: 'Courses', courseId }) as const), { type: 'Courses', id: 'LIST' }]
@@ -27,7 +27,7 @@ export const courseApi = createApi({
         try {
           return {
             url: 'courses',
-            method: 'Course',
+            method: 'POST',
             body
           }
         } catch (error: any) {
