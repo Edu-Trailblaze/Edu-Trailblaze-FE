@@ -36,7 +36,7 @@ namespace EduTrailblaze.API
                 //{}
                 app.MapControllers();
                 app.MigrateDatabase<EduTrailblazeDbContext>().Run();
-                
+
             }
 
             catch (Exception ex)

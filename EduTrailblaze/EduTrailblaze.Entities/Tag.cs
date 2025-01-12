@@ -1,10 +1,9 @@
 ﻿using EduTrailblaze.API.Domain;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
 {
-    public class Tag : EntityAuditBase<int> 
+    public class Tag : EntityAuditBase<int>
     {
 
         [Required, StringLength(50)]

@@ -1,47 +1,45 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Post } from '../types/blog.type'
 import { CustomError } from '../utils/helpers'
 
-
-export const blogApi = createApi({
-  reducerPath: 'blog/api', //tên field trong reduce state
+export const courseApi = createApi({
+  reducerPath: 'course/api', //tên field trong reduce state
   //keepUnusedDataFor: 10, setting tg caching default là 60
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:4000/',
+    baseUrl: 'http://localhost:4001/'
     // prepareHeaders(headers) {
     //   headers.set('authorization', `Bearer ${token}`)
     //   return headers
     // }
   }),
-  tagTypes: ['Posts'],
+  tagTypes: ['Courses'],
   endpoints: (build) => ({
-    getPosts: build.query<Post[], void>({
-      query: () => 'posts', //method k có argment
+    getCourses: build.query<Course[], void>({
+      query: () => 'course', //method k có argment
       providesTags(result) {
         return result
-          ? [...result.map(({ id }) => ({ type: 'Posts', id } as const)), { type: 'Posts', id: 'LIST' }]
-          : [{ type: 'Posts', id: 'LIST' }]
+          ? [...result.map(({ courseId }) => ({ type: 'Courses', courseId }) as const), { type: 'Courses', id: 'LIST' }]
+          : [{ type: 'Courses', id: 'LIST' }]
       }
     }),
 
-    addPost: build.mutation<Post, Omit<Post, 'id'>>({
+    addCourse: build.mutation<Course, Omit<Course, 'id'>>({
       query(body) {
         try {
           return {
-            url: 'posts',
-            method: 'POST',
+            url: 'courses',
+            method: 'Course',
             body
           }
         } catch (error: any) {
           throw new CustomError(error.message)
         }
       },
-      invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Posts', id: 'LIST' }])
+      invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     }),
 
-    getPost: build.query<Post, string>({
+    getCourse: build.query<Course, string>({
       query: (id) => ({
-        url: `posts/${id}`,
+        url: `course/${id}`,
         method: 'GET',
         headers: {
           hello: 'aaaaaaaaaaaaaaaaaaaaaaaaaa'
@@ -53,28 +51,33 @@ export const blogApi = createApi({
       })
     }),
 
-    updatePost: build.mutation<Post, { id: string; body: Post }>({
+    updateCourse: build.mutation<Course, { id: string; body: Course }>({
       query(data) {
         return {
-          url: `posts/${data.id}`,
+          url: `courses/${data.id}`,
           method: 'PUT',
           body: data.body
         }
       },
-      invalidatesTags: (result, error, data) => (error ? [] : [{ type: 'Posts', id: data.id }])
+      invalidatesTags: (result, error, data) => (error ? [] : [{ type: 'Courses', id: data.id }])
     }),
 
-    deletePost: build.mutation<{}, string>({
+    deleteCourse: build.mutation<{}, string>({
       query(id) {
         return {
-          url: `posts/${id}`,
+          url: `courses/${id}`,
           method: 'DELETE'
         }
       },
-      invalidatesTags: (result, error, id) => (error ? [] : [{ type: 'Posts', id }])
+      invalidatesTags: (result, error, id) => (error ? [] : [{ type: 'Courses', id }])
     })
   })
 })
 
-export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery, useUpdatePostMutation, useDeletePostMutation } =
-  blogApi
+export const {
+  useGetCoursesQuery,
+  useAddCourseMutation,
+  useGetCourseQuery,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation
+} = courseApi

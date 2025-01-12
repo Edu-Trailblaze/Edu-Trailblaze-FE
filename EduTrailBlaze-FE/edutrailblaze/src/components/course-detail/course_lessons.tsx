@@ -4,40 +4,24 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-interface Course {
-  course: number
-  title: string
-  duration: string
-  rating: number
-  reviews: string
-  expandedContent: string
-}
-
-interface Intructor {
-  avata: string
-  name: string
-  course: number
-  learner: string
-}
-
 const instructors: Intructor[] = [
   {
     avata: 'https://github.com/shadcn.png',
     name: 'Dariush Derakhshani',
-    course: 1,
+    courseId: 1,
     learner: '47,001'
   },
   {
     avata: 'https://github.com/shadcn.png',
     name: 'Théotime Vaillant',
-    course: 2,
+    courseId: 2,
     learner: '37,560'
   }
 ]
 
 const courses: Course[] = [
   {
-    course: 1,
+    courseId: 1,
     title: 'Introduction to Game Design',
     duration: '6 hours',
     rating: 4.7,
@@ -45,7 +29,7 @@ const courses: Course[] = [
     expandedContent: 'This course focuses on the fundamentals of game design.'
   },
   {
-    course: 2,
+    courseId: 2,
     title: 'Story and Narrative Development for Video Games',
     duration: '11 hours',
     rating: 4.7,
@@ -53,7 +37,7 @@ const courses: Course[] = [
     expandedContent: 'This course focuses on the fundamentals of game design..'
   },
   {
-    course: 3,
+    courseId: 3,
     title: 'World Design for Video Games',
     duration: '7 hours',
     rating: 4.5,
@@ -61,7 +45,7 @@ const courses: Course[] = [
     expandedContent: 'This course focuses on the fundamentals of game design.'
   },
   {
-    course: 4,
+    courseId: 4,
     title: 'Character Design for Video Games',
     duration: '9 hours',
     rating: 4.7,
@@ -69,7 +53,7 @@ const courses: Course[] = [
     expandedContent: 'This course focuses on the fundamentals of game design.'
   },
   {
-    course: 5,
+    courseId: 5,
     title: 'Game Design Document: Define the Art & Concepts',
     duration: '16 hours',
     rating: 4.7,
@@ -129,7 +113,7 @@ export default function CourseLessons() {
                     {course.title}
                   </a>
                   <div className='flex text-xs text-gray-500 space-x-4'>
-                    <span>Course {course.course}</span>
+                    <span>Course {course.courseId}</span>
                     <span>•</span>
                     <span>{course.duration}</span>
                     <span>•</span>
@@ -160,7 +144,7 @@ export default function CourseLessons() {
                       {value.name}
                     </a>
                     <div>
-                      <span className='text-xs mr-2 text-gray-500'>{value.course} Course</span>
+                      <span className='text-xs mr-2 text-gray-500'>{value.courseId} Course</span>
                       <span className='mr-2 text-gray-500 text-xs'>•</span>
                       <span className='text-xs text-gray-500'>{value.learner} learners</span>
                     </div>

@@ -1,12 +1,10 @@
-﻿
-using EduTrailblaze.Entities;
+﻿using EduTrailblaze.Entities;
 using EduTrailblaze.Services.Helper;
 using EduTrailblaze.Services.Interfaces;
 using EduTrailblaze.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Polly;
 using Polly.Retry;

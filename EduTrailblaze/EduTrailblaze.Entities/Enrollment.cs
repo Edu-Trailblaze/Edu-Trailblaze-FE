@@ -6,7 +6,7 @@ namespace EduTrailblaze.Entities
 {
     public class Enrollment : EntityAuditBase<int>
     {
-        
+
 
         [Required, ForeignKey("Course")]
         public int CourseId { get; set; }
@@ -18,7 +18,7 @@ namespace EduTrailblaze.Entities
 
         public bool IsCompleted { get; set; } = false;
 
-        
+
 
 
         // Navigation properties

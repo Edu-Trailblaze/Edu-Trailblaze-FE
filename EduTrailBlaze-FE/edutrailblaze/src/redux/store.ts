@@ -2,19 +2,16 @@ import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 // import { rtkQueryErrorLogger } from './middleware'
 import { useDispatch } from 'react-redux'
+import courseReducer from './slice/course.slice'
+import { courseApi } from '../service/redux.service'
 
 export const store = configureStore({
-  reducer: {},
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat()
+  reducer: {
+    course: courseReducer,
+    [courseApi.reducerPath]: courseApi.reducer
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(courseApi.middleware)
 })
-
-// export const store = configureStore({
-//   reducer: {
-//     blog: blogReducer,
-//     [blogApi.reducerPath]: blogApi.reducer //thêm reducer được tạo từ api slice
-//   },
-//   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(blogApi.middleware)
-// })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>

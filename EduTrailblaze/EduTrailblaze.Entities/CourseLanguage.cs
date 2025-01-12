@@ -1,6 +1,5 @@
 ﻿using EduTrailblaze.API.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduTrailblaze.Entities
