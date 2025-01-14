@@ -2,13 +2,7 @@
 import { useState } from 'react'
 import { useGetCoursesQuery } from '../../service/redux.service'
 import SkeletonCard from '../skeleton/skeleton_card'
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(amount)
-}
+import { formatCurrency } from '../../utils/format'
 
 export default function CourseSuggestion() {
   const { data, isLoading, isFetching } = useGetCoursesQuery()
@@ -63,10 +57,8 @@ export default function CourseSuggestion() {
 
                 {/* Course Price */}
                 <div className='ml-3 text-right'>
-                  <p className='text-lg font-bold text-green-600'>{formatCurrency(course.price)}</p>
-                  <p className='text-sm line-through text-gray-400'>
-                    {formatCurrency(course.discount.calculatedPrice)}
-                  </p>
+                  <p className='text-lg font-bold text-green-600'>{formatCurrency(course.discount.calculatedPrice)}</p>
+                  <p className='text-sm line-through text-gray-400'>{formatCurrency(course.price)}</p>
                 </div>
               </a>
             ))}

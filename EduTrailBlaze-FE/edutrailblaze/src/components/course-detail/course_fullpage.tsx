@@ -7,21 +7,24 @@ import CourseHeader from './course_header'
 import CourseSuggestion from './course_suggestion'
 import Navigation from './course_nav'
 import { useEffect, useState } from 'react'
-import { stat } from 'fs'
-import { RootState } from '../../redux/store'
-import { Stack } from '@mui/material'
 import LoadingPayment from '../animate/LoadingPayment'
+import { useGetCourseQuery } from '../../service/redux.service'
 
 export default function Course() {
   const [selected, setSelected] = useState<string>('about')
   const [showNavigation, setShowNavigation] = useState<boolean>(false)
+  const { data, isLoading, isFetching, error } = useGetCourseQuery('1')
+
+  //        if (isLoading || isFetching) {
+  //   return <LoadingPayment />
+  // }
 
   useEffect(() => {
     const handleScroll = () => {
       const headerElement = document.getElementById('course-header')
-      if (!headerElement) return
+      if (!headerElement) return 
 
-      const headerRect = headerElement.getBoundingClientRect()
+      const headerRect = headerElement?.getBoundingClientRect()
       const sections = [
         { id: 'about', element: document.getElementById('about') },
         { id: 'outcomes', element: document.getElementById('outcomes') },
@@ -47,7 +50,6 @@ export default function Course() {
         }
       }
     }
-
     window.addEventListener('scroll', handleScroll)
 
     return () => window.removeEventListener('scroll', handleScroll)

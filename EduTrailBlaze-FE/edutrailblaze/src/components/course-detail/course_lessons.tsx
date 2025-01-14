@@ -4,12 +4,22 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useGetCourseQuery } from '../../service/redux.service'
+import Modal from '../global/Modal'
+import Link from 'next/link'
+import LoadingPayment from '../animate/LoadingPayment'
+import { formatNumber } from '../../utils/format'
 
 export default function CourseLessons() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
   const [showMore, setShowMore] = useState(false)
 
+  const [isModalOpen, setModalOpen] = useState(false)
+  const openModal = () => setModalOpen(true)
+  const closeModal = () => setModalOpen(false)
+
   const { data: course, isLoading, isFetching, error } = useGetCourseQuery('1')
+
+  
 
   const toggleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index)
@@ -63,7 +73,7 @@ export default function CourseLessons() {
                     <span>{value.duration}</span>
                     <span>•</span>
                     <span className='text-blue-500 tracking-wide font-semibold'>★ {value.rating}</span>
-                    <span>({value.reviews} ratings)</span>
+                    <span>({formatNumber(value.reviews)} ratings)</span>
                   </div>
                   {expandedIndex === index && <p className='mt-2 text-sm text-gray-700'>{value.description}</p>}
                 </div>
@@ -78,7 +88,7 @@ export default function CourseLessons() {
           <div className='col-span-4 border-2 rounded-lg px-10 py-4 h-fit'>
             <div className='py-4'>
               <p className=' text-lg font-semibold'>Instructors</p>
-              {course?.instructors.map((value, index) => (
+              {course?.instructors.slice(0, 2).map((value, index) => (
                 <div key={index} className='flex mb-5 mt-5'>
                   <Avatar>
                     <AvatarImage src={`${value.image}`} />
@@ -96,7 +106,11 @@ export default function CourseLessons() {
                   </div>
                 </div>
               ))}
-              <p className='text-sm text-blue-700 border-b pb-5'>View all 3 instructors</p>
+              <div className='border-b pb-3'>
+                <button className='text-sm text-blue-700 hover:underline' onClick={openModal}>
+                  View all {course?.instructors.length} instructors
+                </button>
+              </div>
             </div>
             <div className='font-semibold text-lg mb-5'> Offered by</div>
             <div className='flex'>
@@ -114,6 +128,24 @@ export default function CourseLessons() {
           </div>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal} title='Instructors'>
+        <div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4'>
+          {course?.instructors.map((value, index) => (
+            <div key={index} className='flex space-x-3 items-center'>
+              <Avatar className='border-2 border-gray-300'>
+                <AvatarImage src={`${value.image}`}/>
+                <AvatarFallback>Instructor</AvatarFallback>
+              </Avatar>
+              <div>
+                <Link href='' className='text-sm font-semibold'>{value.userName}</Link>
+                <br/>
+                <Link href='' className='text-sm text-gray-500'>{'IBM'}</Link>
+                <p className='text-sm text-gray-500'>{0} Courses • {0} learners</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
     </>
   )
 }

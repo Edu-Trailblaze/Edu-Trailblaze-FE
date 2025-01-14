@@ -15,7 +15,7 @@ export default function CourseOutcome() {
   return (
     <>
       {/* Text */}
-      <div className='container mb-32 flex relative'>
+      {/* <div className='container mb-32 flex relative'>
         <div className='w-[1375px]'>
           <p className='mb-3 text-3xl font-semibold'>Advance your subject-matter expertise</p>
           <ul className='ml-7'>
@@ -29,7 +29,7 @@ export default function CourseOutcome() {
         <div className='absolute right-[90px]'>
           <img src='/assets/logos/pp_study.png' alt='study' className='rounded-md' />
         </div>
-      </div>
+      </div> */}
 
       {/* Certificate */}
       <div className='container flex border-8 shadow-lg shadow-cyan-200/50 p-4 rounded-2xl mb-32 relative w-[1375px]'>

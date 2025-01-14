@@ -43,5 +43,5 @@ interface Course {
   review: Review;
   instructors: Instructor[];
   enrollment: Enrollment;
-  lessons: Lesson[]; 
+  lessons: Lesson[];
 }

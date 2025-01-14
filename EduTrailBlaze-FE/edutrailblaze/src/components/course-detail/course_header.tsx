@@ -2,7 +2,9 @@
 import { redirect, useParams } from 'next/navigation'
 import { useGetCourseQuery } from '../../service/redux.service'
 import { useState } from 'react'
-import Modal from './course_model'
+import Modal from '../global/Modal'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { formatNumber } from '../../utils/format'
 
 export default function CourseDetails() {
   const [isModalOpen, setModalOpen] = useState(false)
@@ -58,12 +60,10 @@ export default function CourseDetails() {
                 .slice(0, 3)
                 .reverse()
                 .map((instructor, index) => (
-                  <img
-                    key={index}
-                    src={instructor.image}
-                    alt={`Instructor ${instructor.userName}`}
-                    className='w-10 h-10 rounded-full border-2 border-white'
-                  />
+                  <Avatar key={index}>
+                    <AvatarImage src={`${instructor.image}`} />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
                 ))}
             </div>
 
@@ -86,7 +86,7 @@ export default function CourseDetails() {
           </button>
 
           <p>
-            <span className='font-bold'>{course.enrollment.totalEnrollments}</span> already registered
+            <span className='font-bold'>{formatNumber(course.enrollment.totalEnrollments)}</span> already registered
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default function CourseDetails() {
 
           <div className='text-center md:border-r-2 border-gray-300'>
             <p className='text-blue-700 font-bold text-xl'>{course.review.averageRating} ★</p>
-            <p className='text-gray-500'>({course.review.totalRatings} reviews)</p>
+            <p className='text-gray-500'>({formatNumber(course.review.totalRatings)} reviews)</p>
           </div>
 
           <div className='text-center md:border-r-2 border-gray-300'>
@@ -126,14 +126,13 @@ export default function CourseDetails() {
       </div>
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title='Instructors'>
-        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4'>
           {course?.instructors.map((instructor, index) => (
             <div key={index} className='flex items-center space-x-3'>
-              <img
-                src={instructor.image}
-                alt={`Instructor ${instructor.userName}`}
-                className='w-12 h-12 rounded-full border-2 border-gray-300'
-              />
+              <Avatar className='border-2 border-gray-300'>
+                <AvatarImage src={`${instructor.image}`}/>
+                <AvatarFallback>Instructor</AvatarFallback>
+              </Avatar>
               <div>
                 <p className='font-bold'>{instructor.userName}</p>
                 <p className='text-sm text-gray-500'>{'IBM'}</p>
