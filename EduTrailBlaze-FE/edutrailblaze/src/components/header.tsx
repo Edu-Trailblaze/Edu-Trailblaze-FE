@@ -216,6 +216,7 @@ export default function WebHeader() {
 
         <div className="hidden lg:flex lg:flex-1 justify-end">
           <div>
+            <Link href={"/login_register"}>
             <button
               data-ripple-light="true"
               type="button"
@@ -223,6 +224,7 @@ export default function WebHeader() {
             >
               Login
             </button>
+            </Link>
           </div>
 
           <div>

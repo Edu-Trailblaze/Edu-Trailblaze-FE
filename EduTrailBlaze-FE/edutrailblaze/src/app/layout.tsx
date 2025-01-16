@@ -4,6 +4,7 @@ import './globals.css'
 import WebHeader from '@/components/header'
 import WebFooter from '@/components/footer'
 import { StoreProvider } from '../redux/StorProvider'
+import SessionProviderWrapper from './SessionProviderWrapper' 
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -27,14 +28,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <StoreProvider>
-      <html lang='en'>
-        <body>
-          <WebHeader></WebHeader>
-          {children}
-          <WebFooter></WebFooter>
-        </body>
-      </html>
-    </StoreProvider>
+    <SessionProviderWrapper>
+      <StoreProvider>
+        <html lang='en'>
+          <body>
+            <WebHeader />
+            {children}
+            <WebFooter />
+          </body>
+        </html>
+      </StoreProvider>
+    </SessionProviderWrapper>
   )
 }
