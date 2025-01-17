@@ -29,7 +29,7 @@ interface Enrollment {
   totalEnrollments: number;
 }
 
-interface Course {
+interface ICourse {
   courseId: number;
   imageURL?: string;
   title: string;

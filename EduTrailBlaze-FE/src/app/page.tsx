@@ -4,10 +4,13 @@ import HomeSupporter from '@/components/home_components/home_supporter'
 import HomeTeacherArea from '@/components/home_components/home_teacher_area'
 import ImageSlider from '@/components/home_components/image_slider'
 import MakeDiffer from '@/components/home_components/make_different'
+import WebHeader from '../components/header'
+import WebFooter from '../components/footer'
 
 export default function Home() {
   return (
     <div>
+      <WebHeader/>
       <ImageSlider></ImageSlider>
       <HomeCourses></HomeCourses>
       <MakeDiffer></MakeDiffer>
@@ -16,6 +19,7 @@ export default function Home() {
       </div>
       <HomeTeacherArea></HomeTeacherArea>
       <HomeSupporter></HomeSupporter>
+      <WebFooter/>
     </div>
   )
 }

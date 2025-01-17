@@ -5,6 +5,7 @@ import { useState } from 'react'
 import Modal from '../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { formatNumber } from '../../utils/format'
+import LoadingPayment from '../animate/LoadingPayment'
 
 export default function CourseDetails() {
   const [isModalOpen, setModalOpen] = useState(false)
@@ -20,25 +21,18 @@ export default function CourseDetails() {
     return <p>Invalid course ID</p>
   }
 
-  const {
-    data: course,
-    isLoading,
-    isFetching,
-    error
-  } = useGetCourseQuery(validCourseId, {
-    skip: !validCourseId // Bỏ qua query nếu courseId không hợp lệ
-  })
+  const { data: course, isLoading, isFetching, error } = useGetCourseQuery(validCourseId)
 
   if (isLoading || isFetching) {
-    return <div className='text-center text-gray-500'>Loading...</div>
+    return <LoadingPayment />
   }
 
-  if (error) {
-    redirect('/')
-  }
+  // if (error) {
+  //   redirect('/')
+  // }
 
   if (!course) {
-    return <div className='text-center text-gray-700'>Course not found.</div>
+    return <div className='text-center text-gray-700'>No course available.</div>
   }
   return (
     <div className='bg-white p-6'>
@@ -130,7 +124,7 @@ export default function CourseDetails() {
           {course?.instructors.map((instructor, index) => (
             <div key={index} className='flex items-center space-x-3'>
               <Avatar className='border-2 border-gray-300'>
-                <AvatarImage src={`${instructor.image}`}/>
+                <AvatarImage src={`${instructor.image}`} />
                 <AvatarFallback>Instructor</AvatarFallback>
               </Avatar>
               <div>

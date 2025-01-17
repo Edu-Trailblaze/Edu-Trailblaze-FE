@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
-import './globals.css'
+import '../globals.css'
 import WebHeader from '@/components/header'
 import WebFooter from '@/components/footer'
-import { StoreProvider } from '../redux/StorProvider'
-import SessionProviderWrapper from './SessionProviderWrapper' 
 
 export const metadata: Metadata = {
   title: 'Edutrail Blaze',
@@ -16,14 +14,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <SessionProviderWrapper>
-      <StoreProvider>
         <html lang='en'>
           <body>
+            <WebHeader />
             {children}
+            <WebFooter />
           </body>
         </html>
-      </StoreProvider>
-    </SessionProviderWrapper>
   )
 }

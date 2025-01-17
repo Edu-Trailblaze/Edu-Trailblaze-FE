@@ -13,7 +13,7 @@ export const courseApi = createApi({
   }),
   tagTypes: ['Courses'],
   endpoints: (build) => ({
-    getCourses: build.query<Course[], void>({
+    getCourses: build.query<ICourse[], void>({
       query: () => 'course',
       providesTags(result) {
         return result
@@ -22,7 +22,7 @@ export const courseApi = createApi({
       }
     }),
 
-    addCourse: build.mutation<Course, Omit<Course, 'id'>>({
+    addCourse: build.mutation<ICourse, Omit<ICourse, 'id'>>({
       query(body) {
         try {
           return {
@@ -37,7 +37,7 @@ export const courseApi = createApi({
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     }),
 
-    getCourse: build.query<Course, string>({
+    getCourse: build.query<ICourse, string>({
       query: (id) => ({
         url: `course/${id}`,
         method: 'GET',
@@ -51,7 +51,7 @@ export const courseApi = createApi({
       })
     }),
 
-    updateCourse: build.mutation<Course, { id: string; body: Course }>({
+    updateCourse: build.mutation<ICourse, { id: string; body: ICourse }>({
       query(data) {
         return {
           url: `courses/${data.id}`,

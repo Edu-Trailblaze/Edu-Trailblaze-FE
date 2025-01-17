@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface BlogState {
+interface CourseState {
   courseId: number
-  editingPost: Course | null
+  editingPost: ICourse | null
 }
 
-const initialState: BlogState = {
+const initialState: CourseState = {
   courseId: 0,
   editingPost: null
 }
