@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import WebHeader from '@/components/header'
-import WebFooter from '@/components/footer'
 import { StoreProvider } from '../redux/StorProvider'
 import SessionProviderWrapper from './SessionProviderWrapper' 
 
