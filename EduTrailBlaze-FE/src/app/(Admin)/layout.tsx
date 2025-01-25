@@ -1,8 +1,7 @@
 'use client'
-import {
-  createTheme,
-  CssBaseline,
-} from '@mui/material'
+import AdminHeader from '@/components/admin/Header/header'
+import Layout from '@/components/Layout/Layout'
+import { createTheme, CssBaseline } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
 import React from 'react'
 
@@ -16,7 +15,10 @@ export default function RootLayout({
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <html lang='en'>
-          <body>{children}</body>
+          <body>
+            <AdminHeader />
+            <Layout>{children}</Layout>
+          </body>
         </html>
       </ThemeProvider>
     </>
