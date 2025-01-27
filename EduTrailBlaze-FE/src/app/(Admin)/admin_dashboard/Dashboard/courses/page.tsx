@@ -1,27 +1,80 @@
-import React from "react";
+'use client'
+import React, { useState } from "react";
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 export default function CoursesManagement() {
+
+    const [startDay, setStartDay] = useState(null);
+    const [endDay, setEndDay] = useState(null);
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-6 bg-gray-50 min-h-screen w-full">
             {/* Header */}
-            <div className="flex justify-between items-center gap-4 mb-6">
+            <div className="flex justify-start items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold text-black">COURSES MANAGEMENT</h1>
-                <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full shadow-sm">
-                    <span className="text-gray-700 text-sm">10/1/2025 - 20/1/2025</span>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={['DatePicker']}>
+                        <DatePicker
+                            label="Start Date"
+                            value={startDay}
+                            onChange={(newValue) => setStartDay(newValue)}
+                        />
+                        <DatePicker
+                            label="End Date"
+                            value={endDay}
+                            onChange={(newValue) => setEndDay(newValue)}
+                        />
+                    </DemoContainer>
+                </LocalizationProvider>
+            </div>
+
+            <div className="flex items-center justify-between mb-4">
+                {/* Search and Filter */}
+                <div className="flex items-center gap-4 w-2/5">
+                    <TextField
+                        variant="outlined"
+                        placeholder="Type to search..."
+                        fullWidth
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <IconButton
+                        color="primary"
+                        aria-label="filter"
+                        className="bg-gray-200 rounded-md hover:bg-gray-300"
+                    >
+                        <FilterListIcon />
+                    </IconButton>
+                </div>
+
+                {/* Pagination */}
+                <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-600">Page 2 of 78</div>
+                    <div className="flex items-center gap-2">
+                        <button className="px-3 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                            &lt;
+                        </button>
+                        <button className="px-3 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                            &gt;
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Search and Filter */}
-            <div className="flex items-center gap-4 mb-4">
-                <input
-                    type="text"
-                    placeholder="Type to search..."
-                    className="border rounded-md px-4 py-2 w-full shadow-sm focus:outline-none focus:ring focus:ring-gray-300"
-                />
-                <button className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                    <span className="font-medium">Filter</span>
-                </button>
-            </div>
 
             {/* Table */}
             <div className="overflow-x-auto bg-white rounded-lg shadow-md">
@@ -53,14 +106,7 @@ export default function CoursesManagement() {
                 </table>
             </div>
 
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-gray-600">Page 2 of 78</div>
-                <div className="flex items-center gap-2">
-                    <button className="px-3 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">&lt;</button>
-                    <button className="px-3 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">&gt;</button>
-                </div>
-            </div>
+
         </div>
     );
 }
