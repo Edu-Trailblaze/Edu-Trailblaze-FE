@@ -17,6 +17,10 @@ import EqualizerIcon from '@mui/icons-material/Equalizer'
 import Person2Icon from '@mui/icons-material/Person2'
 import Settings from '@mui/icons-material/Settings'
 import ExitToAppIcon from '@mui/icons-material/Logout'
+import SchoolIcon from '@mui/icons-material/School';
+import GroupsIcon from '@mui/icons-material/Groups';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
@@ -43,9 +47,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }
 })
 
-const menuRouteList = ['analytics', 'profile', 'settings', '']
-const menuListTranslations = ['Data', 'Profile', 'Settings', 'Sign Out']
-const menuListIcons = [<EqualizerIcon />, <Person2Icon />, <Settings />, <ExitToAppIcon />]
+const menuRouteList = ['analytics', 'courses', 'orders', 'vouchers', 'profile', 'settings', '']
+const menuListTranslations = ['Data', 'Courses', 'Orders', 'Vouchers', 'Profile', 'Settings', 'Sign Out']
+const menuListIcons = [<EqualizerIcon />, <SchoolIcon />, <GroupsIcon />, <CardGiftcardIcon />, <Person2Icon />, <Settings />, <ExitToAppIcon />]
 
 export default function SideMenu() {
   const theme = useTheme()
@@ -109,11 +113,11 @@ export default function SideMenu() {
                   },
                   open
                     ? {
-                        justifyContent: 'initial'
-                      }
+                      justifyContent: 'initial'
+                    }
                     : {
-                        justifyContent: 'center'
-                      }
+                      justifyContent: 'center'
+                    }
                 ]}
               >
                 <ListItemIcon
@@ -124,11 +128,11 @@ export default function SideMenu() {
                     },
                     open
                       ? {
-                          mr: 3
-                        }
+                        mr: 3
+                      }
                       : {
-                          mr: 'auto'
-                        }
+                        mr: 'auto'
+                      }
                   ]}
                 >
                   {menuListIcons[index]}
