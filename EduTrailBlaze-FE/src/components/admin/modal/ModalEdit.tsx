@@ -3,19 +3,19 @@ import { Modal, Box, Typography, Button, TextField, IconButton } from "@mui/mate
 import CloseIcon from "@mui/icons-material/Close";
 
 interface FieldConfig {
-    key: string; // The field name
-    label: string; // The label for the field
-    type?: "text" | "number" | "textarea"; // Field type, default is "text"
+    key: string;
+    label: string;
+    type?: "text" | "number" | "textarea";
 }
 
 interface ModalEditProps {
     open: boolean;
     onClose: () => void;
-    initialData: Record<string, any>; // Initial data to populate the fields
-    fields: FieldConfig[]; // Array of field configurations
-    title?: string; // Title of the modal
-    onSave: (updatedData: Record<string, any>) => void; // Callback to handle saving the data
-    onDelete?: () => void; // Callback to handle deleting the data
+    initialData: ICourse;
+    fields: FieldConfig[];
+    title?: string;
+    onSave: (updatedData: ICourse) => void; // Callback to handle saving 
+    onDelete?: () => void; // Callback to handle deleting
 }
 
 const ModalEdit: React.FC<ModalEditProps> = ({
@@ -29,7 +29,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
 }) => {
     const [formData, setFormData] = useState(initialData);
 
-    const handleInputChange = (key: string, value: string | number) => {
+    const handleInputChange = <K extends keyof ICourse>(key: K, value: ICourse[K]) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
@@ -48,7 +48,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                     outline: "none",
                 }}
             >
-                {/* Close Button */}
+
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -57,12 +57,10 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                     <CloseIcon />
                 </IconButton>
 
-                {/* Modal Title */}
                 <Typography id="edit-modal-title" variant="h6" className="mb-4 font-bold">
                     {title}
                 </Typography>
 
-                {/* Dynamic Fields */}
                 <div className="flex flex-col gap-4 mb-4">
                     {fields.map((field) => (
                         <div key={field.key}>
@@ -71,18 +69,18 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                                     label={field.label}
                                     multiline
                                     rows={4}
-                                    value={formData[field.key]}
-                                    onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                    value={formData[field.key as keyof ICourse]}
+                                    onChange={(e) => handleInputChange(field.key as keyof ICourse, e.target.value)}
                                     fullWidth
                                 />
                             ) : (
                                 <TextField
                                     label={field.label}
                                     type={field.type || "text"}
-                                    value={formData[field.key]}
+                                    value={formData[field.key as keyof ICourse]} // Ensures key is valid
                                     onChange={(e) =>
                                         handleInputChange(
-                                            field.key,
+                                            field.key as keyof ICourse,
                                             field.type === "number" ? Number(e.target.value) : e.target.value
                                         )
                                     }

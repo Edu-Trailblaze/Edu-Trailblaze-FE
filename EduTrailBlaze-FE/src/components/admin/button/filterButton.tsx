@@ -1,30 +1,31 @@
 import React, { useState } from "react";
 
-interface Filters {
-    instructor: string;
-    language: string;
-    minPrice: string;
-    maxPrice: string;
+interface FilterField {
+    key: string;
+    label: string;
 }
 
-const FilterButton: React.FC = () => {
-    const [filters, setFilters] = useState<Filters>({
-        instructor: "",
-        language: "",
-        minPrice: "",
-        maxPrice: "",
-    });
+interface FilterButtonProps {
+    fieldsToFilter: FilterField[]; // Dynamic fields (e.g., price, rating, students)
+    onApplyFilters: (filters: Record<string, { min?: number; max?: number }>) => void;
+}
+
+const FilterButton: React.FC<FilterButtonProps> = ({ fieldsToFilter, onApplyFilters }) => {
+    const [filters, setFilters] = useState<Record<string, { min?: number; max?: number }>>({});
     const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>, field: string, type: "min" | "max") => {
+        const value = e.target.value ? parseFloat(e.target.value) : undefined;
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [field]: { ...prevFilters[field], [type]: value },
+        }));
     };
 
     const applyFilters = () => {
         console.log("Filters Applied:", filters);
+        onApplyFilters(filters);
         setIsFilterOpen(false);
-        // API call or filtering logic here
     };
 
     return (
@@ -37,53 +38,31 @@ const FilterButton: React.FC = () => {
                 <i className="fas fa-filter"></i> Filter
             </button>
 
-            {/* Filter Modal/Dropdown */}
+            {/* Filter Dropdown */}
             {isFilterOpen && (
-                <div className="absolute right-0 bg-white shadow-md p-4 rounded w-72 mt-2">
+                <div className="absolute right-0 bg-white shadow-md p-4 rounded w-72 mt-2 z-50">
                     <h3 className="font-bold mb-2">Filters</h3>
-                    <div className="mb-2">
-                        <label className="block text-sm font-medium">Instructor</label>
-                        <input
-                            type="text"
-                            name="instructor"
-                            value={filters.instructor}
-                            onChange={handleFilterChange}
-                            className="border p-2 rounded w-full"
-                            placeholder="Enter instructor name"
-                        />
-                    </div>
-                    <div className="mb-2">
-                        <label className="block text-sm font-medium">Language</label>
-                        <input
-                            type="text"
-                            name="language"
-                            value={filters.language}
-                            onChange={handleFilterChange}
-                            className="border p-2 rounded w-full"
-                            placeholder="Enter language"
-                        />
-                    </div>
-                    <div className="mb-2">
-                        <label className="block text-sm font-medium">Price Range</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="number"
-                                name="minPrice"
-                                value={filters.minPrice}
-                                onChange={handleFilterChange}
-                                className="border p-2 rounded w-full"
-                                placeholder="Min"
-                            />
-                            <input
-                                type="number"
-                                name="maxPrice"
-                                value={filters.maxPrice}
-                                onChange={handleFilterChange}
-                                className="border p-2 rounded w-full"
-                                placeholder="Max"
-                            />
+                    {fieldsToFilter.map(({ key, label }) => (
+                        <div key={key} className="mb-2">
+                            <label className="block text-sm font-medium">{label}</label>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="number"
+                                    value={filters[key]?.min || ""}
+                                    onChange={(e) => handleFilterChange(e, key, "min")}
+                                    className="border p-2 rounded w-full"
+                                    placeholder="Min"
+                                />
+                                <input
+                                    type="number"
+                                    value={filters[key]?.max || ""}
+                                    onChange={(e) => handleFilterChange(e, key, "max")}
+                                    className="border p-2 rounded w-full"
+                                    placeholder="Max"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    ))}
                     <button
                         onClick={applyFilters}
                         className="mt-4 w-full bg-blue-500 text-white p-2 rounded"
