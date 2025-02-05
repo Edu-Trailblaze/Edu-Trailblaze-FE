@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Modal, Box, Typography, Button, TextField, IconButton } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Modal, Box, Typography, Button, TextField, IconButton, CircularProgress } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { toast } from "react-toastify";
 
 interface FieldConfig {
     key: string;
@@ -14,8 +15,8 @@ interface ModalEditProps {
     initialData: ICourse;
     fields: FieldConfig[];
     title?: string;
-    onSave: (updatedData: ICourse) => void; // Callback to handle saving 
-    onDelete?: () => void; // Callback to handle deleting
+    onSave: (updatedData: ICourse) => void;
+    onDelete?: (id: number) => void;
 }
 
 const ModalEdit: React.FC<ModalEditProps> = ({
@@ -27,16 +28,56 @@ const ModalEdit: React.FC<ModalEditProps> = ({
     onSave,
     onDelete,
 }) => {
-    const [formData, setFormData] = useState(initialData);
+    const [formData, setFormData] = useState<ICourse>(initialData || {});
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setFormData(initialData);
+    }, [initialData]);
+
 
     const handleInputChange = <K extends keyof ICourse>(key: K, value: ICourse[K]) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleSave = () => {
-        onSave(formData);
-        onClose();
+    const handleSave = async () => {
+        if (!formData.courseId) {
+            toast.error("Invalid course data!");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setLoading(true);
+            // api
+            onSave(formData);
+            toast.success("Course updated successfully!");
+            onClose();
+        } catch (error) {
+            toast.error("Failed to update course!");
+        } finally {
+            setLoading(false);
+        }
     };
+
+
+    const handleDelete = async () => {
+        if (!onDelete || !formData.courseId) return;
+        if (!window.confirm("Do you want to delete this course?")) return;
+
+        try {
+            setLoading(true);
+            //api
+            toast.success("Course deleted successfully!");
+            onDelete(formData.courseId);
+            onClose();
+        } catch (error) {
+            toast.error("Failed to delete course!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <Modal open={open} onClose={onClose} aria-labelledby="edit-modal-title">
@@ -48,7 +89,6 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                     outline: "none",
                 }}
             >
-
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -69,7 +109,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                                     label={field.label}
                                     multiline
                                     rows={4}
-                                    value={formData[field.key as keyof ICourse]}
+                                    value={formData[field.key as keyof ICourse] || ""}
                                     onChange={(e) => handleInputChange(field.key as keyof ICourse, e.target.value)}
                                     fullWidth
                                 />
@@ -77,7 +117,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                                 <TextField
                                     label={field.label}
                                     type={field.type || "text"}
-                                    value={formData[field.key as keyof ICourse]} // Ensures key is valid
+                                    value={formData[field.key as keyof ICourse] || ""}
                                     onChange={(e) =>
                                         handleInputChange(
                                             field.key as keyof ICourse,
@@ -94,15 +134,15 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                 {/* Actions */}
                 <div className="flex justify-end gap-4">
                     {onDelete && (
-                        <Button variant="contained" color="error" onClick={onDelete}>
-                            Delete
+                        <Button variant="contained" color="error" onClick={handleDelete} disabled={loading}>
+                            {loading ? <CircularProgress size={20} color="inherit" /> : "Delete"}
                         </Button>
                     )}
                     <Button variant="outlined" onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button variant="contained" color="primary" onClick={handleSave}>
-                        Save
+                    <Button variant="contained" color="primary" onClick={handleSave} disabled={loading}>
+                        {loading ? <CircularProgress size={20} color="inherit" /> : "Save"}
                     </Button>
                 </div>
             </Box>
