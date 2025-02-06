@@ -1,5 +1,0 @@
-{
-    "routes": {
-        "/courses/:courseId": "/courses?courseId=:courseId"
-    }
-}

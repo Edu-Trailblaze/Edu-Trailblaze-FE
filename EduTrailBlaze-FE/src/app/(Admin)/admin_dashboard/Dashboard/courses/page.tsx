@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { courseData } from "@/components/admin/mockData/courseData";
 
 
-import ModalEdit from "@/components/admin/modal/ModalEdit";
-import DateRangePicker from "@/components/admin/button/dateRangePicker";
-import FilterButton from "@/components/admin/button/filterButton";
-import SearchSection from "@/components/admin/button/searchSection";
+import ModalEdit from "@/components/admin/Modal/ModalEdit";
+import DateRangePicker from "@/components/admin/Button/dateRangePicker";
+import FilterButton from "@/components/admin/Button/filterButton";
+import SearchSection from "@/components/admin/Button/searchSection";
 import Loader from "@/components/animate/loader/loader";
 import dayjs from "dayjs";
 
