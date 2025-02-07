@@ -44,4 +44,5 @@ interface ICourse {
   instructors: Instructor[];
   enrollment: Enrollment;
   lessons: Lesson[];
+
 }
