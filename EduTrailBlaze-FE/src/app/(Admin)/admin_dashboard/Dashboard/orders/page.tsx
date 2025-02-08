@@ -1,66 +1,112 @@
-import React from "react";
+'use client';
+
+// import FormModal from '@/components/FormModal';
+import Pagination from '@/components/admin/Pagination/Pagination';
+import Table from '@/components/admin/Table/Table';
+import TableSearch from '@/components/admin/TableSearch/TableSearch';
+import { useState, useEffect } from 'react';
+import Loader from '@/components/animate/loader/loader';
+import { Filter, ArrowUpDown } from "lucide-react";
+
+
+type Order = {
+    orderDate: string;
+    invoiceId: string;
+    customerName: string;
+    phoneNumber: string;
+    amount: string;
+    paymentMethod: string;
+};
+
+const ordersData = [
+    {
+        orderDate: '15/11/2024',
+        invoiceId: '200001',
+        customerName: 'NGUYEN VAN A',
+        phoneNumber: '0123456789',
+        amount: '$3000.00',
+        paymentMethod: 'Banking',
+    },
+    {
+        orderDate: '15/11/2024',
+        invoiceId: '200002',
+        customerName: 'TRAN VAN B',
+        phoneNumber: '0987654321',
+        amount: '$2500.00',
+        paymentMethod: 'Cash',
+    },
+    {
+        orderDate: '15/11/2024',
+        invoiceId: '200003',
+        customerName: 'LE VAN C',
+        phoneNumber: '0345678901',
+        amount: '$1800.00',
+        paymentMethod: 'Credit Card',
+    },
+];
+
+const columns = [
+    { header: 'Order Date', accessor: 'orderDate' },
+    { header: 'Invoice ID', accessor: 'invoiceId' },
+    { header: 'Customer Name', accessor: 'customerName' },
+    { header: 'Phone', accessor: 'phoneNumber', className: 'hidden md:table-cell' },
+    { header: 'Amount', accessor: 'amount', className: 'hidden md:table-cell' },
+    { header: 'Payment Method', accessor: 'paymentMethod', className: 'hidden lg:table-cell' },
+    { header: 'Actions', accessor: 'action' },
+];
 
 export default function OrdersManagement() {
+    const [orders, setOrders] = useState(ordersData);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false);
+        }, 700);
+    }, []);
+
+    const renderRow = (order: Order) => (
+        <tr key={order.invoiceId} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
+            <td className="p-4">{order.orderDate}</td>
+            <td>{order.invoiceId}</td>
+            <td>{order.customerName}</td>
+            <td className="hidden md:table-cell">{order.phoneNumber}</td>
+            <td className="hidden md:table-cell">{order.amount}</td>
+            <td className="hidden lg:table-cell">{order.paymentMethod}</td>
+            <td>
+                {/* <div className="flex items-center gap-2">
+                    <FormModal table="order" type="update" data={order} />
+                    <FormModal table="order" type="delete" id={order.invoiceId} />
+                </div> */}
+            </td>
+        </tr>
+    );
+
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
-            {/* Header */}
-            <div className="flex justify-between items-center gap-4 mb-6">
-                <h1 className="text-2xl font-bold text-black">ORDERS MANAGEMENT</h1>
-                <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full shadow-sm">
-                    <span className="text-gray-700 text-sm">10/1/2025 - 20/1/2025</span>
+        <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+            <div className="flex items-center justify-between">
+                <h1 className="hidden md:block text-lg font-semibold">Orders Management</h1>
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    <TableSearch />
+                    <div className="flex items-center gap-4 self-end">
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                            <Filter size={18} />
+                        </button>
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                            <ArrowUpDown size={18} />
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            {/* Search and Filter */}
-            <div className="flex items-center gap-4 mb-4">
-                <input
-                    type="text"
-                    placeholder="Type to search..."
-                    className="border rounded-md px-4 py-2 w-full shadow-sm focus:outline-none focus:ring focus:ring-gray-300"
-                />
-                <button className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                    <span className="font-medium">Filter</span>
-                </button>
-            </div>
-
-            {/* Table */}
-            <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-                <table className="min-w-full table-auto">
-                    <thead className="bg-gray-100 border-b">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">ORDER DATE</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">INVOICE ID</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">CUSTOMER NAME</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">PHONE NUMBER</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">AMOUNT</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">PAYMENT METHOD</th>
-                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {[1, 2, 3].map((_, idx) => (
-                            <tr key={idx} className="border-b hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm text-gray-700">15/11/2024</td>
-                                <td className="px-6 py-4 text-sm text-gray-700">200001</td>
-                                <td className="px-6 py-4 text-sm text-gray-700">NGUYEN VAN A</td>
-                                <td className="px-6 py-4 text-sm text-gray-700">0123456789</td>
-                                <td className="px-6 py-4 text-sm text-gray-700">$3000.00</td>
-                                <td className="px-6 py-4 text-sm text-gray-700">Banking</td>
-                                <td className="px-6 py-4 text-sm text-blue-600 cursor-pointer">Open</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-gray-600">Page 2 of 78</div>
-                <div className="flex items-center gap-2">
-                    <button className="px-3 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">&lt;</button>
-                    <button className="px-3 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">&gt;</button>
+            {loading ? (
+                <div className="flex justify-center py-6">
+                    <Loader className="w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin" />
+                    <p className="mt-2 text-gray-500 text-sm">Loading orders...</p>
                 </div>
-            </div>
+            ) : (
+                <Table columns={columns} renderRow={renderRow} data={orders} />
+            )}
+            <Pagination />
         </div>
     );
 }

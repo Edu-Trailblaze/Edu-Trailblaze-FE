@@ -14,10 +14,11 @@ import Drawer from '@mui/material/Drawer'
 import { useMediaQuery } from '@mui/material'
 import scss from './SideMenu.module.scss'
 import EqualizerIcon from '@mui/icons-material/Equalizer'
+import SchoolIcon from '@mui/icons-material/School'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import Person2Icon from '@mui/icons-material/Person2'
 import Settings from '@mui/icons-material/Settings'
 import ExitToAppIcon from '@mui/icons-material/Logout'
-import SchoolIcon from '@mui/icons-material/School';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 
@@ -47,9 +48,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }
 })
 
-const menuRouteList = ['analytics', 'courses', 'orders', 'vouchers', 'profile', 'settings', '']
-const menuListTranslations = ['Data', 'Courses', 'Orders', 'Vouchers', 'Profile', 'Settings', 'Sign Out']
-const menuListIcons = [<EqualizerIcon />, <SchoolIcon />, <GroupsIcon />, <CardGiftcardIcon />, <Person2Icon />, <Settings />, <ExitToAppIcon />]
+const menuRouteList = ['analytics', 'courses', 'orders', 'profile', 'settings', '']
+const menuListTranslations = ['Data', 'Courses', 'Orders', 'Profile', 'Settings', 'Sign Out']
+const menuListIcons = [<EqualizerIcon />, <SchoolIcon />, <ShoppingCartIcon />, <Person2Icon />, <Settings />, <ExitToAppIcon />]
 
 export default function SideMenu() {
   const theme = useTheme()
