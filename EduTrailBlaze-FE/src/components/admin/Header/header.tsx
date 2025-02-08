@@ -62,7 +62,7 @@ function AdminHeader() {
             }}
           >
             {/* <img alt='' src='/assets/logos/ETB_Logo.png' className='w-40 h-30' /> */}
-            EduTrailBlaze
+            <Link href={'/admin_dashboard'}>EduTrailBlaze</Link>
           </Typography>
 
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -118,7 +118,7 @@ function AdminHeader() {
             >
               <MenuItem onClick={() => (session ? signOut() : '')}>
                 <Typography sx={{ textAlign: 'center' }}>
-                  {session ? 'Logout' : <Link href={'/login_register'}>Login</Link>}
+                  {session ? 'Logout' : <Link href={'/auth/login_register'}>Login</Link>}
                 </Typography>
               </MenuItem>
             </Menu>

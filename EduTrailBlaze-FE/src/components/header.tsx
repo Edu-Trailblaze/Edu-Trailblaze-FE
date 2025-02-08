@@ -4,9 +4,6 @@ import { useState } from "react";
 import {
   Dialog,
   DialogPanel,
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
   Popover,
   PopoverButton,
   PopoverGroup,
@@ -216,7 +213,7 @@ export default function WebHeader() {
 
         <div className="hidden lg:flex lg:flex-1 justify-end">
           <div>
-            <Link href={"/login_register"}>
+            <Link href={"/auth/login_register"}>
             <button
               data-ripple-light="true"
               type="button"

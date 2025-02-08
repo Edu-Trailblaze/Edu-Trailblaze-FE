@@ -187,7 +187,7 @@ export default function LoginRegister() {
           </div>
         )}
         <div className='sm:block hidden w-1/2 p-5'>
-          <img className='rounded-2xl h-[620px]' src='/assets/Side_Image/login_pic.jpg' alt='Side Illustration' />
+          <img className='rounded-2xl h-[620px]' src='\public\assets\Side_Image\login_pic.jpg' alt='Side Illustration' />
         </div>
       </div>
     </section>
