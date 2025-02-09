@@ -11,81 +11,51 @@ import LoadingPayment from '../animate/LoadingPayment'
 import { useGetCourseQuery } from '../../service/redux.service'
 
 export default function Course() {
-  const [selected, setSelected] = useState<string>('about')
-  const [showNavigation, setShowNavigation] = useState<boolean>(false)
-  const { data, isLoading, isFetching, error } = useGetCourseQuery('1')
+  // const [selected, setSelected] = useState<string>('about')
+  // const [showNavigation, setShowNavigation] = useState<boolean>(false)
 
-  //        if (isLoading || isFetching) {
-  //   return <LoadingPayment />
-  // }
+  const { data, isLoading, isFetching, error } = useGetCourseQuery(18)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const headerElement = document.getElementById('course-header')
-      if (!headerElement) return 
+  const detail = data?.courseDetails
+  const section = data?.sectionDetails
 
-      const headerRect = headerElement?.getBoundingClientRect()
-      const sections = [
-        { id: 'about', element: document.getElementById('about') },
-        { id: 'outcomes', element: document.getElementById('outcomes') },
-        { id: 'courses', element: document.getElementById('courses') },
-        { id: 'suggestion', element: document.getElementById('suggestion') }
-      ]
+  // Kiểm tra nếu courseDetails không phải là undefined
+  if (!detail) {
+    return <div>No course available.</div>;
+  }
 
-      //CourseHeader đã hoàn toàn ra khỏi màn hình
-      if (headerRect.bottom <= 0) {
-        setShowNavigation(true)
-      } else {
-        setShowNavigation(false)
-      }
-
-      //Xác định section
-      for (let section of sections) {
-        if (section.element) {
-          const rect = section.element.getBoundingClientRect()
-          if (rect.top >= 0 && rect.top <= window.innerHeight / 4) {
-            setSelected(section.id)
-            break
-          }
-        }
-      }
-    }
-    window.addEventListener('scroll', handleScroll)
-
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  if (!section) {
+    return <div>No section available.</div>;
+  }
 
   return (
-        <div className='relative'>
-          {/* Header */}
-          <div id='course-header'>
-            <CourseHeader />
-          </div>
+    <div className='relative'>
+      {/* Header */}
+      <div id='course-header'>
+      <CourseHeader courseDetails={detail} />
+      </div>
 
-          {/* CourseDetails */}
-          {!showNavigation && <CourseDetails selected={selected} setSelected={setSelected} />}
+      {/* CourseDetails */}
+      <CourseDetails  />
 
-          {/* Navigation */}
-          {showNavigation && (
-            <div className='sticky top-0 z-10 bg-white shadow-md'>
-              <Navigation selected={selected} setSelected={setSelected} />
-            </div>
-          )}
-
-          {/* Sections */}
-          <div id='about' className='scroll-mt-44'>
-            <CourseAbout />
-          </div>
-          <div id='outcomes' className='scroll-mt-44'>
-            <CourseOutcome />
-          </div>
-          <div id='courses' className='scroll-mt-44'>
-            <CourseLessons />
-          </div>
-          <div id='suggestion' className='scroll-mt-44'>
-            <CourseSuggestion />
-          </div>
-        </div>
-
+      {/* Navigation */}
+        {/* <div className='sticky top-0 z-10 bg-white shadow-md'>
+          <Navigation  />
+        </div> */}
+   
+      {/* Sections */}
+      <div id='about'>
+        <CourseAbout courseDetails={detail}/>
+      </div>
+      <div id='outcomes'>
+        <CourseOutcome />
+      </div>
+      <div id='courses'>
+        <CourseLessons courseDetails={detail} sectionDetails={section} />
+      </div>
+      <div id='suggestion'>
+        <CourseSuggestion />
+      </div>
+    </div>
   )
 }

@@ -5,7 +5,7 @@ export const courseApi = createApi({
   reducerPath: 'course/api', //tên field trong reduce state
   //keepUnusedDataFor: 10, setting tg caching default là 60
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:4001/'
+    baseUrl: 'https://edu-trailblaze.azurewebsites.net/api/'
     // prepareHeaders(headers) {
     //   headers.set('authorization', `Bearer ${token}`)
     //   return headers
@@ -14,7 +14,7 @@ export const courseApi = createApi({
   tagTypes: ['Courses'],
   endpoints: (build) => ({
     getCourses: build.query<ICourse[], void>({
-      query: () => 'course',
+      query: () => 'Course',
       providesTags(result) {
         return result
           ? [...result.map(({ courseId }) => ({ type: 'Courses', courseId }) as const), { type: 'Courses', id: 'LIST' }]
@@ -37,17 +37,10 @@ export const courseApi = createApi({
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     }),
 
-    getCourse: build.query<ICourse, string>({
+    getCourse: build.query<ICourseFull, number>({
       query: (id) => ({
-        url: `course/${id}`,
-        method: 'GET',
-        headers: {
-          hello: 'aaaaaaaaaaaaaaaaaaaaaaaaaa'
-        },
-        params: {
-          first_name: 'dat',
-          'last-name': 'tran'
-        }
+        url: `Course/get-course-detail/${id}`,
+        method: 'GET'
       })
     }),
 
