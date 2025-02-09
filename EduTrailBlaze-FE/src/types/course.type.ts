@@ -1,3 +1,6 @@
+interface ICourseProps {
+  courseId: number; 
+}
 interface Lesson {
   lessonId: number;
   title: string;
@@ -5,6 +8,14 @@ interface Lesson {
   rating: number;
   reviews: number;
   description: string;
+}
+
+interface Section {
+  courseId: number
+  title: string
+  description: string
+  numberOfLectures: number
+  duration: string
 }
 
 interface Instructor {
@@ -30,19 +41,91 @@ interface Enrollment {
 }
 
 interface ICourse {
+  courseDetails: {}
   courseId: number;
   imageURL?: string;
   title: string;
-  duration: number; // in hours
+  duration: number;
   price: number;
   difficultyLevel: string;
   description: string;
   createdBy: string;
-  createdAt: string; // ISO 8601 string
+  createdAt: string;
   discount: Discount;
   review: Review;
   instructors: Instructor[];
   enrollment: Enrollment;
   lessons: Lesson[];
+}
 
+interface ICourseSuggestions {
+  title: string;
+  imageURL: string;
+  introURL: string;
+  description: string;
+  price: number;
+  duration: number;
+  difficultyLevel: "Beginner" | "Intermediate" | "Advanced"; 
+  prerequisites: string;
+  learningOutcomes: string[];
+  estimatedCompletionTime: number;
+  createdBy: string;
+  updatedBy: string;
+  isPublished: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: number;
+}
+
+
+interface ICourseDetails {
+  courseDetails: {
+    courseId: number
+    imageURL?: string
+    title: string
+    duration: number
+    price: number
+    difficultyLevel: string
+    description: string
+    createdBy: string
+    createdAt: string
+    discount: Discount
+    review: Review
+    instructors: Instructor[]
+    enrollment: Enrollment
+    lessons: Lesson[]
+    languages: string[]
+    introURL: string
+    learningOutcomes: string[]
+    skills: string[]
+    estimatedCompletionTime: number
+    updatedAt: string
+  }
+}
+
+interface ICourseFull {
+  courseDetails: {
+    courseId: number
+    imageURL?: string
+    title: string
+    duration: number
+    price: number
+    difficultyLevel: string
+    description: string
+    createdBy: string
+    createdAt: string
+    discount: Discount
+    review: Review
+    instructors: Instructor[]
+    enrollment: Enrollment
+    lessons: Lesson[]
+    languages: string[]
+    introURL: string
+    learningOutcomes: string[]
+    skills: string[]
+    estimatedCompletionTime: number
+    updatedAt: string
+  }
+  sectionDetails: Section[]
 }

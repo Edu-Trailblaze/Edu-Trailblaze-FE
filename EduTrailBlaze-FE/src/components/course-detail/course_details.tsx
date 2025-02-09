@@ -1,10 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-interface CourseDetailsProps {
-  selected: string
-  setSelected: React.Dispatch<React.SetStateAction<string>>
-}
-export default function CourseDetails({selected, setSelected}: CourseDetailsProps) {
+
+export default function CourseDetails() {
 
   const items = [
     { id: 'about', title: 'About' },
@@ -14,7 +11,7 @@ export default function CourseDetails({selected, setSelected}: CourseDetailsProp
   ]
 
   const handleClick = (id: string) => {
-    setSelected(id)
+    // setSelected(id)
   }
 
   return (
@@ -24,9 +21,7 @@ export default function CourseDetails({selected, setSelected}: CourseDetailsProp
           key={item.id}
           href={`#${item.id}`}
           onClick={() => handleClick(item.id)}
-          className={`px-4 py-2 rounded-lg ${
-            selected === item.id ? 'text-blue-500 bg-blue-100' : ''
-          } hover:bg-blue-100 hover:text-blue-500`}
+          className={`px-4 py-2 rounded-lg  hover:bg-blue-100 hover:text-blue-500`}
         >
           {item.title}
         </a>

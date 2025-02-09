@@ -1,61 +1,44 @@
 'use-client'
 import { redirect, useParams } from 'next/navigation'
-import { useGetCourseQuery } from '../../service/redux.service'
+import { useGetCourseQuery } from '../../services/course.service'
 import { useState } from 'react'
 import Modal from '../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { formatNumber } from '../../utils/format'
-import LoadingPayment from '../animate/LoadingPayment'
 
-export default function CourseDetails() {
+export default function CourseHeader( {courseDetails} : ICourseDetails) {
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
 
-  const { courseId } = useParams()
-
-  // Nếu courseId là mảng hoặc undefined, trả về undefined (không gọi API)
-  const validCourseId = typeof courseId === 'string' ? courseId : undefined
-
-  if (!validCourseId) {
-    return <p>Invalid course ID</p>
+  if (!courseDetails) {
+    return <div>No course details available</div>;
   }
 
-  const { data: course, isLoading, isFetching, error } = useGetCourseQuery(validCourseId)
-
-  if (isLoading || isFetching) {
-    return <LoadingPayment />
-  }
-
-  // if (error) {
-  //   redirect('/')
-  // }
-
-  if (!course) {
-    return <div className='text-center text-gray-700'>No course available.</div>
-  }
+    // Fallback image for instructors
+  const getInstructorImage = (instructor: any) => instructor.image || '/assets/img/default-avatar.jpg'
   return (
     <div className='bg-white p-6'>
       <div className='container mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12'>
         {/* Left Section */}
         <div className='md:w-1/2'>
-          <h1 className='text-4xl font-bold text-gray-900 mb-4'>{course?.title}</h1>
-          <p className='text-lg text-gray-700 mb-6'>{course?.description}</p>
+          <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
+          <p className='text-lg text-gray-700 mb-6'>{courseDetails.description}</p>
 
           <div className='flex items-center space-x-3 mb-5'>
             {/* Display instructor images */}
             <div className='flex -space-x-3'>
-              {course?.instructors.length > 3 && (
+              {courseDetails.instructors.length > 3 && (
                 <div className='w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold border-2 border-white'>
-                  +{course.instructors.length - 3}
+                  +{courseDetails.instructors.length - 3}
                 </div>
               )}
-              {course?.instructors
+              {courseDetails.instructors
                 .slice(0, 3)
                 .reverse()
                 .map((instructor, index) => (
                   <Avatar key={index}>
-                    <AvatarImage src={`${instructor.image}`} />
+                    <AvatarImage src={getInstructorImage(instructor)} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 ))}
@@ -65,12 +48,12 @@ export default function CourseDetails() {
             <p className='text-gray-700'>
               Instructors:{' '}
               <a href='#' className='text-blue-600 underline'>
-                {course?.instructors[0].userName}
+                {courseDetails.instructors[0].userName}
               </a>{' '}
             </p>
 
             <button onClick={openModal} className='underline font-bold text-blue-600'>
-              +{course?.instructors.length} more
+              +{courseDetails.instructors.length} more
             </button>
           </div>
 
@@ -80,7 +63,7 @@ export default function CourseDetails() {
           </button>
 
           <p>
-            <span className='font-bold'>{formatNumber(course.enrollment.totalEnrollments)}</span> already registered
+            <span className='font-bold'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span> already registered
           </p>
         </div>
 
@@ -98,17 +81,17 @@ export default function CourseDetails() {
           </div>
 
           <div className='text-center md:border-r-2 border-gray-300'>
-            <p className='text-blue-700 font-bold text-xl'>{course.review.averageRating} ★</p>
-            <p className='text-gray-500'>({formatNumber(course.review.totalRatings)} reviews)</p>
+            <p className='text-blue-700 font-bold text-xl'>{courseDetails.review.averageRating} ★</p>
+            <p className='text-gray-500'>({formatNumber(courseDetails.review.totalRatings)} reviews)</p>
           </div>
 
           <div className='text-center md:border-r-2 border-gray-300'>
-            <p className='font-semibold text-lg'>{course.difficultyLevel} level</p>
+            <p className='font-semibold text-lg'>{courseDetails.difficultyLevel} level</p>
             <p className='text-gray-500'>No prior experience required</p>
           </div>
 
           <div className='text-center md:border-r-2 border-gray-300'>
-            <p className='font-semibold text-lg'>{course.duration} hours</p>
+            <p className='font-semibold text-lg'>{courseDetails.duration} hours</p>
             <p className='text-gray-500'>at 10 hours a week</p>
           </div>
 
@@ -121,10 +104,10 @@ export default function CourseDetails() {
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title='Instructors'>
         <div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4'>
-          {course?.instructors.map((instructor, index) => (
+          {courseDetails.instructors.map((instructor, index) => (
             <div key={index} className='flex items-center space-x-3'>
               <Avatar className='border-2 border-gray-300'>
-                <AvatarImage src={`${instructor.image}`} />
+                <AvatarImage src={getInstructorImage(instructor)} />
                 <AvatarFallback>Instructor</AvatarFallback>
               </Avatar>
               <div>

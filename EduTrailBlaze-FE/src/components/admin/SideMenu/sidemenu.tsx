@@ -19,6 +19,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import Person2Icon from '@mui/icons-material/Person2'
 import Settings from '@mui/icons-material/Settings'
 import ExitToAppIcon from '@mui/icons-material/Logout'
+import GroupsIcon from '@mui/icons-material/Groups';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
