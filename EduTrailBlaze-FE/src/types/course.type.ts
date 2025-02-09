@@ -58,6 +58,27 @@ interface ICourse {
   lessons: Lesson[];
 }
 
+interface ICourseSuggestions {
+  title: string;
+  imageURL: string;
+  introURL: string;
+  description: string;
+  price: number;
+  duration: number;
+  difficultyLevel: "Beginner" | "Intermediate" | "Advanced"; 
+  prerequisites: string;
+  learningOutcomes: string[];
+  estimatedCompletionTime: number;
+  createdBy: string;
+  updatedBy: string;
+  isPublished: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: number;
+}
+
+
 interface ICourseDetails {
   courseDetails: {
     courseId: number

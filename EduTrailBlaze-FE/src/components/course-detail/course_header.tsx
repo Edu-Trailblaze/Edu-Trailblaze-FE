@@ -1,11 +1,10 @@
 'use-client'
 import { redirect, useParams } from 'next/navigation'
-import { useGetCourseQuery } from '../../service/redux.service'
+import { useGetCourseQuery } from '../../services/course.service'
 import { useState } from 'react'
 import Modal from '../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { formatNumber } from '../../utils/format'
-import LoadingPayment from '../animate/LoadingPayment'
 
 export default function CourseHeader( {courseDetails} : ICourseDetails) {
   const [isModalOpen, setModalOpen] = useState(false)
