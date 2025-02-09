@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useGetCoursesQuery } from '../../service/redux.service'
+import { useGetCoursesQuery } from '../../services/course.service'
 import SkeletonCard from '../skeleton/skeleton_card'
 import { formatCurrency } from '../../utils/format'
 
@@ -38,7 +38,7 @@ export default function CourseSuggestion() {
           <div className='grid grid-cols-2 gap-6'>
             {data.slice(0, visibleCourse).map((course, index) => (
               <a
-                href={`${course.imageURL || '#'}`}
+                href={course.id ? `http://localhost:4000/course/${course.id}` : '#'}
                 key={index}
                 className='flex items-center border rounded-lg p-4 hover:shadow-lg'
               >
@@ -56,10 +56,11 @@ export default function CourseSuggestion() {
                 </div>
 
                 {/* Course Price */}
-                {/* <div className='ml-3 text-right'>
-                  <p className='text-lg font-bold text-green-600'>{formatCurrency(course.discount.calculatedPrice)}</p>
-                  <p className='text-sm line-through text-gray-400'>{formatCurrency(course.price)}</p>
-                </div> */}
+                <div className='ml-3 text-right'>
+                <p className='text-lg font-bold text-green-600'>{formatCurrency(course.price)}</p>
+                  {/* <p className='text-lg font-bold text-green-600'>{formatCurrency(course.discount.calculatedPrice)}</p> */}
+                  {/* <p className='text-sm line-through text-gray-400'>{formatCurrency(course.price)}</p> */}
+                </div>
               </a>
             ))}
           </div>
