@@ -49,17 +49,17 @@ export default function CourseSuggestion() {
                 <div className='flex-1'>
                   <h3 className='text-md font-semibold'>{course.title}</h3>
                   <p className='text-sm text-gray-500'> {course.description}</p>
-                  <p className='text-sm text-gray-500'>⭐ {course.review.averageRating}</p>
+                  {/* <p className='text-sm text-gray-500'>⭐ {course.review.averageRating}</p> */}
                   <p className='text-sm text-gray-500'>
                     ⏳ {course.duration} total hours • {course.difficultyLevel} Level
                   </p>
                 </div>
 
                 {/* Course Price */}
-                <div className='ml-3 text-right'>
+                {/* <div className='ml-3 text-right'>
                   <p className='text-lg font-bold text-green-600'>{formatCurrency(course.discount.calculatedPrice)}</p>
                   <p className='text-sm line-through text-gray-400'>{formatCurrency(course.price)}</p>
-                </div>
+                </div> */}
               </a>
             ))}
           </div>
