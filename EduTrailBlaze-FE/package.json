@@ -16,7 +16,6 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@mui/icons-material": "^6.1.10",
-
     "@mui/material": "^6.4.3",
     "@mui/x-data-grid": "^7.25.0",
     "@mui/x-data-grid-generator": "^7.25.0",
