@@ -6,36 +6,27 @@ import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
-import MenuIcon from '@mui/icons-material/Menu'
 import Container from '@mui/material/Container'
 import Avatar from '@mui/material/Avatar'
-import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ModeToggle } from '@/components/ui/mode_toggle'
 import ToggleButton from '@/components/toggle_button/toggle_button'
+import { useTheme } from '@mui/material'
 
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function AdminHeader() {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
   const { data: session } = useSession()
+  const theme = useTheme()
   const userProfile = session?.user?.image as string
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
-  }
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
-  }
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
   }
 
   const handleCloseUserMenu = () => {
@@ -84,13 +75,6 @@ function AdminHeader() {
           >
             EduTrailBlaze
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button key={page} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
-                {page}
-              </Button>
-            ))}
-          </Box>
           <Box sx={{ paddingRight: 5, marginLeft: 'auto', display: { xs: 'none', md: 'flex' } }}>
             <Typography>Signed in as {session?.user?.email}</Typography>
           </Box>
@@ -116,6 +100,14 @@ function AdminHeader() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
+              <MenuItem>
+                <Link
+                  href={'/admin_dashboard/Dashboard/profile'}
+                  style={{ color: theme.palette.text.primary, textDecoration: 'none' }}
+                >
+                  <Typography textAlign='center'>Profile</Typography>
+                </Link>
+              </MenuItem>
               <MenuItem onClick={() => (session ? signOut() : '')}>
                 <Typography sx={{ textAlign: 'center' }}>
                   {session ? 'Logout' : <Link href={'/auth/login_register'}>Login</Link>}
