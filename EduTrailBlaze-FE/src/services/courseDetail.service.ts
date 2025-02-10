@@ -3,7 +3,7 @@ import { CustomError } from '../utils/helpers'
 
 export const courseApi = createApi({
   reducerPath: 'course/api', //tên field trong reduce state
-  //keepUnusedDataFor: 10, setting tg caching default là 60
+  // keepUnusedDataFor: 60, 
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://edu-trailblaze.azurewebsites.net/api/'
     // prepareHeaders(headers) {
@@ -13,7 +13,7 @@ export const courseApi = createApi({
   }),
   tagTypes: ['Courses'],
   endpoints: (build) => ({
-    getCourses: build.query<ICourseSuggestions[], void>({
+    getAllCourses: build.query<ICourseSuggestions[], void>({
       query: () => 'Course',
       providesTags(result) {
         return result
@@ -37,12 +37,19 @@ export const courseApi = createApi({
     //   invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     // }),
 
-    getCourse: build.query<ICourseFull, number>({
+    getCourseDetails: build.query<ICourseFull, number>({
       query: (id) => ({
         url: `Course/get-course-detail/${id}`,
         method: 'GET'
       })
     }),
+
+    getCourse: build.query<ICourseDetails, number>({
+      query: (id) => ({
+        url: `Course/${id}`,
+        method: 'GET'
+      })
+    })
 
     // updateCourse: build.mutation<ICourse, { id: string; body: ICourse }>({
     //   query(data) {
@@ -68,8 +75,9 @@ export const courseApi = createApi({
 })
 
 export const {
-  useGetCoursesQuery,
+  useGetAllCoursesQuery,
   // useAddCourseMutation,
+  useGetCourseDetailsQuery,
   useGetCourseQuery,
   // useUpdateCourseMutation,
   // useDeleteCourseMutation

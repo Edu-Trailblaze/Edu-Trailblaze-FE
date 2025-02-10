@@ -13,3 +13,5 @@ export function convertDuration(duration: string) {
   const [hours, minutes] = duration.split(":").map(Number);
   return `${hours + minutes / 60} hours`;
 }
+
+export const getInstructorImage = (instructor: any) => instructor.image || '/assets/img/default-avatar.jpg'

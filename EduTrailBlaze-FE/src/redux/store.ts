@@ -5,7 +5,9 @@ import type { TypedUseSelectorHook } from 'react-redux'
 // import { rtkQueryErrorLogger } from './middleware'
 import { useDispatch, useSelector } from 'react-redux'
 import courseReducer from './slice/course.slice'
-import { courseApi } from '../services/course.service'
+import { courseApi } from '../services/courseDetail.service'
+import { lectureApi } from '../services/lecture.service'
+import { sectionApi } from '../services/section.service'
 
 export const store = configureStore({
   reducer: {
@@ -15,9 +17,11 @@ export const store = configureStore({
     course: courseReducer,
 
     //createApi
-    [courseApi.reducerPath]: courseApi.reducer
+    [courseApi.reducerPath]: courseApi.reducer,
+    [lectureApi.reducerPath]: lectureApi.reducer,
+    [sectionApi.reducerPath]: sectionApi.reducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(courseApi.middleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(courseApi.middleware, lectureApi.middleware, sectionApi.middleware),
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

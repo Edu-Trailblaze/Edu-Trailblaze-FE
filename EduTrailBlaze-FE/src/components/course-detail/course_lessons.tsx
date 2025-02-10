@@ -3,11 +3,9 @@ import { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useGetCourseQuery } from '../../services/course.service'
 import Modal from '../global/Modal'
 import Link from 'next/link'
-import LoadingPayment from '../animate/LoadingPayment'
-import { convertDuration, formatNumber } from '../../utils/format'
+import { convertDuration, formatNumber, getInstructorImage } from '../../utils/format'
 
 export default function CourseLessons({courseDetails, sectionDetails} : ICourseFull) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
@@ -93,7 +91,7 @@ export default function CourseLessons({courseDetails, sectionDetails} : ICourseF
               {courseDetails?.instructors.slice(0, 2).map((value, index) => (
                 <div key={index} className='flex mb-5 mt-5'>
                   <Avatar>
-                    <AvatarImage src={`${value.image}`} />
+                    <AvatarImage src={getInstructorImage(value)} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                   <div className='ml-5'>
@@ -135,7 +133,7 @@ export default function CourseLessons({courseDetails, sectionDetails} : ICourseF
           {courseDetails?.instructors.map((value, index) => (
             <div key={index} className='flex space-x-3 items-center'>
               <Avatar className='border-2 border-gray-300'>
-                <AvatarImage src={`${value.image}`}/>
+                <AvatarImage src={getInstructorImage(value)}/>
                 <AvatarFallback>Instructor</AvatarFallback>
               </Avatar>
               <div>

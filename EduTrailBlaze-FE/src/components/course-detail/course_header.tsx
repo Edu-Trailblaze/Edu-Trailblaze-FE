@@ -1,27 +1,23 @@
 'use-client'
-import { redirect, useParams } from 'next/navigation'
-import { useGetCourseQuery } from '../../services/course.service'
 import { useState } from 'react'
 import Modal from '../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { formatNumber } from '../../utils/format'
+import { formatNumber, getInstructorImage } from '../../utils/format'
 
-export default function CourseHeader( {courseDetails} : ICourseDetails) {
+export default function CourseHeader({ courseDetails, sectionDetails }: ICourseFull) {
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
 
   if (!courseDetails) {
-    return <div>No course details available</div>;
+    return <div>No course details available</div>
   }
 
-    // Fallback image for instructors
-  const getInstructorImage = (instructor: any) => instructor.image || '/assets/img/default-avatar.jpg'
   return (
-    <div className='bg-white p-6'>
-      <div className='container mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12'>
+    <div className='p-6 container bg-sky-200 rounded-lg'>
+      <div className='mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12'>
         {/* Left Section */}
-        <div className='md:w-1/2'>
+        <div className='w-1/2 pl-8'>
           <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
           <p className='text-lg text-gray-700 mb-6'>{courseDetails.description}</p>
 
@@ -39,7 +35,6 @@ export default function CourseHeader( {courseDetails} : ICourseDetails) {
                 .map((instructor, index) => (
                   <Avatar key={index}>
                     <AvatarImage src={getInstructorImage(instructor)} />
-                    <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 ))}
             </div>
@@ -63,17 +58,18 @@ export default function CourseHeader( {courseDetails} : ICourseDetails) {
           </button>
 
           <p>
-            <span className='font-bold'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span> already registered
+            <span className='font-bold'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span> already
+            registered
           </p>
         </div>
 
         {/* Right Section */}
-        <div className='md:w-1/2'>
-          <img src='/assets/logos/AI.png' alt='Course Visual' className='rounded-lg shadow-lg w-full' />
+        <div className='w-1/2 min-h-[400px] relative '>
+          <img src={courseDetails.imageURL} alt='Course Visual' className='rounded-lg shadow-lg max-h-[400px] absolute right-10' />
         </div>
       </div>
 
-      <div className='container mx-auto mt-12 p-6 rounded-lg shadow-xl border-2 '>
+      <div className='container mx-auto mt-12 p-6 rounded-lg border-2 bg-white'>
         <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
           <div className='text-center md:border-r-2 border-gray-300'>
             <p className='font-semibold text-lg'>5 course services</p>
@@ -108,7 +104,6 @@ export default function CourseHeader( {courseDetails} : ICourseDetails) {
             <div key={index} className='flex items-center space-x-3'>
               <Avatar className='border-2 border-gray-300'>
                 <AvatarImage src={getInstructorImage(instructor)} />
-                <AvatarFallback>Instructor</AvatarFallback>
               </Avatar>
               <div>
                 <p className='font-bold'>{instructor.userName}</p>

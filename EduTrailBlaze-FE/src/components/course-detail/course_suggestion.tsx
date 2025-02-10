@@ -1,11 +1,11 @@
 'use client'
 import { useState } from 'react'
-import { useGetCoursesQuery } from '../../services/course.service'
+import { useGetAllCoursesQuery } from '../../services/courseDetail.service'
 import SkeletonCard from '../skeleton/skeleton_card'
 import { formatCurrency } from '../../utils/format'
 
 export default function CourseSuggestion() {
-  const { data, isLoading, isFetching } = useGetCoursesQuery()
+  const { data, isLoading, isFetching } = useGetAllCoursesQuery()
 
   const [visibleCourse, setVisibleCourse] = useState(4)
 
@@ -36,7 +36,7 @@ export default function CourseSuggestion() {
         <>
           {/* Course List */}
           <div className='grid grid-cols-2 gap-6'>
-            {data.slice(0, visibleCourse).map((course, index) => (
+            {data.slice(0, visibleCourse).map((course: any, index: any) => (
               <a
                 href={course.id ? `http://localhost:4000/course/${course.id}` : '#'}
                 key={index}
@@ -57,7 +57,7 @@ export default function CourseSuggestion() {
 
                 {/* Course Price */}
                 <div className='ml-3 text-right'>
-                <p className='text-lg font-bold text-green-600'>{formatCurrency(course.price)}</p>
+                  <p className='text-lg font-bold text-green-600'>{formatCurrency(course.price)}</p>
                   {/* <p className='text-lg font-bold text-green-600'>{formatCurrency(course.discount.calculatedPrice)}</p> */}
                   {/* <p className='text-sm line-through text-gray-400'>{formatCurrency(course.price)}</p> */}
                 </div>
