@@ -13,7 +13,7 @@ const ListItemsWithIcon = (prop: ListItemProps) => {
   )
 }
 
-export default function CourseAbout({ courseDetails }: ICourseDetails) {
+export default function CourseAbout({ courseDetails }: ICourseFull) {
   return (
     <div className='container mb-20'>
       <h1 className='w-[900px] border-t-2 pt-10 font-bold text-xl mb-5'>What you'll learn</h1>

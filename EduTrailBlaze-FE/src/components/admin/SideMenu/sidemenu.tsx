@@ -21,9 +21,11 @@ import Settings from '@mui/icons-material/Settings'
 import ExitToAppIcon from '@mui/icons-material/Logout'
 import GroupsIcon from '@mui/icons-material/Groups';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ListSubheader from '@mui/material/ListSubheader';
 
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import { Star } from 'lucide-react'
 
 const drawerWidth = 240
 
@@ -48,14 +50,23 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }
 })
 
-const menuRouteList = ['analytics', 'courses', 'orders', 'profile', 'settings', '']
-const menuListTranslations = ['Data', 'Courses', 'Orders', 'Profile', 'Settings', 'Sign Out']
-const menuListIcons = [<EqualizerIcon />, <SchoolIcon />, <ShoppingCartIcon />, <Person2Icon />, <Settings />, <ExitToAppIcon />]
+const generalRoutes = ['analytics', 'instructors', 'courses', 'orders', 'vouchers', 'reviews'];
+const generalTranslations = ['Data', 'Instructors', 'Courses', 'Orders', 'Vouchers', 'Reviews'];
+const generalIcons = [<EqualizerIcon />, <GroupsIcon />, <SchoolIcon />, <ShoppingCartIcon />, <CardGiftcardIcon />, <Star />];
+
+const personalRoutes = ['profile', 'settings', ''];
+const personalTranslations = ['Profile', 'Settings', 'Sign Out'];
+const personalIcons = [<Person2Icon />, <Settings />, <ExitToAppIcon />];
+
+
 
 export default function SideMenu() {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const mobileCheck = useMediaQuery('(min-width: 600px)')
+  // const mobileCheck = useMediaQuery("(max-width:600px)")
+  const mobileCheck = useMediaQuery(theme.breakpoints.down("sm"));
+
+
 
   const handleDrawerToggle = () => {
     setOpen(!open)
@@ -95,48 +106,39 @@ export default function SideMenu() {
         </IconButton>
       </div>
       <Divider />
-      <Divider />
-      <List>
-        {menuListTranslations.map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <Link
-              className={scss.link}
-              href={`/admin_dashboard/Dashboard/${menuRouteList[index]}`}
+
+
+      {/* GENERAL */}
+
+      <List
+        subheader={
+          mobileCheck ? (
+            <ListSubheader
+              component="div"
+              sx={{
+                fontWeight: 'bold',
+                fontSize: '14px',
+                letterSpacing: '0.5px',
+                color: theme.palette.text.primary,
+                textTransform: 'uppercase',
+              }}
             >
+              General
+            </ListSubheader>
+          ) : null
+        }
+      >
+        {generalTranslations.map((text, index) => (
+          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+            <Link href={`/admin_dashboard/Dashboard/${generalRoutes[index]}`} className={scss.link}>
               <ListItemButton
                 onClick={() => handleListItemButtonClick(text)}
                 title={text}
                 aria-label={text}
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5
-                  },
-                  open
-                    ? {
-                      justifyContent: 'initial'
-                    }
-                    : {
-                      justifyContent: 'center'
-                    }
-                ]}
+                sx={{ minHeight: 48, px: 2.5, justifyContent: open ? 'initial' : 'center' }}
               >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: 'center'
-                    },
-                    open
-                      ? {
-                        mr: 3
-                      }
-                      : {
-                        mr: 'auto'
-                      }
-                  ]}
-                >
-                  {menuListIcons[index]}
+                <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center', mr: open ? 3 : 'auto' }}>
+                  {generalIcons[index]}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ color: theme.palette.text.primary, opacity: open ? 1 : 0 }} />
               </ListItemButton>
@@ -144,6 +146,48 @@ export default function SideMenu() {
           </ListItem>
         ))}
       </List>
-    </Drawer>
-  )
+
+      <Divider />
+
+      {/* PERSONAL */}
+
+      <List
+        subheader={
+          mobileCheck ? (
+            <ListSubheader
+              component="div"
+              sx={{
+                fontWeight: 'bold',
+                fontSize: '14px',
+                letterSpacing: '0.5px',
+                color: theme.palette.text.primary,
+                textTransform: 'uppercase',
+              }}
+            >
+              Personal
+            </ListSubheader>
+          ) : null
+        }
+      >
+        {personalTranslations.map((text, index) => (
+          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+            <Link href={`/admin_dashboard/Dashboard/${personalRoutes[index]}`} className={scss.link}>
+              <ListItemButton
+                onClick={() => handleListItemButtonClick(text)}
+                title={text}
+                aria-label={text}
+                sx={{ minHeight: 48, px: 2.5, justifyContent: open ? 'initial' : 'center' }}
+              >
+                <ListItemIcon sx={{ minWidth: 0, justifyContent: 'center', mr: open ? 3 : 'auto' }}>
+                  {personalIcons[index]}
+                </ListItemIcon>
+                <ListItemText primary={text} sx={{ color: theme.palette.text.primary, opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </Link>
+          </ListItem>
+        ))}
+      </List>
+
+    </Drawer >
+  );
 }

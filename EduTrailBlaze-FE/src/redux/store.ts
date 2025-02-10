@@ -5,7 +5,9 @@ import type { TypedUseSelectorHook } from 'react-redux'
 // import { rtkQueryErrorLogger } from './middleware'
 import { useDispatch, useSelector } from 'react-redux'
 import courseReducer from './slice/course.slice'
-import { courseApi } from '../services/course.service'
+import { courseApi } from '../services/courseDetail.service'
+import { lectureApi } from '../services/lecture.service'
+import { sectionApi } from '../services/section.service'
 import authReducer from './slice/auth.slice' // Import auth slice
 import { authApi } from '@/services/auth.service'
 import storage from "redux-persist/lib/storage";
@@ -29,11 +31,13 @@ export const store = configureStore({
     //createApi
     [courseApi.reducerPath]: courseApi.reducer,
     [authApi.reducerPath]: authApi.reducer
+    [lectureApi.reducerPath]: lectureApi.reducer,
+    [sectionApi.reducerPath]: sectionApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false // Bỏ kiểm tra serialize để tránh lỗi
-    }).concat(courseApi.middleware, authApi.middleware)
+    }).concat(courseApi.middleware, authApi.middleware, lectureApi.middleware, sectionApi.middleware)
 })
 
 export const persistor = persistStore(store);

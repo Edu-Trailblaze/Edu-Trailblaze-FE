@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useRef } from 'react'
 import { ChartConfiguration, registerables } from 'chart.js'
 import { Chart } from 'chart.js'

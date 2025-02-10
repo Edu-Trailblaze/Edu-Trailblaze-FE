@@ -7,7 +7,7 @@ export default function Profile() {
   const { data: session } = useSession()
   const names = session?.user?.name ? session?.user?.name?.split(' ') : []
   const firstName = names[0]
-  const lastName = names?.length > 1 ? names[names.length - 1] : "" 
+  const lastName = names?.length > 1 ? names[names.length - 1] : ""
   const emailAddress = session?.user?.email
 
   const [formData, setFormData] = useState({
@@ -18,13 +18,13 @@ export default function Profile() {
     newPassword: '',
     confirmPassword: '',
     receiveEmails: false
-  }) 
+  })
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value, checked} = event.target
+    const { name, value, checked } = event.target
     setFormData((prevState) => ({
       ...prevState,
-      [name]: name === 'receiveEmails' ? checked: value
+      [name]: name === 'receiveEmails' ? checked : value
     }))
   }
 
@@ -124,9 +124,9 @@ export default function Profile() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                      <Button type='submit' variant='contained' color='primary'>
-                        Save Changes
-                      </Button>
+                    <Button type='submit' variant='contained' color='primary'>
+                      Save Changes
+                    </Button>
                   </Grid>
                 </Grid>
               </form>

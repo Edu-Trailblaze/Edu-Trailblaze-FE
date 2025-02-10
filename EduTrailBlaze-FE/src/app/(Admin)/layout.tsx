@@ -14,12 +14,10 @@ export default function RootLayout({
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <html lang='en'>
-          <body>
-            <AdminHeader />
-            <Layout>{children}</Layout>
-          </body>
-        </html>
+
+        <AdminHeader />
+        <Layout>{children}</Layout>
+
       </ThemeProvider>
     </>
   )
