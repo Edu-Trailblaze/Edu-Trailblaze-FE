@@ -5,7 +5,7 @@ import type { TypedUseSelectorHook } from 'react-redux'
 // import { rtkQueryErrorLogger } from './middleware'
 import { useDispatch, useSelector } from 'react-redux'
 import courseReducer from './slice/course.slice'
-import { courseApi } from '../service/redux.service'
+import { courseApi } from '../services/course.service'
 
 export const store = configureStore({
   reducer: {
