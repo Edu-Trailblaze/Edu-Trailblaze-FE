@@ -3,10 +3,12 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
+import { Edit, PlusCircle, Trash2, X } from "lucide-react"; // Import Lucide icons
 
 
 
-const OrderForm = dynamic(() => import("./Form/OrderForm"), {
+
+const OrderForm = dynamic(() => import("../Form/OrderForm"), {
     loading: () => <h1>Loading...</h1>,
 });
 
@@ -41,7 +43,7 @@ const FormModal = ({
     data?: any;
     id?: number;
 }) => {
-    const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
+    const size = type === "create" ? "w-10 h-10" : "w-9 h-9";
     const bgColor =
         type === "create"
             ? "bg-lamaYellow"
@@ -74,7 +76,13 @@ const FormModal = ({
                 className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
                 onClick={() => setOpen(true)}
             >
-                <Image src={`/${type}.png`} alt="" width={16} height={16} />
+                {type === "create" ? (
+                    <PlusCircle size={20} />
+                ) : type === "update" ? (
+                    <Edit size={20} />
+                ) : (
+                    <Trash2 size={20} />
+                )}
             </button>
             {open && (
                 <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">

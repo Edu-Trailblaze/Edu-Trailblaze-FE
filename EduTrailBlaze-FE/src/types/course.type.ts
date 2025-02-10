@@ -8,9 +8,14 @@ interface Lesson {
 }
 
 interface Instructor {
+  instructorId: string;
+  courseId: number[];
   userName: string;
   email: string;
   image: string;
+  isPrimaryInstructor: boolean;
+  createdAt: string;
+
 }
 
 interface Discount {

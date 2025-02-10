@@ -1,7 +1,12 @@
-import React from 'react'
+"use client";
 
-export default function Settings() {
-  return (
-    <div>settings</div>
-  )
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+
+export default function SettingPage() {
+    return (
+        <BrowserRouter>
+            <div>customer your settingsetting</div>
+        </BrowserRouter>
+    );
 }

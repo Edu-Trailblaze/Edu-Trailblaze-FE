@@ -1,5 +1,5 @@
 import React from 'react'
-import SideMenu from './sideMenu'
+import SideMenu from './SideMenu'
 
 export default {
   children: '',
