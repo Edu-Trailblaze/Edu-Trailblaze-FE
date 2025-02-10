@@ -11,7 +11,7 @@ import Loading from '../animate/Loading'
 export default function LecturePage() {
   const { data: course, isLoading: courseLoading, isFetching: courseFetching } = useGetCourseQuery(18)
   const { data: section, isLoading: sectionLoading, isFetching: sectionFetching } = useGetSectionQuery(1)
-  const { data: lecture, isLoading: lectureLoading, isFetching: lectureFetching } = useGetLectureQuery(1)
+  const { data: lecture, isLoading: lectureLoading, isFetching: lectureFetching } = useGetLectureQuery(2)
   
   if(courseLoading || sectionLoading){
     return <Loading />
@@ -25,16 +25,15 @@ export default function LecturePage() {
     return <div>Section not found</div>
   }
 
-  
+  if (!lecture){
+    return <div>Lecture not found</div>
+  }
 
-  // if (!lecture){
-  //   return <div>Lecture not found</div>
-  // }
   return (
     <div>
         <div className='flex'>
             <ModuleBar course={course} section={section}/>
-            <ModuleVideo course={course} section={section}/>
+            <ModuleVideo course={course} section={section} lecture={lecture}/>
         </div>
     </div>
   )
