@@ -5,7 +5,13 @@ import { RiArrowDropDownLine, RiArrowUpSLine } from "react-icons/ri";
 import { BsCheck2 } from "react-icons/bs"; // Checkmark icon
 import { FiVideo } from "react-icons/fi"; // Video icon
 
-export default function ModuleBar() {
+interface ModuleBarProps {
+  course: ICourseDetails
+  section: ISection;
+  // lecture: ILecture;
+}
+
+export default function ModuleBar( {course, section}: ModuleBarProps ) {
   const [moduleOpen, setModuleOpen] = useState(false); // Toggle module
   const [activeVideo, setActiveVideo] = useState<number | null>(null); // Track active video
 

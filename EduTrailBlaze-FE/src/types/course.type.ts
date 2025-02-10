@@ -1,16 +1,15 @@
-interface ICourseProps {
-  courseId: number; 
-}
-interface Lesson {
-  lessonId: number;
+interface ILecture {
+  sectionId: number;
   title: string;
-  duration: string;
-  rating: number;
-  reviews: number;
+  content: string;
   description: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: number;
 }
 
-interface Section {
+interface ISection {
   courseId: number
   title: string
   description: string
@@ -60,7 +59,6 @@ interface ICourse {
   review: Review;
   instructors: Instructor[];
   enrollment: Enrollment;
-  lessons: Lesson[];
 }
 
 interface ICourseSuggestions {
@@ -83,54 +81,27 @@ interface ICourseSuggestions {
   id: number;
 }
 
-
 interface ICourseDetails {
-  courseDetails: {
     courseId: number
-    imageURL?: string
     title: string
-    duration: number
-    price: number
-    difficultyLevel: string
-    description: string
-    createdBy: string
-    createdAt: string
-    discount: Discount
     review: Review
-    instructors: Instructor[]
     enrollment: Enrollment
-    lessons: Lesson[]
+    instructors: Instructor[]
     languages: string[]
+    imageURL: string
     introURL: string
+    description: string
+    price: number
+    duration: number
+    difficultyLevel: string
     learningOutcomes: string[]
+    createdAt: string
     skills: string[]
     estimatedCompletionTime: number
     updatedAt: string
-  }
 }
 
 interface ICourseFull {
-  courseDetails: {
-    courseId: number
-    imageURL?: string
-    title: string
-    duration: number
-    price: number
-    difficultyLevel: string
-    description: string
-    createdBy: string
-    createdAt: string
-    discount: Discount
-    review: Review
-    instructors: Instructor[]
-    enrollment: Enrollment
-    lessons: Lesson[]
-    languages: string[]
-    introURL: string
-    learningOutcomes: string[]
-    skills: string[]
-    estimatedCompletionTime: number
-    updatedAt: string
-  }
-  sectionDetails: Section[]
+  courseDetails: ICourseDetails
+  sectionDetails: ISection[]
 }

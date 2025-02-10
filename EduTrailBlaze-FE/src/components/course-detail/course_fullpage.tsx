@@ -5,26 +5,21 @@ import CourseDetails from './course_details'
 import CourseLessons from './course_lessons'
 import CourseHeader from './course_header'
 import CourseSuggestion from './course_suggestion'
-import Navigation from './course_nav'
-import { useEffect, useState } from 'react'
-import LoadingPayment from '../animate/LoadingPayment'
-import { useGetCourseQuery } from '../../services/course.service'
+import { useGetCourseDetailsQuery } from '../../services/courseDetail.service'
 import { useParams } from 'next/navigation'
+import Loading from '../animate/Loading'
 
 export default function Course() {
-  // const [selected, setSelected] = useState<string>('about')
-  // const [showNavigation, setShowNavigation] = useState<boolean>(false)
-
   const { courseId } = useParams() // { courseId } là phân rã object từ useParams()
-  const id  = useParams()
-  console.log('sssssss',id)
-  console.log(courseId)
   const numbericCourseId = Number(courseId);
-
-  const { data, isLoading, isFetching, error } = useGetCourseQuery(numbericCourseId)
-  
+  const { data, isLoading, isFetching, error } = useGetCourseDetailsQuery(numbericCourseId)
+  if (isLoading || isFetching) {
+    return <Loading />
+  }
   const detail = data?.courseDetails
-  const section = data?.sectionDetails
+  const section = data?.sectionDetails 
+  console.log('ssssssss',detail)
+  console.log('aaaaa',section)
   if (!detail) {
     return <div>No course available.</div>
   }
@@ -32,11 +27,13 @@ export default function Course() {
     return <div>No section available.</div>
   }
 
+  
+
   return (
     <div className='relative'>
       {/* Header */}
       <div id='course-header'>
-        <CourseHeader courseDetails={detail} />
+        <CourseHeader courseDetails={detail} sectionDetails={section} />
       </div>
 
       {/* CourseDetails */}
@@ -49,7 +46,7 @@ export default function Course() {
 
       {/* Sections */}
       <div id='about'>
-        <CourseAbout courseDetails={detail} />
+        <CourseAbout courseDetails={detail} sectionDetails={section} />
       </div>
       <div id='outcomes'>
         <CourseOutcome />
