@@ -6,7 +6,7 @@ import Table from '@/components/admin/Table/Table';
 import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import { useState, useEffect } from 'react';
 import Loader from '@/components/animate/loader/loader';
-import { Filter, ArrowUpDown } from "lucide-react";
+import { Filter, ArrowUpDown, Plus } from "lucide-react";
 
 
 type Order = {
@@ -89,11 +89,14 @@ export default function OrdersManagement() {
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <TableSearch />
                     <div className="flex items-center gap-4 self-end">
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#89CFF0]">
                             <Filter size={18} />
                         </button>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#89CFF0]">
                             <ArrowUpDown size={18} />
+                        </button>
+                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#89CFF0]">
+                            <Plus size={18} />
                         </button>
                     </div>
                 </div>
