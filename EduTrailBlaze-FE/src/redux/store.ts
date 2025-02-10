@@ -30,7 +30,7 @@ export const store = configureStore({
 
     //createApi
     [courseApi.reducerPath]: courseApi.reducer,
-    [authApi.reducerPath]: authApi.reducer
+    [authApi.reducerPath]: authApi.reducer,
     [lectureApi.reducerPath]: lectureApi.reducer,
     [sectionApi.reducerPath]: sectionApi.reducer
   },
