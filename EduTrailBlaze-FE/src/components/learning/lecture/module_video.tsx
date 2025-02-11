@@ -1,7 +1,9 @@
 'use client'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io'
 import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
+import { truncateContent } from '../../../utils/format'
 
 interface ModuleBarProps {
   course: ICourseDetails
@@ -31,29 +33,23 @@ export default function ModuleVideo({ course, section, lecture }: ModuleBarProps
     { id: 13, name: 'Deutsch' }
   ]
 
-  const truncateContent = (content: string, maxLength: number = 20 ): string => {
-    if (content.length <= maxLength) return content // Trả về nguyên nội dung nếu nó ngắn hơn maxLength
-
-    const words = content.split(' ')
-    let truncated = ''
-
-    for (const word of words) {
-      if ((truncated + word).length > maxLength) break
-      truncated += (truncated ? ' ' : '') + word
-    }
-
-    return truncated.trim() + '...'
-  }
-
+  console.log('sssssss', course)
+  console.log('aaaaa', course.id)
   return (
     <div className='pb-5 container max-w-[1300px]'>
       {/**Video Header */}
       <div className='flex justify-between text-sm'>
         <div className='flex py-3 ml-14 items-center gap-2 font-normal '>
-          <a href='' className='hover:text-blue-500 hover:underline decoration-solid'>
+          <Link
+            href={`http://localhost:4000/course/${course.id}`}
+            className='hover:text-blue-500 hover:underline decoration-solid'
+          >
             {truncateContent(course.title)}
-          </a>
+          </Link>
           <IoIosArrowForward />
+          {/* <a href={`http://localhost:4000/course/${section.id}`} className='hover:text-blue-500 hover:underline decoration-solid'>
+            {truncateContent(section.title)}
+          </a> */}
           <a href='' className='hover:text-blue-500 hover:underline decoration-solid'>
             {truncateContent(section.title)}
           </a>

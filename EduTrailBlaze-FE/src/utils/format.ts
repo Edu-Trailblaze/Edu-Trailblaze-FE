@@ -15,3 +15,17 @@ export function convertDuration(duration: string) {
 }
 
 export const getInstructorImage = (instructor: any) => instructor.image || '/assets/img/default-avatar.jpg'
+
+export const truncateContent = (content: string, maxLength: number = 20): string => {
+  if (content.length <= maxLength) return content // Trả về nguyên nội dung nếu nó ngắn hơn maxLength
+
+  const words = content.split(' ')
+  let truncated = ''
+
+  for (const word of words) {
+    if ((truncated + word).length > maxLength) break
+    truncated += (truncated ? ' ' : '') + word
+  }
+
+  return truncated.trim() + '...'
+}
