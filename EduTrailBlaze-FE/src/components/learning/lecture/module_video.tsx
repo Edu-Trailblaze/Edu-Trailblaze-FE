@@ -1,18 +1,18 @@
 'use client'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io'
 import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
+import { truncateContent } from '../../../utils/format'
 
-interface ModuleBarProps  {
-  course: ICourseDetails;
-  section: ISection;
-  // lecture: ILecture;
+interface ModuleBarProps {
+  course: ICourseDetails
+  section: ISection
+  lecture: ILecture
 }
 
-export default function ModuleVideo({course, section}: ModuleBarProps) {
+export default function ModuleVideo({ course, section, lecture }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
-
-  console.log(section.title)
   const toggleList = () => {
     setLanguageOpen((prev) => !prev)
   }
@@ -32,22 +32,30 @@ export default function ModuleVideo({course, section}: ModuleBarProps) {
     { id: 12, name: 'Español' },
     { id: 13, name: 'Deutsch' }
   ]
+
+  console.log('sssssss', course)
+  console.log('aaaaa', course.id)
   return (
-    <div className='pb-5'>
+    <div className='pb-5 container max-w-[1300px]'>
       {/**Video Header */}
-      <div className='flex justify-between'>
-        <div className='flex py-3 ml-14 items-center gap-2 font-normal'>
+      <div className='flex justify-between text-sm'>
+        <div className='flex py-3 ml-14 items-center gap-2 font-normal '>
+          <Link
+            href={`http://localhost:4000/course/${course.id}`}
+            className='hover:text-blue-500 hover:underline decoration-solid'
+          >
+            {truncateContent(course.title)}
+          </Link>
+          <IoIosArrowForward />
+          {/* <a href={`http://localhost:4000/course/${section.id}`} className='hover:text-blue-500 hover:underline decoration-solid'>
+            {truncateContent(section.title)}
+          </a> */}
           <a href='' className='hover:text-blue-500 hover:underline decoration-solid'>
-            {course.title}
+            {truncateContent(section.title)}
           </a>
           <IoIosArrowForward />
           <a href='' className='hover:text-blue-500 hover:underline decoration-solid'>
-            {section.title}
-          </a>
-          <IoIosArrowForward />
-          <a href='' className='hover:text-blue-500 hover:underline decoration-solid'>
-            {/* {lecture?.title} */}
-            lecture.tiltle
+            {lecture?.title}
           </a>
         </div>
         <div className='flex gap-5 font-normal'>
@@ -64,17 +72,15 @@ export default function ModuleVideo({course, section}: ModuleBarProps) {
 
       {/**Video Display */}
       <div className='w-auto pl-12'>
-        <video className='rounded-2xl w-[1300px]' controls>
+        <video className='rounded-2xl w-full ' controls>
           <source src='assets/Video/fish_video.mp4' type='video/mp4'></source>
         </video>
-        {/* <p className='font-semibold text-2xl py-5'>{lecture?.title}</p> */}
-        lecture?.titile
+        <p className='font-semibold text-2xl py-5'>{lecture?.title}</p>
       </div>
 
       {/**Video summarise */}
-      <div className='ml-12 w-[1300px] bg-[#F4F4F4] px-[30px] py-[30px] rounded-2xl border-2 border-blue-500'>
-        {/* <p>{lecture?.content}</p> */}
-        lecture?.content
+      <div className='ml-12 bg-[#F4F4F4] px-[30px] py-[30px] rounded-2xl border-2 border-blue-500'>
+        <p>{lecture?.content}</p>
       </div>
 
       {/**Video Options */}

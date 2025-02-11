@@ -3,9 +3,9 @@ import { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Modal from '../global/Modal'
+import Modal from '../../global/Modal'
 import Link from 'next/link'
-import { convertDuration, formatNumber, getInstructorImage } from '../../utils/format'
+import { convertDuration, formatNumber, getInstructorImage } from '../../../utils/format'
 
 export default function CourseLessons({courseDetails, sectionDetails} : ICourseFull) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)

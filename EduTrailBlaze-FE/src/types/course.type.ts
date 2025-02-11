@@ -15,6 +15,7 @@ interface ISection {
   description: string
   numberOfLectures: number
   duration: string
+  id: number
 }
 
 interface Instructor {
@@ -82,7 +83,7 @@ interface ICourseSuggestions {
 }
 
 interface ICourseDetails {
-    courseId: number
+    id: number
     title: string
     review: Review
     enrollment: Enrollment
