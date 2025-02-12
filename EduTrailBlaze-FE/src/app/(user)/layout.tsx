@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import '../globals.css'
-import WebHeader from '@/components/header'
-import WebFooter from '@/components/footer'
+import WebHeader from '@/components/generalLayout/header/header'
+import WebFooter from '@/components/generalLayout/footer/footer'
 
 export const metadata: Metadata = {
   title: 'Edutrail Blaze',
