@@ -49,7 +49,7 @@ export const courseApi = createApi({
         url: `Course/${id}`,
         method: 'GET'
       })
-    })
+    }),
 
     // updateCourse: build.mutation<ICourse, { id: string; body: ICourse }>({
     //   query(data) {
@@ -71,6 +71,12 @@ export const courseApi = createApi({
     //   },
     //   invalidatesTags: (result, error, id) => (error ? [] : [{ type: 'Courses', id }])
     // })
+
+    getInstructorOfCourse: build.query<ICourseInstructor[], number>({
+      query: (id) => ({
+        url: `Course/get-instructors-of-a-course?courseId=${id}`
+      })
+    })
   })
 })
 
@@ -81,4 +87,5 @@ export const {
   useGetCourseQuery,
   // useUpdateCourseMutation,
   // useDeleteCourseMutation
+  useGetInstructorOfCourseQuery
 } = courseApi

@@ -105,3 +105,9 @@ interface ICourseFull {
   courseDetails: ICourseDetails
   sectionDetails: ISection[]
 }
+
+interface ICourseInstructor {
+  id: string
+  userName: string
+  email: string
+}
