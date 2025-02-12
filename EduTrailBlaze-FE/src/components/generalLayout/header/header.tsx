@@ -5,13 +5,24 @@ import { Dialog, DialogPanel, Popover, PopoverButton, PopoverGroup, PopoverPanel
 import { Bars3Icon, BriefcaseIcon, NewspaperIcon, ComputerDesktopIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, ArrowRightCircleIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 import { LuHandHeart } from 'react-icons/lu'
-import { MdAttachMoney, MdOutlineShoppingCart, MdLanguage } from 'react-icons/md'
+import { MdAttachMoney, MdOutlineShoppingCart, MdLanguage, MdOutlineSupportAgent } from 'react-icons/md'
+import { IoLogOut } from "react-icons/io5";
 import Link from 'next/link'
-import { logout } from '../redux/slice/auth.slice'
+import { logout } from '../../../redux/slice/auth.slice'
 import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '../../ui/dropdown-menu'
+import { Avatar, AvatarImage } from '../../ui/avatar'
+import { jwtDecode } from 'jwt-decode'
+import { FaUserCog, FaUserEdit } from 'react-icons/fa'
 
 const products = [
   {
@@ -77,16 +88,37 @@ export default function WebHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [languageModalOpen, setLanguageModalOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [cartHovered, setCartHovered] = useState(false)
+  const [userId, setUserId] = useState('')
+  const [userName, setUserName] = useState('')
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
     setIsLoggedIn(!!token)
+
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        console.log('decode', decode)
+        setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
+        setUserName((decode as any)?.fullName ?? '')
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setUserId('')
+    }
   }, [])
+
+  console.log('userName', userName)
 
   const handleLogout = () => {
     dispatch(logout())
     alert(`Logout successful!`)
     router.push('/auth/login_register')
+  }
+
+  const handleToggleCart = () => {
+    setCartHovered((prev) => !prev)
   }
 
   return (
@@ -183,29 +215,71 @@ export default function WebHeader() {
             </div>
           </div>
 
-          <div>
+          <div
+            className='cursor-pointer hover:bg-blue-200   ml-6 p-[6px] rounded-md'
+            onMouseEnter={() => setCartHovered(true)}
+            onMouseLeave={() => setCartHovered(false)}
+          >
             {/* <a href="#">
               <MdOutlineShoppingCart className="w-8 h-8 ml-10" />
             </a> */}
-            <Link href={'/shopping_cart'}>
-              <MdOutlineShoppingCart className='w-8 h-8 ml-10' />
-            </Link>
+
+            <MdOutlineShoppingCart className='w-8 h-8 hover:text-blue-600' />
+
+            {cartHovered && (
+              <div className='absolute mt-4 w-80 -translate-x-[45%] p-4 bg-white shadow-2xl rounded-xl border border-gray-400 z-10'>
+                <div className='flex gap-5'>
+                  <div>
+                    <img
+                      className='h-[70px] w-[7-px] rounded-[7px]'
+                      src='assets/Side_Image/course_image.png'
+                      alt='course_img'
+                    />
+                  </div>
+                  <div>
+                    <h1 className='font-semibold'>Course Title</h1>
+                    <p className='block font-sans font-light text-sm leading-relaxed text-inherit antialiased'>
+                      <strong>Instructor:</strong>
+                    </p>
+                    <p className='font-semibold'>Price$</p>
+                  </div>
+                </div>
+
+                <button className='mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg'>
+                  <Link href={'/shopping_cart'}>Go to Cart</Link>
+                </button>
+
+                <div className='absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-4 h-4 bg-white rotate-45 border-l border-t border-gray-400'></div>
+              </div>
+            )}
           </div>
         </PopoverGroup>
 
         <div className='lg:flex lg:flex-1 justify-end'>
           {isLoggedIn ? (
-            <div className='relative overflow-visible mr-[50px]'>
+            <div className='relative overflow-visible mr-[50px] mt-2'>
+              {/* <WelcomeItem id={userId}/> */}
               <DropdownMenu>
-                <DropdownMenuTrigger className='pt-[10px]'>
+                <DropdownMenuTrigger asChild>
                   <Avatar>
-                    <AvatarImage src='/assets/img/default-avatar.jpg' alt='@shadcn' />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage src='/assets/img/default-avatar.jpg' alt='avatar' />
                   </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuItem  className='bg-white hover:bg-slate-100' onClick={() => console.log('Go to Profile')}>Profile</DropdownMenuItem>
-                  <DropdownMenuItem  className='bg-white hover:bg-slate-100' onClick={handleLogout}>Logout</DropdownMenuItem>
+                <DropdownMenuContent className='w-56 bg-white'>
+                  <DropdownMenuLabel className='flex items-center bg-sky-200 rounded'>
+                    <Avatar className='border-2 border-green-600'>
+                      <AvatarImage src='/assets/img/default-avatar.jpg' alt='avatar' />
+                    </Avatar>{' '}
+                    <p className='ml-2'>{userName}</p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><FaUserEdit /></div> Profile</DropdownMenuItem>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><FaUserCog /></div> Settings</DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><MdOutlineSupportAgent /> </div>Support</DropdownMenuItem>
+                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><IoLogOut /></div> 
+                    Log out
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
