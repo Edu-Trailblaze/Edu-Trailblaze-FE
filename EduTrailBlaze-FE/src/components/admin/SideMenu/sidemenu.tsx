@@ -11,7 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Drawer from '@mui/material/Drawer'
-import { useMediaQuery } from '@mui/material'
+import { Paper, useMediaQuery } from '@mui/material'
 import scss from './SideMenu.module.scss'
 import EqualizerIcon from '@mui/icons-material/Equalizer'
 import SchoolIcon from '@mui/icons-material/School'
@@ -25,7 +25,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
-import { Star } from 'lucide-react'
+import { Paperclip, Star } from 'lucide-react'
 
 const drawerWidth = 240
 
@@ -50,9 +50,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }
 })
 
-const generalRoutes = ['analytics', 'instructors', 'courses', 'orders', 'vouchers', 'reviews'];
-const generalTranslations = ['Data', 'Instructors', 'Courses', 'Orders', 'Vouchers', 'Reviews'];
-const generalIcons = [<EqualizerIcon />, <GroupsIcon />, <SchoolIcon />, <ShoppingCartIcon />, <CardGiftcardIcon />, <Star />];
+const generalRoutes = ['analytics', 'news', 'courses', 'orders', 'vouchers', 'reviews'];
+const generalTranslations = ['Data', 'News', 'Courses', 'Orders', 'Vouchers', 'Reviews'];
+const generalIcons = [<EqualizerIcon />, <Paperclip />, <SchoolIcon />, <ShoppingCartIcon />, <CardGiftcardIcon />, <Star />, <Paper />];
 
 const personalRoutes = ['profile', 'settings', ''];
 const personalTranslations = ['Profile', 'Settings', 'Sign Out'];
