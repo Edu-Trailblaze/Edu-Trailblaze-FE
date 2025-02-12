@@ -12,6 +12,7 @@ import authReducer from './slice/auth.slice' // Import auth slice
 import { authApi } from '@/services/auth.service'
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from 'redux-persist'
+import { videoApi } from '../services/video.service'
 
 const persistConfig = {
   key: 'auth',
@@ -32,12 +33,13 @@ export const store = configureStore({
     [courseApi.reducerPath]: courseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [lectureApi.reducerPath]: lectureApi.reducer,
-    [sectionApi.reducerPath]: sectionApi.reducer
+    [sectionApi.reducerPath]: sectionApi.reducer,
+    [videoApi.reducerPath]: videoApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false // Bỏ kiểm tra serialize để tránh lỗi
-    }).concat(courseApi.middleware, authApi.middleware, lectureApi.middleware, sectionApi.middleware)
+    }).concat(courseApi.middleware, authApi.middleware, lectureApi.middleware, sectionApi.middleware, videoApi.middleware)
 })
 
 export const persistor = persistStore(store);
