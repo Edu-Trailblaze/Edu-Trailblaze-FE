@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { BASE_URL } from '../utils/config'
 
 export const lectureApi = createApi({
   reducerPath: 'lecture/api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://edu-trailblaze.azurewebsites.net/api/'
+    baseUrl: BASE_URL
   }),
   tagTypes: ['Lectures'],
   endpoints: (build) => ({

@@ -3,22 +3,16 @@ import { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Modal from '../global/Modal'
 import Link from 'next/link'
-import { convertDuration, formatNumber, getInstructorImage } from '../../utils/format'
+import Modal from '../../../global/Modal'
 
-export default function CourseLessons({courseDetails, sectionDetails} : ICourseFull) {
+export default function SectionModule() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
   const [showMore, setShowMore] = useState(false)
 
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
-
-  if (!courseDetails) {
-    return <div>No course details available</div>;
-  }
-  
 
   const toggleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index)
@@ -60,35 +54,39 @@ export default function CourseLessons({courseDetails, sectionDetails} : ICourseF
         <div className='grid grid-cols-12'>
           {/* courses */}
           <div className='col-span-8 border-2 rounded-lg px-10 py-4 mr-12'>
-            {sectionDetails.map((value, index) => (
-              <div key={index} className='border-b last:border-0 py-4 flex justify-between'>
+            {/* {sectionDetails.map((value, index) => ( */}
+              <div className='border-b last:border-0 py-4 flex justify-between'>
                 <div>
                   <a href='' className='text-lg font-semibold underline'>
-                    {value.title}
+                    {/* {value.title} */}
+                    title
                   </a>
                   <div className='flex text-xs text-gray-500 space-x-4'>
-                    <span>Course {index + 1}</span>
+                    {/* <span>Course {index + 1}</span> */}
+                    <span>Course 1</span>
                     <span>•</span>
                     {/* <span>{value.duration}</span> */}
-                    <span>{convertDuration(value.duration)}</span>
+                    {/* <span>{convertDuration(value.duration)}</span> */}
+                    <span>4h 30m</span>
                     <span>•</span>
                     {/* <span className='text-blue-500 tracking-wide font-semibold'>★ {value.rating}</span> */}
-                    <span>{value.numberOfLectures} {value.numberOfLectures > 1 ? "instructors" : "instructor"} </span>
+                    {/* <span>{value.numberOfLectures} {value.numberOfLectures > 1 ? "instructors" : "instructor"} </span> */}
+                    <span>12 instructors</span>
                   </div>
-                  {expandedIndex === index && <p className='mt-2 text-sm text-gray-700'>{value.description}</p>}
+                  {/* {expandedIndex === index && <p className='mt-2 text-sm text-gray-700'>{value.description}</p>} */}
                 </div>
-                <button onClick={() => toggleExpand(index)}>
+                {/* <button onClick={() => toggleExpand(index)}>
                   {expandedIndex === index ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </button>
+                </button> */}
               </div>
-            ))}
+            {/* ))} */}
           </div>
 
           {/* instructors */}
           <div className='col-span-4 border-2 rounded-lg px-10 py-4 h-fit'>
             <div className='py-4'>
               <p className=' text-lg font-semibold'>Instructors</p>
-              {courseDetails?.instructors.slice(0, 2).map((value, index) => (
+              {/* {courseDetails?.instructors.slice(0, 2).map((value, index) => (
                 <div key={index} className='flex mb-5 mt-5'>
                   <Avatar>
                     <AvatarImage src={getInstructorImage(value)} />
@@ -105,12 +103,12 @@ export default function CourseLessons({courseDetails, sectionDetails} : ICourseF
                     </div>
                   </div>
                 </div>
-              ))}
-              <div>
+              ))} */}
+              {/* <div>
                 <button className='text-sm text-blue-700 hover:underline' onClick={openModal}>
                   View all {courseDetails?.instructors.length} instructors
                 </button>
-              </div>
+              </div> */}
             </div>
             {/* <div className='font-semibold text-lg mb-5'> Offered by</div>
             <div className='flex'>
@@ -130,7 +128,7 @@ export default function CourseLessons({courseDetails, sectionDetails} : ICourseF
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal} title='Instructors'>
         <div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4'>
-          {courseDetails?.instructors.map((value, index) => (
+          {/* {courseDetails?.instructors.map((value, index) => (
             <div key={index} className='flex space-x-3 items-center'>
               <Avatar className='border-2 border-gray-300'>
                 <AvatarImage src={getInstructorImage(value)}/>
@@ -143,7 +141,7 @@ export default function CourseLessons({courseDetails, sectionDetails} : ICourseF
                 <p className='text-sm text-gray-500'>{0} Courses • {0} learners</p>
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
       </Modal>
     </>

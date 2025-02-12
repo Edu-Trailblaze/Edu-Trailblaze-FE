@@ -4,13 +4,13 @@ import CourseOutcome from './course_outcome'
 import CourseDetails from './course_details'
 import CourseLessons from './course_lessons'
 import CourseHeader from './course_header'
-import CourseSuggestion from './course_suggestion'
-import { useGetCourseDetailsQuery } from '../../services/courseDetail.service'
+import CourseSuggestion from '../course_suggestion'
+import { useGetCourseDetailsQuery } from '../../../services/courseDetail.service'
 import { useParams } from 'next/navigation'
-import Loading from '../animate/Loading'
+import Loading from '../../animate/Loading'
 
 export default function Course() {
-  const { courseId } = useParams() // { courseId } là phân rã object từ useParams()
+  const { courseId } = useParams()
   const numbericCourseId = Number(courseId);
   const { data, isLoading, isFetching, error } = useGetCourseDetailsQuery(numbericCourseId)
   if (isLoading || isFetching) {
@@ -18,8 +18,7 @@ export default function Course() {
   }
   const detail = data?.courseDetails
   const section = data?.sectionDetails 
-  console.log('ssssssss',detail)
-  console.log('aaaaa',section)
+
   if (!detail) {
     return <div>No course available.</div>
   }
