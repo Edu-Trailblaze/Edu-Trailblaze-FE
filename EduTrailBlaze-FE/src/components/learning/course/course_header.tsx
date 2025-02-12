@@ -14,8 +14,8 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
   }
 
   return (
-    <div className='p-6 container bg-sky-200 rounded-lg'>
-      <div className='mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12'>
+    <div className=' bg-sky-200 rounded-lg'>
+      <div className='mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12 container'>
         {/* Left Section */}
         <div className='w-1/2 pl-8'>
           <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
@@ -72,7 +72,7 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
       <div className='container mx-auto mt-12 p-6 rounded-lg border-2 bg-white'>
         <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
           <div className='text-center md:border-r-2 border-gray-300'>
-            <p className='font-semibold text-lg'>5 course services</p>
+            <p className='font-semibold text-lg'>{sectionDetails.length} course services</p>
             <p className='text-gray-500'>Get in-depth knowledge of a subject</p>
           </div>
 
