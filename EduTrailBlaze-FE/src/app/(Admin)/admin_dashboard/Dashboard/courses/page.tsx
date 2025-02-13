@@ -202,14 +202,22 @@ export default function CoursesManagement() {
         try {
             const courseToSend = {
                 ...updatedCourse,
+                courseId: updatedCourse.id, // Đảm bảo gửi courseId trong body
                 learningOutcomes: updatedCourse.learningOutcomes.length > 0 ? updatedCourse.learningOutcomes : ["Default outcome"],
             };
 
-            await axios.put(`${API_URL}/${updatedCourse.id}`, courseToSend);
+            console.log("Updating course with ID:", updatedCourse.id);
+            console.log("Request URL:", `${API_URL}`); // Không thêm ID vào URL
+            console.log("Payload:", courseToSend);
+
+            await axios.put(`${API_URL}`, courseToSend, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
             toast.success("Course updated successfully!");
 
-            // Cập nhật lại danh sách khóa học
             setCourses(courses.map((course) =>
                 course.id === updatedCourse.id ? updatedCourse : course
             ));
@@ -221,8 +229,6 @@ export default function CoursesManagement() {
             toast.error("Failed to update course!");
         }
     };
-
-
 
     const renderRow = (course: Course) => (
         <tr key={course.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">

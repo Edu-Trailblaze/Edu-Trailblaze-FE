@@ -172,14 +172,14 @@ export default function ReviewsManagement() {
             />
 
 
-            {selectedReview && <DetailModal item={selectedReview} fields={reviewFields} onClose={() => setSelectedReview(null)} />}
+            {/* {selectedReview && <DetailModal item={selectedReview} fields={reviewFields} onClose={() => setSelectedReview(null)} />}
             {(isAddModalOpen || isEditModalOpen) && (
                 <FormModal initialValues={isEditModalOpen ? editedReview! : newReview} fields={reviewFormFields} onSubmit={isEditModalOpen ? handleEditReview : handleAddReview} onCancel={() => {
                     setAddModalOpen(false);
                     setEditModalOpen(false);
                 }}
                 />
-            )}
+            )} */}
         </div>
     );
 }
