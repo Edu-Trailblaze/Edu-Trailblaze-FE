@@ -8,22 +8,21 @@ import Table from '@/components/admin/Table/Table';
 import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
 
-import DetailModal from '@/components/admin/Modal/DetailModal';
-import FormModal from '@/components/admin/Modal/CourseFormModal/CourseFormModalCreate';
+import ReviewFormModalEdit from '@/components/admin/Modal/ReviewFormModal/ReviewFormModalEdit';
 
-import { Filter, ArrowUpDown, Plus, Eye, Pencil } from 'lucide-react';
-import axios from 'axios';
+import { Filter, ArrowUpDown, Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import api from '@/components/config/axios';
 
-const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Review/get-paging-review';
 
 type Review = {
-    reviewId?: number;
+    id?: number;
     courseId?: number;
     rating: number;
     reviewText: string;
 };
 
 const reviewFields: { label: string; accessor: keyof Review }[] = [
+    { label: 'Review ID', accessor: 'id' },
     { label: 'Course ID', accessor: 'courseId' },
     { label: 'Rating', accessor: 'rating' },
     { label: 'Review Text', accessor: 'reviewText' },
@@ -31,10 +30,6 @@ const reviewFields: { label: string; accessor: keyof Review }[] = [
 ];
 
 
-const reviewFormFields: { label: string; accessor: keyof Review; type: string }[] = [
-    { label: 'Rating', accessor: 'rating', type: 'number' },
-    { label: 'Review Text', accessor: 'reviewText', type: 'text' },
-];
 
 export default function ReviewsManagement() {
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -42,7 +37,7 @@ export default function ReviewsManagement() {
     const [selectedReview, setSelectedReview] = useState<Review | null>(null);
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
-    const [editedReview, setEditedReview] = useState<Review | null>(null);
+    const [editReview, setEditReview] = useState<Review | null>(null);
     const [newReview, setNewReview] = useState<Review>({
         rating: 0,
         reviewText: '',
@@ -58,7 +53,7 @@ export default function ReviewsManagement() {
         setLoading(true);
 
         try {
-            const response = await axios.get(API_URL, {
+            const response = await api.get('/Review/get-paging-review', {
                 params: { pageIndex: page, pageSize },
             });
             setReviews(response.data.items);
@@ -78,18 +73,7 @@ export default function ReviewsManagement() {
         fetchReviews(pageIndex);
     }, [pageIndex]);
 
-    const handleAddReview = async () => {
-        try {
-            await axios.post(API_URL, newReview);
-            toast.success('Review created successfully!');
-            setAddModalOpen(false);
-            resetNewReview();
-            fetchReviews(pageIndex);
-        } catch (error) {
-            console.error('Error adding review:', error);
-            toast.error('Failed to create review!');
-        }
-    };
+
 
     const resetNewReview = () => {
         setNewReview({
@@ -100,28 +84,46 @@ export default function ReviewsManagement() {
 
 
     const openEditModal = (review: Review) => {
-        setEditedReview(review);
+        setEditReview(review);
         setEditModalOpen(true);
     };
 
     const handleEditReview = async (updatedReview: Review) => {
-        if (!updatedReview.reviewId) return;
-
         try {
-            await axios.put(`${API_URL}/${updatedReview.reviewId}`, updatedReview);
-            setReviews(reviews.map((r) => (r.reviewId === updatedReview.reviewId ? updatedReview : r)));
+            await api.put(`/Review/${updatedReview.id}`, {
+                rating: updatedReview.rating,
+                reviewText: updatedReview.reviewText
+            });
             toast.success('Review updated successfully!');
             setEditModalOpen(false);
-            setEditedReview(null);
+            fetchReviews(pageIndex);
         } catch (error) {
             console.error('Error updating review:', error);
             toast.error('Failed to update review!');
         }
     };
 
+
+
+    const handleDeleteReview = async (id: number) => {
+        const isConfirmed = window.confirm('Bạn có chắc chắn muốn xóa review này không?');
+        if (!isConfirmed) return;
+
+        try {
+            await api.delete(`/Review/${id}`);
+            toast.success('Xóa review thành công!');
+            setReviews(prevReviews => prevReviews.filter(review => review.id !== id));
+        } catch (error) {
+            console.error('Lỗi khi xóa review:', error);
+            toast.error('Xóa review thất bại. Vui lòng thử lại sau!');
+        }
+    };
+
+
     const renderRow = (review: Review) => (
-        <tr key={review.courseId} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
-            <td className="p-4">{review.courseId}</td>
+        <tr key={review.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
+            <td className="p-4">{review.id}</td>
+            <td >{review.courseId}</td>
             <td>{review.rating}</td>
             <td>{review.reviewText}</td>
             <td className="flex mt-4 space-x-2">
@@ -130,6 +132,9 @@ export default function ReviewsManagement() {
                 </button>
                 <button onClick={() => openEditModal(review)} className="text-yellow-600 cursor-pointer">
                     <Pencil size={18} />
+                </button>
+                <button onClick={() => handleDeleteReview(review.id!)} className="text-red-600 cursor-pointer">
+                    <Trash2 size={18} />
                 </button>
             </td>
         </tr>
@@ -172,14 +177,18 @@ export default function ReviewsManagement() {
             />
 
 
-            {/* {selectedReview && <DetailModal item={selectedReview} fields={reviewFields} onClose={() => setSelectedReview(null)} />}
-            {(isAddModalOpen || isEditModalOpen) && (
-                <FormModal initialValues={isEditModalOpen ? editedReview! : newReview} fields={reviewFormFields} onSubmit={isEditModalOpen ? handleEditReview : handleAddReview} onCancel={() => {
-                    setAddModalOpen(false);
-                    setEditModalOpen(false);
-                }}
+            {editReview && (
+                <ReviewFormModalEdit
+                    initialValues={editReview}
+                    setEditReview={setEditReview}
+                    onSubmit={handleEditReview}
+                    onCancel={() => {
+                        setEditModalOpen(false);
+                        setEditReview(null);
+                    }}
+                    isOpen={isEditModalOpen}
                 />
-            )} */}
+            )}
         </div>
     );
 }

@@ -17,6 +17,7 @@ import CourseFormModalEdit from '@/components/admin/Modal/CourseFormModal/Course
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from "lucide-react";
 import dayjs from 'dayjs';
 import axios from 'axios';
+import api from '@/components/config/axios';
 
 
 type Course = {
@@ -45,18 +46,6 @@ const courseFields: { label: string; accessor: keyof Course }[] = [
 
 ];
 
-const courseFormFields: { label: string; accessor: keyof Course; type: string }[] = [
-    { label: 'Title', accessor: 'title', type: 'text' },
-    { label: 'Image URL', accessor: 'imageURL', type: 'text' },
-    { label: 'Intro URL', accessor: 'introURL', type: 'text' },
-    { label: 'Description', accessor: 'description', type: 'text' },
-    { label: 'Price', accessor: 'price', type: 'number' },
-    { label: 'Difficulty Level', accessor: 'difficultyLevel', type: 'text' },
-    { label: 'Prerequisites', accessor: 'prerequisites', type: 'text' },
-    { label: 'Learning Outcome', accessor: 'learningOutcomes', type: 'text' },
-
-];
-
 
 export default function CoursesManagement() {
     const [userId, setUserId] = useState("");
@@ -65,7 +54,7 @@ export default function CoursesManagement() {
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
-    const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+    const [editCourse, setEditCourse] = useState<Course | null>(null);
     const [newCourse, setNewCourse] = useState<Course>({
         title: '',
         imageURL: '',
@@ -120,8 +109,6 @@ export default function CoursesManagement() {
 
 
     const handleAddCourse = async (newCourse: Course) => {
-        console.log("New course before submission:", newCourse); // Kiểm tra dữ liệu trước khi gửi API
-
         if (!newCourse.title || !newCourse.description || !newCourse.difficultyLevel || newCourse.price <= 0) {
             toast.error("Please fill all required fields and ensure price is greater than 0!");
             return;
@@ -137,10 +124,7 @@ export default function CoursesManagement() {
                 learningOutcomes: newCourse.learningOutcomes.length > 0 ? newCourse.learningOutcomes : ["Default outcome"],
                 createdBy: userId
             };
-            console.log("Request payload:", courseToSend);
-
             const response = await axios.post(API_URL, courseToSend);
-            console.log("Response:", response.data); // Kiểm tra phản hồi từ API
 
             toast.success("Course created successfully!");
             setCourses([...courses, response.data]);
@@ -188,7 +172,7 @@ export default function CoursesManagement() {
     };
 
     const handleEditCourse = (course: Course) => {
-        setEditingCourse(course);
+        setEditCourse(course);
         setEditModalOpen(true);
     };
 
@@ -202,13 +186,9 @@ export default function CoursesManagement() {
         try {
             const courseToSend = {
                 ...updatedCourse,
-                courseId: updatedCourse.id, // Đảm bảo gửi courseId trong body
+                courseId: updatedCourse.id,
                 learningOutcomes: updatedCourse.learningOutcomes.length > 0 ? updatedCourse.learningOutcomes : ["Default outcome"],
             };
-
-            console.log("Updating course with ID:", updatedCourse.id);
-            console.log("Request URL:", `${API_URL}`); // Không thêm ID vào URL
-            console.log("Payload:", courseToSend);
 
             await axios.put(`${API_URL}`, courseToSend, {
                 headers: {
@@ -223,7 +203,7 @@ export default function CoursesManagement() {
             ));
 
             setEditModalOpen(false);
-            setEditingCourse(null);
+            setEditCourse(null);
         } catch (error) {
             console.error('Error updating course:', error);
             toast.error("Failed to update course!");
@@ -292,15 +272,14 @@ export default function CoursesManagement() {
                 isOpen={isAddModalOpen}
 
             />
-
-            {editingCourse && (
+            {editCourse && (
                 <CourseFormModalEdit
-                    initialValues={editingCourse}
-                    setNewCourse={setNewCourse}
-                    onSubmit={handleUpdateCourse} // Sử dụng hàm cập nhật ở đây
+                    initialValues={editCourse}
+                    setEditCourse={setNewCourse}
+                    onSubmit={handleUpdateCourse}
                     onCancel={() => {
                         setEditModalOpen(false);
-                        setEditingCourse(null);
+                        setEditCourse(null);
                     }}
                     isOpen={isEditModalOpen}
                 />

@@ -16,13 +16,13 @@ type Course = {
 
 type CourseFormModalEditProps = {
     initialValues: Course;
-    setNewCourse: React.Dispatch<React.SetStateAction<Course>>;
+    setEditCourse: React.Dispatch<React.SetStateAction<Course>>;
     onSubmit: (formValues: Course) => void;
     onCancel: () => void;
     isOpen: boolean;
 };
 
-export default function CourseFormModalEdit({ initialValues, setNewCourse, onSubmit, onCancel, isOpen }: CourseFormModalEditProps) {
+export default function CourseFormModalEdit({ initialValues, setEditCourse, onSubmit, onCancel, isOpen }: CourseFormModalEditProps) {
     const [formValues, setFormValues] = useState(initialValues);
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,7 +41,7 @@ export default function CourseFormModalEdit({ initialValues, setNewCourse, onSub
             ...prev,
             [field]: value,
         }));
-        setNewCourse((prev) => ({
+        setEditCourse((prev) => ({
             ...prev,
             [field]: value,
         }));

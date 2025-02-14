@@ -13,36 +13,35 @@ import FormModal from '@/components/admin/Modal/CourseFormModal/CourseFormModalC
 
 import { Filter, ArrowUpDown, Plus, Eye, Trash2 } from "lucide-react";
 import axios from 'axios';
+import api from '@/components/config/axios';
 
 type News = {
     id?: number;
     title: string;
     content: string;
     imageUrl: string;
+    isDeleted: boolean;
+    createdAt: string;
 };
 
-const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/News';
 
 const newsFields: { label: string; accessor: keyof News }[] = [
-    // { label: 'Id', accessor: 'id' },
+    { label: 'Id', accessor: 'id' },
     { label: 'Title', accessor: 'title' },
     { label: 'Content', accessor: 'content' },
-    { label: 'Image URL', accessor: 'imageUrl' }
+    // { label: 'Image URL', accessor: 'imageUrl' }
 ];
 
 
-const newsFormFields: { label: string; accessor: keyof News; type: string }[] = [
-    // { label: 'Id', accessor: 'id', type: 'number' },  
-    { label: 'Title', accessor: 'title', type: 'text' },
-    { label: 'Content', accessor: 'content', type: 'textarea' },
-    { label: 'Image URL', accessor: 'imageUrl', type: 'text' }
-];
 
 export default function NewsManagement() {
     const [news, setNews] = useState<News[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedNews, setSelectedNews] = useState<News | null>(null);
-    const [isAddModalOpen, setAddModalOpen] = useState<boolean>(false);
+    const [isAddModalOpen, setAddModalOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [editVoucher, setEditVoucher] = useState<News | null>(null);
+
     const [newNews, setNewNews] = useState<News>({
         title: '',
         content: '',
@@ -51,7 +50,7 @@ export default function NewsManagement() {
 
     const fetchNews = async () => {
         try {
-            const response = await axios.get(API_URL);
+            const response = await api.get('/News');
             setNews(response.data);
         } catch (error) {
             console.error('Error fetching news:', error);
@@ -60,26 +59,33 @@ export default function NewsManagement() {
         }
     };
 
+    ;
+
     useEffect(() => {
         fetchNews();
     }, []);
 
     const handleAddNews = async () => {
         try {
-            await axios.post(API_URL, newNews);
+            await api.post('/News', newNews);
             toast.success("News added successfully!");
-            setAddModalOpen(false);
+            setNews([...news, response.data]);
             fetchNews();
+            setAddModalOpen(false);
+
         } catch (error) {
             console.error('Error adding news:', error);
             toast.error("Failed to add news!");
         }
     };
 
+
+
+
     const handleDeleteNews = async (newsId: number) => {
         if (!window.confirm("Are you sure you want to delete this news?")) return;
         try {
-            await axios.delete(`${API_URL}/${newsId}`);
+            await api.delete(`/News/${newsId}`);
             setNews(news.filter((n) => n.id !== newsId));
             toast.success("News deleted successfully!");
         } catch (error) {
@@ -88,11 +94,14 @@ export default function NewsManagement() {
         }
     };
 
+
+
     const renderRow = (news: News) => (
         <tr key={news.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
-            <td className="p-4">{news.title}</td>
+            <td className="p-4">{news.id}</td>
+            <td>{news.title}</td>
             <td>{news.content}</td>
-            <td>{news.imageUrl}</td>
+            {/* <td>{news.imageUrl}</td> */}
             <td className="flex space-x-2">
                 <button onClick={() => setSelectedNews(news)} className="text-blue-600 cursor-pointer">
                     <Eye size={18} />
