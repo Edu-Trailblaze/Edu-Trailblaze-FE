@@ -19,7 +19,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import Person2Icon from '@mui/icons-material/Person2'
 import Settings from '@mui/icons-material/Settings'
 import ExitToAppIcon from '@mui/icons-material/Logout'
-import GroupsIcon from '@mui/icons-material/Groups';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ListSubheader from '@mui/material/ListSubheader';
 
@@ -52,7 +52,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 
 const generalRoutes = ['analytics', 'news', 'courses', 'orders', 'vouchers', 'reviews'];
 const generalTranslations = ['Data', 'News', 'Courses', 'Orders', 'Vouchers', 'Reviews'];
-const generalIcons = [<EqualizerIcon />, <Paperclip />, <SchoolIcon />, <ShoppingCartIcon />, <CardGiftcardIcon />, <Star />, <Paper />];
+const generalIcons = [<EqualizerIcon />, <NewspaperIcon />, <SchoolIcon />, <ShoppingCartIcon />, <CardGiftcardIcon />, <Star />, <Paper />];
 
 const personalRoutes = ['profile', 'settings', ''];
 const personalTranslations = ['Profile', 'Settings', 'Sign Out'];

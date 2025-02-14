@@ -9,10 +9,10 @@ import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
 
 import DetailModal from '@/components/admin/Modal/DetailModal';
-import FormModal from '@/components/admin/Modal/CourseFormModal/CourseFormModalCreate';
+import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate';
+import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit';
 
-import { Filter, ArrowUpDown, Plus, Eye, Trash2 } from "lucide-react";
-import axios from 'axios';
+import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from "lucide-react";
 import api from '@/components/config/axios';
 
 type News = {
@@ -20,8 +20,7 @@ type News = {
     title: string;
     content: string;
     imageUrl: string;
-    isDeleted: boolean;
-    createdAt: string;
+
 };
 
 
@@ -40,13 +39,18 @@ export default function NewsManagement() {
     const [selectedNews, setSelectedNews] = useState<News | null>(null);
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
-    const [editVoucher, setEditVoucher] = useState<News | null>(null);
-
+    const [editNews, setEditNews] = useState<News | null>(null);
     const [newNews, setNewNews] = useState<News>({
         title: '',
         content: '',
         imageUrl: ''
     });
+
+    const initialValues: News = {
+        title: '',
+        content: '',
+        imageUrl: ''
+    };
 
     const fetchNews = async () => {
         try {
@@ -65,9 +69,12 @@ export default function NewsManagement() {
         fetchNews();
     }, []);
 
-    const handleAddNews = async () => {
+
+    const handleAddNews = async (newNews: News) => {
+        console.log("New voucher before submission:", newNews);
+
         try {
-            await api.post('/News', newNews);
+            const response = await api.post('/News', newNews);
             toast.success("News added successfully!");
             setNews([...news, response.data]);
             fetchNews();
@@ -79,7 +86,38 @@ export default function NewsManagement() {
         }
     };
 
+    const handleEditNews = (news: News) => {
+        setEditNews(news);
+        setEditModalOpen(true);
+    };
 
+    const handleUpdateNews = async (updatedNews: News) => {
+
+        try {
+            const newsToSend = {
+                ...updatedNews,
+                newsId: updatedNews.id,
+            };
+
+            await api.put(`/News`, newsToSend, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            toast.success("News updated successfully!");
+
+            setNews(news.map((ne) =>
+                ne.id === updatedNews.id ? updatedNews : ne
+            ));
+
+            setEditModalOpen(false);
+            setEditNews(null);
+        } catch (error) {
+            console.error('Error updating news:', error);
+            toast.error("Failed to update news!");
+        }
+    };
 
 
     const handleDeleteNews = async (newsId: number) => {
@@ -102,9 +140,12 @@ export default function NewsManagement() {
             <td>{news.title}</td>
             <td>{news.content}</td>
             {/* <td>{news.imageUrl}</td> */}
-            <td className="flex space-x-2">
+            <td className="flex mt-4 space-x-2">
                 <button onClick={() => setSelectedNews(news)} className="text-blue-600 cursor-pointer">
                     <Eye size={18} />
+                </button>
+                <button onClick={() => handleEditNews(news)} className="text-blue-600 cursor-pointer">
+                    <Pencil size={18} />
                 </button>
                 <button onClick={() => handleDeleteNews(news.id!)} className="text-red-600 cursor-pointer">
                     <Trash2 size={18} />
@@ -141,14 +182,25 @@ export default function NewsManagement() {
             ) : (
                 <Table columns={newsFields} renderRow={renderRow} data={news} />
             )}
-            <Pagination />
+
             {selectedNews && <DetailModal item={selectedNews} fields={newsFields} onClose={() => setSelectedNews(null)} />}
-            {isAddModalOpen && (
-                <FormModal
-                    initialValues={newNews}
-                    fields={newsFormFields}
-                    onSubmit={handleAddNews}
-                    onCancel={() => setAddModalOpen(false)}
+            <NewsFormModalCreate
+                initialValues={initialValues}
+                setNewNews={setNewNews}
+                onSubmit={handleAddNews}
+                onCancel={() => setAddModalOpen(false)}
+                isOpen={isAddModalOpen}
+            />
+            {editNews && (
+                <NewsFormModalEdit
+                    initialValues={editNews}
+                    setEditNews={setNewNews}
+                    onSubmit={handleUpdateNews}
+                    onCancel={() => {
+                        setEditModalOpen(false);
+                        setEditNews(null);
+                    }}
+                    isOpen={isEditModalOpen}
                 />
             )}
         </div>

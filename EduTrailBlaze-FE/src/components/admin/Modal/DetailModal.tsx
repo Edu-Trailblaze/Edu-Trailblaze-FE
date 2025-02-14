@@ -1,7 +1,7 @@
 import React from "react";
-import { Modal, Box, Typography, TextField, Button } from "@mui/material";
+import { Modal, Box, Typography, Button } from "@mui/material";
+import FormatDateTime from "../Date/FormatDateTime";
 
-// DetailProps type defines the structure of the props the component accepts
 type DetailProps<T> = {
     item: T | null;
     onClose: () => void;
@@ -9,9 +9,13 @@ type DetailProps<T> = {
 };
 
 // Generic Detail component
-export default function Detail<T>({ item, onClose, fields }: DetailProps<T>) {
+export default function DetailModal<T>({ item, onClose, fields }: DetailProps<T>) {
     return (
-        <Modal open={Boolean(item)} onClose={onClose} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Modal
+            open={Boolean(item)}
+            onClose={onClose}
+            sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
             <Box
                 sx={{
                     width: "100%",
@@ -36,26 +40,37 @@ export default function Detail<T>({ item, onClose, fields }: DetailProps<T>) {
                             {item[fields[0].accessor] as string}
                         </Typography>
 
-                        {fields.map(({ label, accessor }) => (
-                            <Box
-                                key={String(accessor)}
-                                sx={{ display: "flex", flexDirection: "column", mb: 2 }}
-                            >
-                                <Typography
-                                    variant="subtitle2"
-                                    component="label"
-                                    sx={{ mb: 1, color: "text.secondary" }}
+                        {fields.map(({ label, accessor }) => {
+                            const value = item[accessor];
+                            const isDateField =
+                                typeof value === 'string' &&
+                                !isNaN(Date.parse(value));
+
+                            const displayValue = isDateField
+                                ? FormatDateTime({ date: value as string })
+                                : String(value || "");
+
+                            return (
+                                <Box
+                                    key={String(accessor)}
+                                    sx={{ mb: 2 }}
                                 >
-                                    {label}
-                                </Typography>
-                                <TextField
-                                    value={String(item[accessor] || "")}
-                                    variant="outlined"
-                                    fullWidth
-                                    InputProps={{ readOnly: true }}
-                                />
-                            </Box>
-                        ))}
+                                    <Typography
+                                        variant="subtitle2"
+                                        component="label"
+                                        sx={{ color: "text.secondary" }}
+                                    >
+                                        {label}
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{ mt: 0.5 }}
+                                    >
+                                        {displayValue}
+                                    </Typography>
+                                </Box>
+                            );
+                        })}
 
                         <Button
                             onClick={onClose}

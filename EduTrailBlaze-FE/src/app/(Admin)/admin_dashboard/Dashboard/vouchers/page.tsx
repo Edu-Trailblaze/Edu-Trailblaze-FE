@@ -7,7 +7,9 @@ import Pagination from '@/components/admin/Pagination/Pagination';
 import Table from '@/components/admin/Table/Table';
 import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
+import FormatDateTime from '@/components/admin/Date/FormatDateTime';
 
+import DetailModal from '@/components/admin/Modal/DetailModal';
 import VoucherFormModalCreate from '@/components/admin/Modal/VoucherFormModal/VoucherFormModalCreate';
 import VoucherFormModalEdit from '@/components/admin/Modal/VoucherFormModal/VoucherFormModalEdit';
 
@@ -71,7 +73,10 @@ export default function VouchersManagement() {
         setLoading(true);
         try {
             const response = await api.get('/Voucher/get-paging-voucher', {
-                params: { pageIndex: page, pageSize },
+                params: {
+                    pageIndex: page,
+                    pageSize
+                },
             });
             setVouchers(response.data.items);
             setTotalPages(response.data.totalPages);
@@ -160,11 +165,13 @@ export default function VouchersManagement() {
             <td>{voucher.discountValue}</td>
             <td>{voucher.voucherCode}</td>
             <td>{voucher.isUsed ? 'Yes' : 'No'}</td>
-            <td>{voucher.expiryDate}</td>
+            <td>
+                <FormatDateTime date={voucher.expiryDate} />
+            </td>
             <td className="flex mt-4 space-x-2">
-                {/* <button onClick={() => setSelectedVoucher(voucher)} className="text-blue-600 cursor-pointer">
+                <button onClick={() => setSelectedVoucher(voucher)} className="text-blue-600 cursor-pointer">
                     <Eye size={18} />
-                </button> */}
+                </button>
                 <button onClick={() => handleEditVoucher(voucher)} className="text-yellow-600 cursor-pointer">
                     <Pencil size={18} />
                 </button>
@@ -206,6 +213,8 @@ export default function VouchersManagement() {
                 totalPages={totalPages}
                 onPageChange={(page) => setPageIndex(page)}
             />
+            {selectedVoucher && <DetailModal item={selectedVoucher} fields={voucherFields} onClose={() => setSelectedVoucher(null)} />}
+
             <VoucherFormModalCreate
                 initialValues={initialValues}
                 setNewVoucher={setNewVoucher}
