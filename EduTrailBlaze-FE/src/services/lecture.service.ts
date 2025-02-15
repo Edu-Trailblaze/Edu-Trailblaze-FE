@@ -23,7 +23,19 @@ export const lectureApi = createApi({
         method: 'GET'
       })
     }),
-  })
+
+    getLectureByConditions: build.query<
+      ILecture[],
+      Partial<Omit<ILecture, 'createAt' | 'updateAt' | 'id'>> & { minDuration?: number; maxDuration?: number }
+    >({
+      query: (conditions) => ({ url: `Lecture/get-lectures-by-conditions`, method: 'GET', params: conditions })
+    }),
+    getSectionLecture: build.query<SectionLecture[], number[]>({
+      query: (ids) => ({
+        url: `Lecture/get-section-lecture?${ids.map(id => `sectionIds=${id}`).join('&')}`,
+      })
+    })
+  }),
 })
 
-export const { useGetAllLectureQuery, useGetLectureQuery } = lectureApi
+export const { useGetAllLectureQuery, useGetLectureQuery, useGetLectureByConditionsQuery, useGetSectionLectureQuery  } = lectureApi

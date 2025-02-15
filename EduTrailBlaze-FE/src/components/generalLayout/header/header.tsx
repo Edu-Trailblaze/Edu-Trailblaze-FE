@@ -254,7 +254,7 @@ export default function WebHeader() {
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                         <FaUserEdit />
                       </div>{' '}
-                      Profile
+                      <Link href={'/profile'} prefetch={false}>Profile</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>

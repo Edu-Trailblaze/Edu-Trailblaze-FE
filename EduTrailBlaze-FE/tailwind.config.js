@@ -30,7 +30,6 @@ module.exports = {
     container: {
       center: true,
       padding: '7rem',
-      
     }
   },
   

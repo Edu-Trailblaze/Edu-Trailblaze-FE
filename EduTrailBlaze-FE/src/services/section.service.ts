@@ -12,7 +12,10 @@ export const sectionApi = createApi({
       query: () => 'Section',
       providesTags(result) {
         return result
-          ? [...result.map(({ courseId }) => ({ type: 'Sections', courseId }) as const), { type: 'Sections', id: 'LIST' }]
+          ? [
+              ...result.map(({ courseId }) => ({ type: 'Sections', courseId }) as const),
+              { type: 'Sections', id: 'LIST' }
+            ]
           : [{ type: 'Sections', id: 'LIST' }]
       }
     }),
@@ -23,7 +26,14 @@ export const sectionApi = createApi({
         method: 'GET'
       })
     }),
+
+    getSectionbyConditions: build.query<ISection[], number>({
+      query: (courseId) => ({
+        url: `Section/cget-sections-by-conditions?CourseId=${courseId}`,
+        method: 'GET'
+      })
+    })
   })
 })
 
-export const { useGetAllSectionsQuery, useGetSectionQuery } = sectionApi
+export const { useGetAllSectionsQuery, useGetSectionQuery, useGetSectionbyConditionsQuery } = sectionApi
