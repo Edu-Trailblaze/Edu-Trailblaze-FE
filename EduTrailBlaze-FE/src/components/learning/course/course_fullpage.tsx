@@ -2,23 +2,22 @@
 import CourseAbout from './course_about'
 import CourseOutcome from './course_outcome'
 import CourseDetails from './course_details'
-import CourseLessons from './course_lessons'
 import CourseHeader from './course_header'
-import CourseSuggestion from '../course_suggestion'
-import { useGetCourseDetailsQuery } from '../../../services/courseDetail.service'
+import { useGetCourseDetailsQuery, useGetCourseQuery } from '../../../services/courseDetail.service'
 import { useParams } from 'next/navigation'
 import Loading from '../../animate/Loading'
+import CourseSection from './course_section'
+import CourseSuggestion from './course_suggestion'
 
 export default function Course() {
-  const { courseId } = useParams()
-  const numbericCourseId = Number(courseId);
-  const { data, isLoading, isFetching, error } = useGetCourseDetailsQuery(numbericCourseId)
+  const { courseURL } = useParams()
+  const { data: courseDetails, isLoading, isFetching, error } = useGetCourseDetailsQuery(Number(courseURL))
+  // const { data: section}
   if (isLoading || isFetching) {
     return <Loading />
   }
-  const detail = data?.courseDetails
-  const section = data?.sectionDetails 
-
+  const detail = courseDetails?.courseDetails
+  const section = courseDetails?.sectionDetails
   if (!detail) {
     return <div>No course available.</div>
   }
@@ -26,10 +25,8 @@ export default function Course() {
     return <div>No section available.</div>
   }
 
-  
-
   return (
-    <div className='relative'>
+    <div>
       {/* Header */}
       <div id='course-header'>
         <CourseHeader courseDetails={detail} sectionDetails={section} />
@@ -51,7 +48,7 @@ export default function Course() {
         <CourseOutcome />
       </div>
       <div id='courses'>
-        <CourseLessons courseDetails={detail} sectionDetails={section} />
+        <CourseSection courseDetails={detail} section={section} />
       </div>
       <div id='suggestion'>
         <CourseSuggestion />

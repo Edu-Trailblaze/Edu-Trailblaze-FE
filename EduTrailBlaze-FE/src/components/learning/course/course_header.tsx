@@ -1,23 +1,26 @@
-'use-client'
+'use client'
 import { useState } from 'react'
 import Modal from '../../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { formatNumber, getInstructorImage } from '../../../utils/format'
+import { useGetUserProfileQuery } from '../../../services/user.service'
 
 export default function CourseHeader({ courseDetails, sectionDetails }: ICourseFull) {
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
+  const {data: instructorURL} = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
 
   if (!courseDetails) {
     return <div>No course details available</div>
   }
 
+  console.log('courseDetails', courseDetails.imageURL)
   return (
-    <div className=' bg-sky-200 rounded-lg'>
-      <div className='mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12 container'>
+    <div className='p-6 bg-sky-200 relative mb-20'>
+      <div className='mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12 container mb-20'>
         {/* Left Section */}
-        <div className='w-1/2 pl-8'>
+        <div className='w-1/2'>
           <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
           <p className='text-lg text-gray-700 mb-6'>{courseDetails.description}</p>
 
@@ -34,7 +37,7 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
                 .reverse()
                 .map((instructor, index) => (
                   <Avatar key={index}>
-                    <AvatarImage src={getInstructorImage(instructor)} />
+                    <AvatarImage src={instructorURL?.profilePictureUrl} />
                   </Avatar>
                 ))}
             </div>
@@ -64,34 +67,35 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
         </div>
 
         {/* Right Section */}
-        <div className='w-1/2 min-h-[400px] relative '>
-          <img src={courseDetails.imageURL} alt='Course Visual' className='rounded-lg shadow-lg max-h-[400px] absolute right-10' />
+        <div className='w-1/2 min-h-[400px] relative'>
+          <img src={courseDetails.imageURL} alt='Course Visual' className='rounded-lg absolute shadow-lg h-[350px] w-[400px] right-10 ' />
         </div>
       </div>
 
-      <div className='container mx-auto mt-12 p-6 rounded-lg border-2 bg-white'>
+      {/* Course details */}
+      <div className='mx-auto p-6 rounded-lg border-2 bg-white container absolute bottom-[-60px] left-0 right-0 max-w-[1400px] z-0'>
         <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
-          <div className='text-center md:border-r-2 border-gray-300'>
+          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
             <p className='font-semibold text-lg'>{sectionDetails.length} course services</p>
             <p className='text-gray-500'>Get in-depth knowledge of a subject</p>
           </div>
 
-          <div className='text-center md:border-r-2 border-gray-300'>
-            <p className='text-blue-700 font-bold text-xl'>{courseDetails.review.averageRating} ★</p>
+          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
+            <p className='text-blue-700 font-bold text-xl '>{courseDetails.review.averageRating} ★</p>
             <p className='text-gray-500'>({formatNumber(courseDetails.review.totalRatings)} reviews)</p>
           </div>
 
-          <div className='text-center md:border-r-2 border-gray-300'>
+          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
             <p className='font-semibold text-lg'>{courseDetails.difficultyLevel} level</p>
             <p className='text-gray-500'>No prior experience required</p>
           </div>
 
-          <div className='text-center md:border-r-2 border-gray-300'>
+          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
             <p className='font-semibold text-lg'>{courseDetails.duration} hours</p>
             <p className='text-gray-500'>at 10 hours a week</p>
           </div>
 
-          <div className='text-center '>
+          <div className='text-center pr-2'>
             <p className='font-semibold text-lg'>Flexible schedule</p>
             <p className='text-gray-500'>Learn at your own pace</p>
           </div>

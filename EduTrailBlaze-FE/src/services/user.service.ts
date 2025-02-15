@@ -12,9 +12,15 @@ export const userApi = createApi({
                 url: `User/${id}`
             })
         }),
+        getUserProfile: build.query<IUserProfile, string>({
+            query: (id) => ({
+                url: `UserProfile/${id}`
+            })
+        })
     })
 })
 
 export const {
-    useGetUserQuery
+    useGetUserQuery,
+    useGetUserProfileQuery
 } = userApi

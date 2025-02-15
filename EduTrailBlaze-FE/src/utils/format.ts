@@ -16,7 +16,7 @@ export function convertDuration(duration: string) {
 
 export const getInstructorImage = (instructor: any) => instructor.image || '/assets/img/default-avatar.jpg'
 
-export const truncateContent = (content: string, maxLength: number = 50): string => {
+export const truncateContent = (content: string, maxLength: number = 40): string => {
   if (content.length <= maxLength) return content // Trả về nguyên nội dung nếu nó ngắn hơn maxLength
 
   const words = content.split(' ')

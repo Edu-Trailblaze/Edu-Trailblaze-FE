@@ -9,6 +9,11 @@ interface ILecture {
   id: number;
 }
 
+interface SectionLecture {
+  sectionId: number;
+  lectures: ILecture[];
+}
+
 interface ISection {
   courseId: number
   title: string
@@ -46,21 +51,25 @@ interface Enrollment {
 }
 
 interface ICourse {
-  courseDetails: {}
-  courseId: number;
-  imageURL?: string;
+  id: number;
   title: string;
-  duration: number;
-  price: number;
-  difficultyLevel: string;
+  imageURL: string;
+  introURL: string;
   description: string;
+  price: number;
+  duration: number;
+  difficultyLevel: string;
+  prerequisites: string;
+  learningOutcomes: string[];
+  estimatedCompletionTime: number;
   createdBy: string;
+  updatedBy: string;
+  isPublished: boolean;
+  isDeleted: boolean;
   createdAt: string;
-  discount: Discount;
-  review: Review;
-  instructors: Instructor[];
-  enrollment: Enrollment;
+  updatedAt: string;
 }
+
 
 interface ICourseSuggestions {
   title: string;

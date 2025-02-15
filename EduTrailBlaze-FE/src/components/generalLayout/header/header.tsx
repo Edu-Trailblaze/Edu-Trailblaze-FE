@@ -6,7 +6,7 @@ import { Bars3Icon, BriefcaseIcon, NewspaperIcon, ComputerDesktopIcon, XMarkIcon
 import { ChevronDownIcon, ArrowRightCircleIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 import { LuHandHeart } from 'react-icons/lu'
 import { MdAttachMoney, MdOutlineShoppingCart, MdLanguage, MdOutlineSupportAgent } from 'react-icons/md'
-import { IoLogOut } from "react-icons/io5";
+import { IoLogOut } from 'react-icons/io5'
 import Link from 'next/link'
 import { logout } from '../../../redux/slice/auth.slice'
 import { useDispatch } from 'react-redux'
@@ -273,11 +273,29 @@ export default function WebHeader() {
                     <p className='ml-2'>{userName}</p>
                   </DropdownMenuLabel>
                   <DropdownMenuGroup>
-                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><FaUserEdit /></div> Profile</DropdownMenuItem>
-                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><FaUserCog /></div> Settings</DropdownMenuItem>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                      <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                        <FaUserEdit />
+                      </div>{' '}
+                      <Link href={'/profile'} prefetch={false}>Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                      <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                        <FaUserCog />
+                      </div>{' '}
+                      Settings
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><MdOutlineSupportAgent /> </div>Support</DropdownMenuItem>
-                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><IoLogOut /></div> 
+                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                    <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                      <MdOutlineSupportAgent />{' '}
+                    </div>
+                    Support
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}>
+                    <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                      <IoLogOut />
+                    </div>
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

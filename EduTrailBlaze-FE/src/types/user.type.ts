@@ -14,3 +14,10 @@ interface IUser {
     lockoutEnabled: boolean;
     accessFailedCount: number;
   }
+
+  interface IUserProfile {
+    id: string
+    fullname: string
+    balance: number
+    profilePictureUrl: string
+  }

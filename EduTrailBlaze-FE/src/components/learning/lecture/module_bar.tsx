@@ -4,30 +4,24 @@ import { LuTableOfContents } from 'react-icons/lu'
 import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
 import { BsCheck2 } from 'react-icons/bs' // Checkmark icon
 import { FiVideo } from 'react-icons/fi' // Video icon
+import { convertDuration } from '../../../utils/format'
 
 interface ModuleBarProps {
-  course: ICourseDetails
-  section: ISection
-  lecture: ILecture
+  course: ICourseFull
+  lectures: SectionLecture[]
   video: IVideo
 }
 
-export default function ModuleBar({ course, section, lecture, video }: ModuleBarProps) {
-  const [moduleOpen, setModuleOpen] = useState(false) // Toggle module
-  const [activeVideo, setActiveVideo] = useState<number | null>(null) // Track active video
+export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
+  const [openModules, setOpenModules] = useState<number | null>(null)
+  const [activeVideo, setActiveVideo] = useState<number | null>(null)
 
-  const toggleModule = () => {
-    setModuleOpen((prev) => !prev)
+  const toggleModule = (id: number) => {
+    setOpenModules((prev) => (prev === id ? null : id))
   }
 
-  const videos = [
-    { id: 1, name: 'Video name', duration: '10:05' },
-    { id: 2, name: 'Video name', duration: '12:04' },
-    { id: 3, name: 'Video name', duration: '10:05' }
-  ]
-
   return (
-    <div className='w-fit border-r-2 border-gray-200'>
+    <div className='w-[400px] border-r-2 border-gray-200'>
       {/* Header */}
       <div className='flex pl-3 text-center items-center font-bold py-3 bg-white'>
         <LuTableOfContents className='text-2xl' />
@@ -35,42 +29,52 @@ export default function ModuleBar({ course, section, lecture, video }: ModuleBar
       </div>
 
       {/* Module Dropdown */}
-      <div
-        className='flex bg-gray-100 w-[300px] px-4 py-2 justify-between cursor-pointer items-center'
-        onClick={toggleModule}
-      >
-        <div>
-          <p className='font-semibold text-lg'>1. Introduction</p>
-          <p className='font-thin text-sm'>30 min | 1/3</p>
-        </div>
-        <div>{moduleOpen ? <RiArrowUpSLine className='text-3xl' /> : <RiArrowDropDownLine className='text-3xl' />}</div>
-      </div>
+      {course.sectionDetails.map((section) => {
+        const sectionLectures = lectures.find((lec) => lec.sectionId === section.id)?.lectures || [];
 
-      {/* Submenu */}
-      {moduleOpen && (
-        <div className='bg-white'>
-          {videos.map((video) => (
+        return (
+          <div key={section.id}>
             <div
-              key={video.id}
-              onClick={() => setActiveVideo(video.id)}
-              className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
-                activeVideo === video.id ? 'bg-blue-100' : 'hover:bg-gray-100'
-              }`}
+              className='flex bg-gray-100 px-4 py-2 justify-between cursor-pointer items-center'
+              onClick={() => toggleModule(section.id)}
             >
-              <div className='flex items-center gap-2'>
-                <FiVideo className='text-gray-500' />
-                <div>
-                  <p className={`font-semibold ${activeVideo === video.id ? 'text-blue-600' : ''}`}>
-                    {video.id}. {video.name}
-                  </p>
-                  <p className='text-sm text-gray-500'>{video.duration}</p>
-                </div>
+              <div>
+                <p className='font-semibold'>{section.title}</p>
+                <p className='font-thin text-sm'>{convertDuration(section.duration)} | {sectionLectures.length} lectures</p>
               </div>
-              <BsCheck2 className='text-xl text-gray-600' />
+              <div>
+                {openModules === section.id ? <RiArrowUpSLine className='text-3xl' /> : <RiArrowDropDownLine className='text-3xl' />}
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Submenu */}
+            {openModules === section.id && (
+              <div className='bg-white'>
+                {sectionLectures.map((item, index) => (
+                  <div
+                    key={item.id}
+                    onClick={() => setActiveVideo(item.id)}
+                    className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
+                      activeVideo === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className='flex items-center gap-2'>
+                      <FiVideo className='text-gray-500' />
+                      <div>
+                        <p className={`font-semibold mr-2 ${activeVideo === item.id ? 'text-blue-600' : ''}`}>
+                          {index + 1}. {item.title}
+                        </p>
+                        <p className='text-sm text-gray-500'>{convertDuration(video.duration)}</p>
+                      </div>
+                    </div>
+                    <BsCheck2 className='text-2xl text-gray-600' />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
-  )
+  );
 }
