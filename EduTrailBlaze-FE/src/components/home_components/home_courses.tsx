@@ -4,17 +4,37 @@ import React, { useEffect, useState } from 'react'
 import SkeletonCard from '../skeleton/skeleton_card'
 import InstructorItem from './InstructorItem'
 import { formatDate } from '@/helper/Util'
+import { jwtDecode } from 'jwt-decode'
+import { usePostCartMutation } from '@/services/cart.service'
+import { useDispatch } from 'react-redux';
+import { addItemToCart } from '@/redux/slice/cart.slice';
 
 export default function HomeCourses() {
   const { data: courses, isLoading, isFetching } = useGetAllCoursesQuery()
+  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation();
+  const dispatch = useDispatch();
 
   const [visibleCourse, setVisibleCourse] = useState(4)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
+  const [userId, setUserId] = useState('')
 
   const paidCourses = courses?.filter((course) => course.price > 0)
   const freeCourses = courses?.filter((course) => course.price === 0)
 
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setUserId('')
+    }
+  }, [])
 
   const categories = [
     'Courses Science',
@@ -30,6 +50,15 @@ export default function HomeCourses() {
       setVisibleCourse(courses.length)
     } else {
       setVisibleCourse(4)
+    }
+  }
+  const handleAddToCart = async (userId: string, courseId: number) => {
+    try {
+      const result = await postCart({userId, courseId}).unwrap()
+      console.log('Item add to cart: ', result)
+      dispatch(addItemToCart(result.cartItems[result.cartItems.length - 1])); // Dispatch the action with the correct payload
+    } catch (error) {
+      console.log('Error adding to cart: ', error)
     }
   }
   return (
@@ -73,7 +102,7 @@ export default function HomeCourses() {
                 {paidCourses.slice(0, visibleCourse).map((course) => (
                   <div
                     key={course.id}
-                    className='transform transition duration-300 hover:scale-110 rounded-lg shadow-lg  w-[18rem] hover:shadow-xl bg-white border border-black p-[5px]'
+                    className='transform transition duration-300 hover:scale-110 rounded-lg shadow-lg  w-[17.5rem] hover:shadow-xl bg-white border border-black p-[5px]'
                     onMouseEnter={() => setHoveredCourse(course.id)}
                     onMouseLeave={() => setHoveredCourse(null)}
                   >
@@ -164,8 +193,11 @@ export default function HomeCourses() {
                           ))}
                         </ul>
 
-                        <button className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg'>
-                          Add to cart
+                        <button className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg'
+                        onClick={() => handleAddToCart(userId, course.id)}
+                        disabled={isAddingToCart} 
+                        >
+                          {isAddingToCart ? "Adding to Cart..." : "Add to Cart"}
                         </button>
 
                         {/* Mũi tên nhỏ chỉ vào khóa học */}

@@ -6,7 +6,7 @@ import { Bars3Icon, BriefcaseIcon, NewspaperIcon, ComputerDesktopIcon, XMarkIcon
 import { ChevronDownIcon, ArrowRightCircleIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 import { LuHandHeart } from 'react-icons/lu'
 import { MdAttachMoney, MdOutlineShoppingCart, MdLanguage, MdOutlineSupportAgent } from 'react-icons/md'
-import { IoLogOut } from "react-icons/io5";
+import { IoLogOut } from 'react-icons/io5'
 import Link from 'next/link'
 import { logout } from '../../../redux/slice/auth.slice'
 import { useDispatch } from 'react-redux'
@@ -23,6 +23,8 @@ import {
 import { Avatar, AvatarImage } from '../../ui/avatar'
 import { jwtDecode } from 'jwt-decode'
 import { FaUserCog, FaUserEdit } from 'react-icons/fa'
+import { useGetCartQuery } from '@/services/cart.service'
+import ViewCart from './viewCart'
 
 const products = [
   {
@@ -82,16 +84,18 @@ const languageOptions = [
   'Nederlands'
 ]
 
+
 export default function WebHeader() {
   const dispatch = useDispatch()
   const router = useRouter()
+  const { data: cart, isLoading, isFetching } = useGetCartQuery('5fbd1966-a4ec-4186-88da-941745562c91')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [languageModalOpen, setLanguageModalOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [cartHovered, setCartHovered] = useState(false)
-  const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
-
+  const [userId, setUserId] = useState('');
+  
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
     setIsLoggedIn(!!token)
@@ -108,8 +112,6 @@ export default function WebHeader() {
       setUserId('')
     }
   }, [])
-
-  console.log('userName', userName)
 
   const handleLogout = () => {
     dispatch(logout())
@@ -226,32 +228,7 @@ export default function WebHeader() {
 
             <MdOutlineShoppingCart className='w-8 h-8 hover:text-blue-600' />
 
-            {cartHovered && (
-              <div className='absolute mt-4 w-80 -translate-x-[45%] p-4 bg-white shadow-2xl rounded-xl border border-gray-400 z-10'>
-                <div className='flex gap-5'>
-                  <div>
-                    <img
-                      className='h-[70px] w-[7-px] rounded-[7px]'
-                      src='assets/Side_Image/course_image.png'
-                      alt='course_img'
-                    />
-                  </div>
-                  <div>
-                    <h1 className='font-semibold'>Course Title</h1>
-                    <p className='block font-sans font-light text-sm leading-relaxed text-inherit antialiased'>
-                      <strong>Instructor:</strong>
-                    </p>
-                    <p className='font-semibold'>Price$</p>
-                  </div>
-                </div>
-
-                <button className='mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg'>
-                  <Link href={'/shopping_cart'}>Go to Cart</Link>
-                </button>
-
-                <div className='absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-4 h-4 bg-white rotate-45 border-l border-t border-gray-400'></div>
-              </div>
-            )}
+            {cartHovered && <ViewCart id={userId} />}
           </div>
         </PopoverGroup>
 
@@ -273,11 +250,29 @@ export default function WebHeader() {
                     <p className='ml-2'>{userName}</p>
                   </DropdownMenuLabel>
                   <DropdownMenuGroup>
-                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><FaUserEdit /></div> Profile</DropdownMenuItem>
-                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><FaUserCog /></div> Settings</DropdownMenuItem>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                      <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                        <FaUserEdit />
+                      </div>{' '}
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                      <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                        <FaUserCog />
+                      </div>{' '}
+                      Settings
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><MdOutlineSupportAgent /> </div>Support</DropdownMenuItem>
-                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}><div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'><IoLogOut /></div> 
+                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                    <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                      <MdOutlineSupportAgent />{' '}
+                    </div>
+                    Support
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}>
+                    <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                      <IoLogOut />
+                    </div>
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
