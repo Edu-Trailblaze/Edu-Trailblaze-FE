@@ -15,9 +15,13 @@ interface ModuleBarProps {
 export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
   const [openModules, setOpenModules] = useState<number | null>(null)
   const [activeVideo, setActiveVideo] = useState<number | null>(null)
+  const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
 
-  const toggleModule = (id: number) => {
-    setOpenModules((prev) => (prev === id ? null : id))
+  const toggleExpand = (index: any) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [index]: !prev[index]
+    }))
   }
 
   return (
@@ -30,25 +34,31 @@ export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
 
       {/* Module Dropdown */}
       {course.sectionDetails.map((section) => {
-        const sectionLectures = lectures.find((lec) => lec.sectionId === section.id)?.lectures || [];
+        const sectionLectures = lectures.find((lec) => lec.sectionId === section.id)?.lectures || []
 
         return (
           <div key={section.id}>
             <div
               className='flex bg-gray-100 px-4 py-2 justify-between cursor-pointer items-center'
-              onClick={() => toggleModule(section.id)}
+              onClick={() => toggleExpand(section.id)}
             >
               <div>
                 <p className='font-semibold'>{section.title}</p>
-                <p className='font-thin text-sm'>{convertDuration(section.duration)} | {sectionLectures.length} lectures</p>
+                <p className='font-thin text-sm'>
+                  {convertDuration(section.duration)} | {sectionLectures.length} lectures
+                </p>
               </div>
               <div>
-                {openModules === section.id ? <RiArrowUpSLine className='text-3xl' /> : <RiArrowDropDownLine className='text-3xl' />}
+                {expandedSections[section.id] ? (
+                  <RiArrowUpSLine className='text-3xl' />
+                ) : (
+                  <RiArrowDropDownLine className='text-3xl' />
+                )}
               </div>
             </div>
 
             {/* Submenu */}
-            {openModules === section.id && (
+            {expandedSections[section.id] && (
               <div className='bg-white'>
                 {sectionLectures.map((item, index) => (
                   <div
@@ -73,8 +83,8 @@ export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
               </div>
             )}
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

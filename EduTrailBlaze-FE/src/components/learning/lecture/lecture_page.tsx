@@ -26,11 +26,6 @@ export default function LecturePage() {
     isLoading: lectureLoading,
     isFetching: lectureFetching
   } = useGetSectionLectureQuery(sectionIds)
-  // const {
-  //   data: lecture,
-  //   isLoading: lectureLoading,
-  //   isFetching: lectureFetching
-  // } = useGetLectureByConditionsQuery({ sectionId: 12 })
   const {
     data: lectureVideo,
     isLoading: lectureVideoLoading,
