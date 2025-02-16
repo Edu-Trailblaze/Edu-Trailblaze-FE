@@ -30,6 +30,7 @@ export const lectureApi = createApi({
     >({
       query: (conditions) => ({ url: `Lecture/get-lectures-by-conditions`, method: 'GET', params: conditions })
     }),
+
     getSectionLecture: build.query<SectionLecture[], number[]>({
       query: (ids) => ({
         url: `Lecture/get-section-lecture?${ids.map(id => `sectionIds=${id}`).join('&')}`,

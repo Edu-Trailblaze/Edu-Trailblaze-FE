@@ -1,5 +1,5 @@
 interface IVideo {
-  lectureId: number
+  lectureId: number | null
   title: string
   videoUrl: string
   duration: string

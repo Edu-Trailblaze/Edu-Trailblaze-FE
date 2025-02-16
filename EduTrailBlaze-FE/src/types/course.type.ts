@@ -1,7 +1,8 @@
 interface ILecture {
-  sectionId: number;
+  sectionId: number | null;
   title: string;
   content: string;
+  duration: string;
   description: string;
   isDeleted: boolean;
   createdAt: string;
