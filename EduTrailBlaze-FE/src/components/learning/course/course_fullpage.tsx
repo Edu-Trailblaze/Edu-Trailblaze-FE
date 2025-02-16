@@ -8,22 +8,26 @@ import { useParams } from 'next/navigation'
 import Loading from '../../animate/Loading'
 import CourseSection from './course_section'
 import CourseSuggestion from './course_suggestion'
+import { useGetSectionLectureQuery } from '../../../services/lecture.service'
+import { skip } from 'node:test'
+import { skipToken } from '@reduxjs/toolkit/query'
 
 export default function Course() {
   const { courseURL } = useParams()
   const { data: courseDetails, isLoading, isFetching, error } = useGetCourseDetailsQuery(Number(courseURL))
-  // const { data: section}
+  const detail = courseDetails?.courseDetails
+  const section = courseDetails?.sectionDetails
+
+  const sectionId = section?.map((item) => item.id) || []
+  //bỏ qua query nếu ko có data
+  const { data: lecture } = useGetSectionLectureQuery(sectionId.length > 0 ? sectionId : skipToken)
   if (isLoading || isFetching) {
     return <Loading />
   }
-  const detail = courseDetails?.courseDetails
-  const section = courseDetails?.sectionDetails
-  if (!detail) {
-    return <div>No course available.</div>
-  }
-  if (!section) {
-    return <div>No section available.</div>
-  }
+
+  if (!detail) return <div>No course available.</div>
+  if (!section) return <div>No section available.</div>
+  if (!lecture) return <div>No lecture available.</div>
 
   return (
     <div>
@@ -48,7 +52,7 @@ export default function Course() {
         <CourseOutcome />
       </div>
       <div id='courses'>
-        <CourseSection courseDetails={detail} section={section} />
+        <CourseSection courseDetails={detail} section={section} lecture={lecture} />
       </div>
       <div id='suggestion'>
         <CourseSuggestion />

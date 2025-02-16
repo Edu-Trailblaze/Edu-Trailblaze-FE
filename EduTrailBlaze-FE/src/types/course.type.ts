@@ -1,5 +1,5 @@
 interface ILecture {
-  sectionId: number;
+  sectionId: number | null;
   title: string;
   content: string;
   duration: string;
