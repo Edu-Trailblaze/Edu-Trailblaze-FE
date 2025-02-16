@@ -9,10 +9,12 @@ import { convertDuration } from '../../../utils/format'
 interface ModuleBarProps {
   course: ICourseFull
   lectures: SectionLecture[]
-  video: IVideo
+  video: IVideo[]
+  activeLectureId: number | null
+  setActiveLectureId: (id: number) => void // Hàm cập nhật lectureId
 }
 
-export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
+export default function ModuleBar({ course, lectures, video, activeLectureId, setActiveLectureId }: ModuleBarProps) {
   const [activeVideo, setActiveVideo] = useState<number | null>(null)
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
 
@@ -26,10 +28,12 @@ export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
   let lectureCounter = 1
   const processedSections = course.sectionDetails.map((section) => {
     const sectionLectures =
-      lectures.find((lec) => lec.sectionId === section.id)?.lectures.map((item) => ({
-        ...item,
-        currentIndex: lectureCounter++
-      })) || []
+      lectures
+        .find((lec) => lec.sectionId === section.id)
+        ?.lectures.map((item) => ({
+          ...item,
+          currentIndex: lectureCounter++
+        })) || []
     return { ...section, lectures: sectionLectures }
   })
 
@@ -51,7 +55,7 @@ export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
             <div>
               <p className='font-semibold'>{section.title}</p>
               <p className='font-thin text-sm'>
-                {convertDuration(section.duration)} | 0/{section.lectures.length}
+                {section.duration.substring(0, 8)} | 0/{section.lectures.length}
               </p>
             </div>
             <div>
@@ -69,18 +73,20 @@ export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
               {section.lectures.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => setActiveVideo(item.id)}
+                  onClick={() => setActiveLectureId(item.id)}
                   className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
-                    activeVideo === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'
+                    activeLectureId === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'
                   }`}
                 >
                   <div className='flex items-center gap-2'>
-                    <FiVideo className='text-gray-500' />
                     <div>
-                      <p className={`font-semibold mr-2 ${activeVideo === item.id ? 'text-blue-600' : ''}`}>
+                      <p className={`font-semibold mr-2 ${activeLectureId === item.id ? 'text-blue-600' : ''}`}>
                         {item.currentIndex}. {item.title}
                       </p>
-                      <p className='text-sm text-gray-500'>{convertDuration(video.duration)}</p>
+                      <div className='text-sm flex items-center gap-2'>
+                        <FiVideo className='' />
+                        <span>{item.duration}min</span>
+                      </div>
                     </div>
                   </div>
                   <BsCheck2 className='text-2xl text-gray-600' />

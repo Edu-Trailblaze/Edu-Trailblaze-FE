@@ -2,6 +2,7 @@ interface ILecture {
   sectionId: number;
   title: string;
   content: string;
+  duration: string;
   description: string;
   isDeleted: boolean;
   createdAt: string;

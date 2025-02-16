@@ -16,7 +16,7 @@ export const videoApi = createApi({
     }),
 
 
-    getVideoByConditions: build.query<IVideo, Partial<IVideo> & {minDuration?: number; maxDuration?: number}>({
+    getVideoByConditions: build.query<IVideo[], Partial<IVideo> & {minDuration?: number; maxDuration?: number}>({
       query: (conditions) => ({
         url: `Video/get-videos-by-conditions`,
         method: 'GET',

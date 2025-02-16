@@ -4,7 +4,7 @@ import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
 
 interface ModuleBarProps {
   lecture: ILecture
-  video: IVideo
+  video: IVideo[]
 }
 
 export default function ModuleVideo({ lecture, video }: ModuleBarProps) {
@@ -32,18 +32,21 @@ export default function ModuleVideo({ lecture, video }: ModuleBarProps) {
   return (
     <div className='pb-5 container max-w-[1300px]'>
       {/**Video Display */}
-          <div className='pl-12 mt-3'>
-            <p className='font-semibold text-2xl '>{video.title}</p>
+      <div className='pl-12 mt-3'>
+        {video.map((v) => (
+          <div key={v.id}>
+            <p className='font-semibold text-2xl '>{v.title}</p>
             <video className=' my-5 w-full h-[500px] bg-black' controls>
-              <source src={video.videoUrl} type='video/mp4'  ></source>
+              <source src={v.videoUrl} type='video/mp4'></source>
             </video>
           </div>
+        ))}
+      </div>
 
-          {/**Video summarise */}
-          <div className='ml-12 bg-[#F4F4F4] px-[30px] py-[20px] rounded-2xl border-2 border-blue-500'>
-            <p>{lecture.content}</p>
-          </div>
-
+      {/**Video summarise */}
+      <div className='ml-12 bg-[#F4F4F4] px-[30px] py-[20px] rounded-2xl border-2 border-blue-500'>
+        <p>{lecture.content}</p>
+      </div>
 
       {/**Video Options */}
       <div className='ml-12 pt-5 pb-3 flex items-center gap-8 border-b-2 border-b-gray-300'>
