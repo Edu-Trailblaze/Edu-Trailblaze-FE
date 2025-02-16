@@ -13,16 +13,25 @@ interface ModuleBarProps {
 }
 
 export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
-  const [openModules, setOpenModules] = useState<number | null>(null)
   const [activeVideo, setActiveVideo] = useState<number | null>(null)
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
 
-  const toggleExpand = (index: any) => {
+  const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
       ...prev,
       [index]: !prev[index]
     }))
   }
+
+  let lectureCounter = 1
+  const processedSections = course.sectionDetails.map((section) => {
+    const sectionLectures =
+      lectures.find((lec) => lec.sectionId === section.id)?.lectures.map((item) => ({
+        ...item,
+        currentIndex: lectureCounter++
+      })) || []
+    return { ...section, lectures: sectionLectures }
+  })
 
   return (
     <div className='w-[400px] border-r-2 border-gray-200'>
@@ -33,58 +42,54 @@ export default function ModuleBar({ course, lectures, video }: ModuleBarProps) {
       </div>
 
       {/* Module Dropdown */}
-      {course.sectionDetails.map((section) => {
-        const sectionLectures = lectures.find((lec) => lec.sectionId === section.id)?.lectures || []
-
-        return (
-          <div key={section.id}>
-            <div
-              className='flex bg-gray-100 px-4 py-2 justify-between cursor-pointer items-center'
-              onClick={() => toggleExpand(section.id)}
-            >
-              <div>
-                <p className='font-semibold'>{section.title}</p>
-                <p className='font-thin text-sm'>
-                  {convertDuration(section.duration)} | {sectionLectures.length} lectures
-                </p>
-              </div>
-              <div>
-                {expandedSections[section.id] ? (
-                  <RiArrowUpSLine className='text-3xl' />
-                ) : (
-                  <RiArrowDropDownLine className='text-3xl' />
-                )}
-              </div>
+      {processedSections.map((section) => (
+        <div key={section.id}>
+          <div
+            className='flex bg-gray-100 px-4 py-2 justify-between cursor-pointer items-center'
+            onClick={() => toggleExpand(section.id)}
+          >
+            <div>
+              <p className='font-semibold'>{section.title}</p>
+              <p className='font-thin text-sm'>
+                {convertDuration(section.duration)} | 0/{section.lectures.length}
+              </p>
             </div>
-
-            {/* Submenu */}
-            {expandedSections[section.id] && (
-              <div className='bg-white'>
-                {sectionLectures.map((item, index) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setActiveVideo(item.id)}
-                    className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
-                      activeVideo === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'
-                    }`}
-                  >
-                    <div className='flex items-center gap-2'>
-                      <FiVideo className='text-gray-500' />
-                      <div>
-                        <p className={`font-semibold mr-2 ${activeVideo === item.id ? 'text-blue-600' : ''}`}>
-                          {index + 1}. {item.title}
-                        </p>
-                        <p className='text-sm text-gray-500'>{convertDuration(video.duration)}</p>
-                      </div>
-                    </div>
-                    <BsCheck2 className='text-2xl text-gray-600' />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div>
+              {expandedSections[section.id] ? (
+                <RiArrowUpSLine className='text-3xl' />
+              ) : (
+                <RiArrowDropDownLine className='text-3xl' />
+              )}
+            </div>
           </div>
-        )
-      })}
+
+          {/* Submenu */}
+          {expandedSections[section.id] && (
+            <div className='bg-white'>
+              {section.lectures.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setActiveVideo(item.id)}
+                  className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
+                    activeVideo === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'
+                  }`}
+                >
+                  <div className='flex items-center gap-2'>
+                    <FiVideo className='text-gray-500' />
+                    <div>
+                      <p className={`font-semibold mr-2 ${activeVideo === item.id ? 'text-blue-600' : ''}`}>
+                        {item.currentIndex}. {item.title}
+                      </p>
+                      <p className='text-sm text-gray-500'>{convertDuration(video.duration)}</p>
+                    </div>
+                  </div>
+                  <BsCheck2 className='text-2xl text-gray-600' />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
