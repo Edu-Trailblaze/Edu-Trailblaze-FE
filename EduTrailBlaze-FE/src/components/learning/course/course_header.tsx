@@ -9,7 +9,7 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
-  const {data: instructorURL} = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
+  const { data: instructorURL } = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
 
   if (!courseDetails) {
     return <div>No course details available</div>
@@ -37,7 +37,8 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
                 .reverse()
                 .map((instructor, index) => (
                   <Avatar key={index}>
-                    <AvatarImage src={instructorURL?.profilePictureUrl} />
+                    <AvatarImage src={instructor.profilePictureUrl} />
+                    <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 ))}
             </div>
@@ -68,7 +69,11 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
 
         {/* Right Section */}
         <div className='w-1/2 min-h-[400px] relative'>
-          <img src={courseDetails.imageURL} alt='Course Visual' className='rounded-lg absolute shadow-lg h-[350px] w-[400px] right-10 ' />
+          <img
+            src={courseDetails.imageURL}
+            alt='Course Visual'
+            className='rounded-lg absolute shadow-lg h-[350px] w-[400px] right-10 '
+          />
         </div>
       </div>
 
@@ -107,11 +112,10 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
           {courseDetails.instructors.map((instructor, index) => (
             <div key={index} className='flex items-center space-x-3'>
               <Avatar className='border-2 border-gray-300'>
-                <AvatarImage src={getInstructorImage(instructor)} />
+                <AvatarImage src={instructor.profilePictureUrl} />
               </Avatar>
               <div>
                 <p className='font-bold'>{instructor.userName}</p>
-                <p className='text-sm text-gray-500'>{'IBM'}</p>
                 <p className='text-sm text-gray-500'>
                   {0} Courses • {0} learners
                 </p>

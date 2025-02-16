@@ -106,7 +106,7 @@ export default function CourseSection({ courseDetails, section, lecture }: Cours
           {courseDetails?.instructors.slice(0, 2).map((instructor, index) => (
             <div key={index} className='flex mb-5 mt-5'>
               <Avatar>
-                <AvatarImage src={getInstructorImage(instructor)} />
+                <AvatarImage src={instructor.profilePictureUrl} />
               </Avatar>
               <div className='ml-5'>
                 <Link href='' className='text-sm underline'>
@@ -132,7 +132,7 @@ export default function CourseSection({ courseDetails, section, lecture }: Cours
           {courseDetails?.instructors.map((instructor, index) => (
             <div key={index} className='flex space-x-3 items-center'>
               <Avatar className='border-2 border-gray-300'>
-                <AvatarImage src={getInstructorImage(instructor)} />
+                <AvatarImage src={instructor.profilePictureUrl} />
                 <AvatarFallback>Instructor</AvatarFallback>
               </Avatar>
               <div>
