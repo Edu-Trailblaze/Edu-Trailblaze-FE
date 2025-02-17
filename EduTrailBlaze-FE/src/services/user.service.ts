@@ -14,13 +14,23 @@ export const userApi = createApi({
         }),
         getUserProfile: build.query<IUserProfile, string>({
             query: (id) => ({
-                url: `UserProfile/${id}`
+                url: `User/get-user-profile?userId=${id}`
             })
+        }),
+        updateUser: build.mutation<any, { id: string, body: FormData }>({
+            query(data) {
+                return {
+                    url: `UserProfile/${data.id}`,
+                    method: 'PUT',
+                    body: data.body
+                }
+            }
         })
     })
 })
 
 export const {
     useGetUserQuery,
-    useGetUserProfileQuery
+    useGetUserProfileQuery,
+    useUpdateUserMutation
 } = userApi
