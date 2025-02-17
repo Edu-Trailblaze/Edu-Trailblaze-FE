@@ -4,21 +4,24 @@ import Modal from '../../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { formatNumber, getInstructorImage } from '../../../utils/format'
 import { useGetUserProfileQuery } from '../../../services/user.service'
+import Link from 'next/link'
 
-export default function CourseHeader({ courseDetails, sectionDetails }: ICourseFull) {
+interface CourseHeaderProps extends ICourseFull {
+  courseDetails: ICourseDetails
+  sectionDetails: ISection[]
+  id: number
+}
+
+export default function CourseHeader({ courseDetails, sectionDetails, id }: CourseHeaderProps) {
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
   const { data: instructorURL } = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
 
-  if (!courseDetails) {
-    return <div>No course details available</div>
-  }
-
-  console.log('courseDetails', courseDetails.imageURL)
+  console.log('courseDetails id', courseDetails)
   return (
     <div className='p-6 bg-sky-200 relative mb-20'>
-      <div className='mx-auto flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12 container mb-20'>
+      <div className='flex items-center md:space-y-0 md:space-x-12 container mb-20'>
         {/* Left Section */}
         <div className='w-1/2'>
           <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
@@ -26,9 +29,9 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
 
           <div className='flex items-center space-x-3 mb-5'>
             {/* Display instructor images */}
-            <div className='flex -space-x-3'>
+            <div className='flex -space-x-3 '>
               {courseDetails.instructors.length > 3 && (
-                <div className='w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold border-2 border-white'>
+                <div className='w-10 h-10 rounded-full bg-gray-200 flex items-center text-sm font-semibold border-2 border-white'>
                   +{courseDetails.instructors.length - 3}
                 </div>
               )}
@@ -55,25 +58,18 @@ export default function CourseHeader({ courseDetails, sectionDetails }: ICourseF
               +{courseDetails.instructors.length} more
             </button>
           </div>
-
-          <button className='bg-blue-700 text-white py-3 px-6 w-60 rounded-lg hover:bg-blue-600 mb-4'>
-            Enroll Now
-            <p className='text-sm mt-1'>Starts Dec 2</p>
-          </button>
-
+          <Link href={`/course/${id}/lecture/12`} target='_blank'>
+            <button className='bg-blue-700 text-white py-5 w-60 rounded-lg hover:bg-blue-600 mb-2'>Go to course</button>
+          </Link>
           <p>
-            <span className='font-bold'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span> already
-            registered
+            <span className='font-bold mt-10'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span>
+            already registered
           </p>
         </div>
 
         {/* Right Section */}
-        <div className='w-1/2 min-h-[400px] relative'>
-          <img
-            src={courseDetails.imageURL}
-            alt='Course Visual'
-            className='rounded-lg absolute shadow-lg h-[350px] w-[400px] right-10 '
-          />
+        <div className='w-1/2 min-h-[400px] ml-auto'>
+          <img src={courseDetails.imageURL} alt='Course Visual' className='rounded-lg shadow-lg ml-auto ' />
         </div>
       </div>
 

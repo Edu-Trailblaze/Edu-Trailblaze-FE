@@ -1,42 +1,62 @@
 'use client'
-import ModuleBar from '@/components/learning/lecture/module_bar'
-import ModuleVideo from '@/components/learning/lecture/module_video'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGetCourseDetailsQuery, useGetCourseQuery } from '../../../services/courseDetail.service'
 import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../services/lecture.service'
 import Loading from '../../animate/Loading'
 import { useGetVideoByConditionsQuery, useGetVideoQuery } from '../../../services/video.service'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import LectureContent from './lecutre_content'
+import LectureSideBar from './lecture_side_bar'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()
+  const router = useRouter()
   const { data: course, isLoading: courseLoading } = useGetCourseDetailsQuery(Number(courseURL))
   const sectionIds = course?.sectionDetails?.map((section) => section.id) || []
   const { data: lectures } = useGetSectionLectureQuery(sectionIds)
 
-  // Lưu lectureId đang được chọn
   const [activeLectureId, setActiveLectureId] = useState<number | null>(Number(lectureURL))
-  const { data: lectureVideo, isLoading: lectureVideoLoading } = useGetLectureQuery(activeLectureId || 12)
-  const { data: video, isLoading: videoLoading } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })
+  
+  //get one lecture
+  const { data: lectureContent } = useGetLectureQuery(activeLectureId ?? 0)
+  const { data: video } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })
+
+  // Lấy trạng thái mở rộng từ sessionStorage (nếu có)
+  const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>(() => {
+    if (typeof window !== 'undefined') {
+      return JSON.parse(sessionStorage.getItem('expandedSections') || '{}')
+    }
+    return {}
+  })
+
+  useEffect(() => {
+    sessionStorage.setItem('expandedSections', JSON.stringify(expandedSections))
+  }, [expandedSections]) // Khi đổi lecture, giữ nguyên trạng thái mở rộng
+
+  const handleLectureChange = (id: number) => {
+    setActiveLectureId(id)
+    router.push(`/course/${courseURL}/lecture/${id}`, { scroll: false })
+  }
 
   if (courseLoading) return <Loading />
   if (!course) return <div>Course not found</div>
   if (!lectures) return <div>Lecture not found</div>
-  if (!lectureVideo) return <div>Lecture not found</div>
+  if (!lectureContent) return <div>Lecture not found</div>
   if (!video) return <div>Video not found</div>
 
   return (
     <div>
       <div className='flex'>
-        {/* <ModuleBar course={course} section={section} lecture={lecture} video={video} /> */}
-        <ModuleBar
+        <LectureSideBar
           course={course}
           lectures={lectures}
           video={video}
           activeLectureId={activeLectureId}
-          setActiveLectureId={setActiveLectureId} // Truyền hàm cập nhật lectureId
+          setActiveLectureId={handleLectureChange}
+          expandedSections={expandedSections}
+          setExpandedSections={setExpandedSections}
         />
-        <ModuleVideo lecture={lectureVideo} video={video} />
+        <LectureContent lecture={lectureContent} video={video} />
       </div>
     </div>
   )

@@ -7,7 +7,7 @@ interface ModuleBarProps {
   video: IVideo[]
 }
 
-export default function ModuleVideo({ lecture, video }: ModuleBarProps) {
+export default function LectureContent({ lecture, video }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const toggleList = () => {
     setLanguageOpen((prev) => !prev)
