@@ -17,7 +17,6 @@ export default function Course() {
   const { data: courseDetails, isLoading, isFetching, error } = useGetCourseDetailsQuery(Number(courseURL))
   const detail = courseDetails?.courseDetails
   const section = courseDetails?.sectionDetails
-
   const sectionId = section?.map((item) => item.id) || []
   //bỏ qua query nếu ko có data
   const { data: lecture } = useGetSectionLectureQuery(sectionId.length > 0 ? sectionId : skipToken)
@@ -33,7 +32,7 @@ export default function Course() {
     <div>
       {/* Header */}
       <div id='course-header'>
-        <CourseHeader courseDetails={detail} sectionDetails={section} />
+        <CourseHeader courseDetails={detail} sectionDetails={section} id={Number(courseURL)} />
       </div>
 
       {/* CourseDetails */}

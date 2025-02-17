@@ -1,23 +1,19 @@
-'use client'
-import React, { useState } from 'react'
+import { FileVideo } from 'lucide-react'
+import { BsCheck2 } from 'react-icons/bs'
 import { LuTableOfContents } from 'react-icons/lu'
 import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
-import { BsCheck2 } from 'react-icons/bs' // Checkmark icon
-import { FiVideo } from 'react-icons/fi' // Video icon
-import { convertDuration } from '../../../utils/format'
 
 interface ModuleBarProps {
   course: ICourseFull
   lectures: SectionLecture[]
   video: IVideo[]
   activeLectureId: number | null
-  setActiveLectureId: (id: number) => void // Hàm cập nhật lectureId
+  setActiveLectureId: (id: number) => void
+  expandedSections: { [key: number]: boolean }
+  setExpandedSections: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>
 }
 
-export default function ModuleBar({ course, lectures, video, activeLectureId, setActiveLectureId }: ModuleBarProps) {
-  const [activeVideo, setActiveVideo] = useState<number | null>(null)
-  const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
-
+export default function LectureSideBar({ course, lectures, video, activeLectureId, setActiveLectureId, expandedSections, setExpandedSections }: ModuleBarProps) {
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -38,14 +34,12 @@ export default function ModuleBar({ course, lectures, video, activeLectureId, se
   })
 
   return (
-    <div className='w-[400px] border-r-2 border-gray-200'>
-      {/* Header */}
+    <div className='w-[400px] border-r-2 border-gray-200 select-none'>
       <div className='flex pl-3 text-center items-center font-bold py-3 bg-white'>
         <LuTableOfContents className='text-2xl' />
         <h1 className='px-2 text-xl'>Course Content</h1>
       </div>
 
-      {/* Module Dropdown */}
       {processedSections.map((section) => (
         <div key={section.id}>
           <div
@@ -59,24 +53,17 @@ export default function ModuleBar({ course, lectures, video, activeLectureId, se
               </p>
             </div>
             <div>
-              {expandedSections[section.id] ? (
-                <RiArrowUpSLine className='text-3xl' />
-              ) : (
-                <RiArrowDropDownLine className='text-3xl' />
-              )}
+              {expandedSections[section.id] ? <RiArrowUpSLine className='text-3xl' /> : <RiArrowDropDownLine className='text-3xl' />}
             </div>
           </div>
 
-          {/* Submenu */}
           {expandedSections[section.id] && (
             <div className='bg-white'>
               {section.lectures.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => setActiveLectureId(item.id)}
-                  className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
-                    activeLectureId === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center justify-between px-4 py-2 cursor-pointer ${activeLectureId === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
                 >
                   <div className='flex items-center gap-2'>
                     <div>
@@ -84,7 +71,7 @@ export default function ModuleBar({ course, lectures, video, activeLectureId, se
                         {item.currentIndex}. {item.title}
                       </p>
                       <div className='text-sm flex items-center gap-2'>
-                        <FiVideo className='' />
+                        <FileVideo className='' />
                         <span>{item.duration}min</span>
                       </div>
                     </div>
