@@ -2,11 +2,11 @@ export function formatNumber(amount: number): string {
   return new Intl.NumberFormat('en-US').format(amount)
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number | undefined): string {
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND'
-  }).format(amount)
+  }).format(amount || 0)
 }
 
 export function convertDuration(duration: string) {

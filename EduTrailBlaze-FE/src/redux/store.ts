@@ -16,6 +16,7 @@ import { userApi } from '@/services/user.service'
 import { videoApi } from '../services/video.service'
 import { cartApi } from '@/services/cart.service'
 import cartReducer from './slice/cart.slice';
+import { paymentApi } from '@/services/payment.service'
 
 const persistConfig = {
   key: 'auth',
@@ -42,11 +43,12 @@ export const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     [videoApi.reducerPath]: videoApi.reducer,
     [cartApi.reducerPath]: cartApi.reducer,
+    [paymentApi.reducerPath]: paymentApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false // Bỏ kiểm tra serialize để tránh lỗi
-    }).concat(courseApi.middleware, authApi.middleware, lectureApi.middleware, sectionApi.middleware, userApi.middleware, videoApi.middleware, cartApi.middleware)
+    }).concat(courseApi.middleware, authApi.middleware, lectureApi.middleware, sectionApi.middleware, userApi.middleware, videoApi.middleware, cartApi.middleware, paymentApi.middleware)
 })
 
 export const persistor = persistStore(store);

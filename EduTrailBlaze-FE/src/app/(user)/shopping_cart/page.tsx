@@ -1,7 +1,10 @@
 'use client'
 
 import { useDeleteCartItemMutation, useGetCartQuery, useGetNumberOfCartItemsQuery, useDeleteAllCartItemsMutation } from '@/services/cart.service'
+import { usePostPaymentMutation } from '@/services/payment.service'
+import { formatCurrency } from '@/utils/format'
 import { jwtDecode } from 'jwt-decode'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { FaTags } from 'react-icons/fa6'
 import { useDispatch } from 'react-redux'
@@ -17,6 +20,9 @@ export default function ShoppingCart() {
     isLoading: loadingNumber,
     isFetching: fetchingNumber
   } = useGetNumberOfCartItemsQuery(userId)
+  const [postPayment, { isLoading: isAddingToPayment, isSuccess: addedPayment, error: PaymentError }] = usePostPaymentMutation();
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -49,6 +55,17 @@ export default function ShoppingCart() {
       console.error('Error removing all items from cart:', error)
     }
   }
+
+  const handleCheckout = async () => {
+    try {
+      const response = await postPayment({ userId, paymentMethod: 'VnPay' }).unwrap();
+      if (response.data) {
+        router.push(`${response.data}`);
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+    }
+  };
   
   return (
     <>
@@ -131,7 +148,7 @@ export default function ShoppingCart() {
 
                       <div className='flex justify-end w-[300px]'>
                         <p className='flex font-semibold'>
-                          {cartItems.totalCoursePrice}$ <FaTags className='ml-2 mt-1' />
+                          {cartItems.totalCoursePrice}VND <FaTags className='ml-2 mt-1' />
                         </p>
                       </div>
                     </div>
@@ -144,11 +161,12 @@ export default function ShoppingCart() {
           </div>
           <div className='w-[250px]'>
             <p className='font-semibold text-gray-500 mb-3'>Total:</p>
-            <p className='font-bold text-4xl mb-2'>{cartItems?.totalPrice}$</p>
+            <p className='font-bold text-4xl mb-2'>{cartItems?.totalPrice} VND</p>
             <div>
               <button
                 className='w-[250px] bg-blue-500 text-white cursor-pointer px-2 py-2 mt-2 rounded-md transition duration-150 hover:bg-blue-600'
                 type='button'
+                onClick={handleCheckout}
               >
                 Checkout
               </button>
