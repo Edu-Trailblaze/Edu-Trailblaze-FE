@@ -9,25 +9,28 @@ import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
 
 import DetailModal from '@/components/admin/Modal/DetailModal';
-import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate';
-import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit';
+import FormatDateTime from '@/components/admin/Date/FormatDateTime';
 
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from "lucide-react";
 import api from '@/components/config/axios';
 
 type Order = {
     id?: number;
-    title: string;
-    content: string;
-    imageUrl: string;
+    userId: string;
+    orderAmount: number;
+    orderDate: string;
+    orderStatus: string;
+    userName?: string; // <-- thêm dòng này
 
 };
 
 
 const orderFields: { label: string; accessor: keyof Order }[] = [
     { label: 'Id', accessor: 'id' },
-    { label: 'Title', accessor: 'title' },
-    { label: 'Content', accessor: 'content' },
+    { label: 'User Name', accessor: 'userName' },
+    { label: 'Amount', accessor: 'orderAmount' },
+    { label: 'Date', accessor: 'orderDate' },
+    { label: 'Status', accessor: 'orderStatus' },
 ];
 
 
@@ -36,32 +39,66 @@ export default function OrdersManagement() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [pageIndex, setPageIndex] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const pageSize = 5;
 
 
-
-    const fetchOrders = async () => {
+    const fetchOrders = async (page: number) => {
+        setLoading(true);
         try {
-            const response = await api.get('/get-paging-order');
-            setOrders(response.data);
+            const response = await api.get('/Order/get-paging-order', {
+                params: {
+                    pageIndex: page,
+                    pageSize
+                }
+            });
+
+            const ordersData = response.data.items;
+
+            const ordersWithNames = await Promise.all(
+                ordersData.map(async (order: Order) => {
+                    try {
+                        const userResponse = await api.get(`/User/${order.userId}`);
+
+                        return {
+                            ...order,
+                            userName: userResponse.data.userName
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching user name for userId ${order.userId}:`, error);
+                        return { ...order, fullName: "Unknown" };
+                    }
+                })
+            );
+
+
+            setOrders(ordersWithNames);
+            setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error('Error fetching orders:', error);
+            toast.error('Failed to fetch orders!');
         } finally {
             setLoading(false);
         }
     };
 
-    ;
+
 
     useEffect(() => {
-        fetchOrders();
-    }, []);
+        fetchOrders(pageIndex);
+    }, [pageIndex]);
 
 
-    const renderRow = (order: Order) => (
+    const renderRow = (order: Order & { userName?: string }) => (
         <tr key={order.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
             <td className="p-4">{order.id}</td>
-            <td>{order.title}</td>
-            <td>{order.content}</td>
+            <td>{order.userName || "Loading..."}</td>
+            <td>{order.orderAmount}</td>
+            <td>
+                <FormatDateTime date={order.orderDate} />
+            </td>
+            <td>{order.orderStatus}</td>
 
             <td className="flex mt-4 space-x-2">
                 <button onClick={() => setSelectedOrder(order)} className="text-blue-600 cursor-pointer">
@@ -92,6 +129,7 @@ export default function OrdersManagement() {
                     </div>
                 </div>
             </div>
+
             {loading ? (
                 <div className="flex justify-center py-6">
                     <Loader className="w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin" />
@@ -100,7 +138,11 @@ export default function OrdersManagement() {
             ) : (
                 <Table columns={orderFields} renderRow={renderRow} data={orders} />
             )}
-
+            <Pagination
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onPageChange={(page) => setPageIndex(page)}
+            />
             {selectedOrder && <DetailModal item={selectedOrder} fields={orderFields} onClose={() => setSelectedOrder(null)} />}
 
         </div>

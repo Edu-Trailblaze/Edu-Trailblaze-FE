@@ -113,18 +113,6 @@ export default function VouchersManagement() {
         }
     };
 
-    const resetNewVoucher = () => {
-        setNewVoucher({
-            discountType: '',
-            discountValue: 0,
-            voucherCode: '',
-            startDate: '',
-            expiryDate: '',
-            minimumOrderValue: 0,
-            isUsed: false,
-        });
-    };
-
     const handleEditVoucher = (voucher: Voucher) => {
         setEditVoucher(voucher);
         setEditModalOpen(true);

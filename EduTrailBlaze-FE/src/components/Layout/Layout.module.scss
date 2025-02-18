@@ -1,9 +1,21 @@
 .layout {
-  padding: 0 24px 0 80px;
-  max-width: 85rem;
-  margin: auto;
+  display: flex;
+  min-height: 100vh;
+}
 
-  @media screen and (min-width: 1700px) {
-    max-width: 92rem;
-  }
+.sideMenu {
+
+  width: 200px;
+  height: 100vh;
+  background-color: blue;
+  overflow-y: auto;
+  /* Độ rộng tùy ý */
+  /* Hoặc thêm border, background-color, v.v... nếu cần */
+}
+
+/* Nội dung chính (cột 2) */
+.content {
+  flex: 1;
+  background-color: red;
+
 }

@@ -34,7 +34,7 @@ function AdminHeader() {
   }
 
   return (
-    <AppBar position='static' sx={{ marginBottom: '40px' }}>
+    <AppBar position='static' sx={{ marginBottom: '0px' }}>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Typography
