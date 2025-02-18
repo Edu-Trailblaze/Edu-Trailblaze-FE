@@ -1,3 +1,5 @@
+import { Table as MuiTable, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+
 const Table = ({
     columns,
     renderRow,
@@ -8,16 +10,18 @@ const Table = ({
     data: any[];
 }) => {
     return (
-        <table className="w-full mt-4">
-            <thead>
-                <tr className="text-left text-gray-500 text-sm">
+        <MuiTable sx={{ mt: 2, width: "100%" }}>
+            <TableHead>
+                <TableRow>
                     {columns.map((col) => (
-                        <th key={col.accessor} className={col.className}>{col.label}</th>
+                        <TableCell key={col.accessor} className={col.className} sx={{ fontWeight: "bold", color: "gray" }}>
+                            {col.label}
+                        </TableCell>
                     ))}
-                </tr>
-            </thead>
-            <tbody>{data.map((item) => renderRow(item))}</tbody>
-        </table>
+                </TableRow>
+            </TableHead>
+            <TableBody>{data.map((item) => renderRow(item))}</TableBody>
+        </MuiTable>
     );
 };
 
