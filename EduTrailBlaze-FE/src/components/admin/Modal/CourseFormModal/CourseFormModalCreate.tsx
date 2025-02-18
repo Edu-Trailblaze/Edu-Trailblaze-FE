@@ -99,12 +99,12 @@ export default function CourseFormModalCreate({ initialValues, setNewCourse, onS
                         <MenuItem value="Intermediate">Intermediate</MenuItem>
                         <MenuItem value="Advanced">Advanced</MenuItem>
                     </Select>
-                    <TextField
+                    {/* <TextField
                         label="Created By"
                         value={formValues.createdBy}
                         onChange={(e) => handleChange("createdBy", e.target.value)}
                         fullWidth
-                    />
+                    /> */}
                     <TextField
                         label="Prerequisites"
                         value={formValues.prerequisites}
@@ -114,13 +114,14 @@ export default function CourseFormModalCreate({ initialValues, setNewCourse, onS
                     />
                     <TextField
                         label="Learning Outcomes"
-                        value={JSON.stringify(formValues.learningOutcomes)}
+                        value={formValues.learningOutcomes.join('\n')}
                         onChange={(e) => {
-                            try {
-                                handleChange("learningOutcomes", JSON.parse(e.target.value));
-                            } catch {
-                                handleChange("learningOutcomes", []);
-                            }
+                            const lines = e.target.value
+                                .split('\n')
+                                .map(line => line.trim())
+                                .filter(line => line !== '');
+
+                            handleChange("learningOutcomes", lines);
                         }}
                         fullWidth
                         multiline
