@@ -7,7 +7,7 @@
 
   width: 200px;
   height: 100vh;
-  background-color: blue;
+  // background-color: blue;
   overflow-y: auto;
   /* Độ rộng tùy ý */
   /* Hoặc thêm border, background-color, v.v... nếu cần */
@@ -16,6 +16,6 @@
 /* Nội dung chính (cột 2) */
 .content {
   flex: 1;
-  background-color: red;
+  // background-color: red;
 
 }
