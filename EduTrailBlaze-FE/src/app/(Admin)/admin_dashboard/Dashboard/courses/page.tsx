@@ -10,11 +10,14 @@ import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
 
 import DetailModal from '@/components/admin/Modal/DetailModal'
-import FormModal from '@/components/admin/Modal/FormModal'
+import CourseFormModalCreate from '@/components/admin/Modal/CourseFormModal/CourseFormModalCreate'
+import CourseFormModalEdit from '@/components/admin/Modal/CourseFormModal/CourseFormModalEdit'
+
 
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from "lucide-react";
 import dayjs from 'dayjs';
 import axios from 'axios';
+import api from '@/components/config/axios';
 
 
 type Course = {
@@ -24,7 +27,6 @@ type Course = {
     introURL: string;
     description: string;
     price: number;
-    duration: number;
     difficultyLevel: string;
     prerequisites: string;
     learningOutcomes: string[];
@@ -38,45 +40,56 @@ const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course';
 const courseFields: { label: string; accessor: keyof Course }[] = [
     { label: 'Course ID', accessor: 'id' },
     { label: 'Title', accessor: 'title' },
+    { label: 'Price', accessor: 'price' },
     { label: 'Difficulty', accessor: 'difficultyLevel' },
-    { label: 'Created By', accessor: 'createdBy' },
-    { label: 'Created Date', accessor: 'createdAt' },
-];
+    { label: 'Created at', accessor: 'createdAt' },
 
-const courseFormFields: { label: string; accessor: keyof Course; type: string }[] = [
-    { label: 'Title', accessor: 'title', type: 'text' },
-    { label: 'Image URL', accessor: 'imageURL', type: 'text' },
-    { label: 'Intro URL', accessor: 'introURL', type: 'text' },
-    { label: 'Description', accessor: 'description', type: 'text' },
-    { label: 'Price', accessor: 'price', type: 'number' },
-    { label: 'Duration', accessor: 'duration', type: 'number' },
-    { label: 'Difficulty Level', accessor: 'difficultyLevel', type: 'text' },
-    // { label: 'Created By', accessor: 'createdBy', type: 'text' },
-    { label: 'Prerequisites', accessor: 'prerequisites', type: 'text' },
 ];
 
 
 export default function CoursesManagement() {
+    const [userId, setUserId] = useState("");
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
-    const [editedCourse, setEditedCourse] = useState<Course | null>(null);
+    const [editCourse, setEditCourse] = useState<Course | null>(null);
     const [newCourse, setNewCourse] = useState<Course>({
         title: '',
         imageURL: '',
         introURL: '',
         description: '',
         price: 0,
-        duration: 0,
         difficultyLevel: '',
-        createdBy: 'aca1c0c4-d195-4208-b1ed-0a89f55b7e09',
+        createdBy: '',
         prerequisites: '',
         learningOutcomes: [],
     });
 
+    const initialValues: Course = {
+        title: '',
+        imageURL: '',
+        introURL: '',
+        description: '',
+        price: 0,
+        difficultyLevel: '',
+        createdBy: '',
+        prerequisites: '',
+        learningOutcomes: [],
+    };
 
+
+    const fetchUserId = async () => {
+        try {
+            const response = await axios.get("https://edu-trailblaze.azurewebsites.net/api/User");
+            if (response.data.length > 0) {
+                setUserId(response.data[0].id);
+            }
+        } catch (error) {
+            console.error("Error fetching user ID:", error);
+        }
+    };
 
     const fetchCourses = async () => {
         try {
@@ -91,24 +104,40 @@ export default function CoursesManagement() {
 
     useEffect(() => {
         fetchCourses();
+        fetchUserId();
     }, []);
 
 
-    const handleAddCourse = async () => {
+    const handleAddCourse = async (newCourse: Course) => {
+        if (!newCourse.title || !newCourse.description || !newCourse.difficultyLevel || newCourse.price <= 0) {
+            toast.error("Please fill all required fields and ensure price is greater than 0!");
+            return;
+        }
+
+        if (!userId) {
+            toast.error("User ID is not available!");
+            return;
+        }
         try {
             const courseToSend = {
                 ...newCourse,
-                learningOutcomes: newCourse.learningOutcomes.filter((item) => item.trim() !== ''),
+                learningOutcomes: newCourse.learningOutcomes.length > 0 ? newCourse.learningOutcomes : ["Default outcome"],
+                createdBy: userId
             };
-            await axios.post(API_URL, courseToSend);
+            const response = await axios.post(API_URL, courseToSend);
+
             toast.success("Course created successfully!");
+            setCourses([...courses, response.data]);
+            fetchCourses();
             setAddModalOpen(false);
             resetNewCourse();
-            fetchCourses();
+
         } catch (error) {
             console.error('Error adding course:', error);
+            if (axios.isAxiosError(error) && error.response) {
+                console.error('Response data:', error.response.data);
+            }
             toast.error("Failed to create course!");
-
         }
     };
 
@@ -120,7 +149,6 @@ export default function CoursesManagement() {
             introURL: '',
             description: '',
             price: 0,
-            duration: 0,
             difficultyLevel: '',
             createdBy: '',
             prerequisites: '',
@@ -143,21 +171,42 @@ export default function CoursesManagement() {
         }
     };
 
-    const openEditModal = (course: Course) => {
-        setEditedCourse(course);
+    const handleEditCourse = (course: Course) => {
+        setEditCourse(course);
         setEditModalOpen(true);
     };
 
-    const handleEditCourse = async (updatedCourse: Course) => {
-        if (!updatedCourse.id) return;
+
+    const handleUpdateCourse = async (updatedCourse: Course) => {
+        if (!updatedCourse.title || !updatedCourse.description || !updatedCourse.difficultyLevel || updatedCourse.price <= 0) {
+            toast.error("Please fill all required fields and ensure price is greater than 0!");
+            return;
+        }
 
         try {
-            await axios.put(`${API_URL}?courseId=${updatedCourse.id}`, updatedCourse);
-            setCourses(courses.map((c) => (c.id === updatedCourse.id ? updatedCourse : c)));
+            const courseToSend = {
+                ...updatedCourse,
+                courseId: updatedCourse.id,
+                learningOutcomes: updatedCourse.learningOutcomes.length > 0 ? updatedCourse.learningOutcomes : ["Default outcome"],
+            };
+
+            await axios.put(`${API_URL}`, courseToSend, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            toast.success("Course updated successfully!");
+
+            setCourses(courses.map((course) =>
+                course.id === updatedCourse.id ? updatedCourse : course
+            ));
+
             setEditModalOpen(false);
-            setEditedCourse(null);
+            setEditCourse(null);
         } catch (error) {
             console.error('Error updating course:', error);
+            toast.error("Failed to update course!");
         }
     };
 
@@ -165,14 +214,14 @@ export default function CoursesManagement() {
         <tr key={course.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
             <td className="p-4">{course.id}</td>
             <td>{course.title}</td>
+            <td>{course.price}</td>
             <td>{course.difficultyLevel}</td>
-            <td>{course.createdBy}</td>
             <td className="hidden lg:table-cell">{dayjs(course.createdAt).format("YYYY-MM-DD")}</td>
-            <td className="flex space-x-2">
+            <td className="flex mt-4 space-x-2">
                 <button onClick={() => setSelectedCourse(course)} className="text-blue-600 cursor-pointer">
                     <Eye size={18} />
                 </button>
-                <button onClick={() => openEditModal(course)} className="text-yellow-600 cursor-pointer">
+                <button onClick={() => handleEditCourse(course)} className="text-yellow-600 cursor-pointer">
                     <Pencil size={18} />
                 </button>
                 <button onClick={() => handleDeleteCourse(course.id!)} className="text-red-600 cursor-pointer">
@@ -186,7 +235,6 @@ export default function CoursesManagement() {
     return (
         <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
             <ToastContainer position="top-right" autoClose={3000} />
-
             <div className="flex items-center justify-between">
                 <h1 className="hidden md:block text-lg font-semibold">Courses Management</h1>
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
@@ -204,6 +252,7 @@ export default function CoursesManagement() {
                     </div>
                 </div>
             </div>
+
             {loading ? (
                 <div className="flex justify-center py-6">
                     <Loader className="w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin" />
@@ -212,19 +261,27 @@ export default function CoursesManagement() {
             ) : (
                 <Table columns={courseFields} renderRow={renderRow} data={courses} />
             )}
-            <Pagination />
+            {/* <Pagination /> */}
 
             {selectedCourse && <DetailModal item={selectedCourse} fields={courseFields} onClose={() => setSelectedCourse(null)} />}
+            <CourseFormModalCreate
+                initialValues={initialValues}
+                setNewCourse={setNewCourse}
+                onSubmit={handleAddCourse}
+                onCancel={() => setAddModalOpen(false)}
+                isOpen={isAddModalOpen}
 
-            {(isAddModalOpen || isEditModalOpen) && (
-                <FormModal
-                    initialValues={isEditModalOpen ? editedCourse! : newCourse}
-                    fields={courseFormFields}
-                    onSubmit={isEditModalOpen ? handleEditCourse : handleAddCourse}
+            />
+            {editCourse && (
+                <CourseFormModalEdit
+                    initialValues={editCourse}
+                    setEditCourse={setNewCourse}
+                    onSubmit={handleUpdateCourse}
                     onCancel={() => {
-                        setAddModalOpen(false);
                         setEditModalOpen(false);
+                        setEditCourse(null);
                     }}
+                    isOpen={isEditModalOpen}
                 />
             )}
         </div>

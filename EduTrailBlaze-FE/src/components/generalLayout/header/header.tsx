@@ -25,6 +25,8 @@ import { jwtDecode } from 'jwt-decode'
 import { FaUserCog, FaUserEdit } from 'react-icons/fa'
 import { useGetCartQuery } from '@/services/cart.service'
 import ViewCart from './viewCart'
+import { FaBell } from 'react-icons/fa6'
+import { useGetUserProfileQuery } from '@/services/user.service'
 
 const products = [
   {
@@ -88,13 +90,13 @@ const languageOptions = [
 export default function WebHeader() {
   const dispatch = useDispatch()
   const router = useRouter()
-  const { data: cart, isLoading, isFetching } = useGetCartQuery('5fbd1966-a4ec-4186-88da-941745562c91')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [languageModalOpen, setLanguageModalOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [cartHovered, setCartHovered] = useState(false)
   const [userName, setUserName] = useState('')
   const [userId, setUserId] = useState('');
+  const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
   
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -234,18 +236,18 @@ export default function WebHeader() {
 
         <div className='lg:flex lg:flex-1 justify-end'>
           {isLoggedIn ? (
-            <div className='relative overflow-visible mr-[50px] mt-2'>
+            <div className='relative overflow-visible mr-[50px] mt-1'>
               {/* <WelcomeItem id={userId}/> */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar>
-                    <AvatarImage src='/assets/img/default-avatar.jpg' alt='avatar' />
+                    <AvatarImage src={profile?.profilePictureUrl || '/assets/img/default-avatar.jpg'} alt='avatar' />
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className='w-56 bg-white'>
                   <DropdownMenuLabel className='flex items-center bg-sky-200 rounded'>
                     <Avatar className='border-2 border-green-600'>
-                      <AvatarImage src='/assets/img/default-avatar.jpg' alt='avatar' />
+                      <AvatarImage src={profile?.profilePictureUrl || '/assets/img/default-avatar.jpg'} alt='avatar' />
                     </Avatar>{' '}
                     <p className='ml-2'>{userName}</p>
                   </DropdownMenuLabel>
@@ -258,6 +260,12 @@ export default function WebHeader() {
                     </DropdownMenuItem>
                     <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                        <FaBell />
+                      </div>{' '}
+                      <Link href={''}>Notification</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                      <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                         <FaUserCog />
                       </div>{' '}
                       Settings
@@ -267,7 +275,7 @@ export default function WebHeader() {
                     <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                       <MdOutlineSupportAgent />{' '}
                     </div>
-                    Support
+                    <Link href={'/support'}>Support</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}>
                     <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>

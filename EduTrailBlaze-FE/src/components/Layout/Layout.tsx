@@ -8,11 +8,23 @@ const Layout = (props: any) => {
   const { data: session } = useSession()
 
   return (
-    <main className={scss.layout}>
-      {session && <SideMenu />}
-      {props.children}
+    <>
+      <main className={scss.layout}>
+        {/* SideMenu */}
+        {session && (
+          <aside className={scss.sideMenu}>
+            <SideMenu />
+          </aside>
+        )}
+
+        {/* Nội dung (Dashboard) */}
+        <section className={scss.content}>
+          {props.children}
+        </section>
+      </main>
       <Footer />
-    </main>
+    </>
+
   )
 }
 
