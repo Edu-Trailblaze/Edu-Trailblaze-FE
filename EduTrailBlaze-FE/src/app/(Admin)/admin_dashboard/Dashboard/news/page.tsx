@@ -28,7 +28,8 @@ const newsFields: { label: string; accessor: keyof News }[] = [
     { label: 'Id', accessor: 'id' },
     { label: 'Title', accessor: 'title' },
     { label: 'Content', accessor: 'content' },
-    // { label: 'Image URL', accessor: 'imageUrl' }
+    { label: 'Image URL', accessor: 'imageUrl' }
+
 ];
 
 
@@ -139,12 +140,18 @@ export default function NewsManagement() {
             <td className="p-4">{news.id}</td>
             <td>{news.title}</td>
             <td>{news.content}</td>
-            {/* <td>{news.imageUrl}</td> */}
+            <td>
+                <img
+                    src={news.imageUrl}
+                    alt="news image"
+                    className="w-16 h-16 object-cover rounded"
+                />
+            </td>
             <td className="flex mt-4 space-x-2">
                 <button onClick={() => setSelectedNews(news)} className="text-blue-600 cursor-pointer">
                     <Eye size={18} />
                 </button>
-                <button onClick={() => handleEditNews(news)} className="text-blue-600 cursor-pointer">
+                <button onClick={() => handleEditNews(news)} className="text-yellow-600 cursor-pointer">
                     <Pencil size={18} />
                 </button>
                 <button onClick={() => handleDeleteNews(news.id!)} className="text-red-600 cursor-pointer">
@@ -180,8 +187,14 @@ export default function NewsManagement() {
                     <p className="mt-2 text-gray-500 text-sm">Loading news...</p>
                 </div>
             ) : (
-                <Table columns={newsFields} renderRow={renderRow} data={news} />
-            )}
+                <Table
+                    columns={[
+                        ...newsFields,
+                        { label: 'Actions', accessor: 'action' }
+                    ]}
+                    renderRow={renderRow}
+                    data={news}
+                />)}
 
             {selectedNews && <DetailModal item={selectedNews} fields={newsFields} onClose={() => setSelectedNews(null)} />}
             <NewsFormModalCreate

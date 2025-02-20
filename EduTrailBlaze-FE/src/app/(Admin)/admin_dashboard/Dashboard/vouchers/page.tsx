@@ -12,6 +12,7 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime';
 import DetailModal from '@/components/admin/Modal/DetailModal';
 import VoucherFormModalCreate from '@/components/admin/Modal/VoucherFormModal/VoucherFormModalCreate';
 import VoucherFormModalEdit from '@/components/admin/Modal/VoucherFormModal/VoucherFormModalEdit';
+import SortByIdButton from '@/components/admin/Filter/SortById';
 
 import { Filter, ArrowUpDown, Plus, Eye, Pencil } from 'lucide-react';
 import api from '@/components/config/axios';
@@ -68,6 +69,12 @@ export default function VouchersManagement() {
     const [pageIndex, setPageIndex] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 5;
+
+    const [originalVouchers, setOriginalVouchers] = useState<Voucher[]>([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [filterField, setFilterField] = useState<'id' | 'discountValue' | 'expiryDate'>('id');
+    const [filterValue, setFilterValue] = useState('');
+
 
     const fetchVouchers = async (page: number) => {
         setLoading(true);
@@ -146,6 +153,32 @@ export default function VouchersManagement() {
         }
     };
 
+
+    const handleApplyFilter = () => {
+        let filteredData = [...originalVouchers];
+
+        if (filterField === 'id') {
+            const filterNumber = Number(filterValue);
+            if (!isNaN(filterNumber)) {
+                filteredData = filteredData.filter(v => (v.id ?? 0) === filterNumber);
+            }
+        } else if (filterField === 'discountValue') {
+            const filterNumber = Number(filterValue);
+            if (!isNaN(filterNumber)) {
+                filteredData = filteredData.filter(v => v.discountValue === filterNumber);
+            }
+        } else if (filterField === 'expiryDate') {
+
+            filteredData = filteredData.filter(v => {
+                const voucherDate = v.expiryDate.split('T')[0];
+                return voucherDate === filterValue;
+            });
+        }
+
+        setVouchers(filteredData);
+        setIsFilterOpen(false);
+    };
+
     const renderRow = (voucher: Voucher) => (
         <tr key={voucher.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
             <td className="p-4">{voucher.id}</td>
@@ -175,12 +208,63 @@ export default function VouchersManagement() {
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <TableSearch />
                     <div className="flex items-center gap-4 self-end">
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]">
-                            <Filter size={18} />
-                        </button>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]">
-                            <ArrowUpDown size={18} />
-                        </button>
+                        <div className="relative">
+                            <button
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]"
+                                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                            >
+                                <Filter size={18} />
+                            </button>
+
+                            {/* Menu filter hiển thị khi isFilterOpen = true */}
+                            {isFilterOpen && (
+                                <div className="absolute right-0 mt-2 w-64 p-4 bg-white border rounded shadow-md z-10">
+                                    <h4 className="font-semibold mb-2">Filter By:</h4>
+                                    {/* Chọn trường để filter */}
+                                    <select
+                                        className="border w-full p-1 rounded mb-2"
+                                        value={filterField}
+                                        onChange={(e) => setFilterField(e.target.value as any)}
+                                    >
+                                        <option value="discountValue">Discount Value</option>
+                                        <option value="expiryDate">Expiry Date (YYYY-MM-DD)</option>
+                                    </select>
+
+                                    {/* Giá trị để filter (tự thay đổi theo filterField nếu muốn) */}
+                                    <input
+                                        type="text"
+                                        placeholder="Enter filter value..."
+                                        value={filterValue}
+                                        onChange={(e) => setFilterValue(e.target.value)}
+                                        className="border w-full p-1 rounded mb-2"
+                                    />
+
+                                    <div className="flex justify-end">
+                                        <button
+                                            className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                                            onClick={handleApplyFilter}
+                                        >
+                                            Apply
+                                        </button>
+                                        <button
+                                            className="bg-gray-300 px-3 py-1 rounded"
+                                            onClick={() => {
+                                                // Clear filter
+                                                setFilterValue('');
+                                                setVouchers(originalVouchers);
+                                                setIsFilterOpen(false);
+                                            }}
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <SortByIdButton data={vouchers} setData={setVouchers} />
+
+
                         <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]" onClick={() => setAddModalOpen(true)}>
                             <Plus size={18} />
                         </button>
