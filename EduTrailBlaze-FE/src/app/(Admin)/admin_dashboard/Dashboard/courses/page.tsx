@@ -4,7 +4,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import Pagination from '@/components/admin/Pagination/Pagination';
 import Table from '@/components/admin/Table/Table';
 import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';

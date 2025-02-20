@@ -27,3 +27,11 @@ export const months = (config: any) => {
 
   return values
 }
+
+export const formatDate = (isoString: string) => {
+  return new Date(isoString).toLocaleDateString("en-US", {
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
+  });
+};

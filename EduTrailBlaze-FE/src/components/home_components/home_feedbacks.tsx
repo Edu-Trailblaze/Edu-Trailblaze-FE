@@ -5,7 +5,7 @@ import { RiDoubleQuotesL } from "react-icons/ri";
 
 export default function HomeFeedbacks() {
   return (
-    <div className=" flex w-[1200px] bg-[#F4F4F4] px-[70px] py-[70px] rounded-lg">
+    <div className=" flex container bg-[#F4F4F4] py-[70px] rounded-lg">
       <div className="w-[220px]">
         <h1 className="font-semibold text-4xl mb-5">What we receive from students</h1>
         <p className="pt-5">
