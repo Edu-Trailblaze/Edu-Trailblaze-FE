@@ -16,7 +16,7 @@ const ListItemsWithIcon = (prop: ListItemProps) => {
 
 export default function CourseAbout({ courseDetails }: ICourseFull) {
   return (
-    <div className='container mb-28'>
+    <div className=' mb-28'>
       <h1 className='w-[900px] border-t-2 pt-10 font-bold text-xl mb-5'>What you'll learn</h1>
 
       <div className='flex flex-wrap gap-4 md:grid md:grid-cols-3 mb-7'>

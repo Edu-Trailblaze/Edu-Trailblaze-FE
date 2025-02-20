@@ -3,8 +3,8 @@ import React from "react";
 
 export default function HomeTeacherArea() {
   return (
-    <div className="flex px-[150px] py-[5px] justify-evenly">
-      <div className="flex justify-evenly w-[600px]">
+    <div className="flex container py-[5px] justify-evenly">
+      <div className="flex justify-evenly">
         <div>
         <img src="assets/Side_Image/teacher1.jpg" alt="" className="rounded-[50%] h-[230px] mb-7"/>
         <img src="assets/Side_Image/teacher2.jpg" alt="" className="rounded-[50%] h-[230px]"/>

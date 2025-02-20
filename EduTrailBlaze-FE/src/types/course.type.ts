@@ -94,7 +94,6 @@ interface ICourseSuggestions {
 }
 
 interface ICourseDetails {
-    id: number
     title: string
     review: Review
     enrollment: Enrollment

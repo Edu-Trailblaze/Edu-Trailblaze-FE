@@ -131,7 +131,7 @@ export default function WebHeader() {
         <div className='flex mr-20'>
           <Link href={'/'} className='-m-1.5 p-1.5'>
             <span className='sr-only'>Your Company</span>
-            <img alt='' src='/assets/logos/ETB_Logo.png' className='w-40 h-30' />
+            <img alt='' src='/assets/logos/ETB_Logo.png' className='h-10' />
           </Link>
         </div>
         <div className='flex lg:hidden'>

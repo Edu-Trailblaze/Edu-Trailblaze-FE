@@ -11,6 +11,7 @@ import CourseSuggestion from './course_suggestion'
 import { useGetSectionLectureQuery } from '../../../services/lecture.service'
 import { skip } from 'node:test'
 import { skipToken } from '@reduxjs/toolkit/query'
+import Navigation from './course_nav'
 
 export default function Course() {
   const { courseURL } = useParams()
@@ -36,25 +37,27 @@ export default function Course() {
       </div>
 
       {/* CourseDetails */}
-      <CourseDetails />
+      <div className='container'>
+        <CourseDetails />
 
-      {/* Navigation */}
-      {/* <div className='sticky top-0 z-10 bg-white shadow-md'>
-          <Navigation  />
-        </div> */}
+        {/* Navigation */}
+        <div>
+          <Navigation courseDetails={detail} id={Number(courseURL)} />
+        </div>
 
-      {/* Sections */}
-      <div id='about'>
-        <CourseAbout courseDetails={detail} sectionDetails={section} />
-      </div>
-      <div id='outcomes'>
-        <CourseOutcome />
-      </div>
-      <div id='courses'>
-        <CourseSection courseDetails={detail} section={section} lecture={lecture} />
-      </div>
-      <div id='suggestion'>
-        <CourseSuggestion />
+        {/* Sections */}
+        <div id='about' className='scroll-mt-40'>
+          <CourseAbout courseDetails={detail} sectionDetails={section} />
+        </div>
+        <div id='outcomes' className='scroll-mt-60'>
+          <CourseOutcome />
+        </div>
+        <div id='courses' className='scroll-mt-48'>
+          <CourseSection courseDetails={detail} section={section} lecture={lecture} />
+        </div>
+        <div id='suggestion' className='scroll-mt-48'>
+          <CourseSuggestion />
+        </div>
       </div>
     </div>
   )
