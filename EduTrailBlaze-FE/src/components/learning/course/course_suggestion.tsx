@@ -18,7 +18,7 @@ export default function CourseSuggestion() {
   }
 
   return (
-    <div className='container mb-10'>
+    <div className=' mb-10'>
       {/* Title */}
       <h2 className='text-2xl font-semibold mb-4'>Students also bought</h2>
 

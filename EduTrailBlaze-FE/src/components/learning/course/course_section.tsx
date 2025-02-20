@@ -25,12 +25,10 @@ export default function CourseSection({ courseDetails, section, lecture }: Cours
     setExpandedLectures((prev) => ({ ...prev, [lectureId]: !prev[lectureId] }))
   }
 
-  console.log('lec duration', lecture.map((lec) => lec.lectures.map((l) => l.duration)))
-
   return (
     <>
       {/* Summary */}
-      <div className='container mb-5'>
+      <div className=' mb-5'>
         <div className='w-[900px]'>
           <h1 className='text-2xl mb-3 font-semibold'>Course Content</h1>
           <div className='flex gap-2'>
@@ -44,7 +42,7 @@ export default function CourseSection({ courseDetails, section, lecture }: Cours
       </div>
 
       {/* Course Content */}
-      <div className='container mb-10 grid grid-cols-12 select-none'>
+      <div className=' mb-10 grid grid-cols-12 select-none'>
         {/* Sections & Lectures */}
         <div className='col-span-8 border border-gray-400 mr-12'>
           {section.map((sec) => (
