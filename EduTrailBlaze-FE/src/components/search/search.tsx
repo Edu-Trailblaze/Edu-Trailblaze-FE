@@ -2,18 +2,10 @@ import React from 'react'
 import { Search, Star, ChevronDown } from 'lucide-react'
 import SearchSidebar from './search_sidebar'
 import SearchCard from './search_card'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import { SelectPortal } from '@radix-ui/react-select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-const UdemyClone = () => {
+export default function SearchPage() {
+  // const {}
   const sampleCourses = [
     {
       title: 'React - The Complete Guide 2024',
@@ -83,7 +75,6 @@ const UdemyClone = () => {
                       >
                         Newest
                       </SelectItem>
-                      
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -101,5 +92,3 @@ const UdemyClone = () => {
     </div>
   )
 }
-
-export default UdemyClone

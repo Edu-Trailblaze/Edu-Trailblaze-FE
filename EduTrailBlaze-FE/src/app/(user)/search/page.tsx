@@ -1,8 +1,8 @@
 import React from 'react'
-import UdemyClone from '../../../components/search/search'
+import SearchPage from '../../../components/search/search'
 
-export default function SearchPage() {
+export default function Search() {
   return (
-    <UdemyClone/>
+    <SearchPage/>
   )
 }
