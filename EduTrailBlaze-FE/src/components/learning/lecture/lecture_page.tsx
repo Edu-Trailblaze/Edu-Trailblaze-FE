@@ -5,7 +5,7 @@ import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../services
 import Loading from '../../animate/Loading'
 import { useGetVideoByConditionsQuery, useGetVideoQuery } from '../../../services/video.service'
 import { useParams, useRouter } from 'next/navigation'
-import LectureContent from './lecutre_content'
+import LectureContent from './video/lecutre_video'
 import LectureSideBar from './lecture_side_bar'
 
 export default function LecturePage() {
