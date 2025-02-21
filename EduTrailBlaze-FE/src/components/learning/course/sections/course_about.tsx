@@ -1,5 +1,4 @@
 import DoneIcon from '@mui/icons-material/Done'
-import { useGetVideoQuery } from '../../../services/video.service'
 
 interface ListItemProps {
   text: string
@@ -15,6 +14,7 @@ const ListItemsWithIcon = (prop: ListItemProps) => {
 }
 
 export default function CourseAbout({ courseDetails }: ICourseFull) {
+  console.log(courseDetails.introURL)
   return (
     <div className=' mb-28'>
       <h1 className='w-[900px] border-t-2 pt-10 font-bold text-xl mb-5'>What you'll learn</h1>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import CourseDetails from './course_details'
+import CourseDetails from '../sections/course_details'
 import Link from 'next/link'
 
 interface NavigationProps {
@@ -31,6 +31,7 @@ export default function Navigation({ courseDetails, id }: NavigationProps) {
     { id: 'about', title: 'About' },
     { id: 'outcomes', title: 'Outcomes' },
     { id: 'courses', title: 'Courses' },
+    { id: 'review', title: 'Review' },
     { id: 'suggestion', title: 'Suggestion Courses' }
   ]
 
