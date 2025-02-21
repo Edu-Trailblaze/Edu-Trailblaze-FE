@@ -8,10 +8,7 @@ interface Tag {
   id: number
   name: string
 }
-interface Review {
-  averageRating: number
-  totalRatings: number
-}
+
 interface Enrollment {
   totalEnrollments: number
 }
@@ -65,7 +62,7 @@ interface ICourseDetails {
   imageURL: string
   tags: string[]
   instructors: Instructor[]
-  review: Review
+  review: ReviewCourse
   enrollment: Enrollment
   languages: string[]
   price: number
@@ -77,8 +74,8 @@ interface ICourseDetails {
   updatedAt: string
 }
 interface ICourseFull {
-  courseDetails: ICourseDetails
-  sectionDetails: ISection[]
+  courseDetails?: ICourseDetails
+  sectionDetails?: ISection[]
 }
 interface ICourseInstructor {
   id: string
