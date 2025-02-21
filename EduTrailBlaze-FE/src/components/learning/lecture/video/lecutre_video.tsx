@@ -30,9 +30,9 @@ export default function LectureContent({ lecture, video }: ModuleBarProps) {
   ]
 
   return (
-    <div className='pb-5 container max-w-[1300px]'>
+    <div className='pb-5 container'>
       {/**Video Display */}
-      <div className='pl-12 mt-3'>
+      <div className=' mt-3'>
         {video.map((v) => (
           <div key={v.id}>
             <p className='font-semibold text-2xl '>{v.title}</p>
@@ -44,19 +44,19 @@ export default function LectureContent({ lecture, video }: ModuleBarProps) {
       </div>
 
       {/**Video summarise */}
-      <div className='ml-12 bg-[#F4F4F4] px-[30px] py-[20px] rounded-2xl border-2 border-blue-500'>
+      <div className=' bg-[#F4F4F4] px-[30px] py-[20px] rounded-2xl border-2 border-blue-500'>
         <p>{lecture.content}</p>
       </div>
 
       {/**Video Options */}
-      <div className='ml-12 pt-5 pb-3 flex items-center gap-8 border-b-2 border-b-gray-300'>
+      <div className=' pt-5 pb-3 flex items-center gap-8 border-b-2 border-b-gray-300'>
         <p>Transcript</p>
         <p>Download</p>
       </div>
 
       {/**Video transcript example */}
-      <div className='flex pt-7 gap-14 justify-center'>
-        <p className='w-[600px]'>
+      <div className='flex pt-7'>
+        <p>
           [MUSIC] Hello and welcome to this demonstration on using RegEx Builder in studio, in this video you will be
           creating a workflow that can extract email IDs from a piece of text to display in the Output panel. So let's
           begin, search for an assigned activity in the Activities panel and drag and drop it in the Designer panel,
@@ -76,7 +76,7 @@ export default function LectureContent({ lecture, video }: ModuleBarProps) {
           dropdown, it will extract all the email IDs from the text, click save to exit the wizard.
         </p>
         <div>
-          <span className='flex  px-2 py-2  hover:bg-blue-200 rounded-sm' onClick={toggleList}>
+          <span className='flex px-2 py-2  hover:bg-blue-200 rounded-sm' onClick={toggleList}>
             <span className='font-semibold'>Transcript language: </span>
             <span className='flex ml-2'>
               English{' '}

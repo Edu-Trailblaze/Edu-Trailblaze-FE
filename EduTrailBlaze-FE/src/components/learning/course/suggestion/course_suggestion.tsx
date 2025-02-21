@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
-import SkeletonCard from '../../skeleton/skeleton_card'
-import { formatCurrency } from '../../../utils/format'
-import { useGetAllCoursesQuery } from '../../../services/courseDetail.service'
+import SkeletonCard from '../../../skeleton/skeleton_card'
+import { formatCurrency } from '../../../../utils/format'
+import { useGetAllCoursesQuery } from '../../../../services/courseDetail.service'
 
 export default function CourseSuggestion() {
   const { data, isLoading, isFetching } = useGetAllCoursesQuery()
@@ -51,7 +51,7 @@ export default function CourseSuggestion() {
                   <p className='text-sm text-gray-500'> {course.description}</p>
                   {/* <p className='text-sm text-gray-500'>⭐ {course.review.averageRating}</p> */}
                   <p className='text-sm text-gray-500'>
-                    ⏳ {course.duration} total hours • {course.difficultyLevel} Level
+                    ⏳ {course.duration} min • {course.difficultyLevel} Level
                   </p>
                 </div>
 
