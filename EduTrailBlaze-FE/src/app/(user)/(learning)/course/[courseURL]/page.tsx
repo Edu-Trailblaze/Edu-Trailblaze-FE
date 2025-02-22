@@ -1,4 +1,4 @@
-import Course from '../../../../../components/learning/course/course_fullpage';
+import Course from '../../../../../components/learning/course/layout/course_fullpage';
 
 export default function CoursePage() {
   return <Course />;

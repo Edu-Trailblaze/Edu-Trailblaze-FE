@@ -6,6 +6,7 @@ export default function CourseDetails() {
     { id: 'about', title: 'About' },
     { id: 'outcomes', title: 'Outcomes' },
     { id: 'courses', title: 'Courses' },
+    { id: 'review', title: 'Review' },
     { id: 'suggestion', title: 'Suggestion Courses' }
   ]
 

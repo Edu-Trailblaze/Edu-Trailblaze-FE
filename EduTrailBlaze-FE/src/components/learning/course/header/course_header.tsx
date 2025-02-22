@@ -1,9 +1,9 @@
 'use client'
 import { useState } from 'react'
-import Modal from '../../global/Modal'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
-import { formatNumber, getInstructorImage } from '../../../utils/format'
-import { useGetUserProfileQuery } from '../../../services/user.service'
+import Modal from '../../../global/Modal'
+import { Avatar, AvatarFallback, AvatarImage } from '../../../ui/avatar'
+import { formatNumber, getInstructorImage } from '../../../../utils/format'
+import { useGetUserProfileQuery } from '../../../../services/user.service'
 import Link from 'next/link'
 
 interface CourseHeaderProps extends ICourseFull {
@@ -18,14 +18,31 @@ export default function CourseHeader({ courseDetails, sectionDetails, id }: Cour
   const closeModal = () => setModalOpen(false)
   const { data: instructorURL } = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
 
-  console.log('courseDetails id', courseDetails)
   return (
     <div className='p-6 bg-sky-200 relative mb-20'>
       <div className='flex items-center md:space-y-0 md:space-x-12 container mb-20'>
         {/* Left Section */}
         <div className='w-1/2'>
           <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
-          <p className='text-lg text-gray-700 mb-6'>{courseDetails.description}</p>
+          <p className='text-lg text-gray-800 mb-3'>{courseDetails.description}</p>
+          <div className='mb-5'>
+            <div className='flex gap-3 items-center'>
+              <p className='font-semibold '>Categories:</p>
+              {/* {courseDetails.tags?.map((tag, index) =>
+               <div key={index} className='bg-blue-300 rounded-full h-full  p-3'>{String(tag)}</div>
+            )} */}
+              <ul className='flex flex-wrap gap-2'>
+                {courseDetails.tags?.map((tag, index) => (
+                  <li
+                    key={index}
+                    className='bg-blue-300 text-blue-900 font-medium rounded-full px-4 py-2 text-sm shadow-md transition-all duration-300 hover:bg-blue-400 hover:text-white'
+                  >
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
           <div className='flex items-center space-x-3 mb-5'>
             {/* Display instructor images */}
