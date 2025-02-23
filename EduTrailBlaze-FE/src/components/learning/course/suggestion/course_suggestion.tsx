@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import SkeletonCard from '../../../skeleton/skeleton_card'
+import SkeletonCard from '../../../animate/skeleton/skeleton_card'
 import { formatCurrency } from '../../../../utils/format'
 import { useGetAllCoursesQuery } from '../../../../redux/services/courseDetail.service'
 

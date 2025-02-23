@@ -1,17 +1,17 @@
-import React from 'react'
+'use client'
+import React, { useState } from 'react'
+import Pagination from '../../components/global/Pagination/Pagination'
 
-const ReviewLoading = () => {
+export default function test() {
+  const [pageIndex, setPageIndex] = useState(1)
+
   return (
-    <div className='space-y-2'>
-      {[5, 4, 3, 2, 1].map((rating) => (
-        <div key={rating} className='flex items-center space-x-2'>
-          <span className='w-4'>{rating}</span>
-          <div className='h-3 w-full bg-gray-300 rounded animate-pulse'></div>
-          <span className='w-8 text-right'>--%</span>
-        </div>
-      ))}
-    </div>
+    <Pagination
+      pageIndex={pageIndex}
+      totalPages={5}
+      hasPreviousPage={pageIndex > 1}
+      hasNextPage={pageIndex < 5}
+      onPageChange={(page: number) => console.log(page)} // 🟢 Điều khiển state pageIndex
+    />
   )
 }
-
-export default ReviewLoading

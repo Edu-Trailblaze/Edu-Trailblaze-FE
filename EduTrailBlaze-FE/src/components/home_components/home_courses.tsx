@@ -1,7 +1,7 @@
 'use client'
 import { useGetAllCoursesQuery, useGetInstructorOfCourseQuery } from '@/redux/services/courseDetail.service'
 import React, { useEffect, useState } from 'react'
-import SkeletonCard from '../skeleton/skeleton_card'
+import SkeletonCard from '../animate/skeleton/skeleton_card'
 import InstructorItem from './InstructorItem'
 import { formatDate } from '@/helper/Util'
 import { jwtDecode } from 'jwt-decode'

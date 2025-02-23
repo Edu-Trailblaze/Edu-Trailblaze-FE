@@ -1,23 +1,16 @@
+'use client'
 import { Star } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import { useGetReviewPagingQuery } from '../../../../../redux/services/review.service'
 import { formatDateTime } from '../../../../../utils/format'
+import Pagination from '../../../../global/Pagination/Pagination'
 
 export default function ReviewList({ id }: { id: number }) {
-  const { data: reviewPaging } = useGetReviewPagingQuery({ courseId: id })
+  const [pageIndex, setPageIndex] = useState(1)
+  const { data: reviewPaging } = useGetReviewPagingQuery({ courseId: id, pageIndex })
   const userId = reviewPaging?.items.map((rv) => rv.userId)
-  // const user = userId?.map((id) => useGetUserQuery(id))
-  const items = reviewPaging?.items.map((review) => ({
-    courseId: review.courseId,
-    userId: review.userId,
-    rating: review.rating,
-    reviewText: review.reviewText,
-    isDeleted: review.isDeleted,
-    createdAt: review.createdAt,
-    updatedAt: review.updatedAt,
-    id: review.id
-  }))
+
   return (
     <div className='space-y-6'>
       {reviewPaging?.items.map((review, index) => (
@@ -48,6 +41,14 @@ export default function ReviewList({ id }: { id: number }) {
           </div>
         </div>
       ))}
+
+      <Pagination
+        pageIndex={reviewPaging?.pageIndex}
+        totalPages={reviewPaging?.totalPages}
+        hasPreviousPage={reviewPaging?.hasPreviousPage}
+        hasNextPage={reviewPaging?.hasNextPage}
+        onPageChange={setPageIndex}
+      />
     </div>
   )
 }
