@@ -8,23 +8,22 @@ export const reviewApi = createApi({
   }),
   tagTypes: ['Reviews'],
   endpoints: (build) => ({
-    // getReviewPaging: build.query<ReviewPaging, ReviewQuery>({
-    //   query: (params) => ({
-    //     url: 'Review/get-paging-review',
-    //     method: 'GET',
-    //     params
-    //   }),
-    //   providesTags: ['Reviews']
-    // }),
-    getRatingDetail: build.query<RatingDetail, number>({
-      query: (courseId) => ({
-        url: 'Review/get-rating-detail',
+    getReviewPaging: build.query<ReviewPaging, ReviewQuery>({
+      query: (params) => ({
+        url: 'Review/get-paging-review',
         method: 'GET',
-        params: { courseId }
+        params
+      }),
+      providesTags: ['Reviews']
+    }),
+    getRatingDetail: build.query<RatingDetail[], number>({
+      query: (courseId) => ({
+        url: `Review/get-rating-details/${courseId}`,
+        method: 'GET'
       }),
       providesTags: ['Reviews']
     })
   })
 })
 
-export const { useGetRatingDetailQuery } = reviewApi
+export const { useGetRatingDetailQuery, useGetReviewPagingQuery } = reviewApi

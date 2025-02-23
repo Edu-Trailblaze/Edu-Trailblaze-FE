@@ -1,15 +1,19 @@
 import { Star } from 'lucide-react'
 import React from 'react'
+import { useGetRatingDetailQuery } from '../../../../../redux/services/review.service'
+import ReviewLoading from '../../../../animate/ReviewLoading/Loading'
 
-export default function RatingOverview({ courseDetails }: ICourseFull) {
-  // const {data: reviewPercentage} = useGetR
-  const ratings = {
-    //số lượng rating từng sao
-    1: 20,
-    2: 0,
-    3: 20,
-    4: 20,
-    5: 40
+export default function RatingOverview({ courseDetails, courseId }: ReviewProps) {
+  const { data: reviewRating, isLoading: reviewLoading } = useGetRatingDetailQuery(courseId)
+
+  const ratingCounts: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+
+  if (reviewRating) {
+    reviewRating.forEach(({ rating, ratingPercentage }) => {
+      if (rating >= 1 && rating <= 5) {
+        ratingCounts[rating as 1 | 2 | 3 | 4 | 5] = ratingPercentage
+      }
+    })
   }
 
   return (
@@ -22,7 +26,8 @@ export default function RatingOverview({ courseDetails }: ICourseFull) {
 
       {/* Rating Bars */}
       <div className='flex-1 space-y-2'>
-        {Object.entries(ratings)
+        {reviewLoading && <ReviewLoading />}
+        {Object.entries(ratingCounts)
           .reverse()
           .map(([rating, percentage]) => (
             <div key={rating} className='flex items-center gap-3'>

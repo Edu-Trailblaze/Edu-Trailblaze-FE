@@ -38,5 +38,12 @@ interface ReviewQuery {
 }
 interface RatingDetail {
   rating: number
+  ratingPercentage: number
   totalRatings: number
+}
+
+// for review component
+interface ReviewProps {
+  courseDetails: ICourseDetails
+  courseId: number
 }

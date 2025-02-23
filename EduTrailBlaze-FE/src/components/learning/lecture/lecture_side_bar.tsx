@@ -30,7 +30,7 @@ export default function LectureSideBar({
   }
 
   let lectureCounter = 1
-  const processedSections = course.sectionDetails.map((section) => {
+  const processedSections = (course.sectionDetails ?? []).map((section) => {
     const sectionLectures =
       lectures
         .find((lec) => lec.sectionId === section.id)
