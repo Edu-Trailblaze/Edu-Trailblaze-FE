@@ -16,7 +16,7 @@ export default function LecturePage() {
   const { data: lectures } = useGetSectionLectureQuery(sectionIds)
 
   const [activeLectureId, setActiveLectureId] = useState<number | null>(Number(lectureURL))
-  
+
   //get one lecture
   const { data: lectureContent } = useGetLectureQuery(activeLectureId ?? 0)
   const { data: video } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })

@@ -9,7 +9,7 @@ interface AuthState {
 const initialState: AuthState = {
   accessToken: null,
   refreshToken: null,
-  twoFactorCode: null,
+  twoFactorCode: null
 }
 
 const authSlice = createSlice({
@@ -26,9 +26,9 @@ const authSlice = createSlice({
       state.accessToken = null
       state.refreshToken = null
       localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken') 
-    },
-  },
+      localStorage.removeItem('refreshToken')
+    }
+  }
 })
 const authReducer = authSlice.reducer
 

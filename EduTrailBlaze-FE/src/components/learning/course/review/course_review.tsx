@@ -2,14 +2,14 @@ import React from 'react'
 import RatingOverview from './overview/rating_overview'
 import ReviewList from './reviewList/review_list'
 
-export default function CourseReview( {courseDetails} : ICourseFull ) {
+export default function CourseReview({ courseDetails, courseId }: ReviewProps) {
   return (
     <div className='container p-8 border rounded-lg shadow mb-10'>
       {/* Review Header */}
       <h1 className='text-xl font-bold mb-6'>REVIEW COURSE</h1>
 
       {/* Rating Overview Section */}
-      <RatingOverview courseDetails={courseDetails} />
+      <RatingOverview courseDetails={courseDetails} courseId={courseId} />
 
       {/* Reviews Section */}
       <div className='mb-6'>
@@ -18,7 +18,7 @@ export default function CourseReview( {courseDetails} : ICourseFull ) {
           <button className='text-blue-500 hover:text-blue-600 text-lg'>+ Add Review</button>
         </div>
 
-        <ReviewList />
+        <ReviewList id={courseId} />
       </div>
 
       {/* Footer Actions */}

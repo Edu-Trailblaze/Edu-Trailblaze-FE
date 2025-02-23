@@ -7,7 +7,7 @@ export default function Profile() {
   const { data: session } = useSession()
   const names = session?.user?.name ? session?.user?.name?.split(' ') : []
   const firstName = names[0]
-  const lastName = names?.length > 1 ? names[names.length - 1] : ""
+  const lastName = names?.length > 1 ? names[names.length - 1] : ''
   const emailAddress = session?.user?.email
 
   const [formData, setFormData] = useState({

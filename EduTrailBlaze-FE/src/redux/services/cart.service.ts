@@ -33,7 +33,7 @@ export const cartApi = createApi({
       }),
       invalidatesTags: ['Cart']
     }),
-    deleteAllCartItems: build.mutation<any, string> ({
+    deleteAllCartItems: build.mutation<any, string>({
       query: (userId) => ({
         url: `Cart/clear-cart?userId=${userId}`,
         method: 'DELETE'
@@ -43,4 +43,10 @@ export const cartApi = createApi({
   })
 })
 
-export const { usePostCartMutation, useGetCartQuery, useGetNumberOfCartItemsQuery, useDeleteCartItemMutation, useDeleteAllCartItemsMutation } = cartApi 
+export const {
+  usePostCartMutation,
+  useGetCartQuery,
+  useGetNumberOfCartItemsQuery,
+  useDeleteCartItemMutation,
+  useDeleteAllCartItemsMutation
+} = cartApi

@@ -5,24 +5,24 @@ const BASE_URL = 'https://edu-trailblaze.azurewebsites.net/api' // Thay bằng U
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
+    baseUrl: BASE_URL
   }),
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (userData) => ({
         url: '/Auth/register',
         method: 'POST',
-        body: userData,
-      }),
+        body: userData
+      })
     }),
     login: builder.mutation({
       query: (credentials) => ({
         url: '/Auth/login',
         method: 'POST',
-        body: credentials,
-      }),
-    }),
-  }),
+        body: credentials
+      })
+    })
+  })
 })
 
 export const { useRegisterMutation, useLoginMutation } = authApi

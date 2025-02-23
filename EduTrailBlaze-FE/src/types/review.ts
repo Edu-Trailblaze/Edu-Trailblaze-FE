@@ -36,8 +36,14 @@ interface ReviewQuery {
   sort?: string
   sortDirection?: string
 }
-
-export interface RatingDetail {
+interface RatingDetail {
   rating: number
+  ratingPercentage: number
   totalRatings: number
+}
+
+// for review component
+interface ReviewProps {
+  courseDetails: ICourseDetails
+  courseId: number
 }

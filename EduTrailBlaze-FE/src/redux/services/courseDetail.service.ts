@@ -3,7 +3,7 @@ import { CustomError } from '../../utils/helpers'
 
 export const courseApi = createApi({
   reducerPath: 'course/api', //tên field trong reduce state
-  // keepUnusedDataFor: 60, 
+  // keepUnusedDataFor: 60,
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://edu-trailblaze.azurewebsites.net/api/'
     // prepareHeaders(headers) {

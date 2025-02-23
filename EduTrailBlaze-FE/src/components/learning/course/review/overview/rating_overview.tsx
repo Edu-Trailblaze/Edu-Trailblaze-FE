@@ -1,29 +1,20 @@
 import { Star } from 'lucide-react'
 import React from 'react'
+import { useGetRatingDetailQuery } from '../../../../../redux/services/review.service'
+import ReviewLoading from '../../../../animate/ReviewLoading/Loading'
 
-export default function RatingOverview( {courseDetails} : ICourseFull ) {
+export default function RatingOverview({ courseDetails, courseId }: ReviewProps) {
+  const { data: reviewRating, isLoading: reviewLoading } = useGetRatingDetailQuery(courseId)
 
-  // const {data: reviewPercentage} = useGet
-  const ratings = {
-    //số lượng rating từng sao
-    1: 20,
-    2: 0,
-    3: 20,
-    4: 20,
-    5: 40,
+  const ratingCounts: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+
+  if (reviewRating) {
+    reviewRating.forEach(({ rating, ratingPercentage }) => {
+      if (rating >= 1 && rating <= 5) {
+        ratingCounts[rating as 1 | 2 | 3 | 4 | 5] = ratingPercentage
+      }
+    })
   }
-
-  // const ratings = courseDetails?.review.ratings || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-
-  // // Tính tổng số review
-  // const totalReviews = Object.values(ratings).reduce((sum, count) => sum + count, 0)
-
-  // // Tính phần trăm số lượng rating từng sao
-  // const ratingPercentages = Object.keys(ratings).reduce((acc, key) => {
-  //   const star = Number(key)
-  //   acc[star] = totalReviews > 0 ? (ratings[star] / totalReviews) * 100 : 0
-  //   return acc
-  // }, {} as Record<number, number>)
 
   return (
     <div className='flex gap-12 mb-8'>
@@ -35,7 +26,8 @@ export default function RatingOverview( {courseDetails} : ICourseFull ) {
 
       {/* Rating Bars */}
       <div className='flex-1 space-y-2'>
-        {Object.entries(ratings)
+        {reviewLoading && <ReviewLoading />}
+        {Object.entries(ratingCounts)
           .reverse()
           .map(([rating, percentage]) => (
             <div key={rating} className='flex items-center gap-3'>

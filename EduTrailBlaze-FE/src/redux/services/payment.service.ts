@@ -19,7 +19,7 @@ export const paymentApi = createApi({
         body: body
       }),
       invalidatesTags: ['Payment']
-    }),
+    })
   })
 })
 

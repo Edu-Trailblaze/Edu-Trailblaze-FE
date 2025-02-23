@@ -13,7 +13,15 @@ interface ModuleBarProps {
   setExpandedSections: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>
 }
 
-export default function LectureSideBar({ course, lectures, video, activeLectureId, setActiveLectureId, expandedSections, setExpandedSections }: ModuleBarProps) {
+export default function LectureSideBar({
+  course,
+  lectures,
+  video,
+  activeLectureId,
+  setActiveLectureId,
+  expandedSections,
+  setExpandedSections
+}: ModuleBarProps) {
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -22,7 +30,7 @@ export default function LectureSideBar({ course, lectures, video, activeLectureI
   }
 
   let lectureCounter = 1
-  const processedSections = course.sectionDetails.map((section) => {
+  const processedSections = (course.sectionDetails ?? []).map((section) => {
     const sectionLectures =
       lectures
         .find((lec) => lec.sectionId === section.id)
@@ -53,7 +61,11 @@ export default function LectureSideBar({ course, lectures, video, activeLectureI
               </p>
             </div>
             <div>
-              {expandedSections[section.id] ? <RiArrowUpSLine className='text-3xl' /> : <RiArrowDropDownLine className='text-3xl' />}
+              {expandedSections[section.id] ? (
+                <RiArrowUpSLine className='text-3xl' />
+              ) : (
+                <RiArrowDropDownLine className='text-3xl' />
+              )}
             </div>
           </div>
 

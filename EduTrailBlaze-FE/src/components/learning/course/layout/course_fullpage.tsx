@@ -57,8 +57,8 @@ export default function Course() {
         <div id='courses' className='scroll-mt-48'>
           <CourseSection courseDetails={detail} section={section} lecture={lecture} />
         </div>
-        <div id='review' className="scroll-mt-48">
-          <CourseReview courseDetails={detail} />
+        <div id='review' className='scroll-mt-48'>
+          <CourseReview courseDetails={detail} courseId={Number(courseURL)} />
         </div>
         <div id='suggestion' className='scroll-mt-48'>
           <CourseSuggestion />

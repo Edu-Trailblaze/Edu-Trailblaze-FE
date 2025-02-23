@@ -33,10 +33,11 @@ export const lectureApi = createApi({
 
     getSectionLecture: build.query<SectionLecture[], number[]>({
       query: (ids) => ({
-        url: `Lecture/get-section-lecture?${ids.map(id => `sectionIds=${id}`).join('&')}`,
+        url: `Lecture/get-section-lecture?${ids.map((id) => `sectionIds=${id}`).join('&')}`
       })
     })
-  }),
+  })
 })
 
-export const { useGetAllLectureQuery, useGetLectureQuery, useGetLectureByConditionsQuery, useGetSectionLectureQuery  } = lectureApi
+export const { useGetAllLectureQuery, useGetLectureQuery, useGetLectureByConditionsQuery, useGetSectionLectureQuery } =
+  lectureApi

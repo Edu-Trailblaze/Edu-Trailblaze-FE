@@ -18,10 +18,10 @@ export default function LoginRegister() {
   const { data: session, status } = useSession()
 
   // Login form state
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const [login] = useLoginMutation()
   const [register, { isLoading }] = useRegisterMutation()
@@ -41,10 +41,10 @@ export default function LoginRegister() {
       const response = await login({ email, password }).unwrap()
       dispatch(setCredentials(response.message.data))
       alert(`Login successful!`)
-      router.push("/") 
+      router.push('/')
     } catch (err) {
       console.error('Login failed', err)
-      alert("Login failed. Please try again.")
+      alert('Login failed. Please try again.')
     }
   }
 
@@ -57,15 +57,15 @@ export default function LoginRegister() {
 
     try {
       const response = await register({ name, email, password, confirmPassword }).unwrap()
-  
+
       // Cập nhật Redux store & localStorage thông qua auth.slice.ts
-      dispatch(setCredentials(response.message.data))  
-  
-      alert("Registration successful! Redirecting to login...")
+      dispatch(setCredentials(response.message.data))
+
+      alert('Registration successful! Redirecting to login...')
       setIsLogin(true)
     } catch (err) {
-      console.error("Registration failed:", err)
-      alert("Registration failed. Please try again.")
+      console.error('Registration failed:', err)
+      alert('Registration failed. Please try again.')
     }
   }
 
@@ -256,11 +256,7 @@ export default function LoginRegister() {
           </div>
         )}
         <div className='sm:block hidden w-1/2 p-5'>
-          <img
-            className='rounded-2xl h-[620px]'
-            src='/assets/Side_Image/login_pic.jpg'
-            alt='Side Illustration'
-          />
+          <img className='rounded-2xl h-[620px]' src='/assets/Side_Image/login_pic.jpg' alt='Side Illustration' />
         </div>
       </div>
     </section>
