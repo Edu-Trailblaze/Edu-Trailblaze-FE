@@ -1,4 +1,4 @@
-import { useGetUserQuery } from '@/services/user.service'
+import { useGetUserQuery } from '@/redux/services/user.service'
 import React from 'react'
 
 interface UserItemProps {

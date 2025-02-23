@@ -1,4 +1,4 @@
-import { useGetCartQuery } from '@/services/cart.service'
+import { useGetCartQuery } from '@/redux/services/cart.service'
 import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux';

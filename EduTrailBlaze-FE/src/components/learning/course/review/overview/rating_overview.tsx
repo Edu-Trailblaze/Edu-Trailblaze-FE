@@ -3,6 +3,7 @@ import React from 'react'
 
 export default function RatingOverview( {courseDetails} : ICourseFull ) {
 
+  // const {data: reviewPercentage} = useGet
   const ratings = {
     //số lượng rating từng sao
     1: 20,

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { CustomError } from '../utils/helpers'
+import { CustomError } from '../../utils/helpers'
 
 export const courseApi = createApi({
   reducerPath: 'course/api', //tên field trong reduce state
