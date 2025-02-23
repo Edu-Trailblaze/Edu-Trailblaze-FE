@@ -86,7 +86,6 @@ const languageOptions = [
   'Nederlands'
 ]
 
-
 export default function WebHeader() {
   const dispatch = useDispatch()
   const router = useRouter()
@@ -95,9 +94,9 @@ export default function WebHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [cartHovered, setCartHovered] = useState(false)
   const [userName, setUserName] = useState('')
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState('')
   const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
-  
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
     setIsLoggedIn(!!token)
@@ -256,7 +255,9 @@ export default function WebHeader() {
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                         <FaUserEdit />
                       </div>{' '}
-                      <Link href={'/profile'} prefetch={false}>Profile</Link>
+                      <Link href={'/profile'} prefetch={false}>
+                        Profile
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>

@@ -36,6 +36,4 @@ interface ICart {
   totalPrice: number
 }
 
-interface ICartNumber {
-  
-}
+interface ICartNumber {}

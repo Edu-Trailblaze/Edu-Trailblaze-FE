@@ -1,15 +1,15 @@
 import { useGetCartQuery } from '@/redux/services/cart.service'
 import Link from 'next/link'
 import React from 'react'
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 
 interface CartItemProps {
   id: string
 }
 
 export default function ViewCart({ id }: CartItemProps) {
-  const cart = useSelector((state: RootState) => state.cart);
+  const cart = useSelector((state: RootState) => state.cart)
   const { isLoading, isFetching } = useGetCartQuery(id)
 
   if (isLoading) return <span>Loading...</span>
@@ -20,11 +20,7 @@ export default function ViewCart({ id }: CartItemProps) {
             <div key={index}>
               <div className='flex gap-5'>
                 <div className='w-[120px]'>
-                  <img
-                    className='rounded-[7px]'
-                    src={cart.cartCourseInformation.imageURL}
-                    alt='img'
-                  />
+                  <img className='rounded-[7px]' src={cart.cartCourseInformation.imageURL} alt='img' />
                 </div>
                 <div>
                   <h1 className='font-semibold line-clamp-1'>{cart.cartCourseInformation.title}</h1>

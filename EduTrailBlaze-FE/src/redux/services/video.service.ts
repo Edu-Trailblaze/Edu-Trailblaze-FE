@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { BASE_URL } from '../../utils/config';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { BASE_URL } from '../../utils/config'
 
 export const videoApi = createApi({
   reducerPath: 'video/api',
@@ -15,8 +15,7 @@ export const videoApi = createApi({
       })
     }),
 
-
-    getVideoByConditions: build.query<IVideo[], Partial<IVideo> & {minDuration?: number; maxDuration?: number}>({
+    getVideoByConditions: build.query<IVideo[], Partial<IVideo> & { minDuration?: number; maxDuration?: number }>({
       query: (conditions) => ({
         url: `Video/get-videos-by-conditions`,
         method: 'GET',
@@ -25,6 +24,5 @@ export const videoApi = createApi({
     })
   })
 })
-
 
 export const { useGetVideoQuery, useGetVideoByConditionsQuery } = videoApi

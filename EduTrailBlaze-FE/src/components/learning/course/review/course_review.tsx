@@ -2,7 +2,7 @@ import React from 'react'
 import RatingOverview from './overview/rating_overview'
 import ReviewList from './reviewList/review_list'
 
-export default function CourseReview( {courseDetails} : ICourseFull ) {
+export default function CourseReview({ courseDetails }: ICourseFull) {
   return (
     <div className='container p-8 border rounded-lg shadow mb-10'>
       {/* Review Header */}

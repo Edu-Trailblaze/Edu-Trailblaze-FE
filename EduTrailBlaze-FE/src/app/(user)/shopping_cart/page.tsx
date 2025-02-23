@@ -1,6 +1,11 @@
 'use client'
 
-import { useDeleteCartItemMutation, useGetCartQuery, useGetNumberOfCartItemsQuery, useDeleteAllCartItemsMutation } from '@/redux/services/cart.service'
+import {
+  useDeleteCartItemMutation,
+  useGetCartQuery,
+  useGetNumberOfCartItemsQuery,
+  useDeleteAllCartItemsMutation
+} from '@/redux/services/cart.service'
 import { usePostPaymentMutation } from '@/redux/services/payment.service'
 import { formatCurrency } from '@/utils/format'
 import { jwtDecode } from 'jwt-decode'
@@ -13,16 +18,17 @@ export default function ShoppingCart() {
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
   const { data: cartItems, isLoading, isFetching } = useGetCartQuery(userId)
-  const [deleteCartItem, {isLoading: loadingRemove}] = useDeleteCartItemMutation()
+  const [deleteCartItem, { isLoading: loadingRemove }] = useDeleteCartItemMutation()
   const [deleteAllCartItemsMutation] = useDeleteAllCartItemsMutation()
   const {
     data: cartNumber,
     isLoading: loadingNumber,
     isFetching: fetchingNumber
   } = useGetNumberOfCartItemsQuery(userId)
-  const [postPayment, { isLoading: isAddingToPayment, isSuccess: addedPayment, error: PaymentError }] = usePostPaymentMutation();
-  const dispatch = useDispatch();
-  const router = useRouter();
+  const [postPayment, { isLoading: isAddingToPayment, isSuccess: addedPayment, error: PaymentError }] =
+    usePostPaymentMutation()
+  const dispatch = useDispatch()
+  const router = useRouter()
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -42,7 +48,7 @@ export default function ShoppingCart() {
 
   const handleRemoveItem = async (userId: string, courseId: number) => {
     try {
-      await deleteCartItem({userId, courseId}).unwrap()
+      await deleteCartItem({ userId, courseId }).unwrap()
     } catch (error) {
       console.error('Error removing item from cart:', error)
     }
@@ -58,15 +64,15 @@ export default function ShoppingCart() {
 
   const handleCheckout = async () => {
     try {
-      const response = await postPayment({ userId, paymentMethod: 'VnPay' }).unwrap();
+      const response = await postPayment({ userId, paymentMethod: 'VnPay' }).unwrap()
       if (response.data) {
-        router.push(`${response.data}`);
+        router.push(`${response.data}`)
       }
     } catch (error) {
-      console.error('Error during checkout:', error);
+      console.error('Error during checkout:', error)
     }
-  };
-  
+  }
+
   return (
     <>
       <div className='px-[100px] py-[70px]'>

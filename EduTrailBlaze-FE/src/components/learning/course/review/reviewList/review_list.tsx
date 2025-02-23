@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react'
 import React from 'react'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 
 export default function ReviewList() {
   const reviews = [

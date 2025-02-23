@@ -1,17 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
- 
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+
     // Or if using `src` directory:
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
     extend: {
       fontSize: {
-        'md': '1rem'
+        md: '1rem'
       }
     },
     fontWeight: {
@@ -25,14 +25,13 @@ module.exports = {
       bold: 700,
       extrabold: 800,
       'extra-bold': 800,
-      black: 900,
+      black: 900
     },
     container: {
       center: true,
-      padding: '7rem',
+      padding: '7rem'
     }
   },
-  
-  plugins: [],
-}
 
+  plugins: []
+}

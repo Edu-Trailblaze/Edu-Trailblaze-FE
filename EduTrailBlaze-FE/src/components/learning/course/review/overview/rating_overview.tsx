@@ -1,29 +1,16 @@
 import { Star } from 'lucide-react'
 import React from 'react'
 
-export default function RatingOverview( {courseDetails} : ICourseFull ) {
-
-  // const {data: reviewPercentage} = useGet
+export default function RatingOverview({ courseDetails }: ICourseFull) {
+  // const {data: reviewPercentage} = useGetR
   const ratings = {
     //số lượng rating từng sao
     1: 20,
     2: 0,
     3: 20,
     4: 20,
-    5: 40,
+    5: 40
   }
-
-  // const ratings = courseDetails?.review.ratings || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-
-  // // Tính tổng số review
-  // const totalReviews = Object.values(ratings).reduce((sum, count) => sum + count, 0)
-
-  // // Tính phần trăm số lượng rating từng sao
-  // const ratingPercentages = Object.keys(ratings).reduce((acc, key) => {
-  //   const star = Number(key)
-  //   acc[star] = totalReviews > 0 ? (ratings[star] / totalReviews) * 100 : 0
-  //   return acc
-  // }, {} as Record<number, number>)
 
   return (
     <div className='flex gap-12 mb-8'>

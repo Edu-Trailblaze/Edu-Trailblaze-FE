@@ -10,16 +10,16 @@ import WebFooter from '../components/generalLayout/footer/footer'
 export default function Home() {
   return (
     <div>
-      <WebHeader/>
+      <WebHeader />
       <ImageSlider></ImageSlider>
       <HomeCourses></HomeCourses>
       <MakeDiffer></MakeDiffer>
-      <div className="flex items-center justify-center mb-20">
-      <HomeFeedbacks></HomeFeedbacks>
+      <div className='flex items-center justify-center mb-20'>
+        <HomeFeedbacks></HomeFeedbacks>
       </div>
       <HomeTeacherArea></HomeTeacherArea>
       <HomeSupporter></HomeSupporter>
-      <WebFooter/>
+      <WebFooter />
     </div>
   )
 }
