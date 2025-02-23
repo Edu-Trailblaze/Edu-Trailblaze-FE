@@ -36,3 +36,8 @@ interface ReviewQuery {
   sort?: string
   sortDirection?: string
 }
+
+export interface RatingDetail {
+  rating: number
+  totalRatings: number
+}

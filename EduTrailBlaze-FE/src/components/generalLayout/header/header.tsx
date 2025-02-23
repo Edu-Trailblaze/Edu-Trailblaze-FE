@@ -23,10 +23,10 @@ import {
 import { Avatar, AvatarImage } from '../../ui/avatar'
 import { jwtDecode } from 'jwt-decode'
 import { FaUserCog, FaUserEdit } from 'react-icons/fa'
-import { useGetCartQuery } from '@/services/cart.service'
+import { useGetCartQuery } from '@/redux/services/cart.service'
 import ViewCart from './viewCart'
 import { FaBell } from 'react-icons/fa6'
-import { useGetUserProfileQuery } from '@/services/user.service'
+import { useGetUserProfileQuery } from '@/redux/services/user.service'
 
 const products = [
   {

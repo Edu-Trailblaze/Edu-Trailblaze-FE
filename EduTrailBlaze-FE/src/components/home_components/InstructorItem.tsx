@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetInstructorOfCourseQuery } from '@/services/courseDetail.service'; 
+import { useGetInstructorOfCourseQuery } from '@/redux/services/courseDetail.service'; 
 
 interface InstructorItemProps {
   courseId: number;

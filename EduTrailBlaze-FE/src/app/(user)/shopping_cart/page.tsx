@@ -1,7 +1,7 @@
 'use client'
 
-import { useDeleteCartItemMutation, useGetCartQuery, useGetNumberOfCartItemsQuery, useDeleteAllCartItemsMutation } from '@/services/cart.service'
-import { usePostPaymentMutation } from '@/services/payment.service'
+import { useDeleteCartItemMutation, useGetCartQuery, useGetNumberOfCartItemsQuery, useDeleteAllCartItemsMutation } from '@/redux/services/cart.service'
+import { usePostPaymentMutation } from '@/redux/services/payment.service'
 import { formatCurrency } from '@/utils/format'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'

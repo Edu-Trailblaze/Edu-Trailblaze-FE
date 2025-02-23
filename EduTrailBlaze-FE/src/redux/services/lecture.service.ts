@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { BASE_URL } from '../utils/config'
+import { BASE_URL } from '../../utils/config'
 
 export const lectureApi = createApi({
   reducerPath: 'lecture/api',

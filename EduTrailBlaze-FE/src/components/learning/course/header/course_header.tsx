@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Modal from '../../../global/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../ui/avatar'
 import { formatNumber, getInstructorImage } from '../../../../utils/format'
-import { useGetUserProfileQuery } from '../../../../services/user.service'
+import { useGetUserProfileQuery } from '../../../../redux/services/user.service'
 import Link from 'next/link'
 
 interface CourseHeaderProps extends ICourseFull {

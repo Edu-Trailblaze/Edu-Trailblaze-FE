@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { StoreProvider } from '../redux/StorProvider'
-import SessionProviderWrapper from './SessionProviderWrapper' 
+import SessionProviderWrapper from './SessionProviderWrapper'
 
 export const metadata: Metadata = {
   title: 'EduTrailBlaze',
@@ -14,14 +14,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <SessionProviderWrapper>
-      <StoreProvider>
-        <html lang='en'>
-          <body>
-            {children}
-          </body>
-        </html>
-      </StoreProvider>
-    </SessionProviderWrapper>
+    <html lang='en'>
+      <body>
+        <SessionProviderWrapper>
+          <StoreProvider>{children}</StoreProvider>
+        </SessionProviderWrapper>
+      </body>
+    </html>
   )
 }

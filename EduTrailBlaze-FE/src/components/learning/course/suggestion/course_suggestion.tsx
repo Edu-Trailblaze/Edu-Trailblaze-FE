@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import SkeletonCard from '../../../skeleton/skeleton_card'
 import { formatCurrency } from '../../../../utils/format'
-import { useGetAllCoursesQuery } from '../../../../services/courseDetail.service'
+import { useGetAllCoursesQuery } from '../../../../redux/services/courseDetail.service'
 
 export default function CourseSuggestion() {
   const { data, isLoading, isFetching } = useGetAllCoursesQuery()
