@@ -1,6 +1,7 @@
 import React from 'react'
 import RatingOverview from './overview/rating_overview'
 import ReviewList from './reviewList/review_list'
+import Pagination from '../../../global/Pagination/Pagination'
 
 export default function CourseReview({ courseDetails, courseId }: ReviewProps) {
   return (
@@ -22,14 +23,6 @@ export default function CourseReview({ courseDetails, courseId }: ReviewProps) {
       </div>
 
       {/* Footer Actions */}
-      {/* <div className='flex justify-between mt-8 pt-4 border-t'>
-        <button className='text-gray-600 hover:text-gray-800 flex items-center gap-2 text-lg'>
-          <span>⬇️</span> Download Data
-        </button>
-        <button className='text-gray-600 hover:text-gray-800 flex items-center gap-2 text-lg'>
-          <span>👁️</span> Hide reviews
-        </button>
-      </div> */}
     </div>
   )
 }

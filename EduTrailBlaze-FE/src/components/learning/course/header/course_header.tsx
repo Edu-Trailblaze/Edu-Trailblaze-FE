@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import Modal from '../../../global/Modal'
+import Modal from '../../../global/Modal/Modal'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../ui/avatar'
 import { formatNumber, getInstructorImage } from '../../../../utils/format'
 import { useGetUserProfileQuery } from '../../../../redux/services/user.service'

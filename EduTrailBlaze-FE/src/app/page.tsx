@@ -4,8 +4,8 @@ import HomeSupporter from '@/components/home_components/home_supporter'
 import HomeTeacherArea from '@/components/home_components/home_teacher_area'
 import ImageSlider from '@/components/home_components/image_slider'
 import MakeDiffer from '@/components/home_components/make_different'
-import WebHeader from '../components/generalLayout/header/header'
-import WebFooter from '../components/generalLayout/footer/footer'
+import WebHeader from '../components/global/header/header'
+import WebFooter from '../components/global/footer/footer'
 
 export default function Home() {
   return (
