@@ -2,6 +2,7 @@ import { Star } from 'lucide-react'
 import React from 'react'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import { useGetReviewPagingQuery } from '../../../../../redux/services/review.service'
+import { formatDateTime } from '../../../../../utils/format'
 
 export default function ReviewList({ id }: { id: number }) {
   const { data: reviewPaging } = useGetReviewPagingQuery({ courseId: id })
@@ -26,7 +27,7 @@ export default function ReviewList({ id }: { id: number }) {
             <div className='flex-1'>
               <div className='flex justify-between items-center mb-2'>
                 <span className='font-medium text-lg'>{review.userId}</span>
-                <span className='text-sm text-gray-500'>{review.createdAt}</span>
+                <span className='text-sm text-gray-500'>{formatDateTime(review.createdAt)}</span>
               </div>
               <div className='flex items-center gap-1 mb-3'>
                 {[...Array(5)].map((_, i) => (

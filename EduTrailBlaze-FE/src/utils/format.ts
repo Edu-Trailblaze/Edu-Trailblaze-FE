@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 export function formatNumber(amount: number): string {
   return new Intl.NumberFormat('en-US').format(amount)
 }
@@ -28,4 +30,8 @@ export const truncateContent = (content: string, maxLength: number = 40): string
   }
 
   return truncated.trim() + '...'
+}
+
+export const formatDateTime = (date: string): string => {
+  return format(new Date(date), 'dd/MM/yyyy HH:mm:ss')
 }
