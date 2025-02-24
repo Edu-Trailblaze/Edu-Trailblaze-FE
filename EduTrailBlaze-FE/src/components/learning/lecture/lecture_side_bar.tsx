@@ -1,7 +1,7 @@
-import { FileVideo } from 'lucide-react'
-import { BsCheck2 } from 'react-icons/bs'
-import { LuTableOfContents } from 'react-icons/lu'
-import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
+// lecture_side_bar.tsx
+'use client'
+import React from 'react'
+import { FileVideo, ChevronDown, ChevronUp, CheckCircle2, MenuIcon, X } from 'lucide-react'
 
 interface ModuleBarProps {
   course: ICourseFull
@@ -11,6 +11,8 @@ interface ModuleBarProps {
   setActiveLectureId: (id: number) => void
   expandedSections: { [key: number]: boolean }
   setExpandedSections: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>
+  isSidebarOpen: boolean
+  onCloseSidebar: () => void
 }
 
 export default function LectureSideBar({
@@ -20,7 +22,9 @@ export default function LectureSideBar({
   activeLectureId,
   setActiveLectureId,
   expandedSections,
-  setExpandedSections
+  setExpandedSections,
+  isSidebarOpen,
+  onCloseSidebar
 }: ModuleBarProps) {
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
@@ -30,71 +34,88 @@ export default function LectureSideBar({
   }
 
   let lectureCounter = 1
+
+  //map section to lectures
   const processedSections = (course.sectionDetails ?? []).map((section) => {
     const sectionLectures =
       lectures
-        .find((lec) => lec.sectionId === section.id)
-        ?.lectures.map((item) => ({
+        .filter((lec) => lec.sectionId === section.id)
+        .flatMap((lec) => lec.lectures)
+        .map((item) => ({
           ...item,
           currentIndex: lectureCounter++
         })) || []
     return { ...section, lectures: sectionLectures }
   })
 
+  const completedLectures = 0
+
   return (
-    <div className='w-[400px] border-r-2 border-gray-200 select-none'>
-      <div className='flex pl-3 text-center items-center font-bold py-3 bg-white'>
-        <LuTableOfContents className='text-2xl' />
-        <h1 className='px-2 text-xl'>Course Content</h1>
+    <div
+      className={`fixed top-0 left-0 h-full bg-white w-[320px] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 border-r border-gray-200 flex flex-col z-50`}
+    >
+      <div className='flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0'>
+        <div className='flex items-center gap-2'>
+          <MenuIcon className='w-5 h-5 text-blue-600' />
+          <h1 className='font-semibold text-lg'>Course Content</h1>
+        </div>
+        <button onClick={onCloseSidebar} className='md:hidden'>
+          <X className='w-5 h-5' />
+        </button>
       </div>
 
-      {processedSections.map((section) => (
-        <div key={section.id}>
-          <div
-            className='flex bg-gray-100 px-4 py-2 justify-between cursor-pointer items-center'
-            onClick={() => toggleExpand(section.id)}
-          >
-            <div>
-              <p className='font-semibold'>{section.title}</p>
-              <p className='font-thin text-sm'>
-                {section.duration.substring(0, 8)} | 0/{section.lectures.length}
-              </p>
-            </div>
-            <div>
+      <div className='flex-1 overflow-y-auto'>
+        {processedSections.map((section) => (
+          // section
+          <div key={section.id} className='border-b border-gray-200 bg-gray-100'>
+            <button
+              className='w-full flex items-center justify-between p-4 hover:bg-gray-200 transition-colors'
+              onClick={() => toggleExpand(section.id)}
+            >
+              <div className='text-left'>
+                <p className='font-medium text-gray-900'>{section.title}</p>
+                <p className='text-sm text-gray-500 mt-1'>
+                  {section.duration.substring(0, 8)} • {completedLectures}/{section.lectures.length} lectures
+                </p>
+              </div>
               {expandedSections[section.id] ? (
-                <RiArrowUpSLine className='text-3xl' />
+                <ChevronUp className='w-5 h-5 text-gray-400' />
               ) : (
-                <RiArrowDropDownLine className='text-3xl' />
+                <ChevronDown className='w-5 h-5 text-gray-400' />
               )}
-            </div>
-          </div>
+            </button>
 
-          {expandedSections[section.id] && (
-            <div className='bg-white'>
-              {section.lectures.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => setActiveLectureId(item.id)}
-                  className={`flex items-center justify-between px-4 py-2 cursor-pointer ${activeLectureId === item.id ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
-                >
-                  <div className='flex items-center gap-2'>
-                    <div>
-                      <p className={`font-semibold mr-2 ${activeLectureId === item.id ? 'text-blue-600' : ''}`}>
-                        {item.currentIndex}. {item.title}
-                      </p>
-                      <div className='text-sm flex items-center gap-2'>
-                        <FileVideo className='' />
-                        <span>{item.duration}min</span>
+            {expandedSections[section.id] && (
+              <div className='bg-white border-l-4 border-blue-300'>
+                {section.lectures.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveLectureId(item.id)}
+                    className={`w-full text-left p-4  hover:bg-sky-100 transition-colors ${
+                      activeLectureId === item.id ? 'bg-blue-50 border-l-4 border-blue-600' : ''
+                    }`}
+                  >
+                    <div className='flex items-center justify-between'>
+                      <div className='flex-1'>
+                        <p
+                          className={`font-medium mr-2 ${activeLectureId === item.id ? 'text-blue-600' : 'text-gray-900'}`}
+                        >
+                          {item.currentIndex}. {item.title}
+                        </p>
+                        <div className='flex items-center gap-2 mt-1 text-sm text-gray-500'>
+                          <FileVideo className='w-4 h-4' />
+                          <span>{item.duration} min</span>
+                        </div>
                       </div>
+                      <CheckCircle2 className={`w-5 h-5 ${false ? 'text-green-500' : 'text-gray-300'}`} />
                     </div>
-                  </div>
-                  <BsCheck2 className='text-2xl text-gray-600' />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

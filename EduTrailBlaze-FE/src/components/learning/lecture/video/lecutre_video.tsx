@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { RiArrowDropDownLine, RiArrowUpSLine } from 'react-icons/ri'
+import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2 } from 'lucide-react'
 
 interface ModuleBarProps {
   lecture: ILecture
@@ -9,6 +9,9 @@ interface ModuleBarProps {
 
 export default function LectureContent({ lecture, video }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState('English')
+  const [activeTab, setActiveTab] = useState('transcript')
+
   const toggleList = () => {
     setLanguageOpen((prev) => !prev)
   }
@@ -30,77 +33,112 @@ export default function LectureContent({ lecture, video }: ModuleBarProps) {
   ]
 
   return (
-    <div className='pb-5 container'>
-      {/**Video Display */}
-      <div className=' mt-3'>
+    <div className='container py-8'>
+      {/* Video Section */}
+      <div className='space-y-6'>
         {video.map((v) => (
-          <div key={v.id}>
-            <p className='font-semibold text-2xl '>{v.title}</p>
-            <video className=' my-5 w-full h-[500px] bg-black' controls>
-              <source src={v.videoUrl} type='video/mp4'></source>
-            </video>
+          <div key={v.id} className='space-y-4'>
+            <h1 className='text-3xl font-bold tracking-tight'>{v.title}</h1>
+            <div className='aspect-video relative rounded-xl overflow-hidden bg-black'>
+              <video className='w-full h-full' controls>
+                <source src={v.videoUrl} type='video/mp4' />
+              </video>
+            </div>
           </div>
         ))}
       </div>
 
-      {/**Video summarise */}
-      <div className=' bg-[#F4F4F4] px-[30px] py-[20px] rounded-2xl border-2 border-blue-500'>
-        <p>{lecture.content}</p>
+      {/* Content Summary Card */}
+      <div className='mt-8 bg-white rounded-xl border-2 border-blue-500 shadow-sm'>
+        <div className='p-6'>
+          <div className='flex items-center gap-2 mb-4'>
+            <Volume2 className='w-5 h-5 text-blue-600' />
+            <h2 className='text-xl font-semibold'>Lecture Summary</h2>
+          </div>
+          <p className='text-gray-700 leading-relaxed'>{lecture.content}</p>
+        </div>
       </div>
 
-      {/**Video Options */}
-      <div className=' pt-5 pb-3 flex items-center gap-8 border-b-2 border-b-gray-300'>
-        <p>Transcript</p>
-        <p>Download</p>
-      </div>
+      {/* Tabs Section */}
+      <div className='mt-8'>
+        {/* Tab Headers */}
+        <div className='flex border-b border-gray-200'>
+          <button
+            className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors
+              ${
+                activeTab === 'transcript'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-blue-600'
+              }`}
+            onClick={() => setActiveTab('transcript')}
+          >
+            <FileText className='w-4 h-4' />
+            Transcript
+          </button>
+          <button
+            className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors
+              ${
+                activeTab === 'download'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-blue-600'
+              }`}
+            onClick={() => setActiveTab('download')}
+          >
+            <Download className='w-4 h-4' />
+            Download
+          </button>
+        </div>
 
-      {/**Video transcript example */}
-      <div className='flex pt-7'>
-        <p>
-          [MUSIC] Hello and welcome to this demonstration on using RegEx Builder in studio, in this video you will be
-          creating a workflow that can extract email IDs from a piece of text to display in the Output panel. So let's
-          begin, search for an assigned activity in the Activities panel and drag and drop it in the Designer panel,
-          rename the sequence as RegEx Builder and add an annotation to it. Rename the assigned activity as message, in
-          the two text box, press Control plus K to create a new variable and name it as message. Now navigate to the
-          Properties panel of the assigned activity, click the ellipsis icon of the value field to open the expression
-          editor window.
-          <br />
-          <br />
-          Enter my name isJoe, my email is, joe@theratemail.com and my father's email is jack@theratemail.com, and my
-          uncle's email is j@theratemail.com, in double quotes, click OK.
-          <br />
-          <br />
-          Search for a Matches activity, and drag and drop it below the assigned activity, rename it as email. Click the
-          configure regular expression button within the matches activity, in the RegEx Builder wizard, go to the RegEX
-          column and select email from the dropdown. In the qualifiers column, select any zero or more from the
-          dropdown, it will extract all the email IDs from the text, click save to exit the wizard.
-        </p>
-        <div>
-          <span className='flex px-2 py-2  hover:bg-blue-200 rounded-sm' onClick={toggleList}>
-            <span className='font-semibold'>Transcript language: </span>
-            <span className='flex ml-2'>
-              English{' '}
-              {languageListOpen ? (
-                <RiArrowDropDownLine className='text-2xl' />
-              ) : (
-                <RiArrowUpSLine className='text-2xl' />
-              )}
-            </span>
-          </span>
-          {/**Language list open */}
-          {languageListOpen && (
-            <>
-              <div className='border-t-2 border-t-blue-700 py-2'></div>
-              <div className='border-2 border-blue-500 py-2 px-2 rounded-md h-[200px] overflow-auto'>
-                <ul>
-                  {languages.map((language) => (
-                    <li className='px-4 hover:bg-blue-200 rounded-sm' key={language.id}>
-                      {language.name}
-                    </li>
-                  ))}
-                </ul>
+        {/* Tab Content */}
+        <div className='mt-6'>
+          {activeTab === 'transcript' && (
+            <div className='flex gap-8'>
+              {/* Transcript Text */}
+              <div className='flex-1'>
+                <p className='text-gray-700 leading-relaxed whitespace-pre-line'>
+                  [MUSIC] Hello and welcome to this demonstration on using RegEx Builder in studio...
+                </p>
               </div>
-            </>
+
+              {/* Language Selector */}
+              <div className='w-64'>
+                <div className='relative'>
+                  <button
+                    className='w-full flex items-center justify-between px-4 py-2 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors'
+                    onClick={toggleList}
+                  >
+                    <div className='flex items-center gap-2'>
+                      <Globe className='w-4 h-4 text-blue-600' />
+                      <span>{selectedLanguage}</span>
+                    </div>
+                    {languageListOpen ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}
+                  </button>
+
+                  {languageListOpen && (
+                    <div className='absolute w-full mt-2 bg-white border-2 border-blue-500 rounded-lg shadow-lg z-50'>
+                      <div className='max-h-64 overflow-auto p-2'>
+                        {languages.map((language) => (
+                          <button
+                            key={language.id}
+                            className='w-full text-left px-3 py-2 hover:bg-blue-50 rounded-md transition-colors'
+                            onClick={() => {
+                              setSelectedLanguage(language.name)
+                              setLanguageOpen(false)
+                            }}
+                          >
+                            {language.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'download' && (
+            <div className='text-center text-gray-500'>Download options will appear here</div>
           )}
         </div>
       </div>
