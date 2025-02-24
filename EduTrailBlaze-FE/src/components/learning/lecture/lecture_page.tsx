@@ -61,7 +61,6 @@ export default function LecturePage() {
         <LectureSideBar
           course={course}
           lectures={lectures}
-          video={video}
           activeLectureId={activeLectureId}
           setActiveLectureId={handleLectureChange}
           expandedSections={expandedSections}

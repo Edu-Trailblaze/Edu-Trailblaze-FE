@@ -33,7 +33,7 @@ export default function VideoLecture({ lecture, video }: ModuleBarProps) {
   ]
 
   return (
-    <div className='container py-8'>
+    <div className='py-8'>
       {/* Video Section */}
       <div className='space-y-6'>
         {video?.map((v) => (

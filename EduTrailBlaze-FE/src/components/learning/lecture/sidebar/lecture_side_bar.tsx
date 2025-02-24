@@ -6,7 +6,6 @@ import { FileVideo, ChevronDown, ChevronUp, CheckCircle2, MenuIcon, X, FileText,
 interface ModuleBarProps {
   course: ICourseFull
   lectures: SectionLecture[]
-  video: IVideo[]
   activeLectureId: number | null
   setActiveLectureId: (id: number) => void
   expandedSections: { [key: number]: boolean }
@@ -18,7 +17,6 @@ interface ModuleBarProps {
 export default function LectureSideBar({
   course,
   lectures,
-  video,
   activeLectureId,
   setActiveLectureId,
   expandedSections,

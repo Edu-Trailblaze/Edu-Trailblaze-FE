@@ -1,8 +1,8 @@
-'use client'
 import React from 'react'
 import ReadingLecture from './reading/lecture_reading'
-import QuizLecture from './quiz/lecture_quiz'
+
 import VideoLecture from './video/lecutre_video'
+import QuizLecture from './quiz/QuizLecture'
 
 interface LectureContentProps {
   lecture: ILecture
