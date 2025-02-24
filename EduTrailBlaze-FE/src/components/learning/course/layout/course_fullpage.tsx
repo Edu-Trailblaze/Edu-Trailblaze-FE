@@ -21,9 +21,12 @@ export default function Course() {
   const detail = courseDetails?.courseDetails
   const section = courseDetails?.sectionDetails
   const sectionId = section?.map((item) => item.id) || []
+
   //bỏ qua query nếu ko có data
-  const { data: lecture } = useGetSectionLectureQuery(sectionId.length > 0 ? sectionId : skipToken)
-  if (isLoading || isFetching) {
+  const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
+    sectionId.length > 0 ? sectionId : skipToken
+  )
+  if (isLoading || isFetching || isLectureFetching) {
     return <Loading />
   }
 
