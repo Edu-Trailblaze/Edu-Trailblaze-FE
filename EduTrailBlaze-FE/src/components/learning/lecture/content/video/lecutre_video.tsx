@@ -4,10 +4,10 @@ import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2 } from 'luci
 
 interface ModuleBarProps {
   lecture: ILecture
-  video: IVideo[]
+  video?: IVideo[]
 }
 
-export default function LectureContent({ lecture, video }: ModuleBarProps) {
+export default function VideoLecture({ lecture, video }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('English')
   const [activeTab, setActiveTab] = useState('transcript')
@@ -36,7 +36,7 @@ export default function LectureContent({ lecture, video }: ModuleBarProps) {
     <div className='container py-8'>
       {/* Video Section */}
       <div className='space-y-6'>
-        {video.map((v) => (
+        {video?.map((v) => (
           <div key={v.id} className='space-y-4'>
             <h1 className='text-3xl font-bold tracking-tight'>{v.title}</h1>
             <div className='aspect-video relative rounded-xl overflow-hidden bg-black'>

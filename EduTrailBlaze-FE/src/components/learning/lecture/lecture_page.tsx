@@ -7,8 +7,8 @@ import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../redux/se
 import { useGetVideoByConditionsQuery } from '../../../redux/services/video.service'
 import { useParams, useRouter } from 'next/navigation'
 import Loading from '../../animate/Loading'
-import LectureContent from './video/lecutre_video'
-import LectureSideBar from './lecture_side_bar'
+import LectureSideBar from './sidebar/lecture_side_bar'
+import LectureContent from './content/leture_content'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()
@@ -30,6 +30,14 @@ export default function LecturePage() {
     }
     return {}
   })
+  const sectionId = course?.sectionDetails?.map((section) => section.id)
+  // const lectureType = lectures
+  //   ?.filter((lecture) => sectionIds.includes(lecture.sectionId))
+  //   .map((lec) => lec.lectures.map((item) => item.lectureType))
+  const currentLecture = lectures?.flatMap((section) => section.lectures).find((lec) => lec.id === activeLectureId)
+
+  const lectureType = currentLecture?.lectureType || 'Video'
+  console.log(currentLecture)
 
   useEffect(() => {
     sessionStorage.setItem('expandedSections', JSON.stringify(expandedSections))
@@ -70,7 +78,7 @@ export default function LecturePage() {
           </div>
 
           <div className='p-4'>
-            <LectureContent lecture={lectureContent} video={video} />
+            <LectureContent lecture={lectureContent} video={video} lectureType={lectureType} />
           </div>
         </div>
       </div>

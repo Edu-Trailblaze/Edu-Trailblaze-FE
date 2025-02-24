@@ -1,7 +1,7 @@
 // lecture_side_bar.tsx
 'use client'
 import React from 'react'
-import { FileVideo, ChevronDown, ChevronUp, CheckCircle2, MenuIcon, X } from 'lucide-react'
+import { FileVideo, ChevronDown, ChevronUp, CheckCircle2, MenuIcon, X, FileText, FileQuestion } from 'lucide-react'
 
 interface ModuleBarProps {
   course: ICourseFull
@@ -103,7 +103,13 @@ export default function LectureSideBar({
                           {item.currentIndex}. {item.title}
                         </p>
                         <div className='flex items-center gap-2 mt-1 text-sm text-gray-500'>
-                          <FileVideo className='w-4 h-4' />
+                          {item.lectureType === 'Reading' ? (
+                            <FileText className='w-4 h-4' />
+                          ) : item.lectureType === 'Video' ? (
+                            <FileVideo className='w-4 h-4' />
+                          ) : (
+                            <FileQuestion className='w-4 h-4' />
+                          )}
                           <span>{item.duration} min</span>
                         </div>
                       </div>
