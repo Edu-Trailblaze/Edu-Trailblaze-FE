@@ -40,7 +40,6 @@ export default function DetailModal<T>({ item, onClose, fields }: DetailProps<T>
                     <CloseIcon />
                 </IconButton>
 
-                {/* 🔹 CHANGED: Tiêu đề căn giữa và in đậm */}
                 <Typography
                     variant="h6"
                     component="h2"
@@ -52,12 +51,11 @@ export default function DetailModal<T>({ item, onClose, fields }: DetailProps<T>
                     DETAIL BOOKING
                 </Typography>
 
-                {/* 🔹 CHANGED: Bố cục dạng cột thay vì grid */}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2, fontSize: "0.9rem" }}>
                     {fields.map(({ label, accessor }) => {
                         const value = item?.[accessor] || "";
                         const isDateField = typeof value === 'string' && !isNaN(Date.parse(value));
-                        const isImageField = accessor === "imageUrl"; // Kiểm tra nếu là ảnh
+                        const isImageField = accessor === "imageUrl";
 
 
                         const displayValue = isDateField
@@ -98,7 +96,6 @@ export default function DetailModal<T>({ item, onClose, fields }: DetailProps<T>
                     })}
                 </Box>
 
-                {/* 🔹 CHANGED: Cập nhật nút Cancel */}
                 <Button
                     onClick={onClose}
                     variant="contained"
@@ -108,7 +105,7 @@ export default function DetailModal<T>({ item, onClose, fields }: DetailProps<T>
                         color: "white",
                         display: "block",
                         width: "100%",
-                        borderRadius: "0px", // 🔹 CHANGED: Không bo góc
+                        borderRadius: "0px",
                         "&:hover": { bgcolor: "#0096D7" }
                     }}
                 >

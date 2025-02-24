@@ -1,9 +1,12 @@
 import { Table as MuiTable, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Edit, Delete, Visibility } from "@mui/icons-material"; // Import icon từ MUI
+
 
 const Table = ({
     columns,
     renderRow,
     data,
+
 }: {
     columns: { label: string; accessor: string; className?: string }[];
     renderRow: (item: any) => React.ReactNode;
@@ -32,30 +35,9 @@ const Table = ({
                     ))}
                 </TableRow>
             </TableHead>
+
             <TableBody>
-                {data.map((item) => (
-                    <TableRow key={item.id}>
-                        {columns.map((col) => (
-                            <TableCell
-                                key={col.accessor}
-                                sx={{
-                                    textAlign: "left",
-                                    padding: "12px 16px",
-                                }}
-                            >
-                                {col.accessor === "imageUrl" ? (
-                                    <img
-                                        src={item[col.accessor]}
-                                        alt="news"
-                                        style={{ width: "100px", height: "auto", borderRadius: "5px" }}
-                                    />
-                                ) : (
-                                    item[col.accessor]
-                                )}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                ))}
+                {data.map((item) => renderRow(item))}
             </TableBody>
         </MuiTable>
     );

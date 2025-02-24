@@ -1,5 +1,7 @@
 'use client';
 import 'react-toastify/dist/ReactToastify.css';
+import { TableRow, TableCell } from "@mui/material";
+
 
 import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,6 +9,8 @@ import Pagination from '@/components/admin/Pagination/Pagination';
 import Table from '@/components/admin/Table/Table';
 import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
+import NewsColumnFilter from '@/components/admin/Filter/NewsFilter/NewsColumnFilter';
+import FormatDateTime from '@/components/admin/Date/FormatDateTime';
 
 import DetailModal from '@/components/admin/Modal/DetailModal';
 import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate';
@@ -15,43 +19,49 @@ import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormMo
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from "lucide-react";
 import api from '@/components/config/axios';
 
-type News = {
+export type News = {
     id?: number;
     title: string;
     content: string;
     imageUrl: string;
-
+    createdAt: string;
 };
+
+export type NewsCreate = Omit<News, "createdAt">;
+
 
 
 const newsFields: { label: string; accessor: keyof News }[] = [
     { label: 'Id', accessor: 'id' },
     { label: 'Title', accessor: 'title' },
     { label: 'Content', accessor: 'content' },
-    { label: 'Image URL', accessor: 'imageUrl' }
+    { label: 'Image URL', accessor: 'imageUrl' },
+    { label: 'Created on', accessor: 'createdAt' }
+
 
 ];
-
 
 
 export default function NewsManagement() {
     const [news, setNews] = useState<News[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedNews, setSelectedNews] = useState<News | null>(null);
+    const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(() =>
+        Object.fromEntries(newsFields.map(field => [field.accessor, true]))
+    );
+    const [isFilterOpen, setFilterOpen] = useState(false);
+    const [tempVisibleColumns, setTempVisibleColumns] = useState(visibleColumns);
+
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [editNews, setEditNews] = useState<News | null>(null);
-    const [newNews, setNewNews] = useState<News>({
+    const [newNews, setNewNews] = useState<NewsCreate>({
         title: '',
         content: '',
-        imageUrl: ''
+        imageUrl: '',
     });
 
-    const initialValues: News = {
-        title: '',
-        content: '',
-        imageUrl: ''
-    };
+
 
     const fetchNews = async () => {
         try {
@@ -71,16 +81,13 @@ export default function NewsManagement() {
     }, []);
 
 
-    const handleAddNews = async (newNews: News) => {
-        console.log("New voucher before submission:", newNews);
-
+    const handleAddNews = async (newNews: NewsCreate) => {
         try {
             const response = await api.post('/News', newNews);
             toast.success("News added successfully!");
-            setNews([...news, response.data]);
+            setNews([...news, { ...response.data, createdAt: new Date().toISOString() }]);
             fetchNews();
             setAddModalOpen(false);
-
         } catch (error) {
             console.error('Error adding news:', error);
             toast.error("Failed to add news!");
@@ -91,6 +98,7 @@ export default function NewsManagement() {
         setEditNews(news);
         setEditModalOpen(true);
     };
+
 
     const handleUpdateNews = async (updatedNews: News) => {
 
@@ -133,33 +141,48 @@ export default function NewsManagement() {
         }
     };
 
-
+    //comlumn filter
+    const toggleColumnVisibility = (column: keyof News) => {
+        setVisibleColumns(prev => ({
+            ...prev,
+            [column]: !prev[column]
+        }));
+    };
+    const handleApplyFilter = (newVisibleColumns: Record<keyof News, boolean>) => {
+        setVisibleColumns(newVisibleColumns);
+        setFilterOpen(false);
+    };
 
     const renderRow = (news: News) => (
-        <tr key={news.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100">
-            <td className="p-4">{news.id}</td>
-            <td>{news.title}</td>
-            <td>{news.content}</td>
-            <td>
-                <img
-                    src={news.imageUrl}
-                    alt="news image"
-                    className="w-16 h-16 object-cover rounded"
-                />
-            </td>
-            <td className="flex mt-4 space-x-2">
-                <button onClick={() => setSelectedNews(news)} className="text-blue-600 cursor-pointer">
-                    <Eye size={18} />
+        <TableRow key={news.id} hover>
+            {visibleColumns["id"] && <TableCell>{news.id}</TableCell>}
+            {visibleColumns["title"] && <TableCell>{news.title}</TableCell>}
+            {visibleColumns["content"] && <TableCell>{news.content}</TableCell>}
+            {visibleColumns["imageUrl"] && (
+                <TableCell>
+                    <img
+                        src={news.imageUrl}
+                        alt="news image"
+                        style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: 4 }}
+                    />
+                </TableCell>
+            )}
+            {visibleColumns["createdAt"] && <TableCell><FormatDateTime date={news.createdAt} /></TableCell>}
+
+            <TableCell>
+                <button onClick={() => setSelectedNews(news)} style={{ color: "#1D4ED8" }}>
+                    <Eye size={18} style={{ marginRight: "10px" }} />
                 </button>
-                <button onClick={() => handleEditNews(news)} className="text-yellow-600 cursor-pointer">
-                    <Pencil size={18} />
+                <button onClick={() => handleEditNews(news)} style={{ color: "#F59E0B" }}>
+                    <Pencil size={18} style={{ marginRight: "10px" }} />
                 </button>
-                <button onClick={() => handleDeleteNews(news.id!)} className="text-red-600 cursor-pointer">
+                <button onClick={() => handleDeleteNews(news.id!)} style={{ color: "#DC2626" }}>
                     <Trash2 size={18} />
                 </button>
-            </td>
-        </tr>
+            </TableCell>
+        </TableRow>
     );
+
 
     return (
         <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
@@ -169,9 +192,24 @@ export default function NewsManagement() {
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <TableSearch />
                     <div className="flex items-center gap-4 self-end">
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]">
-                            <Filter size={18} />
-                        </button>
+                        <div className="relative">
+                            <button
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]"
+                                onClick={() => setFilterOpen(!isFilterOpen)}
+                            >
+                                <Filter size={18} />
+                            </button>
+                            {isFilterOpen && (
+                                <NewsColumnFilter
+                                    columns={newsFields}
+                                    visibleColumns={tempVisibleColumns}
+                                    onApply={handleApplyFilter}
+                                    onClose={() => setFilterOpen(false)}
+                                    onClear={() => setTempVisibleColumns(Object.fromEntries(newsFields.map(field => [field.accessor, true])))}
+                                />
+                            )}
+                        </div>
+
                         <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]">
                             <ArrowUpDown size={18} />
                         </button>
@@ -189,7 +227,7 @@ export default function NewsManagement() {
             ) : (
                 <Table
                     columns={[
-                        ...newsFields,
+                        ...newsFields.filter(field => visibleColumns[field.accessor]),
                         { label: 'Actions', accessor: 'action' }
                     ]}
                     renderRow={renderRow}
@@ -198,7 +236,7 @@ export default function NewsManagement() {
 
             {selectedNews && <DetailModal item={selectedNews} fields={newsFields} onClose={() => setSelectedNews(null)} />}
             <NewsFormModalCreate
-                initialValues={initialValues}
+                initialValues={newNews}
                 setNewNews={setNewNews}
                 onSubmit={handleAddNews}
                 onCancel={() => setAddModalOpen(false)}
@@ -207,7 +245,7 @@ export default function NewsManagement() {
             {editNews && (
                 <NewsFormModalEdit
                     initialValues={editNews}
-                    setEditNews={setNewNews}
+                    setEditNews={setEditNews}
                     onSubmit={handleUpdateNews}
                     onCancel={() => {
                         setEditModalOpen(false);
