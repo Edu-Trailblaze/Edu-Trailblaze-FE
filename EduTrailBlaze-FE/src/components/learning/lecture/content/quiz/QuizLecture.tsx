@@ -2,43 +2,33 @@ import React, { useState } from 'react'
 import QuizIntro from './QuizIntro'
 import QuizResult from './QuizResult'
 import QuizQuestion from './QuizQuestion'
+import Loading from '../../../../animate/Loading'
 
-interface IQuestion {
-  id: number
-  text: string
-  options: string[]
-  correctAnswer: number
-}
-
-interface IQuiz {
-  id: number
-  title: string
-  description: string
-  questionCount: number
-  questions: IQuestion[]
-}
-
-interface ILecture {
-  id: number
-  title: string
-  content: string
-  quiz?: IQuiz
+interface QuizData {
+  quiz: Quiz
+  questions: Question[]
+  answers: Answer[]
 }
 
 interface QuizLectureProps {
-  lecture: ILecture
+  quizData: QuizData
 }
 
-export default function QuizLecture({ lecture }: QuizLectureProps) {
+export default function QuizLecture({ quizData }: QuizLectureProps) {
+  if (!quizData) {
+    return <Loading />
+  }
+  const { quiz, questions, answers } = quizData
+
   const [quizStarted, setQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState<number[]>(Array(lecture.quiz?.questions.length || 0).fill(-1))
+  const [selectedAnswers, setSelectedAnswers] = useState<number[]>(Array(questions.length).fill(-1))
   const [quizCompleted, setQuizCompleted] = useState(false)
 
   const startQuiz = () => {
     setQuizStarted(true)
     setCurrentQuestionIndex(0)
-    setSelectedAnswers(Array(lecture.quiz?.questions.length || 0).fill(-1))
+    setSelectedAnswers(Array(questions.length).fill(-1))
     setQuizCompleted(false)
   }
 
@@ -49,39 +39,60 @@ export default function QuizLecture({ lecture }: QuizLectureProps) {
   }
 
   const goToNextQuestion = () => {
-    if (currentQuestionIndex < (lecture.quiz?.questions.length || 0) - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1)
     } else {
       setQuizCompleted(true)
     }
   }
 
+  const skipQuestion = () => {
+    handleAnswerSelection(-1) // Đánh dấu là bỏ qua
+    goToNextQuestion()
+  }
+
+  const handleSkipQuiz = () => {
+    console.log('Quiz skipped!')
+    setQuizCompleted(true) // Cập nhật state để hiển thị kết quả ngay lập tức
+  }
+
   const calculateScore = () => {
-    if (!lecture.quiz) return 0
-    return lecture.quiz.questions.reduce(
-      (score, question, index) => (selectedAnswers[index] === question.correctAnswer ? score + 1 : score),
-      0
-    )
+    return questions.reduce((score, question, index) => {
+      const selectedAnswerId = selectedAnswers[index]
+      const correctAnswer = answers.find((answer) => answer.questionId === question.id && answer.isCorrect)
+      return correctAnswer && correctAnswer.id === selectedAnswerId ? score + 1 : score
+    }, 0)
   }
 
   if (!quizStarted && !quizCompleted) {
-    return <QuizIntro lecture={lecture} startQuiz={startQuiz} />
+    return <QuizIntro quiz={quiz} startQuiz={startQuiz} onSkipQuiz={handleSkipQuiz} />
   }
 
   if (quizCompleted) {
     return (
-      <QuizResult score={calculateScore()} totalQuestions={lecture.quiz?.questions.length || 0} startQuiz={startQuiz} />
+      <QuizResult
+        score={calculateScore()}
+        totalQuestions={questions.length}
+        passingScore={quiz.passingScore}
+        startQuiz={startQuiz}
+      />
     )
   }
 
+  const currentQuestion = questions[currentQuestionIndex]
+  const currentAnswers = answers.filter((answer) => answer.questionId === currentQuestion.id)
+
   return (
     <QuizQuestion
-      question={lecture.quiz?.questions[currentQuestionIndex]}
+      question={currentQuestion}
+      answers={currentAnswers}
       questionIndex={currentQuestionIndex}
-      totalQuestions={lecture.quiz?.questions.length || 0}
+      totalQuestions={questions.length}
       selectedAnswer={selectedAnswers[currentQuestionIndex]}
       handleAnswerSelection={handleAnswerSelection}
       goToNextQuestion={goToNextQuestion}
+      skipQuestion={skipQuestion}
+      onSkipQuiz={handleSkipQuiz}
     />
   )
 }

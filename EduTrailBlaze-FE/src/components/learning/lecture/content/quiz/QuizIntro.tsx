@@ -1,24 +1,28 @@
 import React from 'react'
 
 interface QuizIntroProps {
-  lecture: { quiz?: { title: string; questionCount: number } }
+  quiz: { title: string }
   startQuiz: () => void
+  onSkipQuiz: () => void
 }
 
-export default function QuizIntro({ lecture, startQuiz }: QuizIntroProps) {
+export default function QuizIntro({ quiz, startQuiz, onSkipQuiz }: QuizIntroProps) {
   return (
     <div className='py-6 max-w-2xl mx-auto'>
-      <h1 className='text-3xl font-semibold mb-4'>{lecture.quiz?.title || 'Microservices Quiz'}</h1>
-      <p className='text-sm text-gray-500 mb-2'>Quiz | {lecture.quiz?.questionCount || 0} questions</p>
+      <h1 className='text-3xl font-semibold mb-4'>{quiz.title}</h1>
 
-      <div className='mt-6'>
-        <button
-          onClick={startQuiz}
-          className='bg-purple-600 text-white font-medium py-2 px-6 rounded-md hover:bg-purple-700'
-        >
-          Start quiz
-        </button>
-      </div>
+      <button
+        onClick={startQuiz}
+        className='bg-purple-600 text-white font-medium py-2 px-6 rounded-md hover:bg-purple-700'
+      >
+        Start Quiz
+      </button>
+      <button
+        onClick={onSkipQuiz}
+        className='bg-gray-400 text-white font-medium py-2 px-6 rounded-md hover:bg-gray-500'
+      >
+        Skip Quiz
+      </button>
     </div>
   )
 }
