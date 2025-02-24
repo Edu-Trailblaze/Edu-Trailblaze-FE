@@ -13,13 +13,10 @@ interface ILecture {
   createdAt: string
   updatedAt: string
   id: number
-  type: LectureType
+  lectureType: LectureType
 }
-enum LectureType {
-  Reading = 'Reading',
-  Video = 'Video',
-  Quiz = 'Quiz'
-}
+type LectureType = 'Reading' | 'Video' | 'Quiz'
+
 interface ISection {
   courseId: number
   title: string

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { StoreProvider } from '../redux/StorProvider'
-import SessionProviderWrapper from './SessionProviderWrapper'
+import SessionProviderWrapper from '../providers/SessionProviderWrapper'
+import { StoreProvider } from '../providers/StoreProvider'
 
 export const metadata: Metadata = {
   title: 'EduTrailBlaze',

@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import '../globals.css'
 import WebHeader from '@/components/global/header/header'
 import WebFooter from '@/components/global/footer/footer'
+import { Suspense } from 'react'
+import Loading from '../../components/animate/Loading'
+import '@/components/animate/Loading/style.scss'
 
 export const metadata: Metadata = {
   title: 'Edutrail Blaze',
@@ -16,7 +19,7 @@ export default function RootLayout({
   return (
     <>
       <WebHeader />
-      {children}
+      <div className='min-h-screen'>{children}</div>
       <WebFooter />
     </>
   )

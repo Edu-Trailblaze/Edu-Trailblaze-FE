@@ -1,7 +1,9 @@
-'use client'
 import React, { useState } from 'react'
 
-// Types
+interface QuizLectureProps {
+  lectures: ILecture
+}
+
 interface IQuestion {
   id: number
   text: string
@@ -24,7 +26,6 @@ interface ILecture {
   quiz?: IQuiz
 }
 
-// Sample data
 const sampleQuiz: IQuiz = {
   id: 1,
   title: 'Microservices Quiz',
@@ -89,7 +90,6 @@ const sampleQuiz: IQuiz = {
     }
   ]
 }
-
 const sampleLecture: ILecture = {
   id: 1,
   title: 'Introduction to Microservices',
@@ -98,8 +98,7 @@ const sampleLecture: ILecture = {
   quiz: sampleQuiz
 }
 
-// Main Quiz Component
-export default function MicroservicesQuiz() {
+export default function QuizLecture({ lectures }: QuizLectureProps) {
   const [lecture] = useState<ILecture>(sampleLecture)
   const [quizStarted, setQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -211,39 +210,48 @@ export default function MicroservicesQuiz() {
   const currentQuestion = lecture.quiz?.questions[currentQuestionIndex]
 
   return (
-    <div className='max-w-3xl mx-auto border-t border-b border-gray-200'>
-      {/* Question header */}
-      <div className='p-6 border-b border-gray-200'>
-        <h2 className='text-lg font-medium'>Question {currentQuestionIndex + 1}:</h2>
-        <p className='text-lg mt-2'>{currentQuestion?.text}</p>
+    <div className='py-6 max-w-2xl mx-auto'>
+      <div className='flex justify-between items-center mb-4'>
+        <h1 className='text-3xl font-semibold'>Microservices Quiz</h1>
+        <p className='text-sm text-gray-500'>
+          Question {currentQuestionIndex + 1} of {lecture.quiz?.questionCount}
+        </p>
       </div>
 
-      {/* Options */}
-      <div className='py-2'>
-        {currentQuestion?.options.map((option, index) => (
-          <div
-            key={index}
-            className='border-b border-gray-200 py-3 px-4 hover:bg-gray-50 cursor-pointer'
-            onClick={() => handleOptionSelect(index)}
-          >
-            <div className='flex items-center'>
-              <div
-                className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  selectedAnswers[currentQuestionIndex] === index ? 'border-purple-600' : 'border-gray-400'
-                }`}
-              >
-                {selectedAnswers[currentQuestionIndex] === index && (
-                  <div className='w-3 h-3 bg-purple-600 rounded-full'></div>
-                )}
+      <div className='bg-white rounded-xl border-2 border-blue-500 shadow-sm p-6 mb-6'>
+        <h2 className='text-xl font-medium mb-4'>Question {currentQuestionIndex + 1}:</h2>
+        <p className='text-gray-700 mb-6'>{currentQuestion?.text}</p>
+
+        <div className='space-y-4'>
+          {currentQuestion?.options.map((option, index) => (
+            <div
+              key={index}
+              className={`border rounded-lg p-4 cursor-pointer ${
+                selectedAnswers[currentQuestionIndex] === index
+                  ? 'border-purple-600 bg-purple-50'
+                  : 'border-gray-300 hover:border-gray-400'
+              }`}
+              onClick={() => handleOptionSelect(index)}
+            >
+              <div className='flex items-center'>
+                <div
+                  className={`w-6 h-6 flex items-center justify-center rounded-full border ${
+                    selectedAnswers[currentQuestionIndex] === index ? 'border-purple-600' : 'border-gray-400'
+                  }`}
+                >
+                  {selectedAnswers[currentQuestionIndex] === index && (
+                    <div className='w-3 h-3 bg-purple-600 rounded-full'></div>
+                  )}
+                </div>
+                <span className='ml-3'>{option}</span>
               </div>
-              <span className='ml-3'>{option}</span>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Footer */}
-      <div className='p-4 border-t border-gray-200 flex justify-between items-center'>
+      <div className='p-4  flex justify-between items-center'>
         <div className='text-sm text-gray-700'>
           Question {currentQuestionIndex + 1} of {lecture.quiz?.questionCount}
         </div>
