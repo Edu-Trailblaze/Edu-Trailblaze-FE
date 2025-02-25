@@ -12,6 +12,7 @@ import { useGetSectionLectureQuery } from '../../../services/lecture.service'
 import { skip } from 'node:test'
 import { skipToken } from '@reduxjs/toolkit/query'
 import Navigation from './course_nav'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 
 export default function Course() {
   const { courseURL } = useParams()
@@ -22,7 +23,7 @@ export default function Course() {
   //bỏ qua query nếu ko có data
   const { data: lecture } = useGetSectionLectureQuery(sectionId.length > 0 ? sectionId : skipToken)
   if (isLoading || isFetching) {
-    return <Loading />
+    return <LoadingPage />
   }
 
   if (!detail) return <div>No course available.</div>

@@ -7,6 +7,7 @@ import { useGetVideoByConditionsQuery, useGetVideoQuery } from '../../../service
 import { useParams, useRouter } from 'next/navigation'
 import LectureContent from './lecutre_content'
 import LectureSideBar from './lecture_side_bar'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()
@@ -38,7 +39,7 @@ export default function LecturePage() {
     router.push(`/course/${courseURL}/lecture/${id}`, { scroll: false })
   }
 
-  if (courseLoading) return <Loading />
+  if (courseLoading) return <LoadingPage />
   if (!course) return <div>Course not found</div>
   if (!lectures) return <div>Lecture not found</div>
   if (!lectureContent) return <div>Lecture not found</div>
