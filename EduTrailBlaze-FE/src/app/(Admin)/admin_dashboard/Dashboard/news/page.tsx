@@ -1,23 +1,28 @@
 'use client';
+//api
+import api from '@/components/config/axios';
 import 'react-toastify/dist/ReactToastify.css';
-import { TableRow, TableCell } from "@mui/material";
+import { Menu, MenuItem, IconButton, TableRow, TableCell } from "@mui/material";
 
 
 import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import Pagination from '@/components/admin/Pagination/Pagination';
 import Table from '@/components/admin/Table/Table';
 import TableSearch from '@/components/admin/TableSearch/TableSearch';
 import Loader from '@/components/animate/loader/loader';
-import NewsColumnFilter from '@/components/admin/Filter/NewsFilter/NewsColumnFilter';
 import FormatDateTime from '@/components/admin/Date/FormatDateTime';
 
+//sort filter
+import NewsSort from '@/components/admin/Filter/NewsFilter/NewsSort';
+import NewsFilter from '@/components/admin/Filter/NewsFilter/NewsFilter';
+
+//modal
 import DetailModal from '@/components/admin/Modal/DetailModal';
 import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate';
 import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit';
 
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from "lucide-react";
-import api from '@/components/config/axios';
+//iconicon
+import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from "lucide-react";
 
 export type News = {
     id?: number;
@@ -46,12 +51,21 @@ export default function NewsManagement() {
     const [news, setNews] = useState<News[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedNews, setSelectedNews] = useState<News | null>(null);
+
+    const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({});
+    //sort
     const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(() =>
         Object.fromEntries(newsFields.map(field => [field.accessor, true]))
     );
-    const [isFilterOpen, setFilterOpen] = useState(false);
+    const [isSortOpen, setSortOpen] = useState(false);
     const [tempVisibleColumns, setTempVisibleColumns] = useState(visibleColumns);
 
+    //filter
+    const [isFilterOpen, setFilterOpen] = useState(false);
+
+
+
+    //modal
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [editNews, setEditNews] = useState<News | null>(null);
@@ -148,9 +162,17 @@ export default function NewsManagement() {
             [column]: !prev[column]
         }));
     };
-    const handleApplyFilter = (newVisibleColumns: Record<keyof News, boolean>) => {
+    const handleApplySort = (newVisibleColumns: Record<keyof News, boolean>) => {
         setVisibleColumns(newVisibleColumns);
-        setFilterOpen(false);
+        setSortOpen(false);
+    };
+
+    const handleClickDot = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+        setDot(prev => ({ ...prev, [id]: event.currentTarget }));
+    };
+
+    const handleCloseDot = (id: number) => {
+        setDot(prev => ({ ...prev, [id]: null }));
     };
 
     const renderRow = (news: News) => (
@@ -170,15 +192,25 @@ export default function NewsManagement() {
             {visibleColumns["createdAt"] && <TableCell><FormatDateTime date={news.createdAt} /></TableCell>}
 
             <TableCell>
-                <button onClick={() => setSelectedNews(news)} style={{ color: "#1D4ED8" }}>
-                    <Eye size={18} style={{ marginRight: "10px" }} />
-                </button>
-                <button onClick={() => handleEditNews(news)} style={{ color: "#F59E0B" }}>
-                    <Pencil size={18} style={{ marginRight: "10px" }} />
-                </button>
-                <button onClick={() => handleDeleteNews(news.id!)} style={{ color: "#DC2626" }}>
-                    <Trash2 size={18} />
-                </button>
+                <IconButton onClick={(e) => handleClickDot(e, news.id!)}>
+                    <EllipsisVertical size={18} />
+                </IconButton>
+
+                <Menu
+                    anchorEl={dot[news.id!]}
+                    open={Boolean(dot[news.id!])}
+                    onClose={() => handleCloseDot(news.id!)}
+                >
+                    <MenuItem onClick={() => { setSelectedNews(news); handleCloseDot(news.id!); }}>
+                        <Eye size={18} style={{ marginRight: "10px", color: "#1D4ED8" }} /> View
+                    </MenuItem>
+                    <MenuItem onClick={() => { handleEditNews(news); handleCloseDot(news.id!); }}>
+                        <Pencil size={18} style={{ marginRight: "10px", color: "#F59E0B" }} /> Edit
+                    </MenuItem>
+                    <MenuItem onClick={() => { handleDeleteNews(news.id!); handleCloseDot(news.id!); }}>
+                        <Trash2 size={18} style={{ marginRight: "10px", color: "#DC2626" }} /> Delete
+                    </MenuItem>
+                </Menu>
             </TableCell>
         </TableRow>
     );
@@ -196,24 +228,49 @@ export default function NewsManagement() {
                             <button
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]"
                                 onClick={() => setFilterOpen(!isFilterOpen)}
+
                             >
                                 <Filter size={18} />
                             </button>
                             {isFilterOpen && (
-                                <NewsColumnFilter
+                                <NewsFilter
                                     columns={newsFields}
                                     visibleColumns={tempVisibleColumns}
-                                    onApply={handleApplyFilter}
+                                    onApply={handleApplySort}
                                     onClose={() => setFilterOpen(false)}
+                                    onClear={() =>
+                                        setTempVisibleColumns(
+                                            Object.fromEntries(newsFields.map(field => [field.accessor, true]))
+                                        )
+                                    }
+                                    onFilterApply={(filters) => {
+                                        console.log("Applied filters: ", filters);
+                                    }}
+                                />
+                            )}
+
+                        </div>
+                        <div className="relative">
+                            <button
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]"
+                                onClick={() => setSortOpen(!isSortOpen)}
+                            >
+                                <ArrowUpDown size={18} />
+                            </button>
+                            {isSortOpen && (
+                                <NewsSort
+                                    columns={newsFields}
+                                    visibleColumns={tempVisibleColumns}
+                                    onApply={handleApplySort}
+                                    onClose={() => setSortOpen(false)}
                                     onClear={() => setTempVisibleColumns(Object.fromEntries(newsFields.map(field => [field.accessor, true])))}
                                 />
                             )}
                         </div>
 
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]">
-                            <ArrowUpDown size={18} />
-                        </button>
-                        <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]" onClick={() => setAddModalOpen(true)}>
+                        <button
+                            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]"
+                            onClick={() => setAddModalOpen(true)}>
                             <Plus size={18} />
                         </button>
                     </div>

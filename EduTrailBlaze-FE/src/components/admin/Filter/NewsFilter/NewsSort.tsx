@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { News } from "@/app/(Admin)/admin_dashboard/Dashboard/news/page";
 
-interface NewsColumnFilterProps {
+interface NewsSortProps {
     columns: { label: string; accessor: keyof News }[];
     visibleColumns: Record<keyof News, boolean>;
     onApply: (newVisibleColumns: Record<keyof News, boolean>) => void;
@@ -9,7 +9,7 @@ interface NewsColumnFilterProps {
     onClear: () => void;
 }
 
-const NewsColumnFilter: React.FC<NewsColumnFilterProps> = ({ columns, visibleColumns, onApply, onClose, onClear }) => {
+const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, onClose, onClear }) => {
     const [tempVisibleColumns, setTempVisibleColumns] = useState(visibleColumns);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ const NewsColumnFilter: React.FC<NewsColumnFilterProps> = ({ columns, visibleCol
                 <button onClick={onClear} className="text-sm text-gray-600 px-2 py-1 border rounded-md hover:bg-gray-100">
                     Clear
                 </button>
-                <h4 className="font-semibold text-gray-700">Filters</h4>
+                <h4 className="font-semibold text-gray-700">Sort</h4>
                 <button onClick={() => onApply(tempVisibleColumns)} className="text-sm bg-black text-white px-3 py-1 rounded-md">
                     Done
                 </button>
@@ -52,4 +52,4 @@ const NewsColumnFilter: React.FC<NewsColumnFilterProps> = ({ columns, visibleCol
     );
 };
 
-export default NewsColumnFilter;
+export default NewsSort;
