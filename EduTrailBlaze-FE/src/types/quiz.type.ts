@@ -21,3 +21,17 @@ interface Answer {
   isCorrect: boolean
   id: number
 }
+
+interface QuizDetail {
+  id: number
+  title: string
+  passingScore: number
+  questions: QuestionDetail[]
+}
+
+interface QuestionDetail {
+  id: number
+  quizzId: number
+  questionText: string
+  answers: Answer[]
+}

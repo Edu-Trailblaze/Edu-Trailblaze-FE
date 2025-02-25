@@ -3,22 +3,20 @@ import QuizIntro from './QuizIntro'
 import QuizResult from './QuizResult'
 import QuizQuestion from './QuizQuestion'
 import Loading from '../../../../animate/Loading'
-
-interface QuizData {
-  quiz: Quiz
-  questions: Question[]
-  answers: Answer[]
-}
-
 interface QuizLectureProps {
-  quizData: QuizData
+  quizDetail?: QuizDetail
 }
 
-export default function QuizLecture({ quizData }: QuizLectureProps) {
-  if (!quizData) {
+export default function QuizLecture({ quizDetail }: QuizLectureProps) {
+  if (!quizDetail) {
     return <Loading />
   }
-  const { quiz, questions, answers } = quizData
+  const { id, passingScore, questions, title } = quizDetail
+
+  const answers = questions.flatMap((q) => q.answers)
+  console.log('answers', answers)
+  // const answersQuestion = questions.map((q) => q.answers.filter((a) => a.id === q.id).map((a) => a.isCorrect))
+  // console.log('answersQuestion', answersQuestion)
 
   const [quizStarted, setQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -57,15 +55,18 @@ export default function QuizLecture({ quizData }: QuizLectureProps) {
   }
 
   const calculateScore = () => {
-    return questions.reduce((score, question, index) => {
-      const selectedAnswerId = selectedAnswers[index]
-      const correctAnswer = answers.find((answer) => answer.questionId === question.id && answer.isCorrect)
-      return correctAnswer && correctAnswer.id === selectedAnswerId ? score + 1 : score
+    if (questions.length === 0) return 0
+
+    const correctAnswers = questions.reduce((score, question, index) => {
+      const correctAnswer = answers?.find?.((answer) => answer.questionId === question.id && answer.isCorrect)
+      return selectedAnswers[index] === correctAnswer?.id ? score + 1 : score
     }, 0)
+
+    return (correctAnswers / questions.length) * 100
   }
 
   if (!quizStarted && !quizCompleted) {
-    return <QuizIntro quiz={quiz} startQuiz={startQuiz} onSkipQuiz={handleSkipQuiz} />
+    return <QuizIntro quiz={quizDetail} startQuiz={startQuiz} onSkipQuiz={handleSkipQuiz} />
   }
 
   if (quizCompleted) {
@@ -73,14 +74,14 @@ export default function QuizLecture({ quizData }: QuizLectureProps) {
       <QuizResult
         score={calculateScore()}
         totalQuestions={questions.length}
-        passingScore={quiz.passingScore}
+        passingScore={passingScore}
         startQuiz={startQuiz}
       />
     )
   }
 
   const currentQuestion = questions[currentQuestionIndex]
-  const currentAnswers = answers.filter((answer) => answer.questionId === currentQuestion.id)
+  const currentAnswers = answers?.filter?.((answer) => answer.questionId === currentQuestion.id)
 
   return (
     <QuizQuestion
