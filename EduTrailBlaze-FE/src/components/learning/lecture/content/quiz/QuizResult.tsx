@@ -3,9 +3,10 @@ interface QuizResultProps {
   totalQuestions: number
   passingScore: number
   startQuiz: () => void
+  nextLecutre: () => void
 }
 
-export default function QuizResult({ score, totalQuestions, passingScore, startQuiz }: QuizResultProps) {
+export default function QuizResult({ score, totalQuestions, passingScore, startQuiz, nextLecutre }: QuizResultProps) {
   return (
     <div className='py-6 max-w-2xl mx-auto'>
       <h1 className='text-3xl font-semibold mb-4'>Quiz Result</h1>
@@ -21,9 +22,15 @@ export default function QuizResult({ score, totalQuestions, passingScore, startQ
 
         <button
           onClick={startQuiz}
-          className='bg-purple-600 text-white font-medium py-2 px-6 rounded-md hover:bg-purple-700'
+          className='bg-blue-600 text-white font-medium py-2 px-6 rounded-md hover:bg-blue-700'
         >
           Try Again
+        </button>
+        <button
+          onClick={nextLecutre}
+          className='bg-blue-600 text-white font-medium py-2 px-6 rounded-md hover:bg-blue-700'
+        >
+          Next Lecutre
         </button>
       </div>
     </div>

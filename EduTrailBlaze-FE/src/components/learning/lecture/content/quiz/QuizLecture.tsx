@@ -5,18 +5,16 @@ import QuizQuestion from './QuizQuestion'
 import Loading from '../../../../animate/Loading'
 interface QuizLectureProps {
   quizDetail?: QuizDetail
+  onNextLecture: () => void
 }
 
-export default function QuizLecture({ quizDetail }: QuizLectureProps) {
+export default function QuizLecture({ quizDetail, onNextLecture }: QuizLectureProps) {
   if (!quizDetail) {
     return <Loading />
   }
   const { id, passingScore, questions, title } = quizDetail
 
   const answers = questions.flatMap((q) => q.answers)
-  console.log('answers', answers)
-  // const answersQuestion = questions.map((q) => q.answers.filter((a) => a.id === q.id).map((a) => a.isCorrect))
-  // console.log('answersQuestion', answersQuestion)
 
   const [quizStarted, setQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -45,13 +43,13 @@ export default function QuizLecture({ quizDetail }: QuizLectureProps) {
   }
 
   const skipQuestion = () => {
-    handleAnswerSelection(-1) // Đánh dấu là bỏ qua
+    handleAnswerSelection(-1)
     goToNextQuestion()
   }
 
   const handleSkipQuiz = () => {
     console.log('Quiz skipped!')
-    setQuizCompleted(true) // Cập nhật state để hiển thị kết quả ngay lập tức
+    setQuizCompleted(true)
   }
 
   const calculateScore = () => {
@@ -76,6 +74,7 @@ export default function QuizLecture({ quizDetail }: QuizLectureProps) {
         totalQuestions={questions.length}
         passingScore={passingScore}
         startQuiz={startQuiz}
+        nextLecutre={onNextLecture}
       />
     )
   }

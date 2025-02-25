@@ -1,4 +1,3 @@
-// lecture_page.tsx
 'use client'
 import React, { useEffect, useState } from 'react'
 import { MenuIcon } from 'lucide-react'
@@ -30,14 +29,8 @@ export default function LecturePage() {
     }
     return {}
   })
-  const sectionId = course?.sectionDetails?.map((section) => section.id)
-  // const lectureType = lectures
-  //   ?.filter((lecture) => sectionIds.includes(lecture.sectionId))
-  //   .map((lec) => lec.lectures.map((item) => item.lectureType))
   const currentLecture = lectures?.flatMap((section) => section.lectures).find((lec) => lec.id === activeLectureId)
-
-  const lectureType = currentLecture?.lectureType || 'Video'
-  console.log(currentLecture)
+  const lectureType = currentLecture?.lectureType || 'Reading'
 
   useEffect(() => {
     sessionStorage.setItem('expandedSections', JSON.stringify(expandedSections))
@@ -47,6 +40,15 @@ export default function LecturePage() {
     setActiveLectureId(id)
     setIsSidebarOpen(false)
     router.push(`/course/${courseURL}/lecture/${id}`, { scroll: false })
+  }
+
+  const handleNextLecture = () => {
+    const allLecture = lectures?.flatMap((section) => section.lectures) || []
+    const currentIndex = allLecture?.findIndex((l) => l.id === activeLectureId)
+    if (currentIndex !== -1 && currentIndex < allLecture.length - 1) {
+      const nextLecutre = allLecture[currentIndex + 1]
+      handleLectureChange(nextLecutre.id)
+    }
   }
 
   if (courseLoading) return <Loading />
@@ -77,7 +79,12 @@ export default function LecturePage() {
           </div>
 
           <div className='p-4'>
-            <LectureContent lecture={lectureContent} video={video} lectureType={lectureType} />
+            <LectureContent
+              lecture={lectureContent}
+              video={video}
+              lectureType={lectureType}
+              onNextLecture={handleNextLecture}
+            />
           </div>
         </div>
       </div>
