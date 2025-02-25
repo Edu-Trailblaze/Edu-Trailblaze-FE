@@ -12,9 +12,9 @@ export default function ViewCart({ id }: CartItemProps) {
   const cart = useSelector((state: RootState) => state.cart)
   const { isLoading, isFetching } = useGetCartQuery(id)
 
-  if (isLoading) return <span>Loading...</span>
+  // if (isLoading) return <span>Loading...</span>
   return (
-    <div className='absolute mt-4 w-80 -translate-x-[45%] p-4 bg-white shadow-2xl rounded-xl border border-gray-400 z-10'>
+    <div className='absolute mt-4 w-80 -translate-x-[46%] p-4 bg-white shadow-2xl rounded-xl border border-gray-400 z-10'>
       {cart.cartItems.length > 0
         ? cart.cartItems.map((cart, index) => (
             <div key={index}>
