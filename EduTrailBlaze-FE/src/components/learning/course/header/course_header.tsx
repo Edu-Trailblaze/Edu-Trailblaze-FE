@@ -91,7 +91,7 @@ export default function CourseHeader({ courseDetails, sectionDetails, id }: Cour
       </div>
 
       {/* Course details */}
-      <div className='mx-auto p-6 rounded-lg border-2 bg-white container absolute bottom-[-60px] left-0 right-0 max-w-[1400px] z-0'>
+      <div className='mx-auto p-6 rounded-lg border-2 bg-white container absolute bottom-[-60px] left-0 right-0 max-w-[1320px] z-0'>
         <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
           <div className='text-center md:border-r-2 border-gray-300 pr-2'>
             <p className='font-semibold text-lg'>{sectionDetails.length} course services</p>

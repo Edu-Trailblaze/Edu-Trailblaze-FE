@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode'
 import { usePostCartMutation } from '@/redux/services/cart.service'
 import { useDispatch } from 'react-redux'
 import { addItemToCart } from '@/redux/slice/cart.slice'
+import Link from 'next/link'
 
 export default function HomeCourses() {
   const { data: courses, isLoading, isFetching } = useGetAllCoursesQuery()
@@ -99,113 +100,131 @@ export default function HomeCourses() {
               ) : paidCourses?.length === 0 || paidCourses === undefined ? (
                 <p>No paid courses available at the moment.</p>
               ) : (
-                <div className='flex gap-10'>
-                  {paidCourses.slice(0, visibleCourse).map((course) => (
-                    <div
-                      key={course.id}
-                      className='transform transition duration-300 hover:scale-110 rounded-lg shadow-lg  w-[17.5rem] hover:shadow-xl bg-white border border-black p-[5px]'
-                      onMouseEnter={() => setHoveredCourse(course.id)}
-                      onMouseLeave={() => setHoveredCourse(null)}
-                    >
-                      {course.imageURL !== null ? (
-                        <div className='m-2 rounded-lg'>
-                          <img className='w-[100%] h-[170px] rounded-md' src={course.imageURL} alt='course_image'></img>
+                <div className='flex gap-[5rem]'>
+                  {paidCourses.slice(0, visibleCourse).map((course, index) => (
+                    <div className='relative' key={course.id}>
+                      <Link href={`/course/${course.id}`}>
+                        <div
+                          className='relative transform transition duration-300 hover:scale-110 rounded-lg shadow-lg w-[17.5rem] hover:shadow-xl bg-white border border-black p-[5px] hover:z-[1]'
+                          onMouseEnter={() => setHoveredCourse(course.id)}
+                          onMouseLeave={() => setHoveredCourse(null)}
+                        >
+                          {course.imageURL !== null ? (
+                            <div className='m-2 rounded-lg'>
+                              <img className='w-[100%] h-[170px] rounded-md' src={course.imageURL} alt='course_image' />
+                            </div>
+                          ) : (
+                            <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 m-2 h-3/6 rounded-lg' />
+                          )}
+
+                          <div className='px-5 mb-[5px] flex flex-col'>
+                            <h2 className='font-semibold'>{course.title}</h2>
+                            <p className='block font-sans text-base font-light leading-relaxed text-inherit antialiased'>
+                              <strong>Instructor:</strong> <InstructorItem courseId={course.id} />
+                            </p>
+                            <div className='flex space-x-1 mt-1 text-yellow-400'>
+                              <span className='text-gray-600 text-sm font-medium'>4.6</span>
+                              {/* <!-- Star icons --> */}
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor'
+                                viewBox='0 0 24 24'
+                                className='w-5 h-5'
+                              >
+                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                              </svg>
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor'
+                                viewBox='0 0 24 24'
+                                className='w-5 h-5'
+                              >
+                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                              </svg>
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor'
+                                viewBox='0 0 24 24'
+                                className='w-5 h-5'
+                              >
+                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                              </svg>
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor'
+                                viewBox='0 0 24 24'
+                                className='w-5 h-5'
+                              >
+                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                              </svg>
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='none'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                viewBox='0 0 24 24'
+                                className='w-5 h-5'
+                              >
+                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                              </svg>
+                              <span className='text-gray-400 text-sm'>(40,856)</span>
+                            </div>
+
+                            <p className='mt-5'>{course.price}$</p>
+                          </div>
+
+                          {hoveredCourse === course.id && (
+                            <div
+                              className={`absolute w-80 bg-white p-4 rounded-xl border shadow-2xl z-[999]
+                               ${
+                                 index === 0
+                                   ? 'left-[calc(100%)]' // First course: show on right
+                                   : '-left-[320px]' // Other courses: show on left
+                               }`}
+                              style={{
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                              }}
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <h4 className='font-semibold text-md'>{course.title}</h4>
+                              <p className='text-sm text-gray-500'>
+                                Updated <span className='text-green-600 font-bold'>{formatDate(course.updatedAt)}</span>
+                              </p>
+                              <p className='text-sm text-gray-500'>• Duration: {course.duration}</p>
+                              <p className='text-sm text-gray-500'>• Difficulty Level: {course.difficultyLevel}</p>
+                              <p className='text-sm text-gray-500'>• {course.prerequisites}</p>
+
+                              <p className='text-gray-700 mt-2 text-sm'>{course.description}</p>
+
+                              <ul className='mt-2 space-y-1 text-sm text-gray-800'>
+                                {course.learningOutcomes.map((outcome, index) => (
+                                  <li key={index} className='flex items-start'>
+                                    <span className='mr-2 text-green-600'>✔</span> {outcome}
+                                  </li>
+                                ))}
+                              </ul>
+
+                              <button
+                                className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg'
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  handleAddToCart(userId, course.id)
+                                }}
+                                disabled={isAddingToCart}
+                              >
+                                {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+                              </button>
+
+                              {/* Arrow pointer */}
+                              <div
+                                className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rotate-45 border
+                ${index === 0 ? 'left-0 -ml-2 border-l border-b' : 'right-0 -mr-2 border-t border-r'}`}
+                              />
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 m-2 h-3/6 rounded-lg'></div>
-                      )}
-
-                      <div className='px-5 mb-[5px] flex flex-col'>
-                        <h2 className='font-semibold'>{course.title}</h2>
-                        <p className='block font-sans text-base font-light leading-relaxed text-inherit antialiased'>
-                          <strong>Instructor:</strong> <InstructorItem courseId={course.id} />
-                        </p>
-                        {/* <!-- Rating Section --> */}
-                        <div className='flex space-x-1 text-yellow-400'>
-                          {/* <!-- Rating text --> */}
-                          <span className='text-gray-600 text-sm font-medium'>4.6</span>
-                          {/* <!-- Star icons --> */}
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          {/* <!-- Review count --> */}
-                          <span className='text-gray-400 text-sm'>(40,856)</span>
-                        </div>
-
-                        <p className='mt-5'>{course.price}$</p>
-                      </div>
-
-                      {hoveredCourse === course.id && (
-                        <div className='absolute left-1/2 top-full mt-3 w-80 -translate-x-1/2 p-4 bg-white shadow-2xl rounded-xl border z-10'>
-                          <h4 className='font-semibold text-md'>{course.title}</h4>
-                          <p className='text-sm text-gray-500'>
-                            Updated <span className='text-green-600 font-bold'>{formatDate(course.updatedAt)}</span>
-                          </p>
-                          <p className='text-sm text-gray-500'> • Duration: {course.duration}</p>
-                          <p className='text-sm text-gray-500'> • Difficulty Level: {course.difficultyLevel}</p>
-                          <p className='text-sm text-gray-500'> • {course.prerequisites}</p>
-
-                          <p className='text-gray-700 mt-2 text-sm'>{course.description}</p>
-
-                          <ul className='mt-2 space-y-1 text-sm text-gray-800'>
-                            {course.learningOutcomes.map((outcome, index) => (
-                              <li key={index} className='flex items-start'>
-                                <span className='mr-2 text-green-600'>✔</span> {outcome}
-                              </li>
-                            ))}
-                          </ul>
-
-                          <button
-                            className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg'
-                            onClick={() => handleAddToCart(userId, course.id)}
-                            disabled={isAddingToCart}
-                          >
-                            {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
-                          </button>
-
-                          {/* Mũi tên nhỏ chỉ vào khóa học */}
-                          <div className='absolute top-0 left-1/2 -translate-x-1/2 -mt-2 w-4 h-4 bg-white rotate-45 border-l border-t'></div>
-                        </div>
-                      )}
+                      </Link>
                     </div>
                   ))}
                 </div>

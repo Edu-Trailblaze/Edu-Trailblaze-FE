@@ -11,6 +11,7 @@ import CourseSuggestion from '../suggestion/course_suggestion'
 import { useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
 import { skip } from 'node:test'
 import { skipToken } from '@reduxjs/toolkit/query'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import Navigation from '../navigation/course_nav'
 import CourseReview from '../review/course_review'
 import CourseAbout from '../sections/course_about'
@@ -27,7 +28,7 @@ export default function Course() {
     sectionId.length > 0 ? sectionId : skipToken
   )
   if (isLoading || isFetching || isLectureFetching) {
-    return <Loading />
+    return <LoadingPage />
   }
 
   if (!detail) return <div>No course available.</div>

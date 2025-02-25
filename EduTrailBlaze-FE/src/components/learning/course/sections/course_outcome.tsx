@@ -2,7 +2,7 @@ export default function CourseOutcome() {
   return (
     <>
       {/* Certificate */}
-      <div className=' flex border-8 shadow-lg shadow-cyan-200/50 p-4 rounded-2xl mb-32 relative w-[1375px]'>
+      <div className=' flex border-8 shadow-lg shadow-cyan-200/50 p-4 rounded-2xl mb-32 relative w-[1320px]'>
         <div>
           <p className='text-3xl font-semibold mb-7'>Earn a career certificate</p>
           <p className='mb-2'>Add this credential to your LinkedIn profile, resume, or CV</p>
