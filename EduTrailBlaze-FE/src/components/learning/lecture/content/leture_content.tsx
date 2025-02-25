@@ -5,6 +5,7 @@ import ReadingLecture from './reading/lecture_reading'
 import VideoLecture from './video/lecutre_video'
 import QuizLecture from './quiz/QuizLecture'
 import QuizResult from './quiz/QuizResult'
+import { useGetQuizDetailQuery } from '../../../../redux/services/quiz.service'
 
 interface LectureContentProps {
   lecture: ILecture
@@ -13,8 +14,6 @@ interface LectureContentProps {
 }
 
 export default function LectureContent({ lecture, video, lectureType }: LectureContentProps) {
-  const [quizCompleted, setQuizCompleted] = useState(false)
-
   const mockQuizData = {
     quiz: {
       lectureId: 1,
@@ -52,17 +51,16 @@ export default function LectureContent({ lecture, video, lectureType }: LectureC
       { questionId: 202, answerText: 'Client-Side Routing', isCorrect: false, id: 308 }
     ]
   }
-  const handleSkipQuiz = () => {
-    console.log('Quiz skipped!')
-    setQuizCompleted(true)
-  }
+
+  const { data: quizData } = useGetQuizDetailQuery(25)
+  // console.log('quizData', quizData)
 
   return (
     <div className='container py-8'>
       {/* <h1 className='text-3xl font-bold mb-6'>{title}</h1> */}
       {lectureType === 'Video' && <VideoLecture lecture={lecture} video={video} />}
       {lectureType === 'Reading' && <ReadingLecture lecture={lecture} />}
-      {lectureType === 'Quiz' && <QuizLecture quizData={mockQuizData} />}
+      {lectureType === 'Quiz' && <QuizLecture quizDetail={quizData} />}
     </div>
   )
 }

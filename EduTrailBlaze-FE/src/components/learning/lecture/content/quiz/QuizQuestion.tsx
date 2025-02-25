@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface QuizQuestionProps {
   question: { questionText: string }
   answers: { answerText: string; id: number }[]

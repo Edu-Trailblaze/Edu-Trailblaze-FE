@@ -11,6 +11,7 @@ import { cartApi } from './services/cart.service'
 import { paymentApi } from './services/payment.service'
 import { reviewApi } from './services/review.service'
 import { persistedAuthReducer } from './persistConfig'
+import { quizApi } from './services/quiz.service'
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -27,5 +28,6 @@ export const rootReducer = combineReducers({
   [videoApi.reducerPath]: videoApi.reducer,
   [cartApi.reducerPath]: cartApi.reducer,
   [paymentApi.reducerPath]: paymentApi.reducer,
-  [reviewApi.reducerPath]: reviewApi.reducer
+  [reviewApi.reducerPath]: reviewApi.reducer,
+  [quizApi.reducerPath]: quizApi.reducer
 })
