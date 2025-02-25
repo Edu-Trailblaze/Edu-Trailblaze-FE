@@ -5,7 +5,6 @@ import CourseDetails from '../sections/course_details'
 import CourseHeader from '../header/course_header'
 import { useGetCourseDetailsQuery, useGetCourseQuery } from '../../../../redux/services/courseDetail.service'
 import { useParams } from 'next/navigation'
-import Loading from '../../../animate/Loading'
 import CourseSection from '../sections/course_section'
 import CourseSuggestion from '../suggestion/course_suggestion'
 import { useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
@@ -27,7 +26,7 @@ export default function Course() {
   const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
     sectionId.length > 0 ? sectionId : skipToken
   )
-  if (isLoading || isFetching || isLectureFetching) {
+  if (!isLoading || !isFetching || !isLectureFetching) {
     return <LoadingPage />
   }
 
