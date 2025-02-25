@@ -1,13 +1,12 @@
 'use client'
-
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import {
   useDeleteCartItemMutation,
   useGetCartQuery,
   useGetNumberOfCartItemsQuery,
   useDeleteAllCartItemsMutation
-} from '@/services/cart.service'
-import { usePostPaymentMutation } from '@/services/payment.service'
+} from '@/redux/services/cart.service'
+import { usePostPaymentMutation } from '@/redux/services/payment.service'
 import { formatCurrency } from '@/utils/format'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'
@@ -82,7 +81,6 @@ export default function ShoppingCart() {
       console.error('Error during checkout:', error)
     }
   }
-
   return (
     <>
       <div className='px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto'>

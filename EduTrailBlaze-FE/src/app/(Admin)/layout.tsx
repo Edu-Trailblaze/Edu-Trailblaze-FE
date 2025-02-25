@@ -17,7 +17,6 @@ export default function RootLayout({
 
         <AdminHeader />
         <Layout>{children}</Layout>
-
       </ThemeProvider>
     </>
   )

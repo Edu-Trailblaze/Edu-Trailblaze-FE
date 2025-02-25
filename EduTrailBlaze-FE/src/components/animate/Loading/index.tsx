@@ -1,19 +1,8 @@
-import React from 'react';
-import './style.css';
+import React from 'react'
+import './style.scss'
 
 const Loading: React.FC = () => {
-  return (
-    <section>
-      <div className="loader">
-        {[...Array(20)].map((_, index) => (
-          <span
-            key={index}
-            style={{ '--i': index + 1 } as React.CSSProperties}
-          ></span>
-        ))}
-      </div>
-    </section>
-  );
-};
+  return <div className='loader'>Loading...</div>
+}
 
-export default Loading;
+export default Loading

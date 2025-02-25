@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 export function formatNumber(amount: number): string {
   return new Intl.NumberFormat('en-US').format(amount)
 }
@@ -10,8 +12,8 @@ export function formatCurrency(amount: number | undefined): string {
 }
 
 export function convertDuration(duration: string) {
-  const [hours, minutes] = duration.split(":").map(Number);
-  return `${hours + minutes / 60} hours`;
+  const [hours, minutes] = duration.split(':').map(Number)
+  return `${hours + minutes / 60} hours`
 }
 
 export const getInstructorImage = (instructor: any) => instructor.image || '/assets/img/default-avatar.jpg'
@@ -28,4 +30,8 @@ export const truncateContent = (content: string, maxLength: number = 40): string
   }
 
   return truncated.trim() + '...'
+}
+
+export const formatDateTime = (date: string): string => {
+  return format(new Date(date), 'dd/MM/yyyy HH:mm:ss')
 }

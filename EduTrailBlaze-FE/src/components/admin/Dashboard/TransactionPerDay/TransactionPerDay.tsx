@@ -11,7 +11,6 @@ export type TransactionCardType = {
   changeValue: string
 }
 
-
 export default function TransactionPerDay() {
   const theme = useTheme()
   return (

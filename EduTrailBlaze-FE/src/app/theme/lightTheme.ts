@@ -1,15 +1,15 @@
-import { ThemeOptions } from "@mui/material";
+import { ThemeOptions } from '@mui/material'
 
 const lightTheme: ThemeOptions = {
-    palette: {
-        mode: 'light',
-        primary: {
-            main: '#ffff00',
-        },
-        secondary: {
-            main: '#ff8400',
-        },
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#ffff00'
+    },
+    secondary: {
+      main: '#ff8400'
     }
+  }
 }
 
-export default lightTheme; 
+export default lightTheme
