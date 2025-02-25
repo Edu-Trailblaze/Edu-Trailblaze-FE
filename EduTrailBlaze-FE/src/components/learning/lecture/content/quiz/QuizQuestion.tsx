@@ -35,9 +35,7 @@ export default function QuizQuestion({
             <div
               key={answer.id}
               className={`border rounded-lg p-4 cursor-pointer ${
-                selectedAnswer === answer.id
-                  ? 'border-purple-600 bg-purple-50'
-                  : 'border-gray-300 hover:border-gray-400'
+                selectedAnswer === answer.id ? 'border-blue-600 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
               }`}
               onClick={() => handleAnswerSelection(answer.id)}
             >
@@ -47,20 +45,23 @@ export default function QuizQuestion({
         </div>
       </div>
 
-      <button
-        onClick={goToNextQuestion}
-        className={`px-4 py-2 rounded-md text-white ${selectedAnswer === -1 ? 'bg-purple-300 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'}`}
-        disabled={selectedAnswer === -1}
-      >
-        Next Question
-      </button>
-      <button onClick={skipQuestion} className='bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600'>
-        Skip Question
-      </button>
-
-      <button onClick={onSkipQuiz} className='bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500'>
-        Skip Quiz
-      </button>
+      <footer className='w-full flex justify-between '>
+        <div className='flex gap-5'>
+          <button onClick={onSkipQuiz} className='bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500'>
+            Skip Quiz
+          </button>
+          <button onClick={skipQuestion} className='bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600'>
+            Skip Question
+          </button>
+        </div>
+        <button
+          onClick={goToNextQuestion}
+          className={`px-4 py-2 rounded-md text-white ${selectedAnswer === -1 ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+          disabled={selectedAnswer === -1}
+        >
+          Next Question
+        </button>
+      </footer>
     </div>
   )
 }
