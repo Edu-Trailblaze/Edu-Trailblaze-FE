@@ -1,0 +1,73 @@
+import { cn } from '@/lib/utils' // Nếu bạn không có, có thể xóa hoặc dùng `clsx`
+import { Loader2 } from 'lucide-react'
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline'
+  size?: 'sm' | 'md' | 'lg'
+  isLoading?: boolean
+  icon?: React.ReactNode
+}
+
+export default function Button({
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  icon,
+  className,
+  children,
+  ...props
+}: ButtonProps) {
+  const baseStyles =
+    'inline-flex items-center justify-center font-medium rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
+
+  const variantStyles = {
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-100 focus:ring-gray-400'
+  }
+
+  const sizeStyles = {
+    sm: 'px-3 py-1 text-sm',
+    md: 'px-6 py-3 text-sm',
+    lg: 'px-8 py-4 text-base'
+  }
+
+  return (
+    <button
+      className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
+      disabled={isLoading}
+      {...props}
+    >
+      {isLoading ? <Loader2 className='animate-spin h-5 w-5 mr-2' /> : icon && <span className='mr-2'>{icon}</span>}
+      {children}
+    </button>
+  )
+}
+
+//Button Primary
+//<Button variant="primary">Next: Add Sections</Button>
+
+//Button Secondary voi icon
+{
+  /* 
+  <Button variant="secondary" icon={<PlusCircleIcon className="h-4 w-4" />}>
+Add Item
+</Button> 
+*/
+}
+
+// Button Danger (Xóa)
+{
+  /* <Button variant="danger" isLoading={true}>
+  Deleting...
+</Button> */
+}
+
+// Button Outline (Viền)
+
+{
+  /* <Button variant="outline" size="lg">
+  Cancel
+</Button> */
+}
