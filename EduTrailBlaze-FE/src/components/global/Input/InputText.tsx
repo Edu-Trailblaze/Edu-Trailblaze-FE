@@ -28,8 +28,8 @@ export default function InputText({
   iconLeft
 }: InputTextProps) {
   return (
-    <Box>
-      <label htmlFor={name} className='text-sm font-medium text-gray-700 flex'>
+    <>
+      <label htmlFor={name} className=' text-sm font-medium text-gray-700 flex'>
         {label} {required && <span className='text-red-500'>*</span>}{' '}
         {helperText && (
           <span className='ml-1 group relative'>
@@ -42,29 +42,35 @@ export default function InputText({
       </label>
 
       {/* Input / Textarea */}
-      {iconLeft && <div className='absolute inset-y-0 left-0 pl-3 flex items-center'>{iconLeft}</div>}
-      {type === 'textarea' ? (
-        <textarea
-          id={name}
-          name={name}
-          placeholder={placeholder}
-          value={value}
-          rows={rows}
-          onChange={onChange}
-          className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'
-        />
-      ) : (
-        <input
-          id={name}
-          name={name}
-          type='text'
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'
-        />
-      )}
+      <div className='relative'>
+        {iconLeft && (
+          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>{iconLeft}</div>
+        )}
+        {type === 'textarea' ? (
+          <textarea
+            id={name}
+            name={name}
+            placeholder={placeholder}
+            value={value}
+            rows={rows}
+            onChange={onChange}
+            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'
+          />
+        ) : (
+          <input
+            id={name}
+            name={name}
+            type='text'
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            className={`w-full p-3 ${iconLeft ? 'pl-9' : ''} border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200`}
+          />
+        )}
+      </div>
+
+      {/* Subtitle */}
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
-    </Box>
+    </>
   )
 }

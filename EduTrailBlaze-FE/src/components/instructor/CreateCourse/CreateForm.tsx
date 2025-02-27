@@ -8,7 +8,7 @@ export default function CreateForm() {
 
   return (
     <div className='min-h-screen bg-blue-50'>
-      <main className='container mx-auto py-6 px-4 sm:px-6 lg:px-8'>
+      <main className='container  py-10 px-6 sm:px-6 lg:px-40'>
         <div className='bg-white shadow-md rounded-lg overflow-hidden mb-6'>
           <FormHeader activeTab={activeTab} setActiveTab={setActiveTab} />
           <FormBody activeTab={activeTab} setActiveTab={setActiveTab} />

@@ -13,7 +13,7 @@ interface SelectFieldProps {
 
 export default function SelectField({ label, name, options, value, onChange, subtitle, required }: SelectFieldProps) {
   return (
-    <Box>
+    <>
       <label htmlFor={name} className='block text-sm font-medium text-gray-500'>
         {label} {required && <span className='text-red-500'>*</span>}
       </label>
@@ -36,6 +36,6 @@ export default function SelectField({ label, name, options, value, onChange, sub
         </div>
       </div>
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
-    </Box>
+    </>
   )
 }

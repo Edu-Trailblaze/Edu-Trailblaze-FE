@@ -26,7 +26,7 @@ export default function InputNumber({
   required
 }: InputNumberProps) {
   return (
-    <Box>
+    <>
       <label htmlFor={name} className='block text-sm font-medium texgray-700 mb-1'>
         {label} {required && <span className='text-red-500'>*</span>}
       </label>
@@ -53,6 +53,6 @@ export default function InputNumber({
         )}
       </div>
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
-    </Box>
+    </>
   )
 }

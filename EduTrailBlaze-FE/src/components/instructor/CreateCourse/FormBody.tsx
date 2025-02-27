@@ -20,7 +20,8 @@ import SelectField from '../../global/Select/SelectField'
 import Box from '../../global/Box/Box'
 import Button from '../../global/Button/Button'
 import Course from '../../learning/course/layout/course_fullpage'
-import CourseFields from './CourseBody/CourseFields'
+import CourseFields from './Content/CourseFields'
+import SectionFields from './Content/SectionFields'
 
 interface FormBodyProps {
   activeTab: string
@@ -29,12 +30,8 @@ interface FormBodyProps {
 
 export default function FormBody({ activeTab, setActiveTab }: FormBodyProps) {
   return (
-    <div className='p-6'>
-      {activeTab === 'details' ? (
-        <CourseFields activeTab={activeTab} setActiveTab={setActiveTab} />
-      ) : (
-        <div>section</div>
-      )}
+    <div className='p-10'>
+      {activeTab === 'details' ? <CourseFields activeTab={activeTab} setActiveTab={setActiveTab} /> : <SectionFields />}
     </div>
   )
 }

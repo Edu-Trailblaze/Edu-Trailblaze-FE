@@ -69,14 +69,16 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
   return (
     <div className='space-y-6'>
       {/* COURSE TITLE */}
-      <InputText
-        label='Course Title'
-        name='title'
-        subtitle='A clear, specific title will attract more students'
-        placeholder='Enter a descriptive title for your course'
-        required
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <Box>
+        <InputText
+          label='Course Title'
+          name='title'
+          subtitle='A clear, specific title will attract more students'
+          placeholder='Enter a descriptive title for your course'
+          required
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </Box>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Input file ảnh */}
@@ -101,7 +103,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
       </div>
 
       {/* Decription */}
-      <div>
+      <Box>
         <InputText
           label='Description'
           name='description'
@@ -110,53 +112,59 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
           placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
         />
-      </div>
+      </Box>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Price */}
-        <InputNumber
-          label='Price (VND)'
-          name='price'
-          subtitle='Set a competitive price or enter 0 for a free course'
-          placeholder='0'
-          required
-          prefix='VND'
-          suffix='VND'
-          onChange={(e) => setPrice(Number(e.target.value))}
-        />
+        <Box>
+          <InputNumber
+            label='Price (VND)'
+            name='price'
+            subtitle='Set a competitive price or enter 0 for a free course'
+            placeholder='0'
+            required
+            prefix='VND'
+            suffix='VND'
+            onChange={(e) => setPrice(Number(e.target.value))}
+          />
+        </Box>
 
         {/* Difficult Level */}
-        <SelectField
-          label='Difficult Level'
-          name='difficultLevel'
-          required
-          subtitle='Clearly specify who your course is intended for '
-          options={['Beginner', 'Intermidate', 'Advanced']}
-          onChange={(e) => setDifficultLevel(e.target.value)}
-        />
+        <Box>
+          <SelectField
+            label='Difficult Level'
+            name='difficultLevel'
+            required
+            subtitle='Clearly specify who your course is intended for '
+            options={['Beginner', 'Intermidate', 'Advanced']}
+            onChange={(e) => setDifficultLevel(e.target.value)}
+          />
+        </Box>
       </div>
 
       {/* Instructor Name */}
-      <InputText
-        label='Instructor Name'
-        name='instructorName'
-        required
-        subtitle='Enter the name of the instructor who created this course'
-        placeholder='Enter the name of the instructor'
-        onChange={(e) => setInstructor(e.target.value)}
-      />
-
+      <Box>
+        <InputText
+          label='Instructor Name'
+          name='instructorName'
+          required
+          subtitle='Enter the name of the instructor who created this course'
+          placeholder='Enter the name of the instructor'
+          onChange={(e) => setInstructor(e.target.value)}
+        />
+      </Box>
       {/* Prerequisites */}
-      <InputText
-        label='Prerequisites'
-        name='prerequisites'
-        required
-        helperText='Knowledge or skills students need before taking this course'
-        iconLeft
-        placeholder='Knowledge or skills students need before taking this course'
-        subtitle='Be specific about required knowledge to ensure student success'
-        onChange={(e) => setPrerequisites(e.target.value)}
-      />
+      <Box>
+        <InputText
+          label='Prerequisites'
+          name='prerequisites'
+          required
+          helperText='Knowledge or skills students need before taking this course'
+          placeholder='Knowledge or skills students need before taking this course'
+          subtitle='Be specific about required knowledge to ensure student success'
+          onChange={(e) => setPrerequisites(e.target.value)}
+        />
+      </Box>
 
       {/* Learning Outcomes */}
       <Box>
@@ -210,11 +218,10 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
       </Box>
 
       {/* Next button */}
-
       <div className='flex justify-end py-5'>
         <Button
           icon={<PlusCircleIcon className='h-4 w-4' />}
-          size='lg'
+          size='ml'
           onClick={() => setActiveTab('sections')}
           variant='primary'
         >

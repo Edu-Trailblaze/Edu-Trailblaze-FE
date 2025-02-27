@@ -4,13 +4,14 @@ interface InputFileProps {
   label: string
   name: string
   accept: string
+  value?: string
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   preview?: string | null
   icon?: React.ReactNode
   subtitle?: string
 }
 
-export default function InputFile({ label, name, accept, onChange, preview, icon }: InputFileProps) {
+export default function InputFile({ label, name, accept, value, onChange, preview, icon }: InputFileProps) {
   return (
     <Box>
       <label htmlFor={name} className='text-sm font-medium text-gray-700 mb-1 flex items-center'>
@@ -20,6 +21,7 @@ export default function InputFile({ label, name, accept, onChange, preview, icon
       <input
         id={name}
         name={name}
+        value={value}
         type='file'
         accept={accept}
         onChange={onChange}

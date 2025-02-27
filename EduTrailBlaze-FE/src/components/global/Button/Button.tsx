@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils' // Nếu bạn không có, có thể xóa hoặ
 import { Loader2 } from 'lucide-react'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline' | 'customBlue' | 'customRed' | 'customGreen'
+  size?: 'sm' | 'md' | 'ml' | 'lg'
   isLoading?: boolean
   icon?: React.ReactNode
 }
@@ -24,12 +24,16 @@ export default function Button({
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
     secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-100 focus:ring-gray-400'
+    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-100 focus:ring-gray-400',
+    customBlue: 'bg-blue-100 text-blue-600 hover:bg-blue-200',
+    customRed: 'bg-red-100 text-red-600 hover:bg-red-200',
+    customGreen: 'bg-green-600 focus:ring-green-500 hover:bg-green-700 text-white'
   }
 
   const sizeStyles = {
     sm: 'px-3 py-1 text-sm',
-    md: 'px-6 py-3 text-sm',
+    md: 'px-5 py-2 text-sm',
+    ml: 'px-5 py-3 text-sm',
     lg: 'px-8 py-4 text-base'
   }
 
