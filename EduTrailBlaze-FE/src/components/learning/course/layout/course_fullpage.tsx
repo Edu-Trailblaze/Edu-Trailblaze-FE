@@ -26,7 +26,7 @@ export default function Course() {
   const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
     sectionId.length > 0 ? sectionId : skipToken
   )
-  if (isLoading || isFetching || isLectureFetching) {
+  if (isLoading || isFetching) {
     return <LoadingPage />
   }
 

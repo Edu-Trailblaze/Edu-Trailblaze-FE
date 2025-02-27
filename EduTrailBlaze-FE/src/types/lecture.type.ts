@@ -25,3 +25,19 @@ interface ISection {
   duration: string
   id: number
 }
+
+interface ILectureTest {
+  id: number
+  title: string
+  type: 'Video' | 'Reading' | 'Quiz'
+  contentUrl: string
+  description: string
+  duration: number
+}
+
+interface ISectionTest {
+  id: number
+  title: string
+  description: string
+  lectures: ILectureTest[]
+}
