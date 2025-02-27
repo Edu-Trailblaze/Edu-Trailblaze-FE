@@ -20,14 +20,18 @@ import SelectField from '../../global/Select/SelectField'
 import Box from '../../global/Box/Box'
 import Button from '../../global/Button/Button'
 
-export default function FormBody() {
+interface FormBodyProps {
+  activeTab: string
+  setActiveTab: (tab: string) => void
+}
+
+export default function FormBody({ activeTab, setActiveTab }: FormBodyProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [instructor, setInstructor] = useState('')
   const [prerequisites, setPrerequisites] = useState('')
   const [outcomes, setOutcomes] = useState<string[]>([''])
 
-  const [activeTab, setActiveTab] = useState<'details' | 'sections'>('details')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [price, setPrice] = useState(0)
@@ -210,15 +214,6 @@ export default function FormBody() {
           </Box>
 
           {/* Next button */}
-          {/* <div className='flex justify-end py-5'>
-            <button
-              type='button'
-              onClick={() => setActiveTab('sections')}
-              className='inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200'
-            >
-              Next: Add Sections
-            </button>
-          </div> */}
 
           <div className='flex justify-end py-5'>
             <Button

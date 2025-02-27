@@ -1,9 +1,12 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
-export default function FormHeader() {
-  const [activeTab, setActiveTab] = useState('details')
+interface FormHeaderProps {
+  activeTab: string
+  setActiveTab: (tab: string) => void
+}
 
+export default function FormHeader({ activeTab, setActiveTab }: FormHeaderProps) {
   return (
     <>
       <div className='p-6 bg-blue-600 text-white'>
