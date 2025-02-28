@@ -9,6 +9,7 @@ interface InputNumberProps {
   prefix?: string
   suffix?: string
   min?: number
+  max?: number
   subtitle?: string
   required?: boolean
 }
@@ -19,9 +20,10 @@ export default function InputNumber({
   placeholder,
   value,
   onChange,
-  prefix = 'VND',
-  suffix = 'VND',
+  prefix,
+  suffix,
   min = 0,
+  max = 100,
   subtitle,
   required
 }: InputNumberProps) {
@@ -44,6 +46,7 @@ export default function InputNumber({
           value={value}
           onChange={onChange}
           min={min}
+          max={max}
           className={`p-3 ${prefix ? 'pl-12' : ''} block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200`}
         />
         {suffix && (
