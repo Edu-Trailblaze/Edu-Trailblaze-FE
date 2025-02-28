@@ -1,4 +1,5 @@
 'use client'
+
 import CourseFields from './Content/CourseFields'
 import SectionFields from './Content/SectionFields'
 

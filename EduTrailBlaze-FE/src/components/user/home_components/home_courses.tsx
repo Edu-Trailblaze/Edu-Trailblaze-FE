@@ -1,7 +1,6 @@
 'use client'
 import { useGetAllCoursesQuery, useGetInstructorOfCourseQuery } from '@/redux/services/courseDetail.service'
 import React, { useEffect, useState } from 'react'
-import SkeletonCard from '../animate/skeleton/skeleton_card'
 import InstructorItem from './InstructorItem'
 import { formatDate } from '@/helper/Util'
 import { jwtDecode } from 'jwt-decode'
@@ -9,6 +8,7 @@ import { usePostCartMutation } from '@/redux/services/cart.service'
 import { useDispatch } from 'react-redux'
 import { addItemToCart } from '@/redux/slice/cart.slice'
 import Link from 'next/link'
+import SkeletonCard from '../../animate/skeleton/skeleton_card'
 
 export default function HomeCourses() {
   const { data: courses, isLoading, isFetching } = useGetAllCoursesQuery()
