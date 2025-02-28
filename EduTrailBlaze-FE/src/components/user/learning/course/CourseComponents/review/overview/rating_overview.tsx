@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react'
 import React from 'react'
-import { useGetRatingDetailQuery } from '../../../../../../redux/services/review.service'
-import ReviewLoading from '../../../../../animate/ReviewLoading/Loading'
+import { useGetRatingDetailQuery } from '../../../../../../../redux/services/review.service'
+import ReviewLoading from '../../../../../../animate/ReviewLoading/Loading'
 
 export default function RatingOverview({ courseDetails, courseId }: ReviewProps) {
   const { data: reviewRating, isLoading: reviewLoading } = useGetRatingDetailQuery(courseId)

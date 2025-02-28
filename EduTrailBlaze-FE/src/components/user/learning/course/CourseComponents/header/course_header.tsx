@@ -2,11 +2,11 @@
 import { useState } from 'react'
 
 import Link from 'next/link'
-import { useGetUserProfileQuery } from '../../../../../redux/services/user.service'
-import { Avatar } from '@mui/material'
-import { AvatarFallback, AvatarImage } from '../../../../ui/avatar'
-import { formatNumber } from '../../../../../utils/format'
-import Modal from '../../../../global/Modal/Modal'
+
+import { Avatar, AvatarFallback, AvatarImage } from '../../../../../ui/avatar'
+import { formatNumber } from '../../../../../../utils/format'
+import Modal from '../../../../../global/Modal/Modal'
+import { useGetUserProfileQuery } from '../../../../../../redux/services/user.service'
 
 interface CourseHeaderProps extends ICourseFull {
   courseDetails: ICourseDetails
