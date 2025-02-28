@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import ToggleButton from '@/components/toggle_button/toggle_button'
+import ToggleButton from '@/components/global/toggle_button/toggle_button'
 import { useTheme } from '@mui/material'
 
 const pages = ['Products', 'Pricing', 'Blog']
