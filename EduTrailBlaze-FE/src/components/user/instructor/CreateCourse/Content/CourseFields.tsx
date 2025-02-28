@@ -27,15 +27,9 @@ interface CourseFieldsProps {
 }
 
 export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [instructor, setInstructor] = useState('')
-  const [prerequisites, setPrerequisites] = useState('')
   const [outcomes, setOutcomes] = useState<string[]>([''])
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
-  const [price, setPrice] = useState(0)
-  const [difficultLevel, setDifficultLevel] = useState('Beginner')
 
   const [courseForm, setCourseForm] = useState<CreateCourse>({
     title: '',
@@ -236,7 +230,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           helperText='Knowledge or skills students need before taking this course'
           placeholder='Knowledge or skills students need before taking this course'
           subtitle='Be specific about required knowledge to ensure student success'
-          onChange={(e) => setPrerequisites(e.target.value)}
+          onChange={handleChange}
         />
       </Box>
 
