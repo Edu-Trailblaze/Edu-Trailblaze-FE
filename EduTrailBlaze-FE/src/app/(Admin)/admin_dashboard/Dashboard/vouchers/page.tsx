@@ -83,9 +83,6 @@ export default function VouchersManagement() {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 5;
 
-
-
-
   const fetchVouchers = async (page: number) => {
     setLoading(true);
     try {
@@ -103,16 +100,8 @@ export default function VouchersManagement() {
     } finally {
       setLoading(false);
     }
-  })
-    setVouchers(response.data.items)
-  setTotalPages(response.data.totalPages)
-} catch (error) {
-  console.error('Error fetching vouchers:', error)
-  toast.error('Failed to fetch vouchers!')
-} finally {
-  setLoading(false)
-}
   }
+   
 
 useEffect(() => {
   fetchVouchers(pageIndex)
@@ -168,41 +157,6 @@ const handleUpdateVoucher = async (updatedVoucher: Voucher) => {
   }
 }
 
-const renderRow = (voucher: Voucher) => (
-  <tr key={voucher.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
-    <td className='p-4'>{voucher.id}</td>
-    <td>{voucher.discountType}</td>
-    <td>{voucher.discountValue}</td>
-    <td>{voucher.voucherCode}</td>
-    <td>{voucher.isUsed ? 'Yes' : 'No'}</td>
-    <td>
-      <FormatDateTime date={voucher.expiryDate} />
-    </td>
-    <td className='flex mt-4 space-x-2'>
-      <button onClick={() => setSelectedVoucher(voucher)} className='text-blue-600 cursor-pointer'>
-        <Eye size={18} />
-      </button>
-      <button onClick={() => handleEditVoucher(voucher)} className='text-yellow-600 cursor-pointer'>
-        <Pencil size={18} />
-      </button>
-    </td>
-  </tr>
-)
-
-toast.success("Voucher updated successfully!");
-
-setVouchers(vouchers.map((voucher) =>
-  voucher.id === updatedVoucher.id ? updatedVoucher : voucher
-));
-
-setEditModalOpen(false);
-setEditVoucher(null);
-        } catch (error) {
-  console.error('Error updating voucher:', error);
-  toast.error("Failed to update voucher!");
-}
-    };
-
 //column filter
 const toggleColumnVisibility = (column: keyof Voucher) => {
   setVisibleColumns(prev => ({
@@ -210,6 +164,7 @@ const toggleColumnVisibility = (column: keyof Voucher) => {
     [column]: !prev[column]
   }));
 };
+
 const handleApplyFilter = (newVisibleColumns: Record<keyof Voucher, boolean>) => {
   setVisibleColumns(newVisibleColumns);
   setFilterOpen(false);
@@ -323,4 +278,5 @@ return (
     )}
   </div>
 )
+}
 

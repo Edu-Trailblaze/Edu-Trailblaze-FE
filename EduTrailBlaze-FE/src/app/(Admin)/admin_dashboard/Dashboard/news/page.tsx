@@ -21,7 +21,7 @@ import DetailModal from '@/components/admin/Modal/DetailModal';
 import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate';
 import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit';
 
-//iconicon
+//icon
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from "lucide-react";
 
 export type News = {
@@ -34,15 +34,12 @@ export type News = {
 
 export type NewsCreate = Omit<News, "createdAt">;
 
-
-
 const newsFields: { label: string; accessor: keyof News }[] = [
   { label: 'Id', accessor: 'id' },
   { label: 'Title', accessor: 'title' },
   { label: 'Content', accessor: 'content' },
   { label: 'Image URL', accessor: 'imageUrl' },
   { label: 'Created on', accessor: 'createdAt' }
-
 
 ];
 
@@ -92,50 +89,12 @@ export default function NewsManagement() {
     fetchNews()
   }, [])
 
-  const handleAddNews = async (newNews: News) => {
-    console.log('New voucher before submission:', newNews)
 
-    try {
-      const response = await api.post('/News', newNews)
-      toast.success('News added successfully!')
-      setNews([...news, response.data])
-      fetchNews()
-      setAddModalOpen(false)
-    } catch (error) {
-      console.error('Error adding news:', error)
-      toast.error('Failed to add news!')
-    }
-  }
 
-  const handleEditNews = (news: News) => {
-    setEditNews(news)
-    setEditModalOpen(true)
-  }
 
-  const handleUpdateNews = async (updatedNews: News) => {
-    try {
-      const newsToSend = {
-        ...updatedNews,
-        newsId: updatedNews.id
-      }
+ 
 
-      await api.put(`/News`, newsToSend, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-
-      toast.success('News updated successfully!')
-
-      setNews(news.map((ne) => (ne.id === updatedNews.id ? updatedNews : ne)))
-
-      setEditModalOpen(false)
-      setEditNews(null)
-    } catch (error) {
-      console.error('Error updating news:', error)
-      toast.error('Failed to update news!')
-    }
-  }
+  
 
   const handleAddNews = async (newNews: NewsCreate) => {
     try {
@@ -155,9 +114,7 @@ export default function NewsManagement() {
     setEditModalOpen(true);
   };
 
-
   const handleUpdateNews = async (updatedNews: News) => {
-
     try {
       const newsToSend = {
         ...updatedNews,
