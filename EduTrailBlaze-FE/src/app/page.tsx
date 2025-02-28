@@ -1,24 +1,24 @@
-import HomeCourses from '@/components/home_components/home_courses'
-import HomeFeedbacks from '@/components/home_components/home_feedbacks'
-import HomeSupporter from '@/components/home_components/home_supporter'
-import HomeTeacherArea from '@/components/home_components/home_teacher_area'
-import ImageSlider from '@/components/home_components/image_slider'
-import MakeDiffer from '@/components/home_components/make_different'
 import WebHeader from '../components/global/header/header'
 import WebFooter from '../components/global/footer/footer'
+import ImageSlider from '../components/user/home_components/image_slider'
+import HomeCourses from '../components/user/home_components/home_courses'
+import MakeDiffer from '../components/user/home_components/make_different'
+import HomeFeedbacks from '../components/user/home_components/home_feedbacks'
+import HomeTeacherArea from '../components/user/home_components/home_teacher_area'
+import HomeSupporter from '../components/user/home_components/home_supporter'
 
 export default function Home() {
   return (
     <div>
       <WebHeader />
-      <ImageSlider></ImageSlider>
-      <HomeCourses></HomeCourses>
-      <MakeDiffer></MakeDiffer>
+      <ImageSlider />
+      <HomeCourses />
+      <MakeDiffer />
       <div className='flex items-center justify-center mb-20'>
-        <HomeFeedbacks></HomeFeedbacks>
+        <HomeFeedbacks />
       </div>
-      <HomeTeacherArea></HomeTeacherArea>
-      <HomeSupporter></HomeSupporter>
+      <HomeTeacherArea />
+      <HomeSupporter />
       <WebFooter />
     </div>
   )

@@ -13,12 +13,12 @@ import {
   CheckCircle,
   ChevronDown
 } from 'lucide-react'
-import InputText from '../../../global/Input/InputText'
-import Button from '../../../global/Button/Button'
-import SelectField from '../../../global/Select/SelectField'
-import InputNumber from '../../../global/Input/InputNumber'
-import InputFile from '../../../global/Input/InputFile'
-import Box from '../../../global/Box/Box'
+import InputText from '../../../../global/Input/InputText'
+import Button from '../../../../global/Button/Button'
+import SelectField from '../../../../global/Select/SelectField'
+import InputNumber from '../../../../global/Input/InputNumber'
+import InputFile from '../../../../global/Input/InputFile'
+import Box from '../../../../global/Box/Box'
 
 interface CourseFieldsProps {
   activeTab: string

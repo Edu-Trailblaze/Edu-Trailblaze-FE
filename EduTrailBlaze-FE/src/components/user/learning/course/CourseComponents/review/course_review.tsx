@@ -1,7 +1,6 @@
 import React from 'react'
 import RatingOverview from './overview/rating_overview'
 import ReviewList from './reviewList/review_list'
-import Pagination from '../../../global/Pagination/Pagination'
 
 export default function CourseReview({ courseDetails, courseId }: ReviewProps) {
   return (

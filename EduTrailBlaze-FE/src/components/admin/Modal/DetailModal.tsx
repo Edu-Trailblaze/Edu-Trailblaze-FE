@@ -1,6 +1,7 @@
-import React from 'react'
-import { Modal, Box, Typography, Button } from '@mui/material'
-import FormatDateTime from '../Date/FormatDateTime'
+import React from "react";
+import { Modal, Box, Typography, Button, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import FormatDateTime from "../Date/FormatDateTime";
 
 type DetailProps<T> = {
   item: T | null
@@ -8,67 +9,109 @@ type DetailProps<T> = {
   fields: { label: string; accessor: keyof T }[]
 }
 
-// Generic Detail component
 export default function DetailModal<T>({ item, onClose, fields }: DetailProps<T>) {
   return (
     <Modal
       open={Boolean(item)}
       onClose={onClose}
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "rgba(0,0,0,0.5)",
+      }}
     >
       <Box
         sx={{
-          width: '100%',
-          maxWidth: 700,
-          height: '80%',
-          maxHeight: '100vh',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
+          width: "100%",
+          maxWidth: 550,
+          bgcolor: "white",
           p: 4,
-          borderRadius: 2,
-          overflowY: 'auto'
+          borderRadius: 0,
+          border: "1px solid #ccc",
+          position: "relative",
+
         }}
       >
-        {item && (
-          <>
-            <Typography
-              variant='h6'
-              component='h2'
-              gutterBottom
-              sx={{ mb: 3, fontWeight: 'bold', textAlign: 'center' }}
-            >
-              {item[fields[0].accessor] as string}
-            </Typography>
+        <IconButton
+          onClick={onClose}
+          sx={{ position: "absolute", top: 12, right: 12, color: "gray" }}
+        >
+          <CloseIcon />
+        </IconButton>
 
-            {fields.map(({ label, accessor }) => {
-              const value = item[accessor]
-              const isDateField = typeof value === 'string' && !isNaN(Date.parse(value))
+        <Typography
+          variant="h6"
+          component="h2"
+          align="center"
+          fontWeight="bold"
+          gutterBottom
+          sx={{ mb: "30px" }}
+        >
+          DETAIL BOOKING
+        </Typography>
 
-              const displayValue = isDateField ? FormatDateTime({ date: value as string }) : String(value || '')
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, fontSize: "0.9rem" }}>
+          {fields.map(({ label, accessor }) => {
+            const value = item?.[accessor] || "";
+            const isDateField = typeof value === 'string' && !isNaN(Date.parse(value));
+            const isImageField = accessor === "imageUrl";
 
-              return (
-                <Box key={String(accessor)} sx={{ mb: 2 }}>
-                  <Typography variant='subtitle2' component='label' sx={{ color: 'text.secondary' }}>
-                    {label}
+
+            const displayValue = isDateField
+              ? FormatDateTime({ date: value as string })
+              : String(value || "");
+
+            return (
+              <Box key={String(accessor)} sx={{ display: "flex", alignItems: "center" }}>
+                <Typography
+                  sx={{
+                    color: "black",
+                    width: "40%",
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    fontFamily: "Montserrat, sans-serif",
+                  }}
+                >
+                  {label}
+                </Typography>
+
+                {isImageField ? (
+                  <img
+                    src={value as string}
+                    alt="news image"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <Typography sx={{ fontWeight: label === "STATUS" || label === "SERVICE TYPE" ? "bold" : "normal" }}>
+                    {isDateField ? FormatDateTime({ date: value as string }) : String(value || "")}
                   </Typography>
-                  <Typography variant='body1' sx={{ mt: 0.5 }}>
-                    {displayValue}
-                  </Typography>
-                </Box>
-              )
-            })}
+                )}
+              </Box>
+            );
+          })}
+        </Box>
 
-            <Button
-              onClick={onClose}
-              variant='contained'
-              color='primary'
-              sx={{ mt: 3, display: 'block', width: '100%' }}
-            >
-              Close
-            </Button>
-          </>
-        )}
+        <Button
+          onClick={onClose}
+          variant="contained"
+          sx={{
+            mt: 4,
+            bgcolor: "#00B4D8",
+            color: "white",
+            display: "block",
+            width: "100%",
+            borderRadius: "0px",
+            "&:hover": { bgcolor: "#0096D7" }
+          }}
+        >
+          CANCEL
+        </Button>
       </Box>
-    </Modal>
-  )
+    </Modal >
+  );
 }
