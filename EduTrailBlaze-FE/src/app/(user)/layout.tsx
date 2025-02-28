@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import '../globals.css'
-import WebHeader from '@/components/generalLayout/header/header'
-import WebFooter from '@/components/generalLayout/footer/footer'
+import WebHeader from '@/components/global/header/header'
+import WebFooter from '@/components/global/footer/footer'
 
 export const metadata: Metadata = {
   title: 'Edutrail Blaze',
@@ -14,12 +14,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en'>
-      <body>
-        <WebHeader />
-        {children}
-        <WebFooter />
-      </body>
-    </html>
+    <>
+      <WebHeader />
+      <div className='min-h-screen'>{children}</div>
+      <WebFooter />
+    </>
   )
 }

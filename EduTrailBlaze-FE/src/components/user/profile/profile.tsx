@@ -5,9 +5,10 @@ import { FaBell, FaCircleUser } from 'react-icons/fa6'
 import { IoIosSettings } from 'react-icons/io'
 import { MdContactSupport } from 'react-icons/md'
 import { Camera, X } from 'lucide-react'
-import { useGetUserProfileQuery, useUpdateUserMutation } from '@/services/user.service'
+import { useGetUserProfileQuery, useUpdateUserMutation } from '@/redux/services/user.service'
 import { jwtDecode } from 'jwt-decode'
 import EducationSection from './educationSection'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -23,6 +24,7 @@ export default function ProfilePage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
+  const { data: profile, error, isLoading, isFetching } = useGetUserProfileQuery(userId)
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -37,8 +39,6 @@ export default function ProfilePage() {
     }
   }, [])
 
-  const { data: profile, error, isLoading } = useGetUserProfileQuery(userId)
-
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -49,6 +49,10 @@ export default function ProfilePage() {
       setImagePreviewUrl(profile.profilePictureUrl)
     }
   }, [profile])
+
+  if (isLoading || isFetching) {
+    return <LoadingPage />
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -77,11 +81,11 @@ export default function ProfilePage() {
     console.log('updatedData', updatedData.get('profilePicture'))
 
     try {
-      await updateUser({ id: userId, body: updatedData }).unwrap()
+      const update = await updateUser({ id: userId, body: updatedData }).unwrap()
       alert('Profile updated successfully')
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
+      // setTimeout(() => {
+      //   window.location.reload()
+      // }, 500)
     } catch (error) {
       console.error('Failed to update profile:', error)
       alert('Failed to update profile')

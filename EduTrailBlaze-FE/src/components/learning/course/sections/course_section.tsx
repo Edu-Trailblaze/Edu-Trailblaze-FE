@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Modal from '../../../global/Modal'
+import Modal from '../../../global/Modal/Modal'
 import Link from 'next/link'
 import SlowMotionVideoIcon from '@mui/icons-material/SlowMotionVideo'
 

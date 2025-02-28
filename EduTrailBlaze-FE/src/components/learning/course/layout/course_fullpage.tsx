@@ -3,14 +3,14 @@
 import CourseOutcome from '../sections/course_outcome'
 import CourseDetails from '../sections/course_details'
 import CourseHeader from '../header/course_header'
-import { useGetCourseDetailsQuery, useGetCourseQuery } from '../../../../services/courseDetail.service'
+import { useGetCourseDetailsQuery, useGetCourseQuery } from '../../../../redux/services/courseDetail.service'
 import { useParams } from 'next/navigation'
-import Loading from '../../../animate/Loading'
 import CourseSection from '../sections/course_section'
 import CourseSuggestion from '../suggestion/course_suggestion'
-import { useGetSectionLectureQuery } from '../../../../services/lecture.service'
+import { useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
 import { skip } from 'node:test'
 import { skipToken } from '@reduxjs/toolkit/query'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import Navigation from '../navigation/course_nav'
 import CourseReview from '../review/course_review'
 import CourseAbout from '../sections/course_about'
@@ -21,10 +21,13 @@ export default function Course() {
   const detail = courseDetails?.courseDetails
   const section = courseDetails?.sectionDetails
   const sectionId = section?.map((item) => item.id) || []
+
   //bỏ qua query nếu ko có data
-  const { data: lecture } = useGetSectionLectureQuery(sectionId.length > 0 ? sectionId : skipToken)
+  const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
+    sectionId.length > 0 ? sectionId : skipToken
+  )
   if (isLoading || isFetching) {
-    return <Loading />
+    return <LoadingPage />
   }
 
   if (!detail) return <div>No course available.</div>
@@ -57,8 +60,8 @@ export default function Course() {
         <div id='courses' className='scroll-mt-48'>
           <CourseSection courseDetails={detail} section={section} lecture={lecture} />
         </div>
-        <div id='review' className="scroll-mt-48">
-          <CourseReview courseDetails={detail} />
+        <div id='review' className='scroll-mt-48'>
+          <CourseReview courseDetails={detail} courseId={Number(courseURL)} />
         </div>
         <div id='suggestion' className='scroll-mt-48'>
           <CourseSuggestion />

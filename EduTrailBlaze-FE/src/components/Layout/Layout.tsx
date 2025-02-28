@@ -18,13 +18,10 @@ const Layout = (props: any) => {
         )}
 
         {/* Nội dung (Dashboard) */}
-        <section className={scss.content}>
-          {props.children}
-        </section>
+        <section className={scss.content}>{props.children}</section>
       </main>
       <Footer />
     </>
-
   )
 }
 

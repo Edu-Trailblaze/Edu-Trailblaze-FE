@@ -1,15 +1,16 @@
 import React from 'react'
 import RatingOverview from './overview/rating_overview'
 import ReviewList from './reviewList/review_list'
+import Pagination from '../../../global/Pagination/Pagination'
 
-export default function CourseReview( {courseDetails} : ICourseFull ) {
+export default function CourseReview({ courseDetails, courseId }: ReviewProps) {
   return (
     <div className='container p-8 border rounded-lg shadow mb-10'>
       {/* Review Header */}
       <h1 className='text-xl font-bold mb-6'>REVIEW COURSE</h1>
 
       {/* Rating Overview Section */}
-      <RatingOverview courseDetails={courseDetails} />
+      <RatingOverview courseDetails={courseDetails} courseId={courseId} />
 
       {/* Reviews Section */}
       <div className='mb-6'>
@@ -18,18 +19,10 @@ export default function CourseReview( {courseDetails} : ICourseFull ) {
           <button className='text-blue-500 hover:text-blue-600 text-lg'>+ Add Review</button>
         </div>
 
-        <ReviewList />
+        <ReviewList id={courseId} />
       </div>
 
       {/* Footer Actions */}
-      {/* <div className='flex justify-between mt-8 pt-4 border-t'>
-        <button className='text-gray-600 hover:text-gray-800 flex items-center gap-2 text-lg'>
-          <span>⬇️</span> Download Data
-        </button>
-        <button className='text-gray-600 hover:text-gray-800 flex items-center gap-2 text-lg'>
-          <span>👁️</span> Hide reviews
-        </button>
-      </div> */}
     </div>
   )
 }

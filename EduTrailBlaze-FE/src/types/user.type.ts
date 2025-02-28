@@ -29,7 +29,7 @@ interface IUserProfile {
 }
 
 interface IUpdateProfile {
-  fullName: string;
-  profilePictureUrl: string;
-  phoneNumber: string;
+  fullName: string
+  profilePictureUrl: string
+  phoneNumber: string
 }
