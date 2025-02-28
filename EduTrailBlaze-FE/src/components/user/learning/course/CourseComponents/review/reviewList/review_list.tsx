@@ -2,9 +2,9 @@
 import { Star } from 'lucide-react'
 import React, { useState } from 'react'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
-import { useGetReviewPagingQuery } from '../../../../../redux/services/review.service'
-import { formatDateTime } from '../../../../../utils/format'
-import Pagination from '../../../../global/Pagination/Pagination'
+import { useGetReviewPagingQuery } from '../../../../../../../redux/services/review.service'
+import { formatDateTime } from '../../../../../../../utils/format'
+import Pagination from '../../../../../../global/Pagination/Pagination'
 
 export default function ReviewList({ id }: { id: number }) {
   const [pageIndex, setPageIndex] = useState(1)

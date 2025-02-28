@@ -19,6 +19,7 @@ import SelectField from '../../../../global/Select/SelectField'
 import InputNumber from '../../../../global/Input/InputNumber'
 import InputFile from '../../../../global/Input/InputFile'
 import Box from '../../../../global/Box/Box'
+import { useAddCourseMutation } from '../../../../../redux/services/courseDetail.service'
 
 interface CourseFieldsProps {
   activeTab: string
@@ -31,17 +32,43 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
   const [instructor, setInstructor] = useState('')
   const [prerequisites, setPrerequisites] = useState('')
   const [outcomes, setOutcomes] = useState<string[]>([''])
-
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [price, setPrice] = useState(0)
   const [difficultLevel, setDifficultLevel] = useState('Beginner')
 
+  const [courseForm, setCourseForm] = useState<CreateCourse>({
+    title: '',
+    description: '',
+    prerequisites: '',
+    learningOutcomes: [''],
+    imageURL: '',
+    introURL: '',
+    price: 0,
+    difficultyLevel: 'Beginner',
+    createdBy: ''
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setCourseForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const [createCourse, { isLoading: isUpdateCourse }] = useAddCourseMutation()
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onload = (e) => setImagePreview(e.target?.result as string)
+      reader.onload = () => {
+        // setImagePreview(reader.result as string)
+        setCourseForm({
+          ...courseForm,
+          imageURL: reader.result as string
+        })
+      }
       reader.readAsDataURL(file)
     }
   }
@@ -50,22 +77,41 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
     const file = event.target.files?.[0]
     if (file) {
       const videoURL = URL.createObjectURL(file)
-      setVideoPreview(videoURL)
+      // setVideoPreview(videoURL)
+      setCourseForm({
+        ...courseForm,
+        introURL: videoURL
+      })
     }
   }
 
   // Add a new learning outcome
   const addOutcome = () => {
-    setOutcomes([...outcomes, ''])
+    setCourseForm((prev) => ({
+      ...courseForm,
+      learningOutcomes: [...prev.learningOutcomes, '']
+    }))
   }
 
   const removeOutcome = (index: number) => {
-    setOutcomes(outcomes.filter((_, i) => i !== index))
+    setCourseForm((prev) => ({
+      ...courseForm,
+      learningOutcomes: prev.learningOutcomes.filter((_, i) => i !== index)
+    }))
   }
 
   const updateOutcome = (index: number, value: string) => {
-    setOutcomes(outcomes.map((outcome, i) => (i === index ? value : outcome)))
+    setCourseForm((prev) => ({
+      ...courseForm,
+      learningOutcomes: prev.learningOutcomes.map((outcome, i) => (i === index ? value : outcome))
+    }))
   }
+
+  const handleSubmit = () => {
+    createCourse(courseForm)
+    setActiveTab('sections')
+  }
+
   return (
     <div className='space-y-6'>
       {/* COURSE TITLE */}
@@ -76,7 +122,8 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           subtitle='A clear, specific title will attract more students'
           placeholder='Enter a descriptive title for your course'
           required
-          onChange={(e) => setTitle(e.target.value)}
+          // onChange={(e) => setTitle(e.target.value)}
+          onChange={handleChange}
         />
       </Box>
 
@@ -111,6 +158,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           required
           subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
           placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
+          onChange={handleChange}
         />
       </Box>
 
@@ -125,19 +173,21 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
             required
             prefix='VND'
             suffix='VND'
-            onChange={(e) => setPrice(Number(e.target.value))}
+            // onChange={(e) => setPrice(Number(e.target.value))}
+            onChange={handleChange}
           />
         </Box>
 
         {/* Difficult Level */}
         <Box>
           <SelectField
-            label='Difficult Level'
-            name='difficultLevel'
+            label='Difficulty Level'
+            name='difficultyLevel'
             required
             subtitle='Clearly specify who your course is intended for '
             options={['Beginner', 'Intermidate', 'Advanced']}
-            onChange={(e) => setDifficultLevel(e.target.value)}
+            // onChange={(e) => setDifficultLevel(e.target.value)}
+            onChange={handleChange}
           />
         </Box>
       </div>
@@ -219,12 +269,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
 
       {/* Next button */}
       <div className='flex justify-end py-5'>
-        <Button
-          icon={<PlusCircleIcon className='h-4 w-4' />}
-          size='ml'
-          onClick={() => setActiveTab('sections')}
-          variant='primary'
-        >
+        <Button icon={<PlusCircleIcon className='h-4 w-4' />} size='ml' onClick={handleSubmit} variant='primary'>
           Next: Add Sections
         </Button>
       </div>
