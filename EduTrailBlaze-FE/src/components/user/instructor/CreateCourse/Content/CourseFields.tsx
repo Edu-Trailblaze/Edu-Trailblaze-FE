@@ -56,14 +56,14 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
     }))
   }
 
-  const [createCourse, { isLoading: isUpdateCourse }] = useAddCourseMutation()
+  const [createCourse, { isLoading: isCreateCourse }] = useAddCourseMutation()
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = () => {
-        // setImagePreview(reader.result as string)
+        setImagePreview(reader.result as string)
         setCourseForm({
           ...courseForm,
           imageURL: reader.result as string
@@ -77,7 +77,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
     const file = event.target.files?.[0]
     if (file) {
       const videoURL = URL.createObjectURL(file)
-      // setVideoPreview(videoURL)
+      setVideoPreview(videoURL)
       setCourseForm({
         ...courseForm,
         introURL: videoURL
@@ -88,28 +88,33 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
   // Add a new learning outcome
   const addOutcome = () => {
     setCourseForm((prev) => ({
-      ...courseForm,
+      ...prev,
       learningOutcomes: [...prev.learningOutcomes, '']
     }))
   }
 
   const removeOutcome = (index: number) => {
     setCourseForm((prev) => ({
-      ...courseForm,
+      ...prev,
       learningOutcomes: prev.learningOutcomes.filter((_, i) => i !== index)
     }))
   }
 
   const updateOutcome = (index: number, value: string) => {
     setCourseForm((prev) => ({
-      ...courseForm,
+      ...prev,
       learningOutcomes: prev.learningOutcomes.map((outcome, i) => (i === index ? value : outcome))
     }))
   }
 
-  const handleSubmit = () => {
-    createCourse(courseForm)
-    setActiveTab('sections')
+  const handleSubmit = async () => {
+    try {
+      const response = await createCourse(courseForm).unwrap()
+      console.log('ourse created successfully', response)
+      setActiveTab('sections')
+    } catch (error) {
+      console.error('Failed to create course', error)
+    }
   }
 
   return (
@@ -122,31 +127,51 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           subtitle='A clear, specific title will attract more students'
           placeholder='Enter a descriptive title for your course'
           required
-          // onChange={(e) => setTitle(e.target.value)}
           onChange={handleChange}
         />
       </Box>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Input file ảnh */}
-        <InputFile
+        {/* <InputFile
           label='Upload Course Image'
           name='courseImage'
           accept='image/*'
           onChange={handleImageUpload}
           preview={imagePreview}
           icon={<PhotoIcon className='w-5 h-5 text-blue-500 mr-2' />}
-        />
+        /> */}
+        <Box>
+          <InputText
+            label='Course Image URL'
+            name='imageURL'
+            required
+            subtitle='Upload a high-quality image that represents your course'
+            placeholder='Enter the URL of the course image'
+            onChange={handleChange}
+          />
+        </Box>
 
         {/* Input file video */}
-        <InputFile
+        {/* <InputFile
           label='Upload Course Video'
           name='courseVideo'
           accept='video/*'
           onChange={handleVideoUpload}
           preview={videoPreview}
           icon={<VideoIcon className='w-5 h-5 text-red-500 mr-2' />}
-        />
+        /> */}
+
+        <Box>
+          <InputText
+            label='Course Video URL'
+            name='introURL'
+            required
+            subtitle='Upload a video that introduces your course'
+            placeholder='Enter the URL of the course video'
+            onChange={handleChange}
+          />
+        </Box>
       </div>
 
       {/* Decription */}
@@ -185,8 +210,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
             name='difficultyLevel'
             required
             subtitle='Clearly specify who your course is intended for '
-            options={['Beginner', 'Intermidate', 'Advanced']}
-            // onChange={(e) => setDifficultLevel(e.target.value)}
+            options={['Beginner', 'Intermediate', 'Advanced']}
             onChange={handleChange}
           />
         </Box>
@@ -196,11 +220,11 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
       <Box>
         <InputText
           label='Instructor Name'
-          name='instructorName'
+          name='createdBy'
           required
           subtitle='Enter the name of the instructor who created this course'
           placeholder='Enter the name of the instructor'
-          onChange={(e) => setInstructor(e.target.value)}
+          onChange={handleChange}
         />
       </Box>
       {/* Prerequisites */}
@@ -238,7 +262,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           </button>
         </div>
         <div className='space-y-3'>
-          {outcomes.map((outcome, index) => (
+          {courseForm.learningOutcomes.map((outcome, index) => (
             <div key={index} className='flex items-center'>
               <div className='flex-grow relative rounded-md shadow-sm'>
                 <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -252,7 +276,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
                   placeholder={`Outcome ${index + 1}, e.g., "Create professional web applications using React"`}
                 />
               </div>
-              {outcomes.length > 1 && (
+              {courseForm.learningOutcomes.length > 1 && (
                 <button
                   type='button'
                   onClick={() => removeOutcome(index)}
@@ -269,8 +293,14 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
 
       {/* Next button */}
       <div className='flex justify-end py-5'>
-        <Button icon={<PlusCircleIcon className='h-4 w-4' />} size='ml' onClick={handleSubmit} variant='primary'>
-          Next: Add Sections
+        <Button
+          icon={<PlusCircleIcon className='h-4 w-4' />}
+          size='ml'
+          onClick={handleSubmit}
+          variant='primary'
+          isLoading={isCreateCourse}
+        >
+          {isCreateCourse ? 'Creating...' : 'Next: Add Sections'}
         </Button>
       </div>
     </div>
