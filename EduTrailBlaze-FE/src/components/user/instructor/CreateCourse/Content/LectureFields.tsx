@@ -1,9 +1,9 @@
 import { Clock, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
-import Button from '../../../global/Button/Button'
-import InputText from '../../../global/Input/InputText'
-import SelectField from '../../../global/Select/SelectField'
-import InputFile from '../../../global/Input/InputFile'
-import InputNumber from '../../../global/Input/InputNumber'
+import Button from '../../../../global/Button/Button'
+import InputText from '../../../../global/Input/InputText'
+import SelectField from '../../../../global/Select/SelectField'
+import InputFile from '../../../../global/Input/InputFile'
+import InputNumber from '../../../../global/Input/InputNumber'
 
 interface LectureFieldsProps {
   section: ISectionTest

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import CourseDetails from '../sections/course_details'
 import Link from 'next/link'
 
 interface NavigationProps {

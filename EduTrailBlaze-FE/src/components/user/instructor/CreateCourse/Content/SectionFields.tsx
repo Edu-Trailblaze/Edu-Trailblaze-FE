@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Button from '../../../global/Button/Button'
+import Button from '../../../../global/Button/Button'
 import { Input } from 'postcss'
-import InputText from '../../../global/Input/InputText'
+import InputText from '../../../../global/Input/InputText'
 import { ArrowLeftIcon, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
 import LectureFields from './LectureFields'
 
