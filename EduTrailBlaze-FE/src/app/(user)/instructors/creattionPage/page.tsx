@@ -18,21 +18,21 @@ export default function BecomeInstructor() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-white">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
+        <div className="container mx-auto px-16 py-16 lg:py-24">
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="lg:w-1/2 mb-10 lg:mb-0 lg:pr-12">
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">Join our teaching community</h1>
-              <p className="text-lg text-gray-600 mb-8">Become an instructor, share knowledge and change lives — including your own</p>
+              <p className="text-lg text-gray-600 mb-8">Become a lecturer, not only share knowledge but also inspire, direct and change the lives of others, while discovering and developing yourself. <br/><br/> Get started now and make a positive impact with us!</p>
               <button className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-lg hover:opacity-90 transition duration-300">
                 Get Started Now
               </button>
             </div>
-            <div className="lg:w-1/2 relative">
+            <div className="lg:w-[40%] relative">
               <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-100 rounded-full opacity-50"></div>
               <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-blue-100 rounded-full opacity-50"></div>
               <div className="relative z-10 rounded-2xl shadow-xl overflow-hidden">
                 <Image 
-                  src="/images/instructor-hero.jpg" 
+                  src="/assets/Lecturer/img1.jpg" 
                   alt="Instructor" 
                   width={600} 
                   height={500}
@@ -47,14 +47,14 @@ export default function BecomeInstructor() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-12">Why become an instructor?</h2>
+      <section className="py-16 px-16 bg-gray-50">
+        <div className="container mx-auto px-12">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-12">Why become an instructor</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Benefit 1 */}
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-lg mb-6 mx-auto">
+              <div className="flex items-center justify-center w-16 h-16 rounded-lg mb-6 mx-auto">
                 <FontAwesomeIcon icon={faChalkboardTeacher} className="text-blue-600 text-2xl" />
               </div>
               <h3 className="text-xl font-semibold text-center mb-4">Teach your way</h3>
@@ -63,7 +63,7 @@ export default function BecomeInstructor() {
             
             {/* Benefit 2 */}
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-lg mb-6 mx-auto">
+              <div className="flex items-center justify-center w-16 h-16 rounded-lg mb-6 mx-auto">
                 <FontAwesomeIcon icon={faLightbulb} className="text-blue-600 text-2xl" />
               </div>
               <h3 className="text-xl font-semibold text-center mb-4">Inspire learners</h3>
@@ -72,7 +72,7 @@ export default function BecomeInstructor() {
             
             {/* Benefit 3 */}
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-lg mb-6 mx-auto">
+              <div className="flex items-center justify-center w-16 h-16 rounded-lg mb-6 mx-auto">
                 <FontAwesomeIcon icon={faCoins} className="text-blue-600 text-2xl" />
               </div>
               <h3 className="text-xl font-semibold text-center mb-4">Expand opportunities</h3>
@@ -112,8 +112,8 @@ export default function BecomeInstructor() {
 
       {/* How to Begin Section */}
       <section className="py-16 lg:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-16">How to begin?</h2>
+        <div className="container mx-auto px-12">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-16">How to begin</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -145,7 +145,7 @@ export default function BecomeInstructor() {
             <div className="flex justify-center lg:justify-end">
               <div className="relative rounded-2xl shadow-xl overflow-hidden">
                 <Image 
-                  src="/images/course-creation.jpg" 
+                  src="/assets/Lecturer/guide.webp" 
                   alt="Course creation guide" 
                   width={500}
                   height={400}
@@ -163,12 +163,13 @@ export default function BecomeInstructor() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="lg:w-1/3 h-64 lg:h-auto relative">
+            <div className="lg:w-2/3 h-64 lg:h-auto relative">
               <Image 
-                src="/images/instructor-testimonial.jpg" 
+                src="/assets/Lecturer/JohnSon.jpeg" 
                 alt="Instructor" 
-                fill
                 className="object-cover"
+                width={600} 
+                height={500}
                 placeholder="blur"
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
               />
@@ -196,10 +197,10 @@ export default function BecomeInstructor() {
           <p className="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-16">We provide comprehensive support throughout your journey</p>
 
           <div className="flex flex-col lg:flex-row items-center justify-between">
-            <div className="lg:w-1/3 mb-12 lg:mb-0">
+            <div className="lg:w-1/2 mb-12 lg:mb-0">
               <div className="relative w-full h-96 rounded-2xl shadow-xl overflow-hidden mx-auto">
                 <Image 
-                  src="/images/instructor-support.jpg" 
+                  src="/assets/Lecturer/support.webp" 
                   alt="Instructor support" 
                   fill
                   className="object-cover"
@@ -209,7 +210,7 @@ export default function BecomeInstructor() {
               </div>
             </div>
             
-            <div className="lg:w-1/2">
+            <div className="lg:w-[40%]">
               <div className="mb-10">
                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">Instructor Support Team</h3>
                 <p className="text-gray-600">Always ready to answer questions and review your first video lecture.</p>
