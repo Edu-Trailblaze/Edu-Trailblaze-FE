@@ -1,19 +1,21 @@
-import { Bell, Link } from 'lucide-react'
+import { Bell } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 export default function InstructorHeader() {
   return (
     <div>
-      <nav className='bg-white shadow-sm sticky top-0 z-10'>
+      {/* Navigation Bar */}
+      <nav className='bg-white shadow-sm'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex justify-between h-16'>
             <div className='flex'>
               <div className='flex-shrink-0 flex items-center'>
-                <div className='h-8 w-32 relative'>
-                  <div className='absolute inset-0 flex items-center justify-center bg-gray-200 rounded'>Logo</div>
+                <div className='h-8 w-44 relative'>
+                  <div className='absolute inset-0 flex items-center'><img alt='EduTrailBlaze Logo' src='/assets/logos/ETB_Logo.png' className='h-8 md:h-10' /></div>
                 </div>
               </div>
-              <div className='hidden sm:ml-6 sm:flex sm:space-x-8'>
+              <div className='hidden sm:ml-6 sm:flex sm:space-x-8 p-4'>
                 <Link href='/instructor/courses'>
                   <span className='border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer'>
                     Courses

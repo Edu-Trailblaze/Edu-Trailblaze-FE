@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import React from 'react'
 
 export default function HomeTeacherArea() {
@@ -24,7 +25,9 @@ export default function HomeTeacherArea() {
           className='w-[160px] bg-blue-500 cursor-pointer text-white px-2 py-1 mt-14 rounded-md transition duration-150 hover:bg-blue-700 mr-[10px]'
           type='button'
         >
+          <Link href='/student/welcome'>
           Create Here!
+          </Link>
         </button>
       </div>
     </div>

@@ -103,7 +103,7 @@ export default function HomeCourses() {
                 <div className='flex gap-[5rem]'>
                   {paidCourses.slice(0, visibleCourse).map((course, index) => (
                     <div className='relative' key={course.id}>
-                      <Link href={`/course/${course.id}`}>
+                      <Link href={`/student/course/${course.id}`}>
                         <div
                           className='relative transform transition duration-300 hover:scale-110 rounded-lg shadow-lg w-[17.5rem] hover:shadow-xl bg-white border border-black p-[5px] hover:z-[1]'
                           onMouseEnter={() => setHoveredCourse(course.id)}

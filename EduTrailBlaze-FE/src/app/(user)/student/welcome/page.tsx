@@ -24,7 +24,9 @@ export default function BecomeInstructor() {
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">Join our teaching community</h1>
               <p className="text-lg text-gray-600 mb-8">Become a lecturer, not only share knowledge but also inspire, direct and change the lives of others, while discovering and developing yourself. <br/><br/> Get started now and make a positive impact with us!</p>
               <button className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-medium py-3 px-8 rounded-lg shadow-lg hover:opacity-90 transition duration-300">
+                <Link href="/instructor/createCourse">
                 Get Started Now
+                </Link>
               </button>
             </div>
             <div className="lg:w-[40%] relative">

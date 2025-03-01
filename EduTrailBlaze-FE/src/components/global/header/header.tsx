@@ -140,7 +140,7 @@ export default function WebHeader() {
           <div className='flex items-center space-x-4'>
             {/* Cart Icon for Mobile */}
             <div className='relative cursor-pointer p-2'>
-              <Link href={'/shopping_cart'}>
+              <Link href={'/student/shopping_cart'}>
                 <MdOutlineShoppingCart className='w-6 h-6 text-gray-700' />
               </Link>
             </div>
@@ -232,7 +232,7 @@ export default function WebHeader() {
             onMouseEnter={() => setCartHovered(true)}
             onMouseLeave={() => setCartHovered(false)}
           >
-            <Link href={'/shopping_cart'}>
+            <Link href={'/student/shopping_cart'}>
               <MdOutlineShoppingCart className='w-6 h-6 hover:text-blue-600' />
             </Link>
 
@@ -248,10 +248,10 @@ export default function WebHeader() {
                 <IoMdNotificationsOutline className='w-6 h-6' />
               </div>
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
-                <Link href={'/instructor/welcome'}>Teach on EduTrail</Link>
+                <Link href={'/student/welcome'}>Teach on EduTrail</Link>
               </div>
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
-                <Link href={'/myLearning'}>My Learning</Link>
+                <Link href={'/student/myLearning'}>My Learning</Link>
               </div>
               <div className='relative'>
                 <DropdownMenu>
@@ -275,7 +275,7 @@ export default function WebHeader() {
                         <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                           <FaUserEdit />
                         </div>
-                        <Link href={'/profile'} prefetch={false} className='ml-2'>
+                        <Link href={'/student/profile'} prefetch={false} className='ml-2'>
                           Profile
                         </Link>
                       </DropdownMenuItem>
@@ -298,7 +298,7 @@ export default function WebHeader() {
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                         <MdOutlineSupportAgent />
                       </div>
-                      <Link href={'/support'} className='ml-2'>
+                      <Link href={'/student/support'} className='ml-2'>
                         Support
                       </Link>
                     </DropdownMenuItem>
@@ -426,7 +426,7 @@ export default function WebHeader() {
                       </div>
 
                       <a
-                        href='/profile'
+                        href='/student/profile'
                         className='flex items-center p-3 rounded-lg hover:bg-gray-50'
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -437,7 +437,7 @@ export default function WebHeader() {
                       </a>
 
                       <a
-                        href='/myLearning'
+                        href='/student/myLearning'
                         className='flex items-center p-3 rounded-lg hover:bg-gray-50'
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -448,7 +448,7 @@ export default function WebHeader() {
                       </a>
 
                       <a
-                        href='/instructor'
+                        href='/student/welcome'
                         className='flex items-center p-3 rounded-lg hover:bg-gray-50'
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -459,7 +459,7 @@ export default function WebHeader() {
                       </a>
 
                       <a
-                        href='/support'
+                        href='/student/support'
                         className='flex items-center p-3 rounded-lg hover:bg-gray-50'
                         onClick={() => setMobileMenuOpen(false)}
                       >
