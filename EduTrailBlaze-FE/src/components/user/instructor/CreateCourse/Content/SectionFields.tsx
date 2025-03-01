@@ -101,10 +101,10 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
               Section {sectionIndex + 1}: {section.title || 'Untilted Section'}
             </h3>
             <div className='flex space-x-2'>
-              <Button size='sm' variant='customBlue' onClick={() => toggleCollapse(sectionIndex)}>
+              <Button size='sm' variant='Blue' onClick={() => toggleCollapse(sectionIndex)}>
                 {collapsedSections[sectionIndex] ? 'Open' : 'Close'}
               </Button>
-              <Button size='sm' variant='customRed' onClick={() => removeSection(sectionIndex)}>
+              <Button size='sm' variant='Red' onClick={() => removeSection(sectionIndex)}>
                 Delete
               </Button>
             </div>
@@ -144,7 +144,7 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
           )}
         </div>
       ))}
-      <Button variant='customGreen' onClick={addSection} icon={<PlusCircleIcon className='h-4 w-4' />} size='ml'>
+      <Button variant='Green' onClick={addSection} icon={<PlusCircleIcon className='h-4 w-4' />} size='ml'>
         Add New Section
       </Button>
 

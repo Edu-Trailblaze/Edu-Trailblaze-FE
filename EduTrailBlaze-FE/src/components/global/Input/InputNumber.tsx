@@ -1,7 +1,8 @@
+import React from 'react'
 import Box from '../Box/Box'
 
 interface InputNumberProps {
-  label: string
+  label: React.ReactNode
   name: string
   placeholder?: string
   value?: number
