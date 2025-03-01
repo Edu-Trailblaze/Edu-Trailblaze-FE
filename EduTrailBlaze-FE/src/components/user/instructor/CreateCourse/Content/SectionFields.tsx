@@ -10,34 +10,26 @@ interface SectionFieldsProps {
 }
 
 export default function SectionFields({ activeTab, setActiveTab }: SectionFieldsProps) {
-  const [sections, setSections] = useState<ISectionTest[]>([]) // SectionLecture[]
+  const [sections, setSections] = useState<ISectionTest[]>([
+    {
+      id: 1,
+      title: 'Section 1',
+      description: 'Section 1 Description',
+      lectures: []
+    }
+  ]) // SectionLecture[]
   const [collapsedSections, setCollapsedSections] = useState<boolean[]>(sections.map(() => false))
 
   const addSection = () => {
-    const tempId = Date.now()
-    const newSection = {
-      id: tempId,
-      title: '',
-      description: '',
-      lectures: [
-        {
-          id: tempId,
-          title: '',
-          lectureType: '' as 'Video' | 'Reading' | 'Quiz',
-          contentPDFFile: '',
-          description: '',
-          duration: 0,
-          passingScore: 0,
-          questions: [
-            {
-              questionText: '',
-              answers: [{ answerText: '', isCorrect: false }]
-            }
-          ]
-        }
-      ]
-    }
-    setSections([...sections, newSection])
+    setSections((prevSections) => [
+      ...prevSections,
+      {
+        id: Date.now(),
+        title: '',
+        description: '',
+        lectures: []
+      }
+    ])
     setCollapsedSections([...collapsedSections, false])
   }
 
@@ -64,6 +56,12 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
           ? { ...section, lectures: section.lectures.filter((_, lIndex) => lIndex !== lectureIndex) }
           : section
       )
+    )
+  }
+
+  const updateLectures = (sectionIndex: number, newLectures: ILectureTest[]) => {
+    setSections((prevSections) =>
+      prevSections.map((section, index) => (index === sectionIndex ? { ...section, lectures: newLectures } : section))
     )
   }
 
@@ -128,13 +126,19 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
               />
 
               {/* Lectures */}
-              <LectureFields
+              {/* <LectureFields
                 section={section}
                 sectionIndex={sectionIndex}
                 removeLecture={removeLecture}
                 handleLectureChange={handleLectureChange}
                 sections={sections}
                 setSections={setSections}
+              /> */}
+              <LectureFields
+                sectionIndex={sectionIndex}
+                lectures={section.lectures}
+                setSections={setSections}
+                updateLectures={updateLectures}
               />
             </div>
           )}
