@@ -5,13 +5,13 @@ import LectureItem from './LectureItems'
 
 interface LectureFieldsProps {
   sectionIndex: number
-  lectures: ILectureTest[]
-  setSections: React.Dispatch<React.SetStateAction<ISectionTest[]>>
-  updateLectures: (sectionIndex: number, newLectures: ILectureTest[]) => void
+  lectures: LectureVip[]
+  setSections: React.Dispatch<React.SetStateAction<SectionLectureVip[]>>
+  updateLectures: (sectionIndex: number, newLectures: LectureVip[]) => void
 }
 
 export default function LectureFields({ sectionIndex, lectures, setSections, updateLectures }: LectureFieldsProps) {
-  const [localLectures, setLocalLectures] = useState<ILectureTest[]>(lectures)
+  const [localLectures, setLocalLectures] = useState<LectureVip[]>(lectures)
   const [expandedLectures, setExpandedLectures] = useState<Record<number, boolean>>({})
 
   useEffect(() => {
@@ -33,14 +33,13 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
     setLocalLectures([
       ...localLectures,
       {
-        id: Date.now(),
+        sectionId: Date.now(),
         title: '',
         lectureType: 'Video',
         contentPDFFile: '',
         description: '',
         duration: 0,
-        passingScore: 0,
-        questions: []
+        content: ''
       }
     ])
   }
@@ -49,24 +48,27 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
     setLocalLectures(localLectures.filter((_, i) => i !== index))
   }
 
-  const handleLectureChange = (
-    sectionIndex: number,
-    lectureIndex: number,
-    field: keyof ILectureTest,
-    value: string | boolean | number | IQuestion[]
-  ) => {
-    setSections((prevSections) =>
-      prevSections.map((section, sIndex) =>
-        sIndex === sectionIndex
-          ? {
-              ...section,
-              lectures: section.lectures.map((lecture, lIndex) =>
-                lIndex === lectureIndex ? { ...lecture, [field]: value } : lecture
-              )
-            }
-          : section
-      )
-    )
+  const handleLectureChange = (sectionIndex: number, lectureIndex: number, field: keyof LectureVip, value: any) => {
+    setSections((prevSections) => {
+      if (prevSections.length === 0) return prevSections
+
+      const newSections = [...prevSections]
+      newSections[0] = {
+        ...newSections[0],
+        Sections: newSections[0].Sections.map((section, sIndex) =>
+          sIndex === sectionIndex
+            ? {
+                ...section,
+                lectures: section.lectures.map((lecture, lIndex) =>
+                  lIndex === lectureIndex ? { ...lecture, [field]: value } : lecture
+                )
+              }
+            : section
+        )
+      }
+
+      return newSections
+    })
   }
 
   return (
@@ -77,7 +79,7 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
 
       {localLectures.map((lecture, lectureIndex) => (
         <LectureItem
-          key={lecture.id}
+          key={`lecture-${sectionIndex}-${lectureIndex}`}
           lecture={lecture}
           lectureIndex={lectureIndex}
           sectionIndex={sectionIndex}
@@ -85,7 +87,6 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
           toggleLecture={toggleLecture}
           removeLecture={removeLecture}
           handleLectureChange={handleLectureChange}
-          setSections={setSections}
           totalLectures={localLectures.length}
         />
       ))}

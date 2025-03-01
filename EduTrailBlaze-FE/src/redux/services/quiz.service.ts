@@ -15,6 +15,7 @@ export const quizApi = createApi({
         params: { lectureId }
       })
     })
+    // createQuiz: build.mutation
   })
 })
 
