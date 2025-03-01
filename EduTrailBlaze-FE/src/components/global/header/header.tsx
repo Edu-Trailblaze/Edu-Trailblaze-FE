@@ -248,7 +248,7 @@ export default function WebHeader() {
                 <IoMdNotificationsOutline className='w-6 h-6' />
               </div>
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
-                <Link href={'/instructor'}>Teach on EduTrail</Link>
+                <Link href={'/instructor/welcome'}>Teach on EduTrail</Link>
               </div>
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
                 <Link href={'/myLearning'}>My Learning</Link>
