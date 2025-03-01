@@ -29,16 +29,17 @@ interface CourseFieldsProps {
 export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
-
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [videoFile, setVideoFile] = useState<File | null>(null)
   const [courseForm, setCourseForm] = useState<CreateCourse>({
     title: '',
     description: '',
     prerequisites: '',
-    learningOutcomes: [''],
     imageURL: '',
     introURL: '',
     price: 0,
     difficultyLevel: 'Beginner',
+    learningOutcomes: [''],
     createdBy: ''
   })
 
@@ -53,31 +54,27 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        setImagePreview(reader.result as string)
-        setCourseForm({
-          ...courseForm,
-          imageURL: reader.result as string
-        })
-      }
-      reader.readAsDataURL(file)
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImagePreview(reader.result as string)
     }
+
+    setImageFile(file) // ✅ Lưu file thay vì Base64
+    reader.readAsDataURL(file)
   }
 
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      const videoURL = URL.createObjectURL(file)
-      setVideoPreview(videoURL)
-      setCourseForm({
-        ...courseForm,
-        introURL: videoURL
-      })
-    }
-  }
+    if (!file) return
 
+    const videoURL = URL.createObjectURL(file)
+    setVideoPreview(videoURL)
+
+    // ✅ Lưu file thay vì chỉ lưu URL
+    setVideoFile(file)
+  }
   // Add a new learning outcome
   const addOutcome = () => {
     setCourseForm((prev) => ({
@@ -100,10 +97,31 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
     }))
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     try {
-      const response = await createCourse(courseForm).unwrap()
-      console.log('ourse created successfully', response)
+      event.preventDefault()
+      const formData = new FormData()
+      formData.append('Title', courseForm.title)
+      formData.append('Description', courseForm.description)
+      formData.append('Prerequisites', courseForm.prerequisites)
+      formData.append('Price', courseForm.price.toString()) // Chuyển số thành string
+      formData.append('DifficultyLevel', courseForm.difficultyLevel)
+      formData.append('CreatedBy', courseForm.createdBy)
+
+      // Xử lý Learning Outcomes (Array)
+      courseForm.learningOutcomes.forEach((outcome, index) => {
+        formData.append(`LearningOutcomes[${index}]`, outcome)
+      })
+
+      // Kiểm tra và thêm file
+      if (imageFile) {
+        formData.append('ImageURL', imageFile)
+      }
+      if (videoFile) {
+        formData.append('IntroURL', videoFile)
+      }
+      const response = await createCourse(formData).unwrap()
+      console.log('Course created successfully', response)
       setActiveTab('sections')
     } catch (error) {
       console.error('Failed to create course', error)
@@ -126,15 +144,15 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Input file ảnh */}
-        {/* <InputFile
+        <InputFile
           label='Upload Course Image'
           name='courseImage'
           accept='image/*'
           onChange={handleImageUpload}
           preview={imagePreview}
           icon={<PhotoIcon className='w-5 h-5 text-blue-500 mr-2' />}
-        /> */}
-        <Box>
+        />
+        {/* <Box>
           <InputText
             label='Course Image URL'
             name='imageURL'
@@ -143,19 +161,19 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
             placeholder='Enter the URL of the course image'
             onChange={handleChange}
           />
-        </Box>
+        </Box> */}
 
         {/* Input file video */}
-        {/* <InputFile
+        <InputFile
           label='Upload Course Video'
           name='courseVideo'
           accept='video/*'
           onChange={handleVideoUpload}
           preview={videoPreview}
           icon={<VideoIcon className='w-5 h-5 text-red-500 mr-2' />}
-        /> */}
+        />
 
-        <Box>
+        {/* <Box>
           <InputText
             label='Course Video URL'
             name='introURL'
@@ -164,7 +182,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
             placeholder='Enter the URL of the course video'
             onChange={handleChange}
           />
-        </Box>
+        </Box> */}
       </div>
 
       {/* Decription */}
@@ -286,15 +304,11 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
 
       {/* Next button */}
       <div className='flex justify-end py-5'>
-        <Button
-          icon={<PlusCircleIcon className='h-4 w-4' />}
-          size='ml'
-          onClick={handleSubmit}
-          variant='primary'
-          isLoading={isCreateCourse}
-        >
-          {isCreateCourse ? 'Creating...' : 'Next: Add Sections'}
-        </Button>
+        <form onSubmit={handleSubmit}>
+          <Button icon={<PlusCircleIcon className='h-4 w-4' />} size='ml' variant='primary' isLoading={isCreateCourse}>
+            {isCreateCourse ? 'Creating...' : 'Next: Add Sections'}
+          </Button>
+        </form>
       </div>
     </div>
   )

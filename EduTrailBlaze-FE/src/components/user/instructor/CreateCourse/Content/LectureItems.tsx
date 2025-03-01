@@ -3,7 +3,7 @@ import InputText from '../../../../global/Input/InputText'
 import SelectField from '../../../../global/Select/SelectField'
 
 interface LectureItemProps {
-  lecture: ILectureTest
+  lecture: LectureVip
   lectureIndex: number
   sectionIndex: number
   isExpanded: boolean
@@ -12,10 +12,9 @@ interface LectureItemProps {
   handleLectureChange: (
     sectionIndex: number,
     lectureIndex: number,
-    field: keyof ILectureTest,
-    value: string | boolean | number | IQuestion[]
+    field: keyof LectureVip,
+    value: string | boolean | number
   ) => void
-  setSections: React.Dispatch<React.SetStateAction<ISectionTest[]>>
   totalLectures: number
 }
 
@@ -27,7 +26,6 @@ export default function LectureItem({
   toggleLecture,
   removeLecture,
   handleLectureChange,
-  setSections,
   totalLectures
 }: LectureItemProps) {
   const getLectureTypeIcon = (type: 'Reading' | 'Video' | 'Quiz') => {
