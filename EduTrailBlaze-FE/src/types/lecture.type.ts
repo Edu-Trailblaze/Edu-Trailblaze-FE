@@ -25,14 +25,25 @@ interface ISection {
   duration: string
   id: number
 }
+interface IAnswer {
+  answerText: string
+  isCorrect: boolean
+}
+
+interface IQuestion {
+  questionText: string
+  answers: IAnswer[]
+}
 
 interface ILectureTest {
   id: number
   title: string
-  type: 'Video' | 'Reading' | 'Quiz'
-  contentUrl: string
+  lectureType: 'Video' | 'Reading' | 'Quiz'
+  contentPDFFile: string
   description: string
   duration: number
+  passingScore: number
+  questions: IQuestion[]
 }
 
 interface ISectionTest {

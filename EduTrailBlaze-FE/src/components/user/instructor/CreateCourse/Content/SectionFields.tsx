@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import Button from '../../../../global/Button/Button'
-import { Input } from 'postcss'
 import InputText from '../../../../global/Input/InputText'
 import { ArrowLeftIcon, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
 import LectureFields from './LectureFields'
 
-export default function SectionFields() {
-  // const [sections, setSections] = useState<SectionLecture[]>([])
+interface SectionFieldsProps {
+  activeTab: string
+  setActiveTab: (tab: string) => void
+}
 
+export default function SectionFields({ activeTab, setActiveTab }: SectionFieldsProps) {
   const [sections, setSections] = useState<ISectionTest[]>([]) // SectionLecture[]
   const [collapsedSections, setCollapsedSections] = useState<boolean[]>(sections.map(() => false))
 
@@ -21,15 +23,27 @@ export default function SectionFields() {
         {
           id: tempId,
           title: '',
-          type: '' as 'Video' | 'Reading' | 'Quiz',
-          contentUrl: '',
+          lectureType: '' as 'Video' | 'Reading' | 'Quiz',
+          contentPDFFile: '',
           description: '',
-          duration: 0
+          duration: 0,
+          passingScore: 0,
+          questions: [
+            {
+              questionText: '',
+              answers: [{ answerText: '', isCorrect: false }]
+            }
+          ]
         }
       ]
     }
     setSections([...sections, newSection])
     setCollapsedSections([...collapsedSections, false])
+  }
+
+  // back
+  const handleBack = () => {
+    setActiveTab('details')
   }
 
   // Xóa Section
@@ -44,24 +58,20 @@ export default function SectionFields() {
   }
 
   const removeLecture = (sectionIndex: number, lectureIndex: number) => {
-    setSections((prevSection) => {
-      return prevSection.map((section, sIndex) => {
-        if (sIndex === sectionIndex) {
-          return {
-            ...section,
-            lectures: section.lectures.filter((_, lIndex) => lIndex !== lectureIndex)
-          }
-        }
-        return section
-      })
-    })
+    setSections((prevSections) =>
+      prevSections.map((section, sIndex) =>
+        sIndex === sectionIndex
+          ? { ...section, lectures: section.lectures.filter((_, lIndex) => lIndex !== lectureIndex) }
+          : section
+      )
+    )
   }
 
   const handleLectureChange = (
     sectionIndex: number,
     lectureIndex: number,
     field: keyof ILectureTest,
-    value: string | boolean | number
+    value: string | boolean | number | IQuestion[]
   ) => {
     setSections((prevSection) =>
       prevSection.map((section, sIndex) => {
@@ -135,7 +145,7 @@ export default function SectionFields() {
       </Button>
 
       <div className='mt-8 flex justify-between'>
-        <Button variant='outline' icon={<ArrowLeftIcon className='h-5 w-5 mr-1' />}>
+        <Button variant='outline' icon={<ArrowLeftIcon className='h-5 w-5 mr-1' />} onClick={handleBack}>
           Back: Course Details
         </Button>
         <Button variant='primary'>Create Course</Button>

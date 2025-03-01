@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { CustomError } from '../../utils/helpers'
+import { BASE_URL } from '../../utils/config'
 
 export const courseApi = createApi({
   reducerPath: 'course/api', //tên field trong reduce state
   // keepUnusedDataFor: 60,
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://edu-trailblaze.azurewebsites.net/api/'
+    baseUrl: BASE_URL
     // prepareHeaders(headers) {
     //   headers.set('authorization', `Bearer ${token}`)
     //   return headers
@@ -22,20 +23,20 @@ export const courseApi = createApi({
       }
     }),
 
-    // addCourse: build.mutation<ICourse, Omit<ICourse, 'id'>>({
-    //   query(body) {
-    //     try {
-    //       return {
-    //         url: 'courses',
-    //         method: 'POST',
-    //         body
-    //       }
-    //     } catch (error: any) {
-    //       throw new CustomError(error.message)
-    //     }
-    //   },
-    //   invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
-    // }),
+    addCourse: build.mutation<any, CreateCourse>({
+      query(body) {
+        try {
+          return {
+            url: 'Course',
+            method: 'POST',
+            body
+          }
+        } catch (error: any) {
+          throw new CustomError(error.message)
+        }
+      },
+      invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
+    }),
 
     getCourseDetails: build.query<ICourseFull, number>({
       query: (id) => ({
@@ -82,7 +83,7 @@ export const courseApi = createApi({
 
 export const {
   useGetAllCoursesQuery,
-  // useAddCourseMutation,
+  useAddCourseMutation,
   useGetCourseDetailsQuery,
   useGetCourseQuery,
   // useUpdateCourseMutation,

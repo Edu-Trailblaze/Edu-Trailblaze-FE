@@ -11,7 +11,11 @@ interface FormBodyProps {
 export default function FormBody({ activeTab, setActiveTab }: FormBodyProps) {
   return (
     <div className='p-10'>
-      {activeTab === 'details' ? <CourseFields activeTab={activeTab} setActiveTab={setActiveTab} /> : <SectionFields />}
+      {activeTab === 'details' ? (
+        <CourseFields activeTab={activeTab} setActiveTab={setActiveTab} />
+      ) : (
+        <SectionFields activeTab={activeTab} setActiveTab={setActiveTab} />
+      )}
     </div>
   )
 }

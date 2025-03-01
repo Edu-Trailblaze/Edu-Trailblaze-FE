@@ -19,6 +19,7 @@ import SelectField from '../../../../global/Select/SelectField'
 import InputNumber from '../../../../global/Input/InputNumber'
 import InputFile from '../../../../global/Input/InputFile'
 import Box from '../../../../global/Box/Box'
+import { useAddCourseMutation } from '../../../../../redux/services/courseDetail.service'
 
 interface CourseFieldsProps {
   activeTab: string
@@ -26,22 +27,42 @@ interface CourseFieldsProps {
 }
 
 export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [instructor, setInstructor] = useState('')
-  const [prerequisites, setPrerequisites] = useState('')
   const [outcomes, setOutcomes] = useState<string[]>([''])
-
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
-  const [price, setPrice] = useState(0)
-  const [difficultLevel, setDifficultLevel] = useState('Beginner')
+
+  const [courseForm, setCourseForm] = useState<CreateCourse>({
+    title: '',
+    description: '',
+    prerequisites: '',
+    learningOutcomes: [''],
+    imageURL: '',
+    introURL: '',
+    price: 0,
+    difficultyLevel: 'Beginner',
+    createdBy: ''
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setCourseForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const [createCourse, { isLoading: isCreateCourse }] = useAddCourseMutation()
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onload = (e) => setImagePreview(e.target?.result as string)
+      reader.onload = () => {
+        setImagePreview(reader.result as string)
+        setCourseForm({
+          ...courseForm,
+          imageURL: reader.result as string
+        })
+      }
       reader.readAsDataURL(file)
     }
   }
@@ -51,21 +72,45 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
     if (file) {
       const videoURL = URL.createObjectURL(file)
       setVideoPreview(videoURL)
+      setCourseForm({
+        ...courseForm,
+        introURL: videoURL
+      })
     }
   }
 
   // Add a new learning outcome
   const addOutcome = () => {
-    setOutcomes([...outcomes, ''])
+    setCourseForm((prev) => ({
+      ...prev,
+      learningOutcomes: [...prev.learningOutcomes, '']
+    }))
   }
 
   const removeOutcome = (index: number) => {
-    setOutcomes(outcomes.filter((_, i) => i !== index))
+    setCourseForm((prev) => ({
+      ...prev,
+      learningOutcomes: prev.learningOutcomes.filter((_, i) => i !== index)
+    }))
   }
 
   const updateOutcome = (index: number, value: string) => {
-    setOutcomes(outcomes.map((outcome, i) => (i === index ? value : outcome)))
+    setCourseForm((prev) => ({
+      ...prev,
+      learningOutcomes: prev.learningOutcomes.map((outcome, i) => (i === index ? value : outcome))
+    }))
   }
+
+  const handleSubmit = async () => {
+    try {
+      const response = await createCourse(courseForm).unwrap()
+      console.log('ourse created successfully', response)
+      setActiveTab('sections')
+    } catch (error) {
+      console.error('Failed to create course', error)
+    }
+  }
+
   return (
     <div className='space-y-6'>
       {/* COURSE TITLE */}
@@ -76,30 +121,51 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           subtitle='A clear, specific title will attract more students'
           placeholder='Enter a descriptive title for your course'
           required
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={handleChange}
         />
       </Box>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Input file ảnh */}
-        <InputFile
+        {/* <InputFile
           label='Upload Course Image'
           name='courseImage'
           accept='image/*'
           onChange={handleImageUpload}
           preview={imagePreview}
           icon={<PhotoIcon className='w-5 h-5 text-blue-500 mr-2' />}
-        />
+        /> */}
+        <Box>
+          <InputText
+            label='Course Image URL'
+            name='imageURL'
+            required
+            subtitle='Upload a high-quality image that represents your course'
+            placeholder='Enter the URL of the course image'
+            onChange={handleChange}
+          />
+        </Box>
 
         {/* Input file video */}
-        <InputFile
+        {/* <InputFile
           label='Upload Course Video'
           name='courseVideo'
           accept='video/*'
           onChange={handleVideoUpload}
           preview={videoPreview}
           icon={<VideoIcon className='w-5 h-5 text-red-500 mr-2' />}
-        />
+        /> */}
+
+        <Box>
+          <InputText
+            label='Course Video URL'
+            name='introURL'
+            required
+            subtitle='Upload a video that introduces your course'
+            placeholder='Enter the URL of the course video'
+            onChange={handleChange}
+          />
+        </Box>
       </div>
 
       {/* Decription */}
@@ -111,6 +177,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           required
           subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
           placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
+          onChange={handleChange}
         />
       </Box>
 
@@ -125,19 +192,20 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
             required
             prefix='VND'
             suffix='VND'
-            onChange={(e) => setPrice(Number(e.target.value))}
+            // onChange={(e) => setPrice(Number(e.target.value))}
+            onChange={handleChange}
           />
         </Box>
 
         {/* Difficult Level */}
         <Box>
           <SelectField
-            label='Difficult Level'
-            name='difficultLevel'
+            label='Difficulty Level'
+            name='difficultyLevel'
             required
             subtitle='Clearly specify who your course is intended for '
-            options={['Beginner', 'Intermidate', 'Advanced']}
-            onChange={(e) => setDifficultLevel(e.target.value)}
+            options={['Beginner', 'Intermediate', 'Advanced']}
+            onChange={handleChange}
           />
         </Box>
       </div>
@@ -146,11 +214,11 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
       <Box>
         <InputText
           label='Instructor Name'
-          name='instructorName'
+          name='createdBy'
           required
           subtitle='Enter the name of the instructor who created this course'
           placeholder='Enter the name of the instructor'
-          onChange={(e) => setInstructor(e.target.value)}
+          onChange={handleChange}
         />
       </Box>
       {/* Prerequisites */}
@@ -162,7 +230,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           helperText='Knowledge or skills students need before taking this course'
           placeholder='Knowledge or skills students need before taking this course'
           subtitle='Be specific about required knowledge to ensure student success'
-          onChange={(e) => setPrerequisites(e.target.value)}
+          onChange={handleChange}
         />
       </Box>
 
@@ -188,7 +256,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           </button>
         </div>
         <div className='space-y-3'>
-          {outcomes.map((outcome, index) => (
+          {courseForm.learningOutcomes.map((outcome, index) => (
             <div key={index} className='flex items-center'>
               <div className='flex-grow relative rounded-md shadow-sm'>
                 <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -202,7 +270,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
                   placeholder={`Outcome ${index + 1}, e.g., "Create professional web applications using React"`}
                 />
               </div>
-              {outcomes.length > 1 && (
+              {courseForm.learningOutcomes.length > 1 && (
                 <button
                   type='button'
                   onClick={() => removeOutcome(index)}
@@ -222,10 +290,11 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
         <Button
           icon={<PlusCircleIcon className='h-4 w-4' />}
           size='ml'
-          onClick={() => setActiveTab('sections')}
+          onClick={handleSubmit}
           variant='primary'
+          isLoading={isCreateCourse}
         >
-          Next: Add Sections
+          {isCreateCourse ? 'Creating...' : 'Next: Add Sections'}
         </Button>
       </div>
     </div>
