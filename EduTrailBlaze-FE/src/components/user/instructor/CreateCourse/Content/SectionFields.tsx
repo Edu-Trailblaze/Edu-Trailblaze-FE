@@ -10,34 +10,26 @@ interface SectionFieldsProps {
 }
 
 export default function SectionFields({ activeTab, setActiveTab }: SectionFieldsProps) {
-  const [sections, setSections] = useState<ISectionTest[]>([]) // SectionLecture[]
+  const [sections, setSections] = useState<ISectionTest[]>([
+    {
+      id: 1,
+      title: 'Section 1',
+      description: 'Section 1 Description',
+      lectures: []
+    }
+  ]) // SectionLecture[]
   const [collapsedSections, setCollapsedSections] = useState<boolean[]>(sections.map(() => false))
 
   const addSection = () => {
-    const tempId = Date.now()
-    const newSection = {
-      id: tempId,
-      title: '',
-      description: '',
-      lectures: [
-        {
-          id: tempId,
-          title: '',
-          lectureType: '' as 'Video' | 'Reading' | 'Quiz',
-          contentPDFFile: '',
-          description: '',
-          duration: 0,
-          passingScore: 0,
-          questions: [
-            {
-              questionText: '',
-              answers: [{ answerText: '', isCorrect: false }]
-            }
-          ]
-        }
-      ]
-    }
-    setSections([...sections, newSection])
+    setSections((prevSections) => [
+      ...prevSections,
+      {
+        id: Date.now(),
+        title: '',
+        description: '',
+        lectures: []
+      }
+    ])
     setCollapsedSections([...collapsedSections, false])
   }
 
@@ -64,6 +56,12 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
           ? { ...section, lectures: section.lectures.filter((_, lIndex) => lIndex !== lectureIndex) }
           : section
       )
+    )
+  }
+
+  const updateLectures = (sectionIndex: number, newLectures: ILectureTest[]) => {
+    setSections((prevSections) =>
+      prevSections.map((section, index) => (index === sectionIndex ? { ...section, lectures: newLectures } : section))
     )
   }
 
@@ -103,10 +101,10 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
               Section {sectionIndex + 1}: {section.title || 'Untilted Section'}
             </h3>
             <div className='flex space-x-2'>
-              <Button size='sm' variant='customBlue' onClick={() => toggleCollapse(sectionIndex)}>
+              <Button size='sm' variant='Blue' onClick={() => toggleCollapse(sectionIndex)}>
                 {collapsedSections[sectionIndex] ? 'Open' : 'Close'}
               </Button>
-              <Button size='sm' variant='customRed' onClick={() => removeSection(sectionIndex)}>
+              <Button size='sm' variant='Red' onClick={() => removeSection(sectionIndex)}>
                 Delete
               </Button>
             </div>
@@ -128,19 +126,25 @@ export default function SectionFields({ activeTab, setActiveTab }: SectionFields
               />
 
               {/* Lectures */}
-              <LectureFields
+              {/* <LectureFields
                 section={section}
                 sectionIndex={sectionIndex}
                 removeLecture={removeLecture}
                 handleLectureChange={handleLectureChange}
                 sections={sections}
                 setSections={setSections}
+              /> */}
+              <LectureFields
+                sectionIndex={sectionIndex}
+                lectures={section.lectures}
+                setSections={setSections}
+                updateLectures={updateLectures}
               />
             </div>
           )}
         </div>
       ))}
-      <Button variant='customGreen' onClick={addSection} icon={<PlusCircleIcon className='h-4 w-4' />} size='ml'>
+      <Button variant='Green' onClick={addSection} icon={<PlusCircleIcon className='h-4 w-4' />} size='ml'>
         Add New Section
       </Button>
 

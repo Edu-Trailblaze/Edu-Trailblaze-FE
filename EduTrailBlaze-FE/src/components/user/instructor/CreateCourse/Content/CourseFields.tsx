@@ -27,7 +27,6 @@ interface CourseFieldsProps {
 }
 
 export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsProps) {
-  const [outcomes, setOutcomes] = useState<string[]>([''])
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
 
