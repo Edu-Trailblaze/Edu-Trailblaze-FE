@@ -1,14 +1,15 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { MdOutlineScreenShare } from 'react-icons/md';
-import { BsChatLeftText } from 'react-icons/bs';
-import { GrResources } from 'react-icons/gr';
-import { GrDocumentPerformance } from 'react-icons/gr';
-import { TbTool } from 'react-icons/tb';
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { MdOutlineScreenShare } from 'react-icons/md'
+import { BsChatLeftText } from 'react-icons/bs'
+import { GrResources } from 'react-icons/gr'
+import { GrDocumentPerformance } from 'react-icons/gr'
+import { TbTool } from 'react-icons/tb'
 
 const InstructorSidebar = () => {
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [sidebarHeight, setSidebarHeight] = useState('100vh');
 
@@ -17,6 +18,7 @@ const InstructorSidebar = () => {
     let animationFrameId: number | null;
 
     const updateSidebarHeight = () => {
+
       const footer = document.querySelector('footer');
       if (footer) {
         const footerRect = footer.getBoundingClientRect();
@@ -25,8 +27,20 @@ const InstructorSidebar = () => {
         setSidebarHeight(`${sidebarMaxHeight}px`);
       } else {
         setSidebarHeight('100vh');
+
+      const footer = document.querySelector('footer') // Target the footer by its ID
+      if (footer) {
+        const footerHeight = footer.offsetHeight
+        const windowHeight = window.innerHeight
+        const sidebarMaxHeight = windowHeight - footerHeight // Subtract footer height and add a small padding (20px)
+        setSidebarHeight(`${sidebarMaxHeight}px`)
+      } else {
+        // If footer isn’t present (e.g., on certain pages), use full viewport height
+        setSidebarHeight('100vh')
+
       }
-    };
+    }
+
 
     const handleScroll = () => {
       if (Math.abs(window.scrollY - lastScrollY) > 5) {
@@ -56,10 +70,11 @@ const InstructorSidebar = () => {
     { icon: <GrDocumentPerformance className='w-6 h-5' />, label: 'Performance', href: '/instructor/performance' },
     { icon: <TbTool className='w-6 h-5' />, label: 'Tools', href: '/instructor/tools' },
     { icon: <GrResources className='w-6 h-5' />, label: 'Resources', href: '/instructor/resources' }
-  ];
+  ]
 
   return (
     <div
+
       className={`fixed top-0 left-0 bg-[#2A57D8] text-white flex flex-col z-10 transition-all duration-100 ease-out shadow-lg`}
       style={{ width: isExpanded ? '200px' : '60px', height: sidebarHeight }}
       onMouseEnter={() => setIsExpanded(true)}
@@ -85,7 +100,7 @@ const InstructorSidebar = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default InstructorSidebar;
+export default InstructorSidebar

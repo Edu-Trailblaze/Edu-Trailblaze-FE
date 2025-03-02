@@ -37,11 +37,11 @@ export const lectureApi = createApi({
       })
     }),
 
-    createSectionLectureVip: build.mutation<ResponseMessage, SectionLectureVip>({
-      query: (body) => ({
+    createSectionLectureVip: build.mutation<ResponseMessage, FormData>({
+      query: (formData) => ({
         url: 'Lecture/create-section-lecture-vip',
         method: 'POST',
-        body
+        body: formData
       })
     })
   })

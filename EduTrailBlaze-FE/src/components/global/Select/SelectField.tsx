@@ -9,10 +9,20 @@ interface SelectFieldProps {
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void
   subtitle?: string
   required?: boolean
+  noLayout?: boolean
 }
 
-export default function SelectField({ label, name, options, value, onChange, subtitle, required }: SelectFieldProps) {
-  return (
+export default function SelectField({
+  label,
+  name,
+  options,
+  value,
+  onChange,
+  subtitle,
+  required,
+  noLayout
+}: SelectFieldProps) {
+  const content = (
     <>
       <label htmlFor={name} className='block text-sm font-medium text-gray-500'>
         {label} {required && <span className='text-red-500'>*</span>}
@@ -38,4 +48,5 @@ export default function SelectField({ label, name, options, value, onChange, sub
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
     </>
   )
+  return noLayout ? content : <Box>{content}</Box>
 }

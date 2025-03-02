@@ -13,6 +13,7 @@ interface InputNumberProps {
   max?: number
   subtitle?: string
   required?: boolean
+  noLayout?: boolean
 }
 
 export default function InputNumber({
@@ -26,9 +27,10 @@ export default function InputNumber({
   min = 0,
   max = 100,
   subtitle,
-  required
+  required,
+  noLayout
 }: InputNumberProps) {
-  return (
+  const content = (
     <>
       <label htmlFor={name} className='block text-sm font-medium texgray-700 mb-1'>
         {label} {required && <span className='text-red-500'>*</span>}
@@ -59,4 +61,5 @@ export default function InputNumber({
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
     </>
   )
+  return noLayout ? content : <Box>{content}</Box>
 }

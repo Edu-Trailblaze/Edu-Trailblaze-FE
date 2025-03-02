@@ -13,7 +13,8 @@ interface InputTextProps {
   helperText?: string // Dùng để hiển thị nội dung tooltip động
   iconLeft?: React.ReactNode
   variant?: 'default' | 'blue'
-  labelClassName?: string // Cho phép custom label
+  labelClassName?: string
+  noLayout?: boolean
 }
 
 export default function InputText({
@@ -29,14 +30,15 @@ export default function InputText({
   helperText,
   iconLeft,
   variant = 'default',
-  labelClassName
+  labelClassName,
+  noLayout
 }: InputTextProps) {
   const inputClass =
     variant === 'blue'
       ? 'w-full p-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
       : 'w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'
 
-  return (
+  const content = (
     <>
       <label htmlFor={name} className={`text-sm font-medium text-gray-700 flex ${labelClassName}`}>
         {label} {required && <span className='text-red-500'>*</span>}{' '}
@@ -82,4 +84,6 @@ export default function InputText({
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
     </>
   )
+
+  return noLayout ? content : <Box>{content}</Box>
 }

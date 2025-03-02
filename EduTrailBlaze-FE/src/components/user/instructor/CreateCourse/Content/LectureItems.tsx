@@ -1,6 +1,7 @@
 import { Clock, MinusCircleIcon, PlusCircleIcon, X, Edit3, HelpCircle } from 'lucide-react'
 import InputText from '../../../../global/Input/InputText'
 import SelectField from '../../../../global/Select/SelectField'
+import InputFile from '../../../../global/Input/InputFile'
 
 interface LectureItemProps {
   lecture: LectureVip
@@ -155,13 +156,38 @@ export default function LectureItem({
 
           <div className='mb-4'>
             <InputText
-              label='Content URL'
-              name='contentURL'
-              value={lecture.contentPDFFile}
-              onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', e.target.value)}
-              placeholder='Enter content URL'
+              label='Content'
+              name='content'
+              value={lecture.content}
+              onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'content', e.target.value)}
+              placeholder='Enter content'
             />
           </div>
+
+          {lecture.lectureType === 'Reading' && (
+            <div className='mb-4'>
+              <InputFile
+                label='Reading File'
+                name='contentPDFFile'
+                value={lecture.contentPDFFile}
+                onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', e.target.value)}
+                accept='application/pdf , application/msword'
+              />
+            </div>
+          )}
+
+          {lecture.lectureType === 'Video' && (
+            <div className='mb-4'>
+              <InputFile
+                label='Input Video'
+                name='contentPDFFile'
+                value={lecture.contentPDFFile}
+                onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', e.target.value)}
+                accept='video/*'
+                noLayout
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

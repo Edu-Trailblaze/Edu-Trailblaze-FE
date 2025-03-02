@@ -94,3 +94,10 @@ interface CreateCourse {
   prerequisites: string
   learningOutcomes: string[]
 }
+
+interface CreateCourseResponse {
+  statusCode: number
+  data: {
+    courseId: number
+  }
+}

@@ -6,7 +6,7 @@ import LectureItem from './LectureItems'
 interface LectureFieldsProps {
   sectionIndex: number
   lectures: LectureVip[]
-  setSections: React.Dispatch<React.SetStateAction<SectionLectureVip[]>>
+  setSections: React.Dispatch<React.SetStateAction<SectionVip[]>>
   updateLectures: (sectionIndex: number, newLectures: LectureVip[]) => void
 }
 
@@ -14,13 +14,21 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
   const [localLectures, setLocalLectures] = useState<LectureVip[]>(lectures)
   const [expandedLectures, setExpandedLectures] = useState<Record<number, boolean>>({})
 
-  useEffect(() => {
-    setLocalLectures(lectures)
-  }, [lectures])
+  // useEffect(() => {
+  //   if (
+  //     lectures.length !== localLectures.length ||
+  //     !lectures.every((lec, i) => JSON.stringify(lec) === JSON.stringify(localLectures[i]))
+  //   ) {
+  //     updateLectures(sectionIndex, localLectures)
+  //   }
+  // }, [localLectures])
 
+  // 🟢 Cập nhật lectures khi state thay đổi
   useEffect(() => {
-    updateLectures(sectionIndex, localLectures)
-  }, [localLectures])
+    if (JSON.stringify(lectures) !== JSON.stringify(localLectures)) {
+      updateLectures(sectionIndex, localLectures)
+    }
+  }, [localLectures, sectionIndex, updateLectures])
 
   const toggleLecture = (lectureIndex: number) => {
     setExpandedLectures((prev) => ({
@@ -30,45 +38,43 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
   }
 
   const addLecture = () => {
-    setLocalLectures([
-      ...localLectures,
+    setLocalLectures((prevLectures) => [
+      ...prevLectures,
       {
         sectionId: Date.now(),
         title: '',
-        lectureType: 'Video',
+        lectureType: 'Video' as LectureType,
         contentPDFFile: '',
         description: '',
         duration: 0,
         content: ''
       }
     ])
+
+    setTimeout(() => {
+      updateLectures(sectionIndex, localLectures)
+    }, 0)
   }
 
   const removeLecture = (index: number) => {
     setLocalLectures(localLectures.filter((_, i) => i !== index))
   }
 
-  const handleLectureChange = (sectionIndex: number, lectureIndex: number, field: keyof LectureVip, value: any) => {
-    setSections((prevSections) => {
-      if (prevSections.length === 0) return prevSections
-
-      const newSections = [...prevSections]
-      newSections[0] = {
-        ...newSections[0],
-        Sections: newSections[0].Sections.map((section, sIndex) =>
-          sIndex === sectionIndex
-            ? {
-                ...section,
-                lectures: section.lectures.map((lecture, lIndex) =>
-                  lIndex === lectureIndex ? { ...lecture, [field]: value } : lecture
-                )
-              }
-            : section
-        )
-      }
-
-      return newSections
+  const handleLocalLectureChange = (
+    sectionIndex: number,
+    lectureIndex: number,
+    field: keyof LectureVip,
+    value: string | number | boolean
+  ) => {
+    setLocalLectures((prevLectures) => {
+      const updatedLectures = prevLectures.map((lecture, index) =>
+        index === lectureIndex ? { ...lecture, [field]: value } : lecture
+      )
+      return updatedLectures
     })
+    setTimeout(() => {
+      updateLectures(sectionIndex, localLectures)
+    }, 0)
   }
 
   return (
@@ -86,7 +92,7 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
           isExpanded={expandedLectures[lectureIndex] || false}
           toggleLecture={toggleLecture}
           removeLecture={removeLecture}
-          handleLectureChange={handleLectureChange}
+          handleLectureChange={handleLocalLectureChange}
           totalLectures={localLectures.length}
         />
       ))}

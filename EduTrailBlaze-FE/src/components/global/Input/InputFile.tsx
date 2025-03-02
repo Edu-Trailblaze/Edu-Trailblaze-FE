@@ -9,11 +9,12 @@ interface InputFileProps {
   preview?: string | null
   icon?: React.ReactNode
   subtitle?: string
+  noLayout?: boolean // ✅ Thêm prop mới
 }
 
-export default function InputFile({ label, name, accept, value, onChange, preview, icon }: InputFileProps) {
-  return (
-    <Box>
+export default function InputFile({ label, name, accept, value, onChange, preview, icon, noLayout }: InputFileProps) {
+  const content = (
+    <>
       <label htmlFor={name} className='text-sm font-medium text-gray-700 mb-1 flex items-center'>
         {icon && <span className='mr-2'>{icon}</span>}
         {label} <span className='text-red-500'>*</span>
@@ -38,6 +39,7 @@ export default function InputFile({ label, name, accept, value, onChange, previe
           </video>
         </div>
       )}
-    </Box>
+    </>
   )
+  return noLayout ? content : <Box>{content}</Box>
 }
