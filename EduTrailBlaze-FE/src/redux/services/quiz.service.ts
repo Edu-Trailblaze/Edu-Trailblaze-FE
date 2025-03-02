@@ -14,9 +14,15 @@ export const quizApi = createApi({
         method: 'GET',
         params: { lectureId }
       })
+    }),
+    createQuiz: build.mutation<any, CreateQuiz>({
+      query: (body) => ({
+        url: `Quiz/create-quiz-details`,
+        method: 'POST',
+        body
+      })
     })
-    // createQuiz: build.mutation
   })
 })
 
-export const { useGetQuizDetailQuery } = quizApi
+export const { useGetQuizDetailQuery, useCreateQuizMutation } = quizApi
