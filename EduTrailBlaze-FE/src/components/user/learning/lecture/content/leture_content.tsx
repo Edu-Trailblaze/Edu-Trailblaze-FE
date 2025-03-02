@@ -5,7 +5,7 @@ import ReadingLecture from './reading/lecture_reading'
 import VideoLecture from './video/lecutre_video'
 import QuizLecture from './quiz/QuizLecture'
 import QuizResult from './quiz/QuizResult'
-import { useGetQuizDetailQuery } from '../../../../redux/services/quiz.service'
+import { useGetQuizDetailQuery } from '../../../../../redux/services/quiz.service'
 
 interface LectureContentProps {
   lecture: ILecture

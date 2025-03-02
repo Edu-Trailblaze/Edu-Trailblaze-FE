@@ -3,12 +3,15 @@ import React, { useState } from 'react'
 import InputText from '../../../global/Input/InputText'
 import InputNumber from '../../../global/Input/InputNumber'
 import Button from '../../../global/Button/Button'
+import { useCreateQuizMutation } from '../../../../redux/services/quiz.service'
 
 const QuizCreator = () => {
-  const [quiz, setQuiz] = useState({
-    lectureId: 0,
+  const [createQuiz, { isLoading, isError, isSuccess }] = useCreateQuizMutation()
+
+  const [quiz, setQuiz] = useState<CreateQuiz>({
+    lectureId: 69,
     title: '',
-    passingScore: 70,
+    passingScore: 0,
     questions: [
       {
         questionText: '',
@@ -22,7 +25,6 @@ const QuizCreator = () => {
     ]
   })
 
-  // Add a new question to the quiz
   const addQuestion = () => {
     setQuiz({
       ...quiz,
@@ -95,8 +97,9 @@ const QuizCreator = () => {
   }
 
   // Save quiz
-  const saveQuiz = () => {
-    console.log(JSON.stringify(quiz, null, 2))
+  const saveQuiz = async () => {
+    const response = await createQuiz(quiz).unwrap()
+    console.log('response', response)
     alert('Quiz saved successfully!')
   }
 
@@ -116,6 +119,7 @@ const QuizCreator = () => {
                 variant='blue'
                 onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
                 placeholder='Input quiz title'
+                required
               />
             </div>
 
@@ -123,9 +127,11 @@ const QuizCreator = () => {
               <InputNumber
                 label={<label className='block text-blue-800 font-semibold  mb-2'>Lecture ID</label>}
                 name='lecutreId'
+                min={0}
                 value={quiz.lectureId}
                 onChange={(e) => setQuiz({ ...quiz, lectureId: parseInt(e.target.value) || 0 })}
                 placeholder='Enter Lecture Id'
+                required
               />
             </div>
 
@@ -138,6 +144,7 @@ const QuizCreator = () => {
                 value={quiz.passingScore}
                 onChange={(e) => setQuiz({ ...quiz, passingScore: parseInt(e.target.value) || 0 })}
                 placeholder='Enter Passing Score'
+                required
               />
             </div>
           </div>
@@ -222,7 +229,7 @@ const QuizCreator = () => {
 
           {/* Save Button */}
           <div className='text-center'>
-            <Button size='lg' variant='DarkBlue' onClick={saveQuiz}>
+            <Button size='lg' variant='DarkBlue' onClick={saveQuiz} isLoading={isLoading}>
               Save
             </Button>
           </div>

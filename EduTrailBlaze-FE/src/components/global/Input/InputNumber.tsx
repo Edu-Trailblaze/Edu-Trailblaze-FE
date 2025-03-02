@@ -5,7 +5,7 @@ interface InputNumberProps {
   label: React.ReactNode
   name: string
   placeholder?: string
-  value?: number
+  value?: number | null
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   prefix?: string
   suffix?: string
@@ -24,15 +24,15 @@ export default function InputNumber({
   onChange,
   prefix,
   suffix,
-  min = 0,
-  max = 100,
+  min,
+  max,
   subtitle,
   required,
   noLayout
 }: InputNumberProps) {
   const content = (
     <>
-      <label htmlFor={name} className='block text-sm font-medium texgray-700 mb-1'>
+      <label htmlFor={name} className='flex text-sm font-medium texgray-700 mb-1'>
         {label} {required && <span className='text-red-500'>*</span>}
       </label>
       <div className='relative rounded-md shadow-sm'>
@@ -46,7 +46,7 @@ export default function InputNumber({
           name={name}
           type='number'
           placeholder={placeholder}
-          value={value}
+          value={value !== undefined && value !== null ? value : ''}
           onChange={onChange}
           min={min}
           max={max}

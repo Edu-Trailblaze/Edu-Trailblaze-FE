@@ -1,20 +1,4 @@
-interface Quiz {
-  lectureId: number
-  title: string
-  passingScore: number
-  createdAt: string
-  updatedAt: string
-  id: number
-}
-
-interface Question {
-  quizzId: number
-  questionText: string
-  createdAt: string
-  updatedAt: string
-  id: number
-}
-
+//GET
 interface Answer {
   questionId: number
   answerText: string
@@ -34,4 +18,21 @@ interface QuestionDetail {
   quizzId: number
   questionText: string
   answers: Answer[]
+}
+
+//POST
+interface CreateQuiz {
+  lectureId: number | null
+  title: string
+  passingScore: number | null
+  questions: CreateQuestion[]
+}
+interface CreateQuestion {
+  questionText: string
+  answers: CreateAnswer[]
+}
+
+interface CreateAnswer {
+  answerText: string
+  isCorrect: boolean
 }

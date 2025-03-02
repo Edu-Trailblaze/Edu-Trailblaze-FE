@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import QuizIntro from './QuizIntro'
 import QuizResult from './QuizResult'
 import QuizQuestion from './QuizQuestion'
-// import Loading from '../../../../animate/Loading'
-import LoadingPage from '../../../../animate/Loading/LoadingPage'
+import LoadingPage from '../../../../../animate/Loading/LoadingPage'
 interface QuizLectureProps {
   quizDetail?: QuizDetail
   onNextLecture: () => void
