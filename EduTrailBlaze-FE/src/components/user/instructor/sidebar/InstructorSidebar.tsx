@@ -9,25 +9,11 @@ import { GrDocumentPerformance } from 'react-icons/gr'
 import { TbTool } from 'react-icons/tb'
 
 const InstructorSidebar = () => {
-
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [sidebarHeight, setSidebarHeight] = useState('100vh');
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [sidebarHeight, setSidebarHeight] = useState('898px')
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let animationFrameId: number | null;
-
     const updateSidebarHeight = () => {
-
-      const footer = document.querySelector('footer');
-      if (footer) {
-        const footerRect = footer.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const sidebarMaxHeight = Math.max(60, windowHeight - Math.max(0, windowHeight - footerRect.top));
-        setSidebarHeight(`${sidebarMaxHeight}px`);
-      } else {
-        setSidebarHeight('100vh');
-
       const footer = document.querySelector('footer') // Target the footer by its ID
       if (footer) {
         const footerHeight = footer.offsetHeight
@@ -37,32 +23,18 @@ const InstructorSidebar = () => {
       } else {
         // If footer isn’t present (e.g., on certain pages), use full viewport height
         setSidebarHeight('100vh')
-
       }
     }
 
-
-    const handleScroll = () => {
-      if (Math.abs(window.scrollY - lastScrollY) > 5) {
-        if (!animationFrameId) {
-          animationFrameId = requestAnimationFrame(() => {
-            updateSidebarHeight();
-            animationFrameId = null;
-          });
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', updateSidebarHeight);
-    updateSidebarHeight();
+    updateSidebarHeight()
+    window.addEventListener('resize', updateSidebarHeight)
+    window.addEventListener('scroll', updateSidebarHeight) // Optional: Update on scroll if needed
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateSidebarHeight);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
+      window.removeEventListener('resize', updateSidebarHeight)
+      window.removeEventListener('scroll', updateSidebarHeight)
+    }
+  }, [])
 
   const menuItems = [
     { icon: <MdOutlineScreenShare className='w-6 h-5' />, label: 'Courses', href: '/instructor/courses' },
@@ -74,11 +46,14 @@ const InstructorSidebar = () => {
 
   return (
     <div
-
-      className={`fixed top-0 left-0 bg-[#2A57D8] text-white flex flex-col z-10 transition-all duration-100 ease-out shadow-lg`}
-      style={{ width: isExpanded ? '200px' : '60px', height: sidebarHeight }}
+      className='fixed top-0 left-0 bg-[#2A57D8] text-white flex flex-col transition-all duration-300 z-10'
+      style={{
+        width: isExpanded ? '240px' : '60px',
+        height: sidebarHeight,
+        maxHeight: sidebarHeight // Ensure it doesn’t exceed the calculated height
+      }}
       onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setTimeout(() => setIsExpanded(false), 500)}
+      onMouseLeave={() => setIsExpanded(false)}
     >
       <div className='py-4 pl-5 flex items-center'>
         <div className='text-white font-bold text-2xl flex items-center'>
