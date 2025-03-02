@@ -68,38 +68,6 @@ export default function InstructorCourses() {
           </div>
         </div>
 
-        {/* Stats Overview */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
-          <div className='bg-white p-4 rounded-lg shadow-sm border border-gray-200'>
-            <p className='text-gray-500 text-sm'>Total Courses</p>
-            <div className='flex items-center mt-1'>
-              <span className='text-2xl font-bold'>12</span>
-              <span className='text-green-500 ml-2 text-sm'>+2 new</span>
-            </div>
-          </div>
-          <div className='bg-white p-4 rounded-lg shadow-sm border border-gray-200'>
-            <p className='text-gray-500 text-sm'>Active Students</p>
-            <div className='flex items-center mt-1'>
-              <span className='text-2xl font-bold'>1,248</span>
-              <span className='text-green-500 ml-2 text-sm'>+8.5%</span>
-            </div>
-          </div>
-          <div className='bg-white p-4 rounded-lg shadow-sm border border-gray-200'>
-            <p className='text-gray-500 text-sm'>Course Completion</p>
-            <div className='flex items-center mt-1'>
-              <span className='text-2xl font-bold'>76%</span>
-              <span className='text-red-500 ml-2 text-sm'>-2.3%</span>
-            </div>
-          </div>
-          <div className='bg-white p-4 rounded-lg shadow-sm border border-gray-200'>
-            <p className='text-gray-500 text-sm'>Revenue This Month</p>
-            <div className='flex items-center mt-1'>
-              <span className='text-2xl font-bold'>$14,320</span>
-              <span className='text-green-500 ml-2 text-sm'>+12%</span>
-            </div>
-          </div>
-        </div>
-
         {/* Courses List */}
         <div className='space-y-4'>
           <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
