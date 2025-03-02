@@ -14,16 +14,6 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
   const [localLectures, setLocalLectures] = useState<LectureVip[]>(lectures)
   const [expandedLectures, setExpandedLectures] = useState<Record<number, boolean>>({})
 
-  // useEffect(() => {
-  //   if (
-  //     lectures.length !== localLectures.length ||
-  //     !lectures.every((lec, i) => JSON.stringify(lec) === JSON.stringify(localLectures[i]))
-  //   ) {
-  //     updateLectures(sectionIndex, localLectures)
-  //   }
-  // }, [localLectures])
-
-  // 🟢 Cập nhật lectures khi state thay đổi
   useEffect(() => {
     if (JSON.stringify(lectures) !== JSON.stringify(localLectures)) {
       updateLectures(sectionIndex, localLectures)

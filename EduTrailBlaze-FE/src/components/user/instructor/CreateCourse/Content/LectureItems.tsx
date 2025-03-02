@@ -19,6 +19,18 @@ interface LectureItemProps {
   totalLectures: number
 }
 
+const lectureIcons = {
+  Reading: <Edit3 className='w-4 h-4' />,
+  Video: <Clock className='w-4 h-4' />,
+  Quiz: <HelpCircle className='w-4 h-4' />
+}
+
+const lectureColors = {
+  Reading: 'bg-purple-100 text-purple-800',
+  Video: 'bg-blue-100 text-blue-800',
+  Quiz: 'bg-amber-100 text-amber-800'
+}
+
 export default function LectureItem({
   lecture,
   lectureIndex,
@@ -29,28 +41,6 @@ export default function LectureItem({
   handleLectureChange,
   totalLectures
 }: LectureItemProps) {
-  const getLectureTypeIcon = (type: 'Reading' | 'Video' | 'Quiz') => {
-    switch (type) {
-      case 'Reading':
-        return <Edit3 className='w-4 h-4' />
-      case 'Video':
-        return <Clock className='w-4 h-4' />
-      case 'Quiz':
-        return <HelpCircle className='w-4 h-4' />
-    }
-  }
-
-  const getLectureTypeColor = (type: 'Reading' | 'Video' | 'Quiz') => {
-    switch (type) {
-      case 'Reading':
-        return 'bg-purple-100 text-purple-800'
-      case 'Video':
-        return 'bg-blue-100 text-blue-800'
-      case 'Quiz':
-        return 'bg-amber-100 text-amber-800'
-    }
-  }
-
   return (
     <div className={`mb-4 border rounded-lg ${isExpanded ? 'border-blue-300 shadow-sm' : 'border-gray-200'}`}>
       {/* Lecture Header - Always visible */}
@@ -72,9 +62,9 @@ export default function LectureItem({
               <span className='font-medium text-gray-900'>
                 Lecture {lectureIndex + 1}: {lecture.title || 'Untitled Lecture'}
               </span>
-              <span className={`ml-2 text-xs px-2 py-1 rounded-full ${getLectureTypeColor(lecture.lectureType)}`}>
+              <span className={`ml-2 text-xs px-2 py-1 rounded-full ${lectureColors[lecture.lectureType]}`}>
                 <span className='flex items-center'>
-                  {getLectureTypeIcon(lecture.lectureType)}
+                  {lectureIcons[lecture.lectureType]}
                   <span className='ml-1'>{lecture.lectureType}</span>
                 </span>
               </span>
@@ -172,19 +162,6 @@ export default function LectureItem({
                 value={lecture.contentPDFFile}
                 onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', e.target.value)}
                 accept='application/pdf , application/msword'
-              />
-            </div>
-          )}
-
-          {lecture.lectureType === 'Video' && (
-            <div className='mb-4'>
-              <InputFile
-                label='Input Video'
-                name='contentPDFFile'
-                value={lecture.contentPDFFile}
-                onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', e.target.value)}
-                accept='video/*'
-                noLayout
               />
             </div>
           )}

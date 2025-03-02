@@ -47,7 +47,6 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
   }
 
   const handleCreateSecLecVip = async () => {
-    courseId = 36
     if (!courseId) {
       alert('❌ CourseId is missing. Please create a course first!')
       return
@@ -78,7 +77,6 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
       const response = await createSecLec(formData).unwrap()
       console.log('✅ Sections Created:', response)
 
-      // Reset state sau khi tạo thành công
       setSections([])
     } catch (error) {
       console.error('Error creating sections:', error)
