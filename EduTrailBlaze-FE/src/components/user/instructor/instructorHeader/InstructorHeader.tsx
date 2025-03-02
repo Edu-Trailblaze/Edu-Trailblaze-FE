@@ -16,17 +16,17 @@ export default function InstructorHeader() {
                 </div>
               </div>
               <div className='hidden sm:ml-6 sm:flex sm:space-x-8 p-4'>
-                <Link href='/instructor/courses'>
+                <Link href='/instructor/dashboard/coursePage'>
                   <span className='border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer'>
                     Courses
                   </span>
                 </Link>
-                <Link href='/instructor/students'>
+                {/* <Link href='/instructor/students'>
                   <span className='border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer'>
                     Students
                   </span>
-                </Link>
-                <Link href='/instructor/analytics'>
+                </Link> */}
+                <Link href='/instructor/dashboard/analyticsPage'>
                   <span className='border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer'>
                     Analytics
                   </span>
