@@ -36,7 +36,7 @@ interface IQuestion {
 }
 
 interface SectionLectureVip {
-  CourseId: number
+  CourseId: number | null
   Sections: SectionVip[]
 }
 

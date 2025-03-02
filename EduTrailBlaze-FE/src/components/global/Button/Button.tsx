@@ -50,30 +50,3 @@ export default function Button({
     </button>
   )
 }
-
-//Button Primary
-//<Button variant="primary">Next: Add Sections</Button>
-
-//Button Secondary voi icon
-{
-  /* 
-  <Button variant="secondary" icon={<PlusCircleIcon className="h-4 w-4" />}>
-Add Item
-</Button> 
-*/
-}
-
-// Button Danger (Xóa)
-{
-  /* <Button variant="danger" isLoading={true}>
-  Deleting...
-</Button> */
-}
-
-// Button Outline (Viền)
-
-{
-  /* <Button variant="outline" size="lg">
-  Cancel
-</Button> */
-}

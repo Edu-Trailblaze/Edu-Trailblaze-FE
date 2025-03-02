@@ -24,9 +24,10 @@ import { useAddCourseMutation } from '../../../../../redux/services/courseDetail
 interface CourseFieldsProps {
   activeTab: string
   setActiveTab: (tab: string) => void
+  setCourseId: (id: number) => void
 }
 
-export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsProps) {
+export default function CourseFields({ activeTab, setActiveTab, setCourseId }: CourseFieldsProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -108,12 +109,10 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
       formData.append('DifficultyLevel', courseForm.difficultyLevel)
       formData.append('CreatedBy', courseForm.createdBy)
 
-      // Xử lý Learning Outcomes (Array)
       courseForm.learningOutcomes.forEach((outcome, index) => {
         formData.append(`LearningOutcomes[${index}]`, outcome)
       })
 
-      // Kiểm tra và thêm file
       if (imageFile) {
         formData.append('ImageURL', imageFile)
       }
@@ -121,7 +120,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
         formData.append('IntroURL', videoFile)
       }
       const response = await createCourse(formData).unwrap()
-      console.log('Course created successfully', response)
+      setCourseId(response.data.courseId)
       setActiveTab('sections')
     } catch (error) {
       console.error('Failed to create course', error)
@@ -131,16 +130,16 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
   return (
     <div className='space-y-6'>
       {/* COURSE TITLE */}
-      <Box>
-        <InputText
-          label='Course Title'
-          name='title'
-          subtitle='A clear, specific title will attract more students'
-          placeholder='Enter a descriptive title for your course'
-          required
-          onChange={handleChange}
-        />
-      </Box>
+
+      <InputText
+        label='Course Title'
+        name='title'
+        subtitle='A clear, specific title will attract more students'
+        placeholder='Enter a descriptive title for your course'
+        required
+        onChange={handleChange}
+        noLayout={false}
+      />
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Input file ảnh */}
@@ -151,17 +150,8 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           onChange={handleImageUpload}
           preview={imagePreview}
           icon={<PhotoIcon className='w-5 h-5 text-blue-500 mr-2' />}
+          noLayout={false}
         />
-        {/* <Box>
-          <InputText
-            label='Course Image URL'
-            name='imageURL'
-            required
-            subtitle='Upload a high-quality image that represents your course'
-            placeholder='Enter the URL of the course image'
-            onChange={handleChange}
-          />
-        </Box> */}
 
         {/* Input file video */}
         <InputFile
@@ -171,87 +161,75 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           onChange={handleVideoUpload}
           preview={videoPreview}
           icon={<VideoIcon className='w-5 h-5 text-red-500 mr-2' />}
+          noLayout={false}
         />
-
-        {/* <Box>
-          <InputText
-            label='Course Video URL'
-            name='introURL'
-            required
-            subtitle='Upload a video that introduces your course'
-            placeholder='Enter the URL of the course video'
-            onChange={handleChange}
-          />
-        </Box> */}
       </div>
 
       {/* Decription */}
-      <Box>
-        <InputText
-          label='Description'
-          name='description'
-          type='textarea'
-          required
-          subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
-          placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
-          onChange={handleChange}
-        />
-      </Box>
+      <InputText
+        label='Description'
+        name='description'
+        type='textarea'
+        required
+        subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
+        placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
+        onChange={handleChange}
+        noLayout={false}
+      />
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Price */}
-        <Box>
-          <InputNumber
-            label='Price (VND)'
-            name='price'
-            subtitle='Set a competitive price or enter 0 for a free course'
-            placeholder='0'
-            required
-            prefix='VND'
-            suffix='VND'
-            // onChange={(e) => setPrice(Number(e.target.value))}
-            onChange={handleChange}
-          />
-        </Box>
+        <InputNumber
+          label='Price (VND)'
+          name='price'
+          subtitle='Set a competitive price or enter 0 for a free course'
+          placeholder='0'
+          required
+          prefix='VND'
+          suffix='VND'
+          onChange={handleChange}
+        />
 
         {/* Difficult Level */}
-        <Box>
-          <SelectField
-            label='Difficulty Level'
-            name='difficultyLevel'
-            required
-            subtitle='Clearly specify who your course is intended for '
-            options={['Beginner', 'Intermediate', 'Advanced']}
-            onChange={handleChange}
-          />
-        </Box>
+
+        <SelectField
+          label='Difficulty Level'
+          name='difficultyLevel'
+          required
+          subtitle='Clearly specify who your course is intended for '
+          options={['Beginner', 'Intermediate', 'Advanced']}
+          onChange={handleChange}
+          noLayout={false}
+        />
       </div>
 
       {/* Instructor Name */}
-      <Box>
-        <InputText
-          label='Instructor Name'
-          name='createdBy'
-          required
-          subtitle='Enter the name of the instructor who created this course'
-          placeholder='Enter the name of the instructor'
-          onChange={handleChange}
-        />
-      </Box>
+
+      <InputText
+        label='Instructor Name'
+        name='createdBy'
+        required
+        subtitle='Enter the name of the instructor who created this course'
+        placeholder='Enter the name of the instructor'
+        onChange={handleChange}
+        noLayout={true}
+      />
+
       {/* Prerequisites */}
-      <Box>
-        <InputText
-          label='Prerequisites'
-          name='prerequisites'
-          required
-          helperText='Knowledge or skills students need before taking this course'
-          placeholder='Knowledge or skills students need before taking this course'
-          subtitle='Be specific about required knowledge to ensure student success'
-          onChange={handleChange}
-        />
-      </Box>
+
+      <InputText
+        label='Prerequisites'
+        name='prerequisites'
+        required
+        helperText='Knowledge or skills students need before taking this course'
+        placeholder='Knowledge or skills students need before taking this course'
+        subtitle='Be specific about required knowledge to ensure student success'
+        onChange={handleChange}
+        noLayout={false}
+      />
 
       {/* Learning Outcomes */}
+
       <Box>
         <div className='flex justify-between items-center mb-3'>
           <label className=' text-sm font-medium text-gray-700 flex items-center'>
@@ -263,14 +241,9 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
               </span>
             </span>
           </label>
-          <button
-            type='button'
-            onClick={addOutcome}
-            className='inline-flex items-center px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200'
-          >
-            <PlusCircleIcon className='h-4 w-4 mr-1' />
+          <Button variant='Blue' icon={<PlusCircleIcon className='h-4 w-4 mr-1' />} onClick={addOutcome}>
             Add Outcome
-          </button>
+          </Button>
         </div>
         <div className='space-y-3'>
           {courseForm.learningOutcomes.map((outcome, index) => (

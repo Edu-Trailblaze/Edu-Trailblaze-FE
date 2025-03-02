@@ -1,45 +1,40 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { MdOutlineScreenShare } from 'react-icons/md';
-import { BsChatLeftText } from 'react-icons/bs';
-import { GrResources } from 'react-icons/gr';
-import { GrDocumentPerformance } from 'react-icons/gr';
-import { TbTool } from 'react-icons/tb';
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { MdOutlineScreenShare } from 'react-icons/md'
+import { BsChatLeftText } from 'react-icons/bs'
+import { GrResources } from 'react-icons/gr'
+import { GrDocumentPerformance } from 'react-icons/gr'
+import { TbTool } from 'react-icons/tb'
 
 const InstructorSidebar = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [sidebarHeight, setSidebarHeight] = useState('898px');
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [sidebarHeight, setSidebarHeight] = useState('898px')
 
   useEffect(() => {
     const updateSidebarHeight = () => {
-      const footer = document.querySelector('footer'); // Target the footer by its ID
+      const footer = document.querySelector('footer') // Target the footer by its ID
       if (footer) {
-        const footerHeight = footer.offsetHeight;
-        console.log('Footer height:', footerHeight);
-        const windowHeight = window.innerHeight;
-        console.log('Window height:', windowHeight);
-        const sidebarMaxHeight = windowHeight - footerHeight; // Subtract footer height and add a small padding (20px)
-        setSidebarHeight(`${sidebarMaxHeight}px`);
+        const footerHeight = footer.offsetHeight
+        const windowHeight = window.innerHeight
+        const sidebarMaxHeight = windowHeight - footerHeight // Subtract footer height and add a small padding (20px)
+        setSidebarHeight(`${sidebarMaxHeight}px`)
       } else {
         // If footer isn’t present (e.g., on certain pages), use full viewport height
-        setSidebarHeight('100vh');
+        setSidebarHeight('100vh')
       }
-    };
+    }
 
-    
-    console.log('Sidebar height:', sidebarHeight);
-
-    updateSidebarHeight();
-    window.addEventListener('resize', updateSidebarHeight);
-    window.addEventListener('scroll', updateSidebarHeight); // Optional: Update on scroll if needed
+    updateSidebarHeight()
+    window.addEventListener('resize', updateSidebarHeight)
+    window.addEventListener('scroll', updateSidebarHeight) // Optional: Update on scroll if needed
 
     return () => {
-      window.removeEventListener('resize', updateSidebarHeight);
-      window.removeEventListener('scroll', updateSidebarHeight);
-    };
-  }, []);
+      window.removeEventListener('resize', updateSidebarHeight)
+      window.removeEventListener('scroll', updateSidebarHeight)
+    }
+  }, [])
 
   const menuItems = [
     { icon: <MdOutlineScreenShare className='w-6 h-5' />, label: 'Courses', href: '/instructor/courses' },
@@ -47,7 +42,7 @@ const InstructorSidebar = () => {
     { icon: <GrDocumentPerformance className='w-6 h-5' />, label: 'Performance', href: '/instructor/performance' },
     { icon: <TbTool className='w-6 h-5' />, label: 'Tools', href: '/instructor/tools' },
     { icon: <GrResources className='w-6 h-5' />, label: 'Resources', href: '/instructor/resources' }
-  ];
+  ]
 
   return (
     <div
@@ -55,7 +50,7 @@ const InstructorSidebar = () => {
       style={{
         width: isExpanded ? '240px' : '60px',
         height: sidebarHeight,
-        maxHeight: sidebarHeight, // Ensure it doesn’t exceed the calculated height
+        maxHeight: sidebarHeight // Ensure it doesn’t exceed the calculated height
       }}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
@@ -80,7 +75,7 @@ const InstructorSidebar = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default InstructorSidebar;
+export default InstructorSidebar

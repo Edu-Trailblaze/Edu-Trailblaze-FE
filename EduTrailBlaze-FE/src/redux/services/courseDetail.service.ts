@@ -23,7 +23,7 @@ export const courseApi = createApi({
       }
     }),
 
-    addCourse: build.mutation<any, FormData>({
+    addCourse: build.mutation<CreateCourseResponse, FormData>({
       query(body) {
         try {
           return {
