@@ -7,14 +7,13 @@ import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 
-import DetailModal from '@/components/admin/Modal/DetailModal'
-import CourseFormModalCreate from '@/components/admin/Modal/CourseFormModal/CourseFormModalCreate'
-import CourseFormModalEdit from '@/components/admin/Modal/CourseFormModal/CourseFormModalEdit'
-
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from 'lucide-react'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import api from '@/components/config/axios'
+import CourseFormModalCreate from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalCreate'
+import CourseFormModalEdit from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalEdit'
+import DetailModal from '../../../../../components/admin/modal/DetailModal'
 
 type Course = {
   id?: number

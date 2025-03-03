@@ -1,7 +1,7 @@
 import Box from '../Box/Box'
 import { CircleHelp } from 'lucide-react'
 interface InputTextProps {
-  label: string
+  label?: React.ReactNode
   name: string
   placeholder?: string
   value?: string
@@ -12,6 +12,9 @@ interface InputTextProps {
   required?: boolean
   helperText?: string // Dùng để hiển thị nội dung tooltip động
   iconLeft?: React.ReactNode
+  variant?: 'default' | 'blue'
+  labelClassName?: string
+  noLayout?: boolean
 }
 
 export default function InputText({
@@ -25,11 +28,19 @@ export default function InputText({
   subtitle,
   required,
   helperText,
-  iconLeft
+  iconLeft,
+  variant = 'default',
+  labelClassName,
+  noLayout
 }: InputTextProps) {
-  return (
+  const inputClass =
+    variant === 'blue'
+      ? 'w-full p-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+      : 'w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'
+
+  const content = (
     <>
-      <label htmlFor={name} className=' text-sm font-medium text-gray-700 flex'>
+      <label htmlFor={name} className={`text-sm font-medium text-gray-700 flex ${labelClassName}`}>
         {label} {required && <span className='text-red-500'>*</span>}{' '}
         {helperText && (
           <span className='ml-1 group relative'>
@@ -54,7 +65,7 @@ export default function InputText({
             value={value}
             rows={rows}
             onChange={onChange}
-            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'
+            className={inputClass}
           />
         ) : (
           <input
@@ -64,7 +75,7 @@ export default function InputText({
             placeholder={placeholder}
             value={value}
             onChange={onChange}
-            className={`w-full p-3 ${iconLeft ? 'pl-9' : ''} border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200`}
+            className={`${inputClass} ${iconLeft ? 'pl-9' : ''}`}
           />
         )}
       </div>
@@ -73,4 +84,6 @@ export default function InputText({
       <p className='mt-1 text-xs text-gray-500'>{subtitle}</p>
     </>
   )
+
+  return noLayout ? content : <Box>{content}</Box>
 }

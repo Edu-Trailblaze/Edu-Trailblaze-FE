@@ -35,9 +35,22 @@ export const lectureApi = createApi({
       query: (ids) => ({
         url: `Lecture/get-section-lecture?${ids.map((id) => `sectionIds=${id}`).join('&')}`
       })
+    }),
+
+    createSectionLectureVip: build.mutation<ResponseMessage, FormData>({
+      query: (formData) => ({
+        url: 'Lecture/create-section-lecture-vip',
+        method: 'POST',
+        body: formData
+      })
     })
   })
 })
 
-export const { useGetAllLectureQuery, useGetLectureQuery, useGetLectureByConditionsQuery, useGetSectionLectureQuery } =
-  lectureApi
+export const {
+  useGetAllLectureQuery,
+  useGetLectureQuery,
+  useGetLectureByConditionsQuery,
+  useGetSectionLectureQuery,
+  useCreateSectionLectureVipMutation
+} = lectureApi

@@ -1,14 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { MenuIcon } from 'lucide-react'
-import { useGetCourseDetailsQuery } from '../../../redux/services/courseDetail.service'
-import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../redux/services/lecture.service'
-import { useGetVideoByConditionsQuery } from '../../../redux/services/video.service'
-import { useParams, useRouter } from 'next/navigation'
-import Loading from '../../animate/Loading'
 import LectureSideBar from './sidebar/lecture_side_bar'
 import LectureContent from './content/leture_content'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
+import { useParams, useRouter } from 'next/navigation'
+import { useGetCourseDetailsQuery } from '../../../../redux/services/courseDetail.service'
+import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
+import { useGetVideoByConditionsQuery } from '../../../../redux/services/video.service'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()

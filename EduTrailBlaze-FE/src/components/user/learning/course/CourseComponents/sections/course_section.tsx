@@ -4,7 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Link from 'next/link'
 import SlowMotionVideoIcon from '@mui/icons-material/SlowMotionVideo'
-import Modal from '../../../../global/Modal/Modal'
+import Modal from '../../../../../global/Modal/Modal'
 
 interface CourseSectionProps {
   courseDetails: ICourseDetails

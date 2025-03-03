@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function WebFooter() {
   return (
-    <footer className='relative bg-gradient-to-bl from-gray-900 via-black to-sky-950 to to-95% text-gray-50'>
+    <footer id='footer' className='footer relative bg-gradient-to-bl from-gray-900 via-black to-sky-950 to to-95% text-gray-50'>
       <div className='container mx-auto px-6 py-6'>
         <div className='grid grid-cols-12'>
           <div className='col-span-12'>

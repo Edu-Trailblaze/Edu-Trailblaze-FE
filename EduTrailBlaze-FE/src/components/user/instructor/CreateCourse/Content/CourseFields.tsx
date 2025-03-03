@@ -19,66 +19,127 @@ import SelectField from '../../../../global/Select/SelectField'
 import InputNumber from '../../../../global/Input/InputNumber'
 import InputFile from '../../../../global/Input/InputFile'
 import Box from '../../../../global/Box/Box'
+import { useAddCourseMutation } from '../../../../../redux/services/courseDetail.service'
 
 interface CourseFieldsProps {
   activeTab: string
   setActiveTab: (tab: string) => void
+  setCourseId: (id: number) => void
 }
 
-export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [instructor, setInstructor] = useState('')
-  const [prerequisites, setPrerequisites] = useState('')
-  const [outcomes, setOutcomes] = useState<string[]>([''])
-
+export default function CourseFields({ activeTab, setActiveTab, setCourseId }: CourseFieldsProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
-  const [price, setPrice] = useState(0)
-  const [difficultLevel, setDifficultLevel] = useState('Beginner')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [courseForm, setCourseForm] = useState<CreateCourse>({
+    title: '',
+    description: '',
+    prerequisites: '',
+    imageURL: '',
+    introURL: '',
+    price: 0,
+    difficultyLevel: 'Beginner',
+    learningOutcomes: [''],
+    createdBy: ''
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setCourseForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const [createCourse, { isLoading: isCreateCourse }] = useAddCourseMutation()
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => setImagePreview(e.target?.result as string)
-      reader.readAsDataURL(file)
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImagePreview(reader.result as string)
     }
+
+    setImageFile(file) // ✅ Lưu file thay vì Base64
+    reader.readAsDataURL(file)
   }
 
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      const videoURL = URL.createObjectURL(file)
-      setVideoPreview(videoURL)
-    }
-  }
+    if (!file) return
 
+    const videoURL = URL.createObjectURL(file)
+    setVideoPreview(videoURL)
+
+    // ✅ Lưu file thay vì chỉ lưu URL
+    setVideoFile(file)
+  }
   // Add a new learning outcome
   const addOutcome = () => {
-    setOutcomes([...outcomes, ''])
+    setCourseForm((prev) => ({
+      ...prev,
+      learningOutcomes: [...prev.learningOutcomes, '']
+    }))
   }
 
   const removeOutcome = (index: number) => {
-    setOutcomes(outcomes.filter((_, i) => i !== index))
+    setCourseForm((prev) => ({
+      ...prev,
+      learningOutcomes: prev.learningOutcomes.filter((_, i) => i !== index)
+    }))
   }
 
   const updateOutcome = (index: number, value: string) => {
-    setOutcomes(outcomes.map((outcome, i) => (i === index ? value : outcome)))
+    setCourseForm((prev) => ({
+      ...prev,
+      learningOutcomes: prev.learningOutcomes.map((outcome, i) => (i === index ? value : outcome))
+    }))
   }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    try {
+      event.preventDefault()
+      const formData = new FormData()
+      formData.append('Title', courseForm.title)
+      formData.append('Description', courseForm.description)
+      formData.append('Prerequisites', courseForm.prerequisites)
+      formData.append('Price', courseForm.price.toString()) // Chuyển số thành string
+      formData.append('DifficultyLevel', courseForm.difficultyLevel)
+      formData.append('CreatedBy', courseForm.createdBy)
+
+      courseForm.learningOutcomes.forEach((outcome, index) => {
+        formData.append(`LearningOutcomes[${index}]`, outcome)
+      })
+
+      if (imageFile) {
+        formData.append('ImageURL', imageFile)
+      }
+      if (videoFile) {
+        formData.append('IntroURL', videoFile)
+      }
+      const response = await createCourse(formData).unwrap()
+      setCourseId(response.data.courseId)
+      setActiveTab('sections')
+    } catch (error) {
+      console.error('Failed to create course', error)
+    }
+  }
+
   return (
     <div className='space-y-6'>
       {/* COURSE TITLE */}
-      <Box>
-        <InputText
-          label='Course Title'
-          name='title'
-          subtitle='A clear, specific title will attract more students'
-          placeholder='Enter a descriptive title for your course'
-          required
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </Box>
+
+      <InputText
+        label='Course Title'
+        name='title'
+        subtitle='A clear, specific title will attract more students'
+        placeholder='Enter a descriptive title for your course'
+        required
+        onChange={handleChange}
+        noLayout={false}
+      />
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Input file ảnh */}
@@ -89,6 +150,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           onChange={handleImageUpload}
           preview={imagePreview}
           icon={<PhotoIcon className='w-5 h-5 text-blue-500 mr-2' />}
+          noLayout={false}
         />
 
         {/* Input file video */}
@@ -99,74 +161,75 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
           onChange={handleVideoUpload}
           preview={videoPreview}
           icon={<VideoIcon className='w-5 h-5 text-red-500 mr-2' />}
+          noLayout={false}
         />
       </div>
 
       {/* Decription */}
-      <Box>
-        <InputText
-          label='Description'
-          name='description'
-          type='textarea'
-          required
-          subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
-          placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
-        />
-      </Box>
+      <InputText
+        label='Description'
+        name='description'
+        type='textarea'
+        required
+        subtitle="Describe your course in at least 200 words to help students understand what they'll learn"
+        placeholder="Provide a detailed description of your course, including what students will learn, who it's for, and why they should take it."
+        onChange={handleChange}
+        noLayout={false}
+      />
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Price */}
-        <Box>
-          <InputNumber
-            label='Price (VND)'
-            name='price'
-            subtitle='Set a competitive price or enter 0 for a free course'
-            placeholder='0'
-            required
-            prefix='VND'
-            suffix='VND'
-            onChange={(e) => setPrice(Number(e.target.value))}
-          />
-        </Box>
+        <InputNumber
+          label='Price (VND)'
+          name='price'
+          subtitle='Set a competitive price or enter 0 for a free course'
+          placeholder='0'
+          required
+          prefix='VND'
+          suffix='VND'
+          onChange={handleChange}
+        />
 
         {/* Difficult Level */}
-        <Box>
-          <SelectField
-            label='Difficult Level'
-            name='difficultLevel'
-            required
-            subtitle='Clearly specify who your course is intended for '
-            options={['Beginner', 'Intermidate', 'Advanced']}
-            onChange={(e) => setDifficultLevel(e.target.value)}
-          />
-        </Box>
+
+        <SelectField
+          label='Difficulty Level'
+          name='difficultyLevel'
+          required
+          subtitle='Clearly specify who your course is intended for '
+          options={['Beginner', 'Intermediate', 'Advanced']}
+          onChange={handleChange}
+          noLayout={false}
+        />
       </div>
 
       {/* Instructor Name */}
-      <Box>
-        <InputText
-          label='Instructor Name'
-          name='instructorName'
-          required
-          subtitle='Enter the name of the instructor who created this course'
-          placeholder='Enter the name of the instructor'
-          onChange={(e) => setInstructor(e.target.value)}
-        />
-      </Box>
+
+      <InputText
+        label='Instructor Name'
+        name='createdBy'
+        required
+        subtitle='Enter the name of the instructor who created this course'
+        placeholder='Enter the name of the instructor'
+        onChange={handleChange}
+        noLayout={true}
+      />
+
       {/* Prerequisites */}
-      <Box>
-        <InputText
-          label='Prerequisites'
-          name='prerequisites'
-          required
-          helperText='Knowledge or skills students need before taking this course'
-          placeholder='Knowledge or skills students need before taking this course'
-          subtitle='Be specific about required knowledge to ensure student success'
-          onChange={(e) => setPrerequisites(e.target.value)}
-        />
-      </Box>
+
+      <InputText
+        label='Prerequisites'
+        name='prerequisites'
+        required
+        helperText='Knowledge or skills students need before taking this course'
+        placeholder='Knowledge or skills students need before taking this course'
+        subtitle='Be specific about required knowledge to ensure student success'
+        onChange={handleChange}
+        noLayout={false}
+      />
 
       {/* Learning Outcomes */}
+
       <Box>
         <div className='flex justify-between items-center mb-3'>
           <label className=' text-sm font-medium text-gray-700 flex items-center'>
@@ -178,17 +241,12 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
               </span>
             </span>
           </label>
-          <button
-            type='button'
-            onClick={addOutcome}
-            className='inline-flex items-center px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200'
-          >
-            <PlusCircleIcon className='h-4 w-4 mr-1' />
+          <Button variant='Blue' icon={<PlusCircleIcon className='h-4 w-4 mr-1' />} onClick={addOutcome}>
             Add Outcome
-          </button>
+          </Button>
         </div>
         <div className='space-y-3'>
-          {outcomes.map((outcome, index) => (
+          {courseForm.learningOutcomes.map((outcome, index) => (
             <div key={index} className='flex items-center'>
               <div className='flex-grow relative rounded-md shadow-sm'>
                 <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -202,7 +260,7 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
                   placeholder={`Outcome ${index + 1}, e.g., "Create professional web applications using React"`}
                 />
               </div>
-              {outcomes.length > 1 && (
+              {courseForm.learningOutcomes.length > 1 && (
                 <button
                   type='button'
                   onClick={() => removeOutcome(index)}
@@ -219,14 +277,11 @@ export default function CourseFields({ activeTab, setActiveTab }: CourseFieldsPr
 
       {/* Next button */}
       <div className='flex justify-end py-5'>
-        <Button
-          icon={<PlusCircleIcon className='h-4 w-4' />}
-          size='ml'
-          onClick={() => setActiveTab('sections')}
-          variant='primary'
-        >
-          Next: Add Sections
-        </Button>
+        <form onSubmit={handleSubmit}>
+          <Button icon={<PlusCircleIcon className='h-4 w-4' />} size='ml' variant='primary' isLoading={isCreateCourse}>
+            {isCreateCourse ? 'Creating...' : 'Next: Add Sections'}
+          </Button>
+        </form>
       </div>
     </div>
   )

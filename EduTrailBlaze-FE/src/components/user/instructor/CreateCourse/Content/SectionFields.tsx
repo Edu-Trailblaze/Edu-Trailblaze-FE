@@ -1,113 +1,119 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from '../../../../global/Button/Button'
-import { Input } from 'postcss'
 import InputText from '../../../../global/Input/InputText'
 import { ArrowLeftIcon, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
 import LectureFields from './LectureFields'
+import { useCreateSectionLectureVipMutation } from '../../../../../redux/services/lecture.service'
 
-export default function SectionFields() {
-  // const [sections, setSections] = useState<SectionLecture[]>([])
+interface SectionFieldsProps {
+  courseId: number | null
+  activeTab: string
+  setActiveTab: (tab: string) => void
+}
 
-  const [sections, setSections] = useState<ISectionTest[]>([]) // SectionLecture[]
-  const [collapsedSections, setCollapsedSections] = useState<boolean[]>(sections.map(() => false))
+export default function SectionFields({ courseId, setActiveTab }: SectionFieldsProps) {
+  const [createSecLec, { isLoading: loadingSecLec }] = useCreateSectionLectureVipMutation()
+  const [sections, setSections] = useState<SectionVip[]>([])
+  const [collapsedSections, setCollapsedSections] = useState<boolean[]>([])
+
+  useEffect(() => {
+    setCollapsedSections(sections.map(() => false))
+  }, [sections])
 
   const addSection = () => {
-    const tempId = Date.now()
-    const newSection = {
-      id: tempId,
-      title: '',
-      description: '',
-      lectures: [
-        {
-          id: tempId,
-          title: '',
-          type: '' as 'Video' | 'Reading' | 'Quiz',
-          contentUrl: '',
-          description: '',
-          duration: 0
-        }
-      ]
-    }
-    setSections([...sections, newSection])
-    setCollapsedSections([...collapsedSections, false])
+    setSections((prev) => [...prev, { id: Date.now(), title: '', description: '', lectures: [] }])
+    setCollapsedSections((prev) => [...prev, false])
   }
 
-  // Xóa Section
   const removeSection = (sectionIndex: number) => {
-    setSections(sections.filter((_, index) => index !== sectionIndex))
-    setCollapsedSections(collapsedSections.filter((_, index) => index !== sectionIndex))
+    setSections((prev) => prev.filter((_, index) => index !== sectionIndex))
+    setCollapsedSections((prev) => prev.filter((_, index) => index !== sectionIndex))
   }
 
-  // Toggle Collapse Section
-  const toggleCollapse = (index: number) => {
-    setCollapsedSections(collapsedSections.map((val, i) => (i === index ? !val : val)))
-  }
-
-  const removeLecture = (sectionIndex: number, lectureIndex: number) => {
-    setSections((prevSection) => {
-      return prevSection.map((section, sIndex) => {
-        if (sIndex === sectionIndex) {
-          return {
-            ...section,
-            lectures: section.lectures.filter((_, lIndex) => lIndex !== lectureIndex)
-          }
-        }
-        return section
-      })
-    })
-  }
-
-  const handleLectureChange = (
-    sectionIndex: number,
-    lectureIndex: number,
-    field: keyof ILectureTest,
-    value: string | boolean | number
-  ) => {
-    setSections((prevSection) =>
-      prevSection.map((section, sIndex) => {
-        if (sIndex === sectionIndex) {
-          return {
-            ...section,
-            lectures: section.lectures.map((lecture, lIndex) => {
-              if (lIndex === lectureIndex) {
-                return {
-                  ...lecture,
-                  [field]: value
-                }
-              }
-              return lecture
-            })
-          }
-        }
-        return section
-      })
+  const updateSection = (sectionIndex: number, field: keyof SectionVip, value: string) => {
+    setSections((prev) =>
+      prev.map((section, index) => (index === sectionIndex ? { ...section, [field]: value } : section))
     )
   }
+
+  const updateLectures = (sectionIndex: number, newLectures: LectureVip[]) => {
+    setSections((prev) =>
+      prev.map((section, index) => (index === sectionIndex ? { ...section, lectures: newLectures } : section))
+    )
+  }
+
+  const toggleCollapse = (index: number) => {
+    setCollapsedSections((prev) => prev.map((val, i) => (i === index ? !val : val)))
+  }
+
+  const handleCreateSecLecVip = async () => {
+    if (!courseId) {
+      alert('❌ CourseId is missing. Please create a course first!')
+      return
+    }
+
+    if (sections.length === 0) {
+      alert('⚠️ Please add at least one section.')
+      return
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append('CourseId', courseId.toString())
+
+      sections.forEach((section, sIndex) => {
+        formData.append(`Sections[${sIndex}].Title`, section.title)
+        formData.append(`Sections[${sIndex}].Description`, section.description)
+
+        section.lectures.forEach((lecture, lIndex) => {
+          formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Title`, lecture.title)
+          formData.append(`Sections[${sIndex}].Lectures[${lIndex}].LectureType`, lecture.lectureType)
+          formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Description`, lecture.description)
+          formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Duration`, lecture.duration.toString())
+          formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Content`, lecture.content)
+        })
+      })
+
+      const response = await createSecLec(formData).unwrap()
+      console.log('✅ Sections Created:', response)
+
+      setSections([])
+    } catch (error) {
+      console.error('Error creating sections:', error)
+    }
+  }
+
   return (
     <div className='space-y-6'>
       <h2 className='text-xl font-medium text-gray-900 mb-4'>Course Content</h2>
+
       {sections.map((section, sectionIndex) => (
-        <div key={section.id} className='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden'>
+        <div key={section.id} className='bg-white rounded-lg shadow-sm border border-gray-200'>
           <div className='p-4 bg-blue-50 border-b border-gray-200 flex justify-between items-center'>
             <h3 className='font-medium text-blue-800'>
-              Section {sectionIndex + 1}: {section.title || 'Untilted Section'}
+              Section {sectionIndex + 1}: {section.title || 'Untitled Section'}
             </h3>
             <div className='flex space-x-2'>
-              <Button size='sm' variant='customBlue' onClick={() => toggleCollapse(sectionIndex)}>
+              <Button size='sm' variant='Blue' onClick={() => toggleCollapse(sectionIndex)}>
                 {collapsedSections[sectionIndex] ? 'Open' : 'Close'}
               </Button>
-              <Button size='sm' variant='customRed' onClick={() => removeSection(sectionIndex)}>
+              <Button size='sm' variant='Red' onClick={() => removeSection(sectionIndex)}>
                 Delete
               </Button>
             </div>
           </div>
 
-          {/* Section Title */}
           {!collapsedSections[sectionIndex] && (
             <div className='p-4 space-y-4'>
-              <InputText label='Section Title' placeholder='Enter Section Title' name='sectionTitle' required />
+              <InputText
+                label='Section Title'
+                placeholder='Enter Section Title'
+                name='sectionTitle'
+                required
+                value={section.title}
+                onChange={(e) => updateSection(sectionIndex, 'title', e.target.value)}
+              />
 
-              {/* Section Description */}
               <InputText
                 label='Section Description'
                 placeholder='Enter Section Description'
@@ -115,30 +121,36 @@ export default function SectionFields() {
                 type='textarea'
                 required
                 rows={4}
+                value={section.description}
+                onChange={(e) => updateSection(sectionIndex, 'description', e.target.value)}
               />
 
-              {/* Lectures */}
               <LectureFields
-                section={section}
                 sectionIndex={sectionIndex}
-                removeLecture={removeLecture}
-                handleLectureChange={handleLectureChange}
-                sections={sections}
+                lectures={section.lectures}
                 setSections={setSections}
+                updateLectures={updateLectures}
               />
             </div>
           )}
         </div>
       ))}
-      <Button variant='customGreen' onClick={addSection} icon={<PlusCircleIcon className='h-4 w-4' />} size='ml'>
+
+      <Button variant='Green' onClick={addSection} icon={<PlusCircleIcon className='h-4 w-4' />} size='ml'>
         Add New Section
       </Button>
 
       <div className='mt-8 flex justify-between'>
-        <Button variant='outline' icon={<ArrowLeftIcon className='h-5 w-5 mr-1' />}>
+        <Button
+          variant='outline'
+          icon={<ArrowLeftIcon className='h-5 w-5 mr-1' />}
+          onClick={() => setActiveTab('details')}
+        >
           Back: Course Details
         </Button>
-        <Button variant='primary'>Create Course</Button>
+        <Button variant='primary' onClick={handleCreateSecLecVip} isLoading={loadingSecLec}>
+          {loadingSecLec ? 'Creating...' : 'Create Course'}
+        </Button>
       </div>
     </div>
   )

@@ -82,3 +82,22 @@ interface ICourseInstructor {
   userName: string
   email: string
 }
+
+interface CreateCourse {
+  title: string
+  imageURL: string
+  introURL: string
+  description: string
+  price: number
+  difficultyLevel: string
+  createdBy: string
+  prerequisites: string
+  learningOutcomes: string[]
+}
+
+interface CreateCourseResponse {
+  statusCode: number
+  data: {
+    courseId: number
+  }
+}

@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
-import SkeletonCard from '../../../../animate/skeleton/skeleton_card'
-import { formatCurrency } from '../../../../../utils/format'
-import { useGetAllCoursesQuery } from '../../../../../redux/services/courseDetail.service'
+import SkeletonCard from '../../../../../animate/skeleton/skeleton_card'
+import { formatCurrency } from '../../../../../../utils/format'
+import { useGetAllCoursesQuery } from '../../../../../../redux/services/courseDetail.service'
 
 export default function CourseSuggestion() {
   const { data, isLoading, isFetching } = useGetAllCoursesQuery()

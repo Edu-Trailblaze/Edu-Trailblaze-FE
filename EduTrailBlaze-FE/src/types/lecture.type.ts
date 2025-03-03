@@ -25,19 +25,38 @@ interface ISection {
   duration: string
   id: number
 }
-
-interface ILectureTest {
-  id: number
-  title: string
-  type: 'Video' | 'Reading' | 'Quiz'
-  contentUrl: string
-  description: string
-  duration: number
+interface IAnswer {
+  answerText: string
+  isCorrect: boolean
 }
 
-interface ISectionTest {
-  id: number
+interface IQuestion {
+  questionText: string
+  answers: IAnswer[]
+}
+
+interface SectionLectureVip {
+  CourseId: number | null
+  Sections: SectionVip[]
+}
+
+interface SectionVip {
+  id?: number // Thêm id (chỉ dùng trong React)
   title: string
   description: string
-  lectures: ILectureTest[]
+  lectures: LectureVip[]
+}
+interface LectureVip {
+  sectionId: number
+  title: string
+  content: string
+  duration: number
+  description: string
+  lectureType: LectureType
+  contentPDFFile: string
+}
+
+interface ResponseMessage {
+  statusCode: number
+  message: string
 }
