@@ -45,7 +45,11 @@ const newsFields: { label: string; accessor: keyof News }[] = [
 
 
 export default function NewsManagement() {
+
+  const [allNews, setAllNews] = useState<News[]>([]);
   const [news, setNews] = useState<News[]>([]);
+  const [newsData, setNewsData] = useState<News[]>([]);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
@@ -60,8 +64,6 @@ export default function NewsManagement() {
   //filter
   const [isFilterOpen, setFilterOpen] = useState(false);
 
-
-
   //modal
   const [isAddModalOpen, setAddModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -72,12 +74,12 @@ export default function NewsManagement() {
     imageUrl: '',
   });
 
-
-
   const fetchNews = async () => {
     try {
       const response = await api.get('/News')
       setNews(response.data)
+      setAllNews(response.data); // Lưu dữ liệu gốc
+
     } catch (error) {
       console.error('Error fetching news:', error)
     } finally {
@@ -88,13 +90,6 @@ export default function NewsManagement() {
   useEffect(() => {
     fetchNews()
   }, [])
-
-
-
-
- 
-
-  
 
   const handleAddNews = async (newNews: NewsCreate) => {
     try {
@@ -141,7 +136,6 @@ export default function NewsManagement() {
     }
   };
 
-
   const handleDeleteNews = async (newsId: number) => {
     if (!window.confirm("Are you sure you want to delete this news?")) return;
     try {
@@ -161,6 +155,7 @@ export default function NewsManagement() {
       [column]: !prev[column]
     }));
   };
+
   const handleApplySort = (newVisibleColumns: Record<keyof News, boolean>) => {
     setVisibleColumns(newVisibleColumns);
     setSortOpen(false);
@@ -233,17 +228,28 @@ export default function NewsManagement() {
               </button>
               {isFilterOpen && (
                 <NewsFilter
+                  data={newsData} // Thêm prop data vào đây
                   columns={newsFields}
                   visibleColumns={tempVisibleColumns}
                   onApply={handleApplySort}
                   onClose={() => setFilterOpen(false)}
-                  onClear={() =>
-                    setTempVisibleColumns(
-                      Object.fromEntries(newsFields.map(field => [field.accessor, true]))
-                    )
-                  }
+                  onClear={() => {
+                    setTempVisibleColumns(Object.fromEntries(newsFields.map(field => [field.accessor, true])));
+                    setNews(allNews); 
+                    console.log("Filter cleared, resetting data.");
+
+                  }}
                   onFilterApply={(filters) => {
-                    console.log("Applied filters: ", filters);
+                    console.log("Applying filter:", filters);
+
+                    const filteredNews = allNews.filter((item) => {
+                      return Object.entries(filters).every(([key, value]) => {
+                        if (!value) return true;
+                        return String(item[key as keyof News]).toLowerCase().includes(String(value).toLowerCase());
+                      });
+                    });
+                    console.log("Filtered news:", filteredNews);
+                    setNews(filteredNews);
                   }}
                 />
               )}
