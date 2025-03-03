@@ -5,3 +5,9 @@ export interface Instructor {
   isPrimaryInstructor: boolean
   createdAt: string
 }
+
+export interface IInstructor {
+  currentData: number
+  comparisonData: number
+}
+
