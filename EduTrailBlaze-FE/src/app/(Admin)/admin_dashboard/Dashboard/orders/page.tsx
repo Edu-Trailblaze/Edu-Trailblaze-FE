@@ -8,11 +8,11 @@ import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 
-import DetailModal from '@/components/admin/Modal/DetailModal'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from 'lucide-react'
 import api from '@/components/config/axios'
+import DetailModal from '../../../../../components/admin/modal/DetailModal'
 
 type Order = {
   id?: number
