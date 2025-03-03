@@ -40,7 +40,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
   }
 
   const handleSave = async () => {
-    if (!formData.courseId) {
+    if (!formData.id) {
       toast.error('Invalid course data!')
       return
     }
@@ -60,14 +60,14 @@ const ModalEdit: React.FC<ModalEditProps> = ({
   }
 
   const handleDelete = async () => {
-    if (!onDelete || !formData.courseId) return
+    if (!onDelete || !formData.id) return
     if (!window.confirm('Do you want to delete this course?')) return
 
     try {
       setLoading(true)
       //api
       toast.success('Course deleted successfully!')
-      onDelete(formData.courseId)
+      onDelete(formData.id)
       onClose()
     } catch (error) {
       toast.error('Failed to delete course!')

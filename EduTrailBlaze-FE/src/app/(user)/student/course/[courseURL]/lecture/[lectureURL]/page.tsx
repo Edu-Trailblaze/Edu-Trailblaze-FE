@@ -1,4 +1,4 @@
-import LecturePage from '../../../../../../../components/learning/lecture/lecture_page'
+import LecturePage from '../../../../../../../components/user/learning/lecture/lecture_page'
 
 export default function CourseLecture() {
   return <LecturePage />
