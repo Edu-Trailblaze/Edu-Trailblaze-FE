@@ -8,10 +8,9 @@ import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 
-import ReviewFormModalEdit from '@/components/admin/Modal/ReviewFormModal/ReviewFormModalEdit'
-
 import { Filter, ArrowUpDown, Plus, Eye, Pencil, Trash2 } from 'lucide-react'
 import api from '@/components/config/axios'
+import ReviewFormModalEdit from '../../../../../components/admin/modal/ReviewFormModal/ReviewFormModalEdit'
 
 type Review = {
   id?: number
