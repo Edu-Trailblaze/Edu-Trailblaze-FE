@@ -44,7 +44,7 @@ const EducationSection = () => {
         <div className='space-y-6'>
           {[1, 2].map((_, index) => (
             <div key={index} className='flex items-start gap-4'>
-              <img src='assets/Side_Image/course_image.png' alt='CertNexus' className='rounded w-[120px] h-[80px]' />
+              <img src='/assets/Side_Image/course_image.png' alt='CertNexus' className='rounded w-[120px] h-[80px]' />
               <div className='flex-1'>
                 <h4 className='font-semibold mb-2'>
                   CertNexus Certified Ethical Emerging Technologist Professional Certificate
@@ -99,7 +99,7 @@ const EducationSection = () => {
             'Budgeting and Scheduling Projects'
           ].map((course, index) => (
             <div key={index} className='flex items-start gap-4'>
-              <img src='assets/Side_Image/course_image.png' alt='UCI' className='rounded w-[120px] h-[80px]' />
+              <img src='/assets/Side_Image/course_image.png' alt='UCI' className='rounded w-[120px] h-[80px]' />
               <div className='flex-1'>
                 <p className='text-sm text-gray-600 mb-1'>University of California, Irvine · Course</p>
                 <h4 className='font-semibold mb-2'>{course}</h4>

@@ -44,3 +44,10 @@ next-env.d.ts
 firebase.js
 
 *storybook.log
+
+# server.js
+server.js
+
+# localhost
+localhost-key.pem
+localhost.pem

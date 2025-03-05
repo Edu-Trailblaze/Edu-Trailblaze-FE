@@ -95,7 +95,7 @@ export default function ShoppingCart() {
                     <div className='flex flex-col sm:flex-row'>
                       {/* Course Image */}
                       <img
-                        src='public/assets/Side_Image/course_image.png'
+                        src='/assets/Side_Image/course_image.png'
                         alt=''
                         className='w-full sm:w-[155px] h-[100px] object-cover mb-4 sm:mb-0 sm:mr-4'
                       />
