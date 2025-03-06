@@ -1,6 +1,5 @@
 'use client'
-import { useState } from 'react'
-import Head from 'next/head'
+import { useEffect, useState } from 'react'
 import {
   ArrowUpRight,
   Users,
@@ -12,9 +11,51 @@ import {
   TrendingUp,
   MoreHorizontal
 } from 'lucide-react'
+import {
+  useGetCourseCompletionRateQuery,
+  useGetInstructorCoursesQuery,
+  useGetInstructorEnrollmentsQuery,
+  useGetInstructorRatingQuery,
+  useGetInstructorRevenueQuery
+} from '@/redux/services/instructor.service'
+import { jwtDecode } from 'jwt-decode'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 
 export default function InstructorAnalytics() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('month')
+  const [Time, setTime] = useState('month')
+  const [InstructorId, setInstructorId] = useState('')
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        setInstructorId(decode?.sub ?? '')
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setInstructorId('')
+    }
+  }, [])
+
+  const { data: courses, isLoading, isError } = useGetInstructorCoursesQuery({ InstructorId, Time })
+  const {
+    data: enrollments,
+    isLoading: enrollmentLoading,
+    isError: enrollmentError
+  } = useGetInstructorEnrollmentsQuery({ InstructorId, Time })
+  const {
+    data: revenue,
+    isLoading: revenueLoading,
+    isError: revenueError
+  } = useGetInstructorRevenueQuery({ InstructorId, Time })
+  const {
+    data: rating,
+    isLoading: ratingLoading,
+    isError: ratingError
+  } = useGetInstructorRatingQuery({ InstructorId, Time })
+  const {data: completion, isLoading: completionLoading, isError: completionError} = useGetCourseCompletionRateQuery(InstructorId)
 
   // Mock data - in a real app, this would come from an API
   const analytics = {
@@ -25,7 +66,7 @@ export default function InstructorAnalytics() {
     studentsGrowth: 12.5,
     courseIncrease: 2,
     revenueGrowth: 8.7,
-    courseCompletionRate: 68,
+    courseCompletionRate: 50,
     monthlyData: [
       { month: 'Jan', students: 210, revenue: 4200 },
       { month: 'Feb', students: 230, revenue: 4600 },
@@ -43,6 +84,16 @@ export default function InstructorAnalytics() {
     ]
   }
 
+  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => { 
+    const newTime = e.target.value;
+    setSelectedTimeframe(newTime);
+    setTime(newTime); 
+  }
+
+  console.log(courses, enrollments, revenue, rating)
+
+  if (isLoading || enrollmentLoading || revenueLoading || ratingLoading) return <LoadingPage />
+
   return (
     <>
       <div className='min-h-screen bg-gray-50'>
@@ -55,16 +106,13 @@ export default function InstructorAnalytics() {
                 <select
                   className='bg-blue-600 text-white px-3 py-2 rounded-md focus:outline-none'
                   value={selectedTimeframe}
-                  onChange={(e) => setSelectedTimeframe(e.target.value)}
+                  onChange={handleTimeChange}
                 >
                   <option className='bg-blue-400' value='week'>
                     Last Week
                   </option>
                   <option className='bg-blue-400' value='month'>
                     Last Month
-                  </option>
-                  <option className='bg-blue-400' value='quarter'>
-                    Last Quarter
                   </option>
                   <option className='bg-blue-400' value='year'>
                     Last Year
@@ -85,8 +133,12 @@ export default function InstructorAnalytics() {
               <div>
                 <p className='text-gray-500 text-sm'>Total Courses</p>
                 <div className='flex items-center mt-1'>
-                  <span className='text-2xl font-bold'>12</span>
-                  <span className='text-green-500 ml-2 text-sm'>+2 new</span>
+                  <span className='text-2xl font-bold'>{courses?.currentData}</span>
+                  {courses?.comparisonData !== undefined && courses?.comparisonData >= 0 ? (
+                    <span className='text-green-500 ml-2 text-sm'>+ {courses?.comparisonData}</span>
+                  ) : (
+                    <span className='text-red-500 ml-2 text-sm'>- {courses?.comparisonData}</span>
+                  )}
                 </div>
               </div>
               <BookOpen className='h-6 w-6 text-blue-500' />
@@ -95,8 +147,12 @@ export default function InstructorAnalytics() {
               <div>
                 <p className='text-gray-500 text-sm'>Total Students</p>
                 <div className='flex items-center mt-1'>
-                  <span className='text-2xl font-bold'>1,248</span>
-                  <span className='text-green-500 ml-2 text-sm'>+8.5%</span>
+                  <span className='text-2xl font-bold'>{enrollments?.currentData}</span>
+                  {enrollments?.comparisonData !== undefined && enrollments?.comparisonData >= 0 ? (
+                    <span className='text-green-500 ml-2 text-sm'>+ {enrollments?.comparisonData}</span>
+                  ) : (
+                    <span className='text-red-500 ml-2 text-sm'>- {enrollments?.comparisonData}</span>
+                  )}
                 </div>
               </div>
               <Users className='h-6 w-6 text-blue-500' />
@@ -105,8 +161,12 @@ export default function InstructorAnalytics() {
               <div>
                 <p className='text-gray-500 text-sm'>Rating</p>
                 <div className='flex items-center mt-1'>
-                  <span className='text-2xl font-bold'>4.7</span>
-                  <span className='text-red-500 ml-2 text-sm'>-2.3%</span>
+                  <span className='text-2xl font-bold'>{rating?.currentData}</span>
+                  {rating?.comparisonData !== undefined && rating?.comparisonData >= 0 ? (
+                    <span className='text-green-500 ml-2 text-sm'>+ {rating?.comparisonData}</span>
+                  ) : (
+                    <span className='text-red-500 ml-2 text-sm'>- {rating?.comparisonData}</span>
+                  )}
                 </div>
               </div>
               <Star className='h-6 w-6 text-blue-500' />
@@ -115,8 +175,12 @@ export default function InstructorAnalytics() {
               <div>
                 <p className='text-gray-500 text-sm'>Revenue This Month</p>
                 <div className='flex items-center mt-1'>
-                  <span className='text-2xl font-bold'>$14,320</span>
-                  <span className='text-green-500 ml-2 text-sm'>+12%</span>
+                  <span className='text-2xl font-bold'>{revenue?.currentData}</span>
+                  {revenue?.comparisonData !== undefined && revenue?.comparisonData >= 0 ? (
+                    <span className='text-green-500 ml-2 text-sm'>+ {revenue?.comparisonData}</span>
+                  ) : (
+                    <span className='text-red-500 ml-2 text-sm'>- {revenue?.comparisonData}</span>
+                  )}
                 </div>
               </div>
               <DollarSign className='h-6 w-6 text-blue-500' />
@@ -174,11 +238,11 @@ export default function InstructorAnalytics() {
             <div className='w-full bg-gray-200 rounded-full h-4'>
               <div
                 className='bg-blue-600 h-4 rounded-full'
-                style={{ width: `${analytics.courseCompletionRate}%` }}
+                style={{ width: `${completion}%` }}
               ></div>
             </div>
             <p className='mt-2 text-gray-600 text-center'>
-              <span className='font-medium text-blue-600'>{analytics.courseCompletionRate}%</span> of enrolled students
+              <span className='font-medium text-blue-600'>{completion}%</span> of enrolled students
               complete their courses
             </p>
           </div>

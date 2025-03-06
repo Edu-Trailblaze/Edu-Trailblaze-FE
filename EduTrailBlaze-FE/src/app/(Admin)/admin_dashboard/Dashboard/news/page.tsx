@@ -19,9 +19,9 @@ import NewsFilter from '@/components/admin/Filter/NewsFilter/NewsFilter'
 
 //icon
 import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
-import NewsFormModalEdit from '../../../../../components/admin/modal/NewsFormModal/NewsFormModalEdit'
-import NewsFormModalCreate from '../../../../../components/admin/modal/NewsFormModal/NewsFormModalCreate'
-import DetailModal from '../../../../../components/admin/modal/DetailModal'
+import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit'
+import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate'
+import DetailModal from '@/components/admin/Modal/DetailModal'
 
 export type News = {
   id?: number
@@ -42,9 +42,13 @@ const newsFields: { label: string; accessor: keyof News }[] = [
 ]
 
 export default function NewsManagement() {
-  const [news, setNews] = useState<News[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [selectedNews, setSelectedNews] = useState<News | null>(null)
+
+  const [allNews, setAllNews] = useState<News[]>([]);
+  const [news, setNews] = useState<News[]>([]);
+  const [newsData, setNewsData] = useState<News[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
   const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({})
   //sort
@@ -71,6 +75,8 @@ export default function NewsManagement() {
     try {
       const response = await api.get('/News')
       setNews(response.data)
+      setAllNews(response.data); // Lưu dữ liệu gốc
+
     } catch (error) {
       console.error('Error fetching news:', error)
     } finally {
@@ -123,7 +129,7 @@ export default function NewsManagement() {
       console.error('Error updating news:', error)
       toast.error('Failed to update news!')
     }
-  }
+  };
 
   const handleDeleteNews = async (newsId: number) => {
     if (!window.confirm('Are you sure you want to delete this news?')) return
@@ -142,8 +148,9 @@ export default function NewsManagement() {
     setVisibleColumns((prev) => ({
       ...prev,
       [column]: !prev[column]
-    }))
-  }
+    }));
+  };
+
   const handleApplySort = (newVisibleColumns: Record<keyof News, boolean>) => {
     setVisibleColumns(newVisibleColumns)
     setSortOpen(false)
@@ -229,15 +236,28 @@ export default function NewsManagement() {
               </button>
               {isFilterOpen && (
                 <NewsFilter
+                  data={newsData} // Thêm prop data vào đây
                   columns={newsFields}
                   visibleColumns={tempVisibleColumns}
                   onApply={handleApplySort}
                   onClose={() => setFilterOpen(false)}
-                  onClear={() =>
-                    setTempVisibleColumns(Object.fromEntries(newsFields.map((field) => [field.accessor, true])))
-                  }
+                  onClear={() => {
+                    setTempVisibleColumns(Object.fromEntries(newsFields.map(field => [field.accessor, true])));
+                    setNews(allNews); 
+                    console.log("Filter cleared, resetting data.");
+
+                  }}
                   onFilterApply={(filters) => {
-                    console.log('Applied filters: ', filters)
+                    console.log("Applying filter:", filters);
+
+                    const filteredNews = allNews.filter((item) => {
+                      return Object.entries(filters).every(([key, value]) => {
+                        if (!value) return true;
+                        return String(item[key as keyof News]).toLowerCase().includes(String(value).toLowerCase());
+                      });
+                    });
+                    console.log("Filtered news:", filteredNews);
+                    setNews(filteredNews);
                   }}
                 />
               )}

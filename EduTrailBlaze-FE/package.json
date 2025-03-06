@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 4000",
+    "dev": "node server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -42,6 +42,8 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "firebase": "^11.1.0",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.464.0",
     "next": "15.1.2",

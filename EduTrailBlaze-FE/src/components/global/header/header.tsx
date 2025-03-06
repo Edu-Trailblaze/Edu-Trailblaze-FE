@@ -271,14 +271,14 @@ export default function WebHeader() {
                       <p className='ml-2'>{userName}</p>
                     </DropdownMenuLabel>
                     <DropdownMenuGroup>
-                      <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
-                        <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
-                          <FaUserEdit />
-                        </div>
-                        <Link href={'/student/profile'} prefetch={false} className='ml-2'>
+                      <Link href={'/student/profile'} prefetch={false}>
+                        <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                          <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                            <FaUserEdit />
+                          </div>
                           Profile
-                        </Link>
-                      </DropdownMenuItem>
+                        </DropdownMenuItem>
+                      </Link>
                       <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
                         <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                           <FaBell />
@@ -294,14 +294,14 @@ export default function WebHeader() {
                         <span className='ml-2'>Settings</span>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
-                    <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
-                      <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
-                        <MdOutlineSupportAgent />
-                      </div>
-                      <Link href={'/student/support'} className='ml-2'>
+                    <Link href={'/student/support'}>
+                      <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex'>
+                        <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
+                          <MdOutlineSupportAgent />
+                        </div>
                         Support
-                      </Link>
-                    </DropdownMenuItem>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem className='hover:bg-slate-100 cursor-pointer flex' onClick={handleLogout}>
                       <div className='flex justify-center items-center bg-slate-200 rounded-full w-8 h-8'>
                         <IoLogOut />
@@ -521,8 +521,6 @@ export default function WebHeader() {
                     ))}
                   </ul>
                 </div>
-
-                
 
                 {/* Language Selection */}
                 <div className='border-t border-gray-200 pt-6 mt-6'>

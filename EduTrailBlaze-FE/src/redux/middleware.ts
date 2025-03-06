@@ -9,6 +9,7 @@ import { cartApi } from './services/cart.service'
 import { paymentApi } from './services/payment.service'
 import { reviewApi } from './services/review.service'
 import { quizApi } from './services/quiz.service'
+import { instructorApi } from './services/instructor.service'
 
 export const apiMiddlewares: Middleware[] = [
   courseApi.middleware,
@@ -20,5 +21,6 @@ export const apiMiddlewares: Middleware[] = [
   cartApi.middleware,
   paymentApi.middleware,
   reviewApi.middleware,
-  quizApi.middleware
+  quizApi.middleware,
+  instructorApi.middleware,
 ]

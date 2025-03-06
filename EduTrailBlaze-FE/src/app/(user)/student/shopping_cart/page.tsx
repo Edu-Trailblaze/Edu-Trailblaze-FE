@@ -95,7 +95,7 @@ export default function ShoppingCart() {
                     <div className='flex flex-col sm:flex-row'>
                       {/* Course Image */}
                       <img
-                        src='assets/Side_Image/course_image.png'
+                        src='/assets/Side_Image/course_image.png'
                         alt=''
                         className='w-full sm:w-[155px] h-[100px] object-cover mb-4 sm:mb-0 sm:mr-4'
                       />
@@ -178,7 +178,7 @@ export default function ShoppingCart() {
                     onClick={() => handleMethodSelect('VnPay')}
                   >
                     <div className='h-10 w-[80px] mb-2 flex items-center justify-center'>
-                      <img src='assets/paymentLogo/VNPAY-QR.svg' className='w-full h-full' alt='' />
+                      <img src='/assets/paymentLogo/VNPAY-QR.svg' className='w-full h-full' alt='' />
                     </div>
                     <span className='text-sm font-medium text-gray-800'>VnPay</span>
                   </div>
@@ -189,7 +189,7 @@ export default function ShoppingCart() {
                     onClick={() => handleMethodSelect('MoMo')}
                   >
                     <div className='h-10 w-10 mb-2 flex items-center justify-center'>
-                      <img src='assets/paymentLogo/MoMo.svg' className='w-full h-full' alt='' />
+                      <img src='/assets/paymentLogo/MoMo.svg' className='w-full h-full' alt='' />
                     </div>
                     <span className='text-sm font-medium text-gray-800'>MoMo</span>
                   </div>
@@ -200,7 +200,7 @@ export default function ShoppingCart() {
                     onClick={() => handleMethodSelect('PayPal')}
                   >
                     <div className='h-12 w-[80px] mb-2 flex items-center justify-center'>
-                      <img src='assets/paymentLogo/PayPal.svg' className='w-full h-full' alt='' />
+                      <img src='/assets/paymentLogo/PayPal.svg' className='w-full h-full' alt='' />
                     </div>
                     <span className='text-sm font-medium text-gray-800'>PayPal</span>
                   </div>
