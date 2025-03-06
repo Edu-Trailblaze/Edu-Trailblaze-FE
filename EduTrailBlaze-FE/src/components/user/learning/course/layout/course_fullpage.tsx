@@ -12,31 +12,48 @@ import CourseOutcome from '../CourseComponents/sections/course_outcome'
 import CourseSection from '../CourseComponents/sections/course_section'
 import CourseReview from '../CourseComponents/review/course_review'
 import CourseSuggestion from '../CourseComponents/suggestion/course_suggestion'
+import { useEffect, useState } from 'react'
 
 export default function Course() {
   const { courseURL } = useParams()
+  const [lectureURL, setLectureURL] = useState<number | undefined>()
   const { data: courseDetails, isLoading, isFetching, error } = useGetCourseDetailsQuery(Number(courseURL))
   const detail = courseDetails?.courseDetails
   const section = courseDetails?.sectionDetails
   const sectionId = section?.map((item) => item.id) || []
 
-  //bỏ qua query nếu ko có data
   const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
     sectionId.length > 0 ? sectionId : skipToken
   )
-  if (isLoading || isFetching) {
+
+  useEffect(() => {
+    if (lecture) {
+      const firstLecture = lecture.find((section) => section.lectures.length > 0)?.lectures[0]
+      if (firstLecture) {
+        setLectureURL(firstLecture.id)
+      }
+    }
+  }, [lecture])
+
+  if (isLoading || isFetching || isLectureFetching) {
     return <LoadingPage />
   }
 
   if (!detail) return <div>No course available.</div>
   if (!section) return <div>No section available.</div>
   if (!lecture) return <div>No lecture available.</div>
+  if (!lectureURL) return <div>No LectureURL</div>
 
   return (
     <div>
       {/* Header */}
       <div id='course-header'>
-        <CourseHeader courseDetails={detail} sectionDetails={section} id={Number(courseURL)} />
+        <CourseHeader
+          courseDetails={detail}
+          sectionDetails={section}
+          courseURL={Number(courseURL)}
+          lectureURL={lectureURL}
+        />
       </div>
 
       {/* CourseDetails */}
@@ -45,7 +62,7 @@ export default function Course() {
 
         {/* Navigation */}
         <div>
-          <Navigation courseDetails={detail} id={Number(courseURL)} />
+          <Navigation courseDetails={detail} courseURL={Number(courseURL)} lectureURL={lectureURL} />
         </div>
 
         {/* Sections */}
