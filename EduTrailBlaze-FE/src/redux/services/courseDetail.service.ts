@@ -77,6 +77,12 @@ export const courseApi = createApi({
       query: (id) => ({
         url: `Course/get-instructors-of-a-course?courseId=${id}`
       })
+    }),
+
+    getCourseByIdAndTag: build.query<ICourseSuggestions[], { tagId: number; studentId: string }>({
+      query: ({ tagId, studentId }) => ({ 
+        url: `Course/get-courses-by-condition?TagId=${tagId}&StudentId=${studentId}`, 
+      })
     })
   })
 })
@@ -88,5 +94,6 @@ export const {
   useGetCourseQuery,
   // useUpdateCourseMutation,
   // useDeleteCourseMutation
-  useGetInstructorOfCourseQuery
+  useGetInstructorOfCourseQuery,
+  useGetCourseByIdAndTagQuery
 } = courseApi

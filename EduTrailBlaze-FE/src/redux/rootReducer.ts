@@ -13,6 +13,7 @@ import { reviewApi } from './services/review.service'
 import { persistedAuthReducer } from './persistConfig'
 import { quizApi } from './services/quiz.service'
 import { instructorApi } from './services/instructor.service'
+import { tagApi } from './services/tag.service'
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -32,4 +33,5 @@ export const rootReducer = combineReducers({
   [reviewApi.reducerPath]: reviewApi.reducer,
   [quizApi.reducerPath]: quizApi.reducer,
   [instructorApi.reducerPath]: instructorApi.reducer,
+  [tagApi.reducerPath]: tagApi.reducer,
 })
