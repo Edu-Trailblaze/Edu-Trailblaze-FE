@@ -1,5 +1,5 @@
 'use client'
-import { useGetAllCoursesQuery, useGetInstructorOfCourseQuery } from '@/redux/services/courseDetail.service'
+import { useGetAllCoursesQuery, useGetCourseByIdAndTagQuery } from '@/redux/services/courseDetail.service'
 import React, { useEffect, useState } from 'react'
 import InstructorItem from './InstructorItem'
 import { formatDate } from '@/helper/Util'
@@ -9,16 +9,19 @@ import { useDispatch } from 'react-redux'
 import { addItemToCart } from '@/redux/slice/cart.slice'
 import Link from 'next/link'
 import SkeletonCard from '../../animate/skeleton/skeleton_card'
+import { useGetTagQuery } from '@/redux/services/tag.service'
 
 export default function HomeCourses() {
-  const { data: courses, isLoading, isFetching } = useGetAllCoursesQuery()
-  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
-  const dispatch = useDispatch()
-
   const [visibleCourse, setVisibleCourse] = useState(4)
   const [activeIndex, setActiveIndex] = useState(0)
   const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
   const [userId, setUserId] = useState('')
+  const [selectedTag, setSelectedTag] = useState(1)
+
+  const { data: courses, isLoading, isFetching } = useGetCourseByIdAndTagQuery({ tagId: selectedTag, studentId: userId })
+  const { data: tags, isLoading: tagsLoading, isFetching: tagsFetching } = useGetTagQuery()
+  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
+  const dispatch = useDispatch()
 
   const paidCourses = courses?.filter((course) => course.price > 0)
   const freeCourses = courses?.filter((course) => course.price === 0)
@@ -46,6 +49,11 @@ export default function HomeCourses() {
     'Business Analytics and Intelligence'
   ]
 
+  const handleTagSelect = (index: number, tagId: number) => {
+    setActiveIndex(index)
+    setSelectedTag(tagId)
+  }
+
   const handleShowCourses = () => {
     if (courses && visibleCourse < courses.length) {
       setVisibleCourse(courses.length)
@@ -62,20 +70,22 @@ export default function HomeCourses() {
       console.log('Error adding to cart: ', error)
     }
   }
+
+
   return (
     <>
       <div>
         <div className='container'>
           <ul className='flex w-fit pt-[5px]'>
-            {categories.map((category, index) => (
+            {tags?.map((tags, index) => (
               <li
                 key={index}
-                className={`cursor-pointer px-2 py-1 hover:bg-slate-100 ${
+                className={`mr-1 cursor-pointer px-2 py-1 hover:bg-slate-100 ${
                   activeIndex === index ? 'border-b-2 border-black font-bold' : ''
                 }`}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => handleTagSelect(index, tags.id)}
               >
-                <button>{category}</button>
+                <button>{tags.name}</button>
               </li>
             ))}
           </ul>
