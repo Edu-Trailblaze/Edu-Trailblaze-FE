@@ -3,20 +3,18 @@ import Link from 'next/link'
 
 interface NavigationProps {
   courseDetails: ICourseDetails
-  id: number
+  courseURL: number
+  lectureURL: number
 }
 
-export default function Navigation({ courseDetails, id }: NavigationProps) {
+export default function Navigation({ courseDetails, courseURL, lectureURL }: NavigationProps) {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      // Get the course-header element
       const courseHeader = document.getElementById('course-header')
       if (!courseHeader) return
-      // Get the bottom position of the course-header
       const headerBottom = courseHeader.getBoundingClientRect().bottom
-      // Show navigation when we've scrolled past the header
       setIsVisible(headerBottom < 0)
     }
 
@@ -42,13 +40,13 @@ export default function Navigation({ courseDetails, id }: NavigationProps) {
             <img src={courseDetails.imageURL} alt='Course logo' className='w-10 rounded-full' />
             <h2 className='font-semibold text-xl ml-5 truncate max-w-xl'>{courseDetails?.title || 'Course Title'}</h2>
           </div>
-          <Link href={`/course/${id}/lecture/12`} target='_blank'>
+          <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>
             <button className='bg-blue-700 hover:bg-blue-600 text-white px-8 py-6 rounded'>
               <span className=''>Go to course</span>
             </button>
           </Link>
         </div>
-        <div className='flex space-x-6 py-4 '>
+        <div className='flex space-x-6 py-4'>
           {items.map((item) => (
             <a
               key={item.id}

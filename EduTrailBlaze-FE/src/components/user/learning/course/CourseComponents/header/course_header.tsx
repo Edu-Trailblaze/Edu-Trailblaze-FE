@@ -11,10 +11,11 @@ import { useGetUserProfileQuery } from '../../../../../../redux/services/user.se
 interface CourseHeaderProps extends ICourseFull {
   courseDetails: ICourseDetails
   sectionDetails: ISection[]
-  id: number
+  courseURL: number
+  lectureURL: number
 }
 
-export default function CourseHeader({ courseDetails, sectionDetails, id }: CourseHeaderProps) {
+export default function CourseHeader({ courseDetails, sectionDetails, courseURL, lectureURL }: CourseHeaderProps) {
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
@@ -77,7 +78,7 @@ export default function CourseHeader({ courseDetails, sectionDetails, id }: Cour
               +{courseDetails.instructors.length} more
             </button>
           </div>
-          <Link href={`/course/${id}/lecture/12`} target='_blank'>
+          <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>
             <button className='bg-blue-700 text-white py-5 w-60 rounded-lg hover:bg-blue-600 mb-2'>Go to course</button>
           </Link>
           <p>
