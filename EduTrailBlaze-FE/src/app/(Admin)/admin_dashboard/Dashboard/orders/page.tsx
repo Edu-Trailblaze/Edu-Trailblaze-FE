@@ -1,26 +1,41 @@
 'use client'
-import 'react-toastify/dist/ReactToastify.css'
+//redux
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
+import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
+//api
+import api from '@/components/config/axios'
+import 'react-toastify/dist/ReactToastify.css'
 import { useState, useEffect } from 'react'
+import { TableRow, TableCell } from '@mui/material'
 import { ToastContainer, toast } from 'react-toastify'
+import dayjs from 'dayjs'
+
 import Pagination from '@/components/admin/Pagination/Pagination'
 import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
-
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from 'lucide-react'
-import api from '@/components/config/axios'
-import DetailModal from '../../../../../components/admin/modal/DetailModal'
+//sort filter
+import OrderSort from '@/components/admin/Filter/OrderSortFilter/OrderSort'
+import OrderFilter from '@/components/admin/Filter/OrderSortFilter/OrderFilter'
 
-type Order = {
+//modal
+import DetailModal from '../../../../../components/admin/Modal/DetailModal'
+
+//icon
+import { Filter, ArrowUpDown, Plus, Eye } from 'lucide-react'
+
+export type Order = {
   id?: number
   userId: string
   orderAmount: number
   orderDate: string
   orderStatus: string
-  userName?: string // <-- thêm dòng này
+  userName?: string
 }
 
 const orderFields: { label: string; accessor: keyof Order }[] = [
@@ -32,9 +47,28 @@ const orderFields: { label: string; accessor: keyof Order }[] = [
 ]
 
 export default function OrdersManagement() {
+  const dispatch = useDispatch()
+
+  const [allOrders, setAllOrders] = useState<Order[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+
+  // ====== Redux Filter & Sort ======
+  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  const tableKey = 'orders'
+  const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
+
+  // State để mở/đóng modal filter & sort
+  const [isFilterOpen, setFilterOpen] = useState(false)
+  const [isSortOpen, setSortOpen] = useState(false)
+
+  const handleApplySort = (newVisibleColumns: Record<keyof Order, boolean>) => {
+    dispatch(setSortForTable({ tableKey, visibility: newVisibleColumns }))
+    setSortOpen(false)
+  }
+
+  //pagination
   const [pageIndex, setPageIndex] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const pageSize = 5
@@ -50,6 +84,7 @@ export default function OrdersManagement() {
       })
 
       const ordersData = response.data.items
+      setTotalPages(response.data.totalPages)
 
       const ordersWithNames = await Promise.all(
         ordersData.map(async (order: Order) => {
@@ -68,7 +103,7 @@ export default function OrdersManagement() {
       )
 
       setOrders(ordersWithNames)
-      setTotalPages(response.data.totalPages)
+      setAllOrders(ordersWithNames)
     } catch (error) {
       console.error('Error fetching orders:', error)
       toast.error('Failed to fetch orders!')
@@ -81,22 +116,52 @@ export default function OrdersManagement() {
     fetchOrders(pageIndex)
   }, [pageIndex])
 
-  const renderRow = (order: Order & { userName?: string }) => (
-    <tr key={order.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
-      <td className='p-4'>{order.id}</td>
-      <td>{order.userName || 'Loading...'}</td>
-      <td>{order.orderAmount}</td>
-      <td>
-        <FormatDateTime date={order.orderDate} />
-      </td>
-      <td>{order.orderStatus}</td>
+  const handleFilterApply = () => {
+    // parse fromDate, toDate bằng dayjs (nếu fromDate, toDate là ISO: 'YYYY-MM-DD')
+    const from = fromDate ? dayjs(fromDate) : null
+    const to = toDate ? dayjs(toDate) : null
+    const kw = keyword.toLowerCase()
 
-      <td className='flex mt-4 space-x-2'>
+    const filtered = allOrders.filter((item) => {
+      // CHANGED: parse item.orderDate
+      // nếu item.orderDate cũng ở dạng ISO, dayjs(item.orderDate) sẽ parse OK
+      const itemDate = dayjs(item.orderDate)
+
+      if (from && itemDate.isBefore(from, 'day')) return false
+      if (to && itemDate.isAfter(to, 'day')) return false
+
+      // Lọc theo keyword: userName, orderStatus,...
+      if (kw) {
+        const inUser = item.userName?.toLowerCase().includes(kw)
+        const inStatus = item.orderStatus.toLowerCase().includes(kw)
+        if (!inUser && !inStatus) return false
+      }
+      return true
+    })
+
+    setOrders(filtered)
+    setFilterOpen(false)
+    console.log('Filtered orders:', filtered)
+  }
+
+  const renderRow = (order: Order & { userName?: string }) => (
+    <TableRow key={order.id} hover>
+      {visibleColumns['id'] && <TableCell>{order.id}</TableCell>}
+      {visibleColumns['userName'] && <TableCell>{order.userName}</TableCell>}
+      {visibleColumns['orderAmount'] && <TableCell>{order.orderAmount}</TableCell>}
+      {visibleColumns['orderDate'] && (
+        <TableCell>
+          <FormatDateTime date={order.orderDate} />
+        </TableCell>
+      )}
+      {visibleColumns['orderStatus'] && <TableCell>{order.orderStatus}</TableCell>}
+
+      <TableCell className='flex mt-4 space-x-2'>
         <button onClick={() => setSelectedOrder(order)} className='text-blue-600 cursor-pointer'>
           <Eye size={18} />
         </button>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   )
 
   return (
@@ -107,15 +172,46 @@ export default function OrdersManagement() {
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
-              <Filter size={18} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
-              <ArrowUpDown size={18} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
+            <div className='relative'>
+              <button
+                className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
+                onClick={() => setFilterOpen(!isFilterOpen)}
+              >
+                <Filter size={18} />
+              </button>
+              {isFilterOpen && (
+                <OrderFilter
+                  onClose={() => setFilterOpen(false)}
+                  onClear={() => {
+                    dispatch(clearFilter())
+                    setOrders(allOrders)
+                  }}
+                  onFilterApply={handleFilterApply}
+                />
+              )}
+            </div>
+
+            <div className='relative'>
+              <button
+                className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
+                onClick={() => setSortOpen(!isSortOpen)}
+              >
+                <ArrowUpDown size={18} />
+              </button>
+              {isSortOpen && (
+                <OrderSort
+                  columns={orderFields}
+                  visibleColumns={visibleColumns}
+                  onApply={handleApplySort}
+                  onClose={() => setSortOpen(false)}
+                  onClear={() => dispatch(clearSortForTable(tableKey))}
+                />
+              )}
+            </div>
+
+            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
               <Plus size={18} />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -126,7 +222,14 @@ export default function OrdersManagement() {
           <p className='mt-2 text-gray-500 text-sm'>Loading orders...</p>
         </div>
       ) : (
-        <Table columns={orderFields} renderRow={renderRow} data={orders} />
+        <Table
+          columns={[
+            ...orderFields.filter((field) => visibleColumns[field.accessor]),
+            { label: 'Actions', accessor: 'action' }
+          ]}
+          renderRow={renderRow}
+          data={orders}
+        />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
       {selectedOrder && (

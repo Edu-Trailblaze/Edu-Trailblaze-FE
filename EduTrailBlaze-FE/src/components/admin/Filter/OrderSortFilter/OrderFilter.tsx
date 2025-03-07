@@ -4,13 +4,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 
-interface NewsFilterProps {
+interface OrderFilterProps {
   onClose: () => void
   onClear: () => void
   onFilterApply: () => void // Giờ onFilterApply không cần tham số
 }
 
-const NewsFilter: React.FC<NewsFilterProps> = ({ onClose, onClear, onFilterApply }) => {
+const OrderFilter: React.FC<OrderFilterProps> = ({ onClose, onClear, onFilterApply }) => {
   const dispatch = useDispatch()
   const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
 
@@ -28,7 +28,7 @@ const NewsFilter: React.FC<NewsFilterProps> = ({ onClose, onClear, onFilterApply
         <button
           onClick={() => {
             dispatch(clearFilter()) // reset Redux slice
-            onClear() // onClear ở cha => setNews(allNews)
+            onClear() // onClear ở cha => setOrder(allOrder)
           }}
           className='text-sm text-gray-600 px-2 py-1 border rounded-md hover:bg-gray-100'
         >
@@ -123,4 +123,4 @@ const NewsFilter: React.FC<NewsFilterProps> = ({ onClose, onClear, onFilterApply
   )
 }
 
-export default NewsFilter
+export default OrderFilter

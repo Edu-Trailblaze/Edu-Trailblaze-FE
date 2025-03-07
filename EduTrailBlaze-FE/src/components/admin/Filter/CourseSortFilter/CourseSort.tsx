@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { News } from '@/app/(Admin)/admin_dashboard/Dashboard/news/page'
+import { Course } from '@/app/(Admin)/admin_dashboard/Dashboard/courses/page'
 
-interface NewsSortProps {
-  columns: { label: string; accessor: keyof News }[]
-  visibleColumns: Record<keyof News, boolean>
-  onApply: (newVisibleColumns: Record<keyof News, boolean>) => void
+interface CourseSortProps {
+  columns: { label: string; accessor: keyof Course }[]
+  visibleColumns: Record<keyof Course, boolean>
+  onApply: (newVisibleColumns: Record<keyof Course, boolean>) => void
   onClose: () => void
   onClear: () => void
 }
 
-const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, onClose, onClear }) => {
+const CourseSort: React.FC<CourseSortProps> = ({ columns, visibleColumns, onApply, onClose, onClear }) => {
   const [tempVisibleColumns, setTempVisibleColumns] = useState(visibleColumns)
 
   useEffect(() => {
@@ -55,4 +55,4 @@ const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, o
   )
 }
 
-export default NewsSort
+export default CourseSort

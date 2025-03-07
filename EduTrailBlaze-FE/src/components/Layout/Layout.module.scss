@@ -4,18 +4,14 @@
 }
 
 .sideMenu {
-
+  padding-top: 50px;
   width: 200px;
-  height: 100vh;
-  // background-color: blue;
   overflow-y: auto;
-  /* Độ rộng tùy ý */
-  /* Hoặc thêm border, background-color, v.v... nếu cần */
+  background-color: 'blue';
 }
 
 /* Nội dung chính (cột 2) */
 .content {
   flex: 1;
   // background-color: red;
-
 }
