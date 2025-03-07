@@ -4,19 +4,17 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 
-interface NewsFilterProps {
+interface CourseFilterProps {
   onClose: () => void
   onClear: () => void
-  onFilterApply: () => void // Giờ onFilterApply không cần tham số
+  onFilterApply: () => void
 }
 
-const NewsFilter: React.FC<NewsFilterProps> = ({ onClose, onClear, onFilterApply }) => {
+const CourseFilter: React.FC<CourseFilterProps> = ({ onClose, onClear, onFilterApply }) => {
   const dispatch = useDispatch()
   const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
 
   const applyFilters = () => {
-    // Thay vì onFilterApply(filters), ta chỉ gọi onFilterApply()
-    // vì toàn bộ filter đã nằm trong Redux
     onFilterApply()
     onClose()
   }
@@ -27,8 +25,8 @@ const NewsFilter: React.FC<NewsFilterProps> = ({ onClose, onClear, onFilterApply
       <div className='flex justify-between items-center border-b pb-2 mb-3'>
         <button
           onClick={() => {
-            dispatch(clearFilter()) // reset Redux slice
-            onClear() // onClear ở cha => setNews(allNews)
+            dispatch(clearFilter())
+            onClear()
           }}
           className='text-sm text-gray-600 px-2 py-1 border rounded-md hover:bg-gray-100'
         >
@@ -123,4 +121,4 @@ const NewsFilter: React.FC<NewsFilterProps> = ({ onClose, onClear, onFilterApply
   )
 }
 
-export default NewsFilter
+export default CourseFilter

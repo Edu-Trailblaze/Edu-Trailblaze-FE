@@ -1,21 +1,37 @@
 'use client'
+//redux
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
+import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
+
+//api
+import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
+import { Menu, MenuItem, IconButton, TableRow, TableCell } from '@mui/material'
 
 import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
+import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil } from 'lucide-react'
-import dayjs from 'dayjs'
+//sort filter
+import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
+import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
+
 import axios from 'axios'
-import api from '@/components/config/axios'
-import CourseFormModalCreate from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalCreate'
-import CourseFormModalEdit from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalEdit'
-import DetailModal from '../../../../../components/admin/modal/DetailModal'
 
-type Course = {
+//modal
+import CourseFormModalCreate from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalCreate'
+import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalEdit'
+import DetailModal from '../../../../../components/admin/Modal/DetailModal'
+
+//icon
+import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
+
+export type Course = {
   id?: number
   title: string
   imageURL: string
@@ -29,10 +45,13 @@ type Course = {
   createdBy: string
 }
 
+export type CourseCreate = Omit<Course, 'createdAt'>
+
 const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course'
+const USER_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/User'
 
 const courseFields: { label: string; accessor: keyof Course }[] = [
-  { label: 'Course ID', accessor: 'id' },
+  { label: 'ID', accessor: 'id' },
   { label: 'Title', accessor: 'title' },
   { label: 'Price', accessor: 'price' },
   { label: 'Difficulty', accessor: 'difficultyLevel' },
@@ -40,14 +59,43 @@ const courseFields: { label: string; accessor: keyof Course }[] = [
 ]
 
 export default function CoursesManagement() {
+  const dispatch = useDispatch()
+
   const [userId, setUserId] = useState('')
+  const [allCourses, setAllCourses] = useState<Course[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+
+  //dot
+  const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({})
+  const handleClickDot = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+    setDot((prev) => ({ ...prev, [id]: event.currentTarget }))
+  }
+  const handleCloseDot = (id: number) => {
+    setDot((prev) => ({ ...prev, [id]: null }))
+  }
+
+  //filter&sort open
+  const [isFilterOpen, setFilterOpen] = useState(false)
+  const [isSortOpen, setSortOpen] = useState(false)
+
+  //redux filter
+  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+
+  //redux sort
+  const tableKey = 'courses'
+  const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
+  const handleApplySort = (newVisibleColumns: Record<keyof Course, boolean>) => {
+    dispatch(setSortForTable({ tableKey, visibility: newVisibleColumns }))
+    setSortOpen(false)
+  }
+
+  //modal
   const [isAddModalOpen, setAddModalOpen] = useState(false)
   const [isEditModalOpen, setEditModalOpen] = useState(false)
   const [editCourse, setEditCourse] = useState<Course | null>(null)
-  const [newCourse, setNewCourse] = useState<Course>({
+  const [newCourse, setNewCourse] = useState<CourseCreate>({
     title: '',
     imageURL: '',
     introURL: '',
@@ -59,21 +107,9 @@ export default function CoursesManagement() {
     learningOutcomes: []
   })
 
-  const initialValues: Course = {
-    title: '',
-    imageURL: '',
-    introURL: '',
-    description: '',
-    price: 0,
-    difficultyLevel: '',
-    createdBy: '',
-    prerequisites: '',
-    learningOutcomes: []
-  }
-
   const fetchUserId = async () => {
     try {
-      const response = await axios.get('https://edu-trailblaze.azurewebsites.net/api/User')
+      const response = await axios.get(USER_API_URL)
       if (response.data.length > 0) {
         setUserId(response.data[0].id)
       }
@@ -86,6 +122,7 @@ export default function CoursesManagement() {
     try {
       const response = await axios.get(API_URL)
       setCourses(response.data)
+      setAllCourses(response.data)
     } catch (error) {
       console.error('Error fetching courses:', error)
     } finally {
@@ -98,12 +135,7 @@ export default function CoursesManagement() {
     fetchUserId()
   }, [])
 
-  const handleAddCourse = async (newCourse: Course) => {
-    if (!newCourse.title || !newCourse.description || !newCourse.difficultyLevel || newCourse.price <= 0) {
-      toast.error('Please fill all required fields and ensure price is greater than 0!')
-      return
-    }
-
+  const handleAddCourse = async (newCourse: CourseCreate) => {
     if (!userId) {
       toast.error('User ID is not available!')
       return
@@ -111,48 +143,22 @@ export default function CoursesManagement() {
     try {
       const courseToSend = {
         ...newCourse,
-        learningOutcomes: newCourse.learningOutcomes.length > 0 ? newCourse.learningOutcomes : ['Default outcome'],
-        createdBy: userId
+        createdBy: userId, // <--- GÁN Ở ĐÂY
+        learningOutcomes: newCourse.learningOutcomes.length > 0 ? newCourse.learningOutcomes : ['Default outcome']
       }
       const response = await axios.post(API_URL, courseToSend)
 
       toast.success('Course created successfully!')
-      setCourses([...courses, response.data])
+      setCourses([...courses, { ...response.data, createdAt: new Date().toISOString() }])
       fetchCourses()
       setAddModalOpen(false)
-      resetNewCourse()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding course:', error)
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Response data:', error.response.data)
+      // Thêm đoạn này:
+      if (error.response) {
+        console.log('Server error response:', error.response.data)
       }
       toast.error('Failed to create course!')
-    }
-  }
-
-  const resetNewCourse = () => {
-    setNewCourse({
-      title: '',
-      imageURL: '',
-      introURL: '',
-      description: '',
-      price: 0,
-      difficultyLevel: '',
-      createdBy: '',
-      prerequisites: '',
-      learningOutcomes: []
-    })
-  }
-
-  const handleDeleteCourse = async (courseId: number) => {
-    if (!window.confirm('Are you sure you want to delete this course?')) return
-    try {
-      await axios.delete(`${API_URL}?courseId=${courseId}`)
-      setCourses(courses.filter((c) => c.id !== courseId))
-      toast.success('Course deleted successfully!')
-    } catch (error) {
-      console.error('Error deleting course:', error)
-      toast.error('Failed to delete course!')
     }
   }
 
@@ -198,41 +204,134 @@ export default function CoursesManagement() {
     }
   }
 
+  const handleDeleteCourse = async (courseId: number) => {
+    if (!window.confirm('Are you sure you want to delete this course?')) return
+    try {
+      await axios.delete(`${API_URL}?courseId=${courseId}`)
+      setCourses(courses.filter((c) => c.id !== courseId))
+      toast.success('Course deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting course:', error)
+      toast.error('Failed to delete course!')
+    }
+  }
+
   const renderRow = (course: Course) => (
-    <tr key={course.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
-      <td className='p-4'>{course.id}</td>
-      <td>{course.title}</td>
-      <td>{course.price}</td>
-      <td>{course.difficultyLevel}</td>
-      <td className='hidden lg:table-cell'>{dayjs(course.createdAt).format('YYYY-MM-DD')}</td>
-      <td className='flex mt-4 space-x-2'>
-        <button onClick={() => setSelectedCourse(course)} className='text-blue-600 cursor-pointer'>
-          <Eye size={18} />
-        </button>
-        <button onClick={() => handleEditCourse(course)} className='text-yellow-600 cursor-pointer'>
-          <Pencil size={18} />
-        </button>
-        <button onClick={() => handleDeleteCourse(course.id!)} className='text-red-600 cursor-pointer'>
-          <Trash2 size={18} />
-        </button>
-      </td>
-    </tr>
+    <TableRow key={course.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
+      {visibleColumns['id'] && <TableCell className='p-4'>{course.id}</TableCell>}
+      {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
+      {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
+      {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
+      {visibleColumns['createdAt'] && (
+        <TableCell>
+          <FormatDateTime date={course.createdAt} />
+        </TableCell>
+      )}
+      <TableCell>
+        <IconButton onClick={(e) => handleClickDot(e, course.id!)}>
+          <EllipsisVertical size={18} />
+        </IconButton>
+
+        <Menu anchorEl={dot[course.id!]} open={Boolean(dot[course.id!])} onClose={() => handleCloseDot(course.id!)}>
+          <MenuItem
+            onClick={() => {
+              setSelectedCourse(course)
+              handleCloseDot(course.id!)
+            }}
+          >
+            <Eye size={18} style={{ marginRight: '10px', color: '#1D4ED8' }} /> View
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleEditCourse(course)
+              handleCloseDot(course.id!)
+            }}
+          >
+            <Pencil size={18} style={{ marginRight: '10px', color: '#F59E0B' }} /> Edit
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleDeleteCourse(course.id!)
+              handleCloseDot(course.id!)
+            }}
+          >
+            <Trash2 size={18} style={{ marginRight: '10px', color: '#DC2626' }} /> Delete
+          </MenuItem>
+        </Menu>
+      </TableCell>
+    </TableRow>
   )
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       <ToastContainer position='top-right' autoClose={3000} />
+
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Courses Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
+
           <div className='flex items-center gap-4 self-end'>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
-              <Filter size={18} />
-            </button>
-            <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
-              <ArrowUpDown size={18} />
-            </button>
+            <div className='relative'>
+              <button
+                className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
+                onClick={() => setFilterOpen(!isFilterOpen)}
+              >
+                <Filter size={18} />
+              </button>
+              {isFilterOpen && (
+                <CourseFilter
+                  onClose={() => setFilterOpen(false)}
+                  onClear={() => {
+                    dispatch(clearFilter())
+                    setAllCourses(allCourses)
+                  }}
+                  onFilterApply={() => {
+                    // CHANGED: Lọc theo fromDate, toDate, keyword
+                    const from = fromDate ? new Date(fromDate) : null
+                    const to = toDate ? new Date(toDate) : null
+                    const kw = keyword.toLowerCase()
+
+                    const filtered = allCourses.filter((item) => {
+                      const itemDate = new Date(item.createdAt)
+                      if (from && itemDate < from) return false
+                      if (to && itemDate > to) return false
+
+                      if (kw) {
+                        const inTitle = item.title.toLowerCase().includes(kw)
+                        const inDescription = item.description.toLowerCase().includes(kw)
+                        if (!inTitle && !inDescription) return false
+                      }
+                      return true
+                    })
+
+                    setCourses(filtered)
+                    console.log('Filtered courses:', filtered)
+                  }}
+                />
+              )}
+            </div>
+
+            {/* CHANGED: Nút Sort (mở CourseSort) */}
+            <div className='relative'>
+              <button
+                className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
+                onClick={() => setSortOpen(!isSortOpen)}
+              >
+                <ArrowUpDown size={18} />
+              </button>
+              {isSortOpen && (
+                <CourseSort
+                  columns={courseFields}
+                  visibleColumns={visibleColumns}
+                  onApply={handleApplySort}
+                  onClose={() => setSortOpen(false)}
+                  onClear={() => dispatch(clearSortForTable(tableKey))}
+                />
+              )}
+            </div>
+
+            {/* Nút + mở modal thêm Course */}
             <button
               className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
               onClick={() => setAddModalOpen(true)}
@@ -249,20 +348,30 @@ export default function CoursesManagement() {
           <p className='mt-2 text-gray-500 text-sm'>Loading courses...</p>
         </div>
       ) : (
-        <Table columns={courseFields} renderRow={renderRow} data={courses} />
+        <Table
+          columns={[
+            ...courseFields.filter((field) => visibleColumns[field.accessor]),
+            { label: 'Actions', accessor: 'action' }
+          ]}
+          renderRow={renderRow}
+          data={courses}
+        />
       )}
+
       {/* <Pagination /> */}
 
       {selectedCourse && (
         <DetailModal item={selectedCourse} fields={courseFields} onClose={() => setSelectedCourse(null)} />
       )}
+
       <CourseFormModalCreate
-        initialValues={initialValues}
+        initialValues={newCourse}
         setNewCourse={setNewCourse}
         onSubmit={handleAddCourse}
         onCancel={() => setAddModalOpen(false)}
         isOpen={isAddModalOpen}
       />
+
       {editCourse && (
         <CourseFormModalEdit
           initialValues={editCourse}

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { News } from '@/app/(Admin)/admin_dashboard/Dashboard/news/page'
+import { Voucher } from '@/app/(Admin)/admin_dashboard/Dashboard/vouchers/page'
 
-interface NewsSortProps {
-  columns: { label: string; accessor: keyof News }[]
-  visibleColumns: Record<keyof News, boolean>
-  onApply: (newVisibleColumns: Record<keyof News, boolean>) => void
+interface VoucherSortProps {
+  columns: { label: string; accessor: keyof Voucher }[]
+  visibleColumns: Record<keyof Voucher, boolean>
+  onApply: (newVisibleColumns: Record<keyof Voucher, boolean>) => void
   onClose: () => void
   onClear: () => void
 }
 
-const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, onClose, onClear }) => {
+const VoucherSort: React.FC<VoucherSortProps> = ({ columns, visibleColumns, onApply, onClose, onClear }) => {
   const [tempVisibleColumns, setTempVisibleColumns] = useState(visibleColumns)
 
   useEffect(() => {
@@ -25,7 +25,10 @@ const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, o
         </button>
         <h4 className='font-semibold text-gray-700'>Sort</h4>
         <button
-          onClick={() => onApply(tempVisibleColumns)}
+          onClick={() => {
+            onApply(tempVisibleColumns)
+            // onClose()
+          }}
           className='text-sm bg-black text-white px-3 py-1 rounded-md'
         >
           Done
@@ -55,4 +58,4 @@ const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, o
   )
 }
 
-export default NewsSort
+export default VoucherSort
