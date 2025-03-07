@@ -51,6 +51,13 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
     }))
   }
 
+  const handleChangeNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCourseForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value ? Number(e.target.value) : ''
+    }))
+  }
+
   const [createCourse, { isLoading: isCreateCourse }] = useAddCourseMutation()
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +112,7 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
       formData.append('Title', courseForm.title)
       formData.append('Description', courseForm.description)
       formData.append('Prerequisites', courseForm.prerequisites)
-      formData.append('Price', courseForm.price.toString()) // Chuyển số thành string
+      formData.append('Price', courseForm.price.toString())
       formData.append('DifficultyLevel', courseForm.difficultyLevel)
       formData.append('CreatedBy', courseForm.createdBy)
 
@@ -184,6 +191,7 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
           name='price'
           subtitle='Set a competitive price or enter 0 for a free course'
           placeholder='0'
+          value={courseForm.price}
           required
           prefix='VND'
           suffix='VND'

@@ -13,6 +13,7 @@ import CourseSection from '../CourseComponents/sections/course_section'
 import CourseReview from '../CourseComponents/review/course_review'
 import CourseSuggestion from '../CourseComponents/suggestion/course_suggestion'
 import { useEffect, useState } from 'react'
+import { useGetCheckCourseStatusQuery } from '../../../../../redux/services/enroll.service'
 
 export default function Course() {
   const { courseURL } = useParams()

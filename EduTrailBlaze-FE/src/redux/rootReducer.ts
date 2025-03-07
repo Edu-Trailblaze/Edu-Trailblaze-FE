@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import courseReducer from './slice/course.slice'
 import cartReducer from './slice/cart.slice'
-import filterReducer from "./slice/filter.slice"; 
+import filterReducer from './slice/filter.slice'
 import { courseApi } from './services/courseDetail.service'
 import { authApi } from './services/auth.service'
 import { lectureApi } from './services/lecture.service'
@@ -11,10 +11,11 @@ import { videoApi } from './services/video.service'
 import { cartApi } from './services/cart.service'
 import { paymentApi } from './services/payment.service'
 import { reviewApi } from './services/review.service'
-import { persistedAuthReducer, persistedFilterReducer , persistedSortReducer} from './persistConfig'
+import { persistedAuthReducer, persistedFilterReducer, persistedSortReducer } from './persistConfig'
 import { quizApi } from './services/quiz.service'
 import { instructorApi } from './services/instructor.service'
 import { tagApi } from './services/tag.service'
+import { enrollApi } from './services/enroll.service'
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -23,8 +24,6 @@ export const rootReducer = combineReducers({
   cart: cartReducer,
   filter: persistedFilterReducer,
   sort: persistedSortReducer,
-
-
 
   // API reducers
   [courseApi.reducerPath]: courseApi.reducer,
@@ -39,4 +38,5 @@ export const rootReducer = combineReducers({
   [quizApi.reducerPath]: quizApi.reducer,
   [instructorApi.reducerPath]: instructorApi.reducer,
   [tagApi.reducerPath]: tagApi.reducer,
+  [enrollApi.reducerPath]: enrollApi.reducer
 })
