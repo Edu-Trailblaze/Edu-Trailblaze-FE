@@ -1,6 +1,11 @@
 'use client'
-import 'react-toastify/dist/ReactToastify.css'
+// CHANGED: import Redux filter/sort
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
+import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
+import 'react-toastify/dist/ReactToastify.css'
 import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import Pagination from '@/components/admin/Pagination/Pagination'
@@ -10,9 +15,10 @@ import Loader from '@/components/animate/loader/loader'
 
 import { Filter, ArrowUpDown, Plus, Eye, Pencil, Trash2 } from 'lucide-react'
 import api from '@/components/config/axios'
+
 import ReviewFormModalEdit from '../../../../../components/admin/modal/ReviewFormModal/ReviewFormModalEdit'
 
-type Review = {
+export type Review = {
   id?: number
   courseId?: number
   rating: number
@@ -27,35 +33,53 @@ const reviewFields: { label: string; accessor: keyof Review }[] = [
 ]
 
 export default function ReviewsManagement() {
+  const dispatch = useDispatch()
+
+  // CHANGED: Redux filter & sort
+  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  // CHANGED: tableKey = 'reviews'
+  const tableKey = 'reviews'
+  const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
+
+  // CHANGED: State mở/đóng filter, sort
+  const [isFilterOpen, setFilterOpen] = useState(false)
+  const [isSortOpen, setSortOpen] = useState(false)
+
+  // CHANGED: Khi áp dụng sort => setSortForTable
+  const handleApplySort = (newVisibleColumns: Record<keyof Review, boolean>) => {
+    dispatch(setSortForTable({ tableKey, visibility: newVisibleColumns }))
+    setSortOpen(false)
+  }
+
+  // =============== Dữ liệu Reviews ===============
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
+
+  // =============== Modal ===============
   const [selectedReview, setSelectedReview] = useState<Review | null>(null)
-  const [isAddModalOpen, setAddModalOpen] = useState(false)
   const [isEditModalOpen, setEditModalOpen] = useState(false)
   const [editReview, setEditReview] = useState<Review | null>(null)
+
+  // CHANGED: (nếu có thêm modal create)
+  const [isAddModalOpen, setAddModalOpen] = useState(false)
   const [newReview, setNewReview] = useState<Review>({
     rating: 0,
     reviewText: ''
   })
 
+  // =============== Pagination ===============
   const [pageIndex, setPageIndex] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [hasPreviousPage, setHasPreviousPage] = useState(false)
-  const [hasNextPage, setHasNextPage] = useState(false)
   const pageSize = 5
 
   const fetchReviews = async (page: number) => {
     setLoading(true)
-
     try {
       const response = await api.get('/Review/get-paging-review', {
         params: { pageIndex: page, pageSize }
       })
       setReviews(response.data.items)
       setTotalPages(response.data.totalPages)
-      setHasPreviousPage(response.data.hasPreviousPage)
-      setHasNextPage(response.data.hasNextPage)
-      console.log('get data', response.data.items)
     } catch (error) {
       console.error('Error fetching reviews:', error)
       toast.error('Failed to fetch reviews!')
@@ -67,13 +91,6 @@ export default function ReviewsManagement() {
   useEffect(() => {
     fetchReviews(pageIndex)
   }, [pageIndex])
-
-  const resetNewReview = () => {
-    setNewReview({
-      rating: 0,
-      reviewText: ''
-    })
-  }
 
   const openEditModal = (review: Review) => {
     setEditReview(review)
@@ -111,10 +128,10 @@ export default function ReviewsManagement() {
 
   const renderRow = (review: Review) => (
     <tr key={review.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
-      <td className='p-4'>{review.id}</td>
-      <td>{review.courseId}</td>
-      <td>{review.rating}</td>
-      <td>{review.reviewText}</td>
+      {visibleColumns['id'] && <td className='p-4'>{review.id}</td>}
+      {visibleColumns['courseId'] && <td>{review.courseId}</td>}
+      {visibleColumns['rating'] && <td>{review.rating}</td>}
+      {visibleColumns['reviewText'] && <td>{review.reviewText}</td>}
       <td className='flex mt-4 space-x-2'>
         <button onClick={() => setSelectedReview(review)} className='text-blue-600 cursor-pointer'>
           <Eye size={18} />
@@ -138,12 +155,15 @@ export default function ReviewsManagement() {
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
+            {/* CHANGED: Filter button */}
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
               <Filter size={18} />
             </button>
+            {/* CHANGED: Sort button */}
             <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
               <ArrowUpDown size={18} />
             </button>
+            {/* CHANGED: Add button */}
             <button
               className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
               onClick={() => setAddModalOpen(true)}
@@ -153,13 +173,21 @@ export default function ReviewsManagement() {
           </div>
         </div>
       </div>
+
       {loading ? (
         <div className='flex justify-center py-6'>
           <Loader className='w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin' />
           <p className='mt-2 text-gray-500 text-sm'>Loading reviews...</p>
         </div>
       ) : (
-        <Table columns={reviewFields} renderRow={renderRow} data={reviews} />
+        <Table
+          columns={[
+            ...reviewFields.filter((field) => visibleColumns[field.accessor]),
+            { label: 'Actions', accessor: 'action' }
+          ]}
+          renderRow={renderRow}
+          data={reviews}
+        />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
 

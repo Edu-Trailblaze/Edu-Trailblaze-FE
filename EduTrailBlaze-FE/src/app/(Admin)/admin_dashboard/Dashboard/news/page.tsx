@@ -1,4 +1,10 @@
 'use client'
+//redux
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
+import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
+
 //api
 import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
@@ -16,12 +22,12 @@ import NewsSort from '@/components/admin/Filter/NewsFilter/NewsSort'
 import NewsFilter from '@/components/admin/Filter/NewsFilter/NewsFilter'
 
 //modal
-
-//icon
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
 import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit'
 import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate'
 import DetailModal from '@/components/admin/Modal/DetailModal'
+
+//icon
+import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
 
 export type News = {
   id?: number
@@ -42,24 +48,24 @@ const newsFields: { label: string; accessor: keyof News }[] = [
 ]
 
 export default function NewsManagement() {
+  const dispatch = useDispatch()
 
-  const [allNews, setAllNews] = useState<News[]>([]);
-  const [news, setNews] = useState<News[]>([]);
-  const [newsData, setNewsData] = useState<News[]>([]);
-
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedNews, setSelectedNews] = useState<News | null>(null);
-
+  const [allNews, setAllNews] = useState<News[]>([])
+  const [news, setNews] = useState<News[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [selectedNews, setSelectedNews] = useState<News | null>(null)
   const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({})
-  //sort
-  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(newsFields.map((field) => [field.accessor, true]))
-  )
-  const [isSortOpen, setSortOpen] = useState(false)
-  const [tempVisibleColumns, setTempVisibleColumns] = useState(visibleColumns)
 
   //filter
   const [isFilterOpen, setFilterOpen] = useState(false)
+
+  //redux filter
+  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+
+  //redux sort
+  const [isSortOpen, setSortOpen] = useState(false)
+  const tableKey = 'news'
+  const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
 
   //modal
   const [isAddModalOpen, setAddModalOpen] = useState(false)
@@ -75,8 +81,7 @@ export default function NewsManagement() {
     try {
       const response = await api.get('/News')
       setNews(response.data)
-      setAllNews(response.data); // Lưu dữ liệu gốc
-
+      setAllNews(response.data)
     } catch (error) {
       console.error('Error fetching news:', error)
     } finally {
@@ -129,7 +134,7 @@ export default function NewsManagement() {
       console.error('Error updating news:', error)
       toast.error('Failed to update news!')
     }
-  };
+  }
 
   const handleDeleteNews = async (newsId: number) => {
     if (!window.confirm('Are you sure you want to delete this news?')) return
@@ -143,16 +148,9 @@ export default function NewsManagement() {
     }
   }
 
-  //comlumn filter
-  const toggleColumnVisibility = (column: keyof News) => {
-    setVisibleColumns((prev) => ({
-      ...prev,
-      [column]: !prev[column]
-    }));
-  };
-
   const handleApplySort = (newVisibleColumns: Record<keyof News, boolean>) => {
-    setVisibleColumns(newVisibleColumns)
+    // save state
+    dispatch(setSortForTable({ tableKey, visibility: newVisibleColumns }))
     setSortOpen(false)
   }
 
@@ -236,32 +234,38 @@ export default function NewsManagement() {
               </button>
               {isFilterOpen && (
                 <NewsFilter
-                  data={newsData} // Thêm prop data vào đây
-                  columns={newsFields}
-                  visibleColumns={tempVisibleColumns}
-                  onApply={handleApplySort}
                   onClose={() => setFilterOpen(false)}
                   onClear={() => {
-                    setTempVisibleColumns(Object.fromEntries(newsFields.map(field => [field.accessor, true])));
-                    setNews(allNews); 
-                    console.log("Filter cleared, resetting data.");
-
+                    dispatch(clearFilter())
+                    setNews(allNews)
                   }}
-                  onFilterApply={(filters) => {
-                    console.log("Applying filter:", filters);
+                  onFilterApply={() => {
+                    //  GET fromDate, toDate, keyword từ Redux
+                    const from = fromDate ? new Date(fromDate) : null
+                    const to = toDate ? new Date(toDate) : null
+                    const kw = keyword.toLowerCase()
 
-                    const filteredNews = allNews.filter((item) => {
-                      return Object.entries(filters).every(([key, value]) => {
-                        if (!value) return true;
-                        return String(item[key as keyof News]).toLowerCase().includes(String(value).toLowerCase());
-                      });
-                    });
-                    console.log("Filtered news:", filteredNews);
-                    setNews(filteredNews);
+                    // filter
+                    const filtered = allNews.filter((item) => {
+                      const itemDate = new Date(item.createdAt)
+                      if (from && itemDate < from) return false
+                      if (to && itemDate > to) return false
+
+                      if (kw) {
+                        const inTitle = item.title.toLowerCase().includes(kw)
+                        const inContent = item.content.toLowerCase().includes(kw)
+                        if (!inTitle && !inContent) return false
+                      }
+                      return true
+                    })
+
+                    setNews(filtered)
+                    console.log('Filtered news:', filtered)
                   }}
                 />
               )}
             </div>
+
             <div className='relative'>
               <button
                 className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
@@ -272,12 +276,10 @@ export default function NewsManagement() {
               {isSortOpen && (
                 <NewsSort
                   columns={newsFields}
-                  visibleColumns={tempVisibleColumns}
+                  visibleColumns={visibleColumns}
                   onApply={handleApplySort}
                   onClose={() => setSortOpen(false)}
-                  onClear={() =>
-                    setTempVisibleColumns(Object.fromEntries(newsFields.map((field) => [field.accessor, true])))
-                  }
+                  onClear={() => dispatch(clearSortForTable(tableKey))}
                 />
               )}
             </div>
@@ -291,6 +293,7 @@ export default function NewsManagement() {
           </div>
         </div>
       </div>
+
       {loading ? (
         <div className='flex justify-center py-6'>
           <Loader className='w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin' />

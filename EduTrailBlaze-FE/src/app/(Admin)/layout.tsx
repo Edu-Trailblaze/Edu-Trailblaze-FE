@@ -14,8 +14,6 @@ export default function RootLayout({
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-
-        <AdminHeader />
         <Layout>{children}</Layout>
       </ThemeProvider>
     </>
