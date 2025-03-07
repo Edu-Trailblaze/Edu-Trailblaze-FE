@@ -18,8 +18,8 @@ import api from '@/components/config/axios'
 
 import ReviewFormModalEdit from '../../../../../components/admin/modal/ReviewFormModal/ReviewFormModalEdit'
 
-export type    = {
-  id?: number 
+export type Review = {
+  id?: number
   courseId?: number
   rating: number
   reviewText: string
