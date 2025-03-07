@@ -47,7 +47,8 @@ const initialState: SortColumnState = {
     id: true,
     courseId: true,
     rating: true,
-    reviewText: true
+    reviewText: true,
+    createdAt: true
   }
 }
 

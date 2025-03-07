@@ -42,7 +42,7 @@ const orderFields: { label: string; accessor: keyof Order }[] = [
   { label: 'Id', accessor: 'id' },
   { label: 'User Name', accessor: 'userName' },
   { label: 'Amount', accessor: 'orderAmount' },
-  { label: 'Date', accessor: 'orderDate' },
+  { label: 'Order Date', accessor: 'orderDate' },
   { label: 'Status', accessor: 'orderStatus' }
 ]
 
@@ -54,12 +54,10 @@ export default function OrdersManagement() {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
-  // ====== Redux Filter & Sort ======
   const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
   const tableKey = 'orders'
   const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
 
-  // State để mở/đóng modal filter & sort
   const [isFilterOpen, setFilterOpen] = useState(false)
   const [isSortOpen, setSortOpen] = useState(false)
 
@@ -71,7 +69,7 @@ export default function OrdersManagement() {
   //pagination
   const [pageIndex, setPageIndex] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const pageSize = 5
+  const pageSize = 10
 
   const fetchOrders = async (page: number) => {
     setLoading(true)
@@ -123,14 +121,11 @@ export default function OrdersManagement() {
     const kw = keyword.toLowerCase()
 
     const filtered = allOrders.filter((item) => {
-      // CHANGED: parse item.orderDate
-      // nếu item.orderDate cũng ở dạng ISO, dayjs(item.orderDate) sẽ parse OK
       const itemDate = dayjs(item.orderDate)
 
       if (from && itemDate.isBefore(from, 'day')) return false
       if (to && itemDate.isAfter(to, 'day')) return false
 
-      // Lọc theo keyword: userName, orderStatus,...
       if (kw) {
         const inUser = item.userName?.toLowerCase().includes(kw)
         const inStatus = item.orderStatus.toLowerCase().includes(kw)

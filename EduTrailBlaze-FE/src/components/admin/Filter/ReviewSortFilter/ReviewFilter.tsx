@@ -7,7 +7,7 @@ import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 interface ReviewFilterProps {
   onClose: () => void
   onClear: () => void
-  onFilterApply: () => void // Giờ onFilterApply không cần tham số
+  onFilterApply: () => void
 }
 
 const ReviewFilter: React.FC<ReviewFilterProps> = ({ onClose, onClear, onFilterApply }) => {
@@ -15,8 +15,6 @@ const ReviewFilter: React.FC<ReviewFilterProps> = ({ onClose, onClear, onFilterA
   const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
 
   const applyFilters = () => {
-    // Thay vì onFilterApply(filters), ta chỉ gọi onFilterApply()
-    // vì toàn bộ filter đã nằm trong Redux
     onFilterApply()
     onClose()
   }
@@ -27,8 +25,8 @@ const ReviewFilter: React.FC<ReviewFilterProps> = ({ onClose, onClear, onFilterA
       <div className='flex justify-between items-center border-b pb-2 mb-3'>
         <button
           onClick={() => {
-            dispatch(clearFilter()) // reset Redux slice
-            onClear() // onClear ở cha => setReview(allReview)
+            dispatch(clearFilter())
+            onClear()
           }}
           className='text-sm text-gray-600 px-2 py-1 border rounded-md hover:bg-gray-100'
         >
@@ -42,7 +40,6 @@ const ReviewFilter: React.FC<ReviewFilterProps> = ({ onClose, onClear, onFilterA
 
       {/* Filter List */}
       <div className='space-y-2'>
-        {/* Date Range */}
         <div className='mb-4'>
           <div className='flex justify-between items-center'>
             <span className='text-sm font-medium text-gray-700'>Date range</span>
