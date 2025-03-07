@@ -23,7 +23,7 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import VoucherSort from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherSort'
 import VoucherFilter from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherFilter'
 //modal
-import DetailModal from '../../../../../components/admin/modal/DetailModal'
+import DetailModal from '../../../../../components/admin/Modal/DetailModal'
 import VoucherFormModalCreate from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalCreate'
 import VoucherFormModalEdit from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalEdit'
 
@@ -89,7 +89,7 @@ export default function VouchersManagement() {
   //pagination
   const [pageIndex, setPageIndex] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const pageSize = 5
+  const pageSize = 10
 
   const fetchVouchers = async (page: number) => {
     setLoading(true)

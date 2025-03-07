@@ -177,7 +177,7 @@ export default function BecomeInstructor() {
             <div className='flex justify-center lg:justify-end'>
               <div className='relative rounded-2xl shadow-xl overflow-hidden'>
                 <Image
-                  src='/assets/Lecturer/guide.webp'
+                  src='/assets/Lecturer/guide.jpg'
                   alt='Course creation guide'
                   width={500}
                   height={400}
@@ -238,7 +238,7 @@ export default function BecomeInstructor() {
             <div className='lg:w-1/2 mb-12 lg:mb-0'>
               <div className='relative w-full h-96 rounded-2xl shadow-xl overflow-hidden mx-auto'>
                 <Image
-                  src='/assets/Lecturer/support.webp'
+                  src='/assets/Lecturer/support.jpg'
                   alt='Instructor support'
                   fill
                   className='object-cover'
