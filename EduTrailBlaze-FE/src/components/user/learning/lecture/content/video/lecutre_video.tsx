@@ -5,9 +5,10 @@ import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2 } from 'luci
 interface ModuleBarProps {
   lecture: ILecture
   video?: IVideo[]
+  userId: string
 }
 
-export default function VideoLecture({ lecture, video }: ModuleBarProps) {
+export default function VideoLecture({ lecture, video, userId }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('English')
   const [activeTab, setActiveTab] = useState('transcript')

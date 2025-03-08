@@ -1,16 +1,21 @@
 'use client'
 import React from 'react'
+import Button from '../../../../../global/Button/Button'
 
 interface ReadingLectureProps {
   lecture: ILecture
+  userId: string
 }
 
-export default function ReadingLecture({ lecture }: ReadingLectureProps) {
+export default function ReadingLecture({ lecture, userId }: ReadingLectureProps) {
   return (
     <div className='py-8 space-y-6'>
-      {/* <p className='text-3xl font-bold'>{lecture.title}</p> */}
       <h2 className='text-3xl font-semibold mb-4'>Document</h2>
-      <p className='text-gray-700 leading-relaxed'>{lecture.description}</p>
+      <div className='flex justify-between items-center'>
+        <p className='text-gray-700 leading-relaxed'>{lecture.description}</p>
+        <Button size='lg'>Make as complete</Button>
+      </div>
+
       <div className='bg-white rounded-xl border-2 border-blue-500 shadow-sm p-6'>
         {lecture.content.split('\n').map((line, index) => (
           <p key={index} className='text-gray-700 leading-relaxed'>
@@ -18,9 +23,6 @@ export default function ReadingLecture({ lecture }: ReadingLectureProps) {
           </p>
         ))}
       </div>
-
-      {/* Danh sách file đọc */}
-      <div className='mt-8'></div>
     </div>
   )
 }

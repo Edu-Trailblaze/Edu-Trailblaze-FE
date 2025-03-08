@@ -49,7 +49,6 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
 
   const handleCreateSecLecVip = async () => {
     if (!courseId) {
-      // alert(' CourseId is missing. Please create a course first!')
       toast.error('CourseId is missing. Please create a course first!', {
         position: 'top-right',
         autoClose: 5000,

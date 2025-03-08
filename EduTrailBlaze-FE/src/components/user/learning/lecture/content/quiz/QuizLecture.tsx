@@ -5,10 +5,11 @@ import QuizQuestion from './QuizQuestion'
 import LoadingPage from '../../../../../animate/Loading/LoadingPage'
 interface QuizLectureProps {
   quizDetail?: QuizDetail
+  userId: string
   onNextLecture: () => void
 }
 
-export default function QuizLecture({ quizDetail, onNextLecture }: QuizLectureProps) {
+export default function QuizLecture({ quizDetail, onNextLecture, userId }: QuizLectureProps) {
   if (!quizDetail) {
     return <LoadingPage />
   }
@@ -87,6 +88,7 @@ export default function QuizLecture({ quizDetail, onNextLecture }: QuizLecturePr
       question={currentQuestion}
       answers={currentAnswers}
       questionIndex={currentQuestionIndex}
+      userId={userId}
       totalQuestions={questions.length}
       selectedAnswer={selectedAnswers[currentQuestionIndex]}
       handleAnswerSelection={handleAnswerSelection}
