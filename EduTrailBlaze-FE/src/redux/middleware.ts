@@ -31,7 +31,7 @@ export const apiMiddlewares: Middleware[] = [
   instructorApi.middleware,
   tagApi.middleware,
 
-  enrollmentApi.middleware
+  enrollmentApi.middleware,
 
   enrollApi.middleware
 
