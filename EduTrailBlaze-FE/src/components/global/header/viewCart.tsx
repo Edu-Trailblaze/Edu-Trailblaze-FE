@@ -34,7 +34,7 @@ export default function ViewCart({ id }: CartItemProps) {
             </div>
           ))
         : 'No course in the cart now'}
-      <Link href={'student/shopping_cart'}>
+      <Link href={'/student/shopping_cart'}>
         <button className='w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg'>
           Go to Cart
         </button>
