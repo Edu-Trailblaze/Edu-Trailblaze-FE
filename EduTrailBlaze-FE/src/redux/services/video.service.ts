@@ -21,8 +21,17 @@ export const videoApi = createApi({
         method: 'GET',
         params: conditions
       })
+    }),
+
+    postVideo: build.mutation<VideoResponse, FormData>({
+      query: (formData) => ({
+        url: 'Video',
+        method: 'POST',
+        body: formData
+      }),
+      invalidatesTags: ['Videos']
     })
   })
 })
 
-export const { useGetVideoQuery, useGetVideoByConditionsQuery } = videoApi
+export const { useGetVideoQuery, useGetVideoByConditionsQuery, usePostVideoMutation } = videoApi
