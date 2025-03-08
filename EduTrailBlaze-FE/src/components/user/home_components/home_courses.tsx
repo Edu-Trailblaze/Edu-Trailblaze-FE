@@ -1,6 +1,10 @@
 'use client'
-import { useGetAllCoursesQuery, useGetCourseByIdAndTagQuery } from '@/redux/services/courseDetail.service'
-import React, { useEffect, useState } from 'react'
+import {
+  useGetAllCoursesQuery,
+  useGetCourseByIdAndTagPagingQuery,
+  useGetCourseByIdAndTagQuery
+} from '@/redux/services/courseDetail.service'
+import React, { useEffect, useRef, useState } from 'react'
 import InstructorItem from './InstructorItem'
 import { formatDate } from '@/helper/Util'
 import { jwtDecode } from 'jwt-decode'
@@ -11,30 +15,33 @@ import Link from 'next/link'
 import SkeletonCard from '../../animate/skeleton/skeleton_card'
 import { useGetTagQuery } from '@/redux/services/tag.service'
 import LoginRequest from '@/components/global/requestLogin/RequestLogin'
-import Modal from 'react-modal';
+import Modal from 'react-modal'
 import '@/components/global/Modal/ReactModal.css'
-
-// Modal.setAppElement('');
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function HomeCourses() {
-  const [visibleCourse, setVisibleCourse] = useState(4)
   const [activeIndex, setActiveIndex] = useState(0)
   const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
   const [userId, setUserId] = useState('')
   const [selectedTag, setSelectedTag] = useState(1)
-
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+  const [visibleCards, setVisibleCards] = useState(4)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const {
-    data: courses,
-    isLoading,
-    isFetching
-  } = useGetCourseByIdAndTagQuery({ tagId: selectedTag, studentId: userId })
+    data: coursesPaging,
+    isLoading: coursesPagingLoading,
+    isFetching: coursesPagingFetching,
+    status: coursesPagingStatus
+  } = useGetCourseByIdAndTagPagingQuery({ tagId: selectedTag, studentId: userId, pageIndex: 1, pageSize: 8 })
   const { data: tags, isLoading: tagsLoading, isFetching: tagsFetching } = useGetTagQuery()
   const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
   const [modalOpen, setModalOpen] = useState(false)
   const dispatch = useDispatch()
 
-  const paidCourses = courses?.filter((course) => course.price > 0)
-  const freeCourses = courses?.filter((course) => course.price === 0)
+  const paidCourses = coursesPaging?.items.filter((course) => course.course.price > 0)
+  const freeCourses = coursesPaging?.items.filter((course) => course.course.price === 0)
+
+  const coursesPerSlide = 4
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -50,27 +57,36 @@ export default function HomeCourses() {
     }
   }, [])
 
-  const categories = [
-    'Courses Science',
-    'IT Certifications',
-    'Leadership',
-    'Web Development',
-    'Communication',
-    'Business Analytics and Intelligence'
-  ]
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
+      handleResize() // Set initial width
+
+      return () => window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (windowWidth < 640) {
+      setVisibleCards(1)
+    } else if (windowWidth < 768) {
+      setVisibleCards(2)
+    } else if (windowWidth < 1024) {
+      setVisibleCards(3)
+    } else {
+      setVisibleCards(4)
+    }
+  }, [windowWidth])
 
   const handleTagSelect = (index: number, tagId: number) => {
     setActiveIndex(index)
     setSelectedTag(tagId)
   }
 
-  const handleShowCourses = () => {
-    if (courses && visibleCourse < courses.length) {
-      setVisibleCourse(courses.length)
-    } else {
-      setVisibleCourse(4)
-    }
-  }
   const handleAddToCart = async (userId: string, courseId: number) => {
     try {
       const result = await postCart({ userId, courseId }).unwrap()
@@ -86,8 +102,36 @@ export default function HomeCourses() {
   }
 
   const handleCloseModal = () => {
-    setModalOpen(false);
-  };
+    setModalOpen(false)
+  }
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex + coursesPerSlide >= (paidCourses?.length ?? 0) ? 0 : prevIndex + coursesPerSlide
+    )
+  }
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex - coursesPerSlide < 0 ? (paidCourses?.length ?? 0) - coursesPerSlide : prevIndex - coursesPerSlide
+    )
+  }
+
+  // Get popup position based on screen size and card index
+  const getPopupPosition = (index: number) => {
+    if (windowWidth < 768) {
+      return 'top-full left-0 mt-2' // Mobile: always below
+    } else if (visibleCards === 1) {
+      return 'top-0 left-full ml-4' // Single visible card: always right
+    } else {
+      // Determine if card is in first or second half of visible courses
+      return index % visibleCards < visibleCards / 2
+        ? 'top-1/2 -translate-y-1/2 left-full ml-4'
+        : 'top-1/2 -translate-y-1/2 right-full mr-4'
+    }
+  }
+
+  console.log(freeCourses, freeCourses?.length)
 
   return (
     <>
@@ -117,131 +161,340 @@ export default function HomeCourses() {
                 <p>Explore top-tier online courses from the world's leading universities and companies.</p>
               </div>
 
-              {isLoading || isFetching ? (
+              {coursesPagingLoading || coursesPagingFetching ? (
                 <div className='grid grid-cols-2 gap-6'>
                   <SkeletonCard />
                   <SkeletonCard />
                   <SkeletonCard />
                   <SkeletonCard />
                 </div>
-              ) : paidCourses?.length === 0 || paidCourses === undefined ? (
+              ) : coursesPagingStatus === 'rejected' || paidCourses?.length === 0 ? (
                 <p>No paid courses available at the moment.</p>
               ) : (
-                <div className='flex gap-[5rem]'>
-                  {paidCourses.slice(0, visibleCourse).map((course, index) => (
-                    <div className='relative' key={course.id}>
-                      <Link href={`/student/course/${course.id}`}>
-                        <div
-                          className='relative transform transition duration-300 hover:scale-110 rounded-lg shadow-lg w-[17.5rem] hover:shadow-xl bg-white border border-black p-[5px] hover:z-[1]'
-                          onMouseEnter={() => setHoveredCourse(course.id)}
-                          onMouseLeave={() => setHoveredCourse(null)}
-                        >
-                          {course.imageURL !== null ? (
-                            <div className='m-2 rounded-lg'>
-                              <img className='w-[100%] h-[170px] rounded-md' src={course.imageURL} alt='course_image' />
-                            </div>
-                          ) : (
-                            <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 m-2 h-3/6 rounded-lg' />
-                          )}
+                <div className='relative'>
+                  <button
+                    onClick={prevSlide}
+                    className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -ml-3 md:-ml-4 hidden sm:block'
+                    aria-label='Scroll left'
+                  >
+                    <ChevronLeft size={windowWidth < 768 ? 20 : 24} />
+                  </button>
+                  <div className='flex pl-5 gap-3 md:gap-4 lg:gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory'>
+                    {paidCourses?.slice(currentIndex, currentIndex + coursesPerSlide).map((course, index) => (
+                      <div
+                        className='relative flex-shrink-0 snap-start w-full sm:w-1/2 md:w-1/3 lg:w-[300px] px-1'
+                        key={course.course.id}
+                      >
+                        <Link href={`/student/course/${course.course.id}`}>
+                          <div
+                            className='relative transform transition duration-300 hover:scale-105 rounded-lg shadow-md w-full hover:shadow-xl bg-white border border-gray-200 p-3 hover:z-10 h-full flex flex-col'
+                            onMouseEnter={() => setHoveredCourse(course.course.id)}
+                            onMouseLeave={() => setHoveredCourse(null)}
+                          >
+                            {course.course.imageURL !== null ? (
+                              <div className='mb-3 rounded-lg overflow-hidden'>
+                                <img
+                                  className='w-full h-32 sm:h-36 md:h-40 object-cover rounded-md'
+                                  src={course.course.imageURL}
+                                  alt='course_image'
+                                />
+                              </div>
+                            ) : (
+                              <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 mb-3 h-32 sm:h-36 md:h-40 rounded-lg' />
+                            )}
 
-                          <div className='px-5 mb-[5px] flex flex-col'>
-                            <h2 className='font-semibold'>{course.title}</h2>
-                            <p className='block font-sans text-base font-light leading-relaxed text-inherit antialiased'>
-                              <strong>Instructor:</strong> <InstructorItem courseId={course.id} />
-                            </p>
-                            <div className='flex space-x-1 mt-1 text-yellow-400'>
-                              <span className='text-gray-600 text-sm font-medium'>4.6</span>
-                              {/* <!-- Star icons --> */}
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='currentColor'
-                                viewBox='0 0 24 24'
-                                className='w-5 h-5'
-                              >
-                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                              </svg>
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='currentColor'
-                                viewBox='0 0 24 24'
-                                className='w-5 h-5'
-                              >
-                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                              </svg>
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='currentColor'
-                                viewBox='0 0 24 24'
-                                className='w-5 h-5'
-                              >
-                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                              </svg>
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='currentColor'
-                                viewBox='0 0 24 24'
-                                className='w-5 h-5'
-                              >
-                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                              </svg>
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='none'
-                                stroke='currentColor'
-                                strokeWidth='2'
-                                viewBox='0 0 24 24'
-                                className='w-5 h-5'
-                              >
-                                <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                              </svg>
-                              <span className='text-gray-400 text-sm'>(40,856)</span>
-                            </div>
+                            <div className='px-1 mb-2 flex-grow'>
+                              <h2 className='font-semibold text-base md:text-lg line-clamp-2 mb-1'>
+                                {course.course.title}
+                              </h2>
+                              <p className='text-xs md:text-sm text-gray-600 mb-1'>
+                                <span className='font-medium'>Instructor:</span>{' '}
+                                <InstructorItem courseId={course.course.id} />
+                              </p>
+                              <div className='flex items-center space-x-1 mb-2'>
+                                <span className='text-gray-700 text-xs md:text-sm font-medium'>4.6</span>
+                                {/* <!-- Star icons --> */}
+                                <div className='flex text-yellow-400'>
+                                  {[1, 2, 3, 4].map((star) => (
+                                    <svg
+                                      key={star}
+                                      xmlns='http://www.w3.org/2000/svg'
+                                      fill='currentColor'
+                                      viewBox='0 0 24 24'
+                                      className='w-3 h-3 md:w-4 md:h-4'
+                                    >
+                                      <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                                    </svg>
+                                  ))}
+                                  <svg
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='2'
+                                    viewBox='0 0 24 24'
+                                    className='w-3 h-3 md:w-4 md:h-4'
+                                  >
+                                    <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                                  </svg>
+                                </div>
 
-                            <p className='mt-5'>{course.price}$</p>
+                                <span className='text-gray-400 text-xs'>(40,856)</span>
+                              </div>
+
+                              <div className='flex justify-between items-center mt-auto'>
+                                <p className='text-base md:text-lg font-bold text-gray-900 '>${course.course.price}</p>
+
+                                <button
+                                  className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    handleAddToCart(userId, course.course.id)
+                                  }}
+                                  disabled={isAddingToCart}
+                                >
+                                  {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+                                </button>
+                              </div>
+                            </div>
                           </div>
+                        </Link>
+                        {hoveredCourse === course.course.id && (
+                          <div
+                            className={`absolute w-80 bg-white p-4 rounded-xl border shadow-2xl z-[999]
+                               ${
+                                 index === 0
+                                   ? 'left-[calc(100%)]' // First course: show on right
+                                   : '-left-[320px]' // Other courses: show on left
+                               } ${windowWidth < 768 ? 'w-full' : 'w-64 md:w-72 lg:w-80'} ${getPopupPosition(index)}`}
+                            style={{
+                              top: '50%',
+                              transform: 'translateY(-50%)'
+                            }}
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <h4 className='font-semibold text-base md:text-lg mb-1'>{course.course.title}</h4>
+                            <p className='text-xs md:text-sm text-gray-500 mb-2'>
+                              Updated{' '}
+                              <span className='text-green-600 font-medium'>{formatDate(course.course.updatedAt)}</span>
+                            </p>
+                            <div className='space-y-1 mb-3'>
+                              <p className='text-xs md:text-sm text-gray-600'>• Duration: {course.course.duration}</p>
+                              <p className='text-xs md:text-sm text-gray-600'>
+                                • Difficulty: {course.course.difficultyLevel}
+                              </p>
+                              {windowWidth >= 768 && (
+                                <p className='text-xs md:text-sm text-gray-600'>• {course.course.prerequisites}</p>
+                              )}
+                            </div>
 
-                          {hoveredCourse === course.id && (
+                            {windowWidth >= 768 && (
+                              <p className='text-gray-700 text-xs md:text-sm mb-3'>{course.course.description}</p>
+                            )}
+
+                            <div className='mb-3'>
+                              <p className='text-xs md:text-sm font-medium mb-1'>What you'll learn:</p>
+                              <ul className='space-y-1 text-xs md:text-sm text-gray-800'>
+                                {course.course.learningOutcomes
+                                  ?.slice(0, windowWidth < 768 ? 2 : 3)
+                                  .map((outcome, idx) => (
+                                    <li key={idx} className='flex items-start'>
+                                      <span className='mr-2 text-green-600'>✔</span> {outcome}
+                                    </li>
+                                  ))}
+                                {course.course.learningOutcomes?.length > (windowWidth < 768 ? 2 : 3) && (
+                                  <li className='text-purple-600 text-xs md:text-sm'>
+                                    + {course.course.learningOutcomes.length - (windowWidth < 768 ? 2 : 3)} more
+                                  </li>
+                                )}
+                              </ul>
+                            </div>
+
+                            {/* Arrow pointer */}
+                            <div
+                              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rotate-45 border
+                ${index === 0 ? 'left-0 -ml-2 border-l border-b' : 'right-0 -mr-2 border-t border-r'}`}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={nextSlide}
+                    className='absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -mr-3 md:-mr-4 hidden sm:block'
+                    aria-label='Scroll right'
+                  >
+                    <ChevronRight size={windowWidth < 768 ? 20 : 24} />
+                  </button>
+                  <div className='mt-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4'>
+                    <button
+                      className='w-full sm:w-auto px-4 py-2 bg-blue-500 text-white font-medium rounded-md transition hover:bg-blue-700 text-sm md:text-base'
+                      type='button'
+                    >
+                      Explore All Courses
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/** Free courses layout */}
+            <div className='mt-10'>
+              <div className='mb-[30px]'>
+                <p className='mb-[10px] font-bold'>100% free</p>
+                <h1 className='text-4xl font-bold'>Start learning with free courses</h1>
+                <p>Discover free online courses from the world's best universities and companies.</p>
+              </div>
+
+              {coursesPagingLoading || coursesPagingFetching ? (
+                <div className='grid grid-cols-2 gap-6'>
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+              ) : coursesPagingStatus === 'rejected' || freeCourses?.length === 0 ? (
+                <p>No free courses available at the moment.</p>
+              ) : (
+                <div className='relative'>
+                  <button
+                    onClick={prevSlide}
+                    className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -ml-3 md:-ml-4 hidden sm:block'
+                    aria-label='Scroll left'
+                  >
+                    <ChevronLeft size={windowWidth < 768 ? 20 : 24} />
+                  </button>
+                  <div className='flex gap-3 md:gap-4 lg:gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory'>
+                    {freeCourses?.slice(currentIndex, currentIndex + coursesPerSlide).map((course, index) => (
+                      <div
+                        className='relative flex-shrink-0 snap-start w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-1'
+                        key={course.course.id}
+                      >
+                        <Link href={`/student/course/${course.course.id}`}>
+                          <div
+                            className='relative transform transition duration-300 hover:scale-105 rounded-lg shadow-md w-full hover:shadow-xl bg-white border border-gray-200 p-3 hover:z-10 h-full flex flex-col'
+                            onMouseEnter={() => setHoveredCourse(course.course.id)}
+                            onMouseLeave={() => setHoveredCourse(null)}
+                          >
+                            {course.course.imageURL !== null ? (
+                              <div className='mb-3 rounded-lg overflow-hidden'>
+                                <img
+                                  className='w-full h-32 sm:h-36 md:h-40 object-cover rounded-md'
+                                  src={course.course.imageURL}
+                                  alt='course_image'
+                                />
+                              </div>
+                            ) : (
+                              <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 mb-3 h-32 sm:h-36 md:h-40 rounded-lg' />
+                            )}
+
+                            <div className='px-1 mb-2 flex-grow'>
+                              <h2 className='font-semibold text-base md:text-lg line-clamp-2 mb-1'>
+                                {course.course.title}
+                              </h2>
+                              <p className='text-xs md:text-sm text-gray-600 mb-1'>
+                                <span className='font-medium'>Instructor:</span>{' '}
+                                <InstructorItem courseId={course.course.id} />
+                              </p>
+                              <div className='flex items-center space-x-1 mb-2'>
+                                <span className='text-gray-700 text-xs md:text-sm font-medium'>4.6</span>
+                                {/* <!-- Star icons --> */}
+                                <div className='flex text-yellow-400'>
+                                  {[1, 2, 3, 4].map((star) => (
+                                    <svg
+                                      key={star}
+                                      xmlns='http://www.w3.org/2000/svg'
+                                      fill='currentColor'
+                                      viewBox='0 0 24 24'
+                                      className='w-3 h-3 md:w-4 md:h-4'
+                                    >
+                                      <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                                    </svg>
+                                  ))}
+                                  <svg
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='2'
+                                    viewBox='0 0 24 24'
+                                    className='w-3 h-3 md:w-4 md:h-4'
+                                  >
+                                    <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
+                                  </svg>
+                                </div>
+
+                                <span className='text-gray-400 text-xs'>(40,856)</span>
+                              </div>
+
+                              <div className='flex justify-between items-center mt-auto'>
+                                <p className='text-base md:text-lg font-bold text-gray-900 mt-auto'>
+                                  ${course.course.price}
+                                </p>
+                                <button
+                                  className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    handleAddToCart(userId, course.course.id)
+                                  }}
+                                  disabled={isAddingToCart}
+                                >
+                                  {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          {hoveredCourse === course.course.id && (
                             <div
                               className={`absolute w-80 bg-white p-4 rounded-xl border shadow-2xl z-[999]
                                ${
                                  index === 0
                                    ? 'left-[calc(100%)]' // First course: show on right
                                    : '-left-[320px]' // Other courses: show on left
-                               }`}
+                               } ${windowWidth < 768 ? 'w-full' : 'w-64 md:w-72 lg:w-80'} ${getPopupPosition(index)}`}
                               style={{
                                 top: '50%',
                                 transform: 'translateY(-50%)'
                               }}
                               onClick={(e) => e.preventDefault()}
                             >
-                              <h4 className='font-semibold text-md'>{course.title}</h4>
-                              <p className='text-sm text-gray-500'>
-                                Updated <span className='text-green-600 font-bold'>{formatDate(course.updatedAt)}</span>
+                              <h4 className='font-semibold text-base md:text-lg mb-1'>{course.course.title}</h4>
+                              <p className='text-xs md:text-sm text-gray-500 mb-2'>
+                                Updated{' '}
+                                <span className='text-green-600 font-medium'>
+                                  {formatDate(course.course.updatedAt)}
+                                </span>
                               </p>
-                              <p className='text-sm text-gray-500'>• Duration: {course.duration}</p>
-                              <p className='text-sm text-gray-500'>• Difficulty Level: {course.difficultyLevel}</p>
-                              <p className='text-sm text-gray-500'>• {course.prerequisites}</p>
+                              <div className='space-y-1 mb-3'>
+                                <p className='text-xs md:text-sm text-gray-600'>• Duration: {course.course.duration}</p>
+                                <p className='text-xs md:text-sm text-gray-600'>
+                                  • Difficulty: {course.course.difficultyLevel}
+                                </p>
+                                {windowWidth >= 768 && (
+                                  <p className='text-xs md:text-sm text-gray-600'>• {course.course.prerequisites}</p>
+                                )}
+                              </div>
 
-                              <p className='text-gray-700 mt-2 text-sm'>{course.description}</p>
+                              {windowWidth >= 768 && (
+                                <p className='text-gray-700 text-xs md:text-sm mb-3'>{course.course.description}</p>
+                              )}
 
-                              <ul className='mt-2 space-y-1 text-sm text-gray-800'>
-                                {course.learningOutcomes.map((outcome, index) => (
-                                  <li key={index} className='flex items-start'>
-                                    <span className='mr-2 text-green-600'>✔</span> {outcome}
-                                  </li>
-                                ))}
-                              </ul>
-
-                              <button
-                                className='mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg'
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                  handleAddToCart(userId, course.id)
-                                }}
-                                disabled={isAddingToCart}
-                              >
-                                {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
-                              </button>
+                              <div className='mb-3'>
+                                <p className='text-xs md:text-sm font-medium mb-1'>What you'll learn:</p>
+                                <ul className='space-y-1 text-xs md:text-sm text-gray-800'>
+                                  {course.course.learningOutcomes
+                                    ?.slice(0, windowWidth < 768 ? 2 : 3)
+                                    .map((outcome, idx) => (
+                                      <li key={idx} className='flex items-start'>
+                                        <span className='mr-2 text-green-600'>✔</span> {outcome}
+                                      </li>
+                                    ))}
+                                  {course.course.learningOutcomes?.length > (windowWidth < 768 ? 2 : 3) && (
+                                    <li className='text-purple-600 text-xs md:text-sm'>
+                                      + {course.course.learningOutcomes.length - (windowWidth < 768 ? 2 : 3)} more
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
 
                               {/* Arrow pointer */}
                               <div
@@ -250,142 +503,37 @@ export default function HomeCourses() {
                               />
                             </div>
                           )}
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className='mt-[20px]'>
-                <button
-                  className='w-[160px] bg-blue-500 cursor-pointer text-white px-2 py-1 mt-2 rounded-md transition duration-150 hover:bg-blue-700 mr-[10px]'
-                  type='button'
-                >
-                  Show 8 others
-                </button>
-                <button
-                  className='w-[100px] bg-white text-blue-500 border-2 border-blue-500 cursor-pointer px-2 py-1 mt-2 rounded-md transition duration-150 hover:bg-blue-500 hover:text-white'
-                  type='button'
-                >
-                  View all
-                </button>
-              </div>
-            </div>
-
-            {/** Free courses layout */}
-            <div className='mt-[80px]'>
-              <div className='mb-[30px]'>
-                <p className='mb-[10px] font-bold'>100% free</p>
-                <h1 className='text-4xl font-bold'>Start learning with free courses</h1>
-                <p>Discover free online courses from the world's best universities and companies.</p>
-              </div>
-
-              {isLoading || isFetching ? (
-                <div className='grid grid-cols-2 gap-6'>
-                  <SkeletonCard />
-                  <SkeletonCard />
-                  <SkeletonCard />
-                  <SkeletonCard />
-                </div>
-              ) : freeCourses?.length === 0 || freeCourses === undefined ? (
-                <div>
-                  <p>No free courses available at the moment.</p>
-                </div>
-              ) : (
-                <div className='flex gap-10'>
-                  {freeCourses.slice(0, visibleCourse).map((course, index) => (
-                    <div
-                      key={index}
-                      className='transform transition duration-300 hover:scale-110 rounded-lg shadow-lg h-[20rem] w-[16rem] hover:shadow-xl bg-white border border-black'
-                    >
-                      <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 m-2 h-3/6 rounded-lg'></div>
-
-                      <div className='px-5 pt-2 flex flex-col'>
-                        <h2 className='font-semibold'>{course.title}</h2>
-                        <p className='block font-sans text-base font-light leading-relaxed text-inherit antialiased'>
-                          Author, teacher
-                        </p>
-                        {/* <!-- Rating Section --> */}
-                        <div className='flex space-x-1 text-yellow-400'>
-                          {/* <!-- Rating text --> */}
-                          <span className='text-gray-600 text-sm font-medium'>4.6</span>
-                          {/* <!-- Star icons --> */}
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            viewBox='0 0 24 24'
-                            className='w-5 h-5'
-                          >
-                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                          </svg>
-                          {/* <!-- Review count --> */}
-                          <span className='text-gray-400 text-sm'>(40,856)</span>
-                        </div>
-
-                        <p className='mt-5'>Free</p>
+                        </Link>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <button
+                    onClick={nextSlide}
+                    className='absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -mr-3 md:-mr-4 hidden sm:block'
+                    aria-label='Scroll right'
+                  >
+                    <ChevronRight size={windowWidth < 768 ? 20 : 24} />
+                  </button>
+                  <div className='mt-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4'>
+                    <button
+                      className='w-full sm:w-auto px-4 py-2 bg-blue-500 text-white font-medium rounded-md transition hover:bg-blue-700 text-sm md:text-base'
+                      type='button'
+                    >
+                      Explore All Courses
+                    </button>
+                  </div>
                 </div>
               )}
-              <div className='mt-[20px]'>
-                <button
-                  className='w-[160px] bg-blue-500 cursor-pointer text-white px-2 py-1 mt-2 rounded-md transition duration-150 hover:bg-blue-700 mr-[10px]'
-                  type='button'
-                >
-                  Show 8 others
-                </button>
-                <button
-                  className='w-[100px] bg-white text-blue-500 border-2 border-blue-500 cursor-pointer px-2 py-1 mt-2 rounded-md transition duration-150 hover:bg-blue-500 hover:text-white'
-                  type='button'
-                >
-                  View all
-                </button>
-              </div>
             </div>
           </div>
         </div>
 
         {modalOpen && (
           <Modal
-          isOpen={modalOpen}
-          onRequestClose={handleCloseModal}
-          className={'bg-transparent border-none p-0'}
-          overlayClassName="modal-overlay"
+            isOpen={modalOpen}
+            onRequestClose={handleCloseModal}
+            className={'bg-transparent border-none p-0'}
+            overlayClassName='modal-overlay'
           >
             <LoginRequest />
           </Modal>
