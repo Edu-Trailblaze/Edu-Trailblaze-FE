@@ -11,3 +11,11 @@ export interface IInstructor {
   comparisonData: number
 }
 
+export interface IEInstructor {
+  //interface for /api/Enrollment/get-student-learning-courses
+  id: string
+  fullname: string
+  profilePictureUrl: string
+  userName: string
+  email: string
+}

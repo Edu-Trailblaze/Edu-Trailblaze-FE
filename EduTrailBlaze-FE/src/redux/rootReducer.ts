@@ -15,6 +15,7 @@ import { persistedAuthReducer, persistedFilterReducer , persistedSortReducer} fr
 import { quizApi } from './services/quiz.service'
 import { instructorApi } from './services/instructor.service'
 import { tagApi } from './services/tag.service'
+import { enrollmentApi } from './services/enrollment.service';
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -39,4 +40,5 @@ export const rootReducer = combineReducers({
   [quizApi.reducerPath]: quizApi.reducer,
   [instructorApi.reducerPath]: instructorApi.reducer,
   [tagApi.reducerPath]: tagApi.reducer,
+  [enrollmentApi.reducerPath]: enrollmentApi.reducer,
 })

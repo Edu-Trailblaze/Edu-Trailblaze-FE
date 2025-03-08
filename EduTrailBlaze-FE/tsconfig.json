@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/redux-provider.tsx", "src/contextApi/CartContext.tsx", "src/components/user/myLearning/MyLearning.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/redux-provider.tsx", "src/contextApi/CartContext.tsx", "src/components/user/myLearning/MyLearning.tsx"],
   "exclude": ["node_modules"]
 }
