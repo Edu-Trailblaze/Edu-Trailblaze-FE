@@ -9,6 +9,7 @@ import { setCredentials } from '../../../redux/slice/auth.slice'
 import { RootState } from '@/redux/store'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
 
 export default function LoginRegister() {
   const dispatch = useDispatch()
@@ -40,11 +41,10 @@ export default function LoginRegister() {
     try {
       const response = await login({ email, password }).unwrap()
       dispatch(setCredentials(response.message.data))
-      alert(`Login successful!`)
       router.push('/')
     } catch (err) {
+      toast.error('Login failed. Please try again.')
       console.error('Login failed', err)
-      alert('Login failed. Please try again.')
     }
   }
 
@@ -61,11 +61,11 @@ export default function LoginRegister() {
       // Cập nhật Redux store & localStorage thông qua auth.slice.ts
       dispatch(setCredentials(response.message.data))
 
-      alert('Registration successful! Redirecting to login...')
+      toast.success('Registration successful! Redirecting to login...')
       setIsLogin(true)
     } catch (err) {
       console.error('Registration failed:', err)
-      alert('Registration failed. Please try again.')
+      toast.error('Registration failed. Please try again.')
     }
   }
 
