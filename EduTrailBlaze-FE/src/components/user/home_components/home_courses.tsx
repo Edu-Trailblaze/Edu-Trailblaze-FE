@@ -10,6 +10,11 @@ import { addItemToCart } from '@/redux/slice/cart.slice'
 import Link from 'next/link'
 import SkeletonCard from '../../animate/skeleton/skeleton_card'
 import { useGetTagQuery } from '@/redux/services/tag.service'
+import LoginRequest from '@/components/global/requestLogin/RequestLogin'
+import Modal from 'react-modal';
+import '@/components/global/Modal/ReactModal.css'
+
+// Modal.setAppElement('');
 
 export default function HomeCourses() {
   const [visibleCourse, setVisibleCourse] = useState(4)
@@ -18,9 +23,14 @@ export default function HomeCourses() {
   const [userId, setUserId] = useState('')
   const [selectedTag, setSelectedTag] = useState(1)
 
-  const { data: courses, isLoading, isFetching } = useGetCourseByIdAndTagQuery({ tagId: selectedTag, studentId: userId })
+  const {
+    data: courses,
+    isLoading,
+    isFetching
+  } = useGetCourseByIdAndTagQuery({ tagId: selectedTag, studentId: userId })
   const { data: tags, isLoading: tagsLoading, isFetching: tagsFetching } = useGetTagQuery()
   const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
+  const [modalOpen, setModalOpen] = useState(false)
   const dispatch = useDispatch()
 
   const paidCourses = courses?.filter((course) => course.price > 0)
@@ -64,6 +74,10 @@ export default function HomeCourses() {
   const handleAddToCart = async (userId: string, courseId: number) => {
     try {
       const result = await postCart({ userId, courseId }).unwrap()
+      if (userId === '' || userId === 'undefined') {
+        setModalOpen(true)
+        return
+      }
       console.log('Item add to cart: ', result)
       dispatch(addItemToCart(result.cartItems[result.cartItems.length - 1])) // Dispatch the action with the correct payload
     } catch (error) {
@@ -71,6 +85,9 @@ export default function HomeCourses() {
     }
   }
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
 
   return (
     <>
@@ -362,6 +379,17 @@ export default function HomeCourses() {
             </div>
           </div>
         </div>
+
+        {modalOpen && (
+          <Modal
+          isOpen={modalOpen}
+          onRequestClose={handleCloseModal}
+          className={'bg-transparent border-none p-0'}
+          overlayClassName="modal-overlay"
+          >
+            <LoginRequest />
+          </Modal>
+        )}
       </div>
     </>
   )

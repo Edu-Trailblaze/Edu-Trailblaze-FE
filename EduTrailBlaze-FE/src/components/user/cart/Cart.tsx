@@ -103,7 +103,7 @@ export default function Cart() {
                     <div className='flex flex-col sm:flex-row'>
                       {/* Course Image */}
                       <img
-                        src='/assets/Side_Image/course_image.png'
+                        src={cartItem.cartCourseInformation.imageURL}
                         alt=''
                         className='w-full sm:w-[155px] h-[100px] object-cover mb-4 sm:mb-0 sm:mr-4'
                       />
