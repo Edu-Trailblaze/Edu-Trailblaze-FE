@@ -1,14 +1,20 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../../../ui/avatar'
 import { formatNumber } from '../../../../../../utils/format'
 import Modal from '../../../../../global/Modal/Modal'
 import { useGetUserProfileQuery } from '../../../../../../redux/services/user.service'
-import { useGetCheckCourseStatusQuery, usePostEnrollMutation } from '../../../../../../redux/services/enroll.service'
+import {
+  useGetCheckCourseStatusQuery,
+  useLazyGetCheckCourseStatusQuery,
+  usePostEnrollMutation
+} from '../../../../../../redux/services/enroll.service'
 import { usePostCartMutation } from '../../../../../../redux/services/cart.service'
 import { useDispatch } from 'react-redux'
 import { addItemToCart } from '../../../../../../redux/slice/cart.slice'
+import Button from '../../../../../global/Button/Button'
+import { toast } from 'react-toastify'
 
 interface CourseHeaderProps extends ICourseFull {
   courseDetails: ICourseDetails
@@ -28,26 +34,25 @@ export default function CourseHeader({
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
-  const { data: instructorURL } = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
-  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
-  // const [userId, setUserId] = useState('a98526d5-35fd-461e-9c35-f7b3fe4df8dd')
+  const [postCart, { isLoading: isAddingToCart }] = usePostCartMutation()
 
   const dispatch = useDispatch()
 
-  const { data: enroll } = useGetCheckCourseStatusQuery({
-    courseId: Number(courseURL),
-    studentId: 'a98526d5-35fd-461e-9c35-f7b3fe4df8dd'
-  })
+  const {
+    data: enroll,
+    isLoading: checkLoading,
+    error
+  } = useGetCheckCourseStatusQuery({ courseId: Number(courseURL), studentId: userId })
 
-  const [postEnroll] = usePostEnrollMutation()
+  const [postEnroll, { isLoading: postLoading }] = usePostEnrollMutation()
 
   const handleEnroll = async () => {
     try {
       await postEnroll({
         courseId: Number(courseURL),
-        studentId: 'a98526d5-35fd-461e-9c35-f7b3fe4df8dd'
+        studentId: userId
       }).unwrap()
-      console.log('Enrollment successful')
+      window.location.reload()
     } catch (error) {
       console.error('Enrollment failed', error)
     }
@@ -56,14 +61,13 @@ export default function CourseHeader({
   const handleAddToCart = async (userId: string, courseId: number) => {
     try {
       const result = await postCart({ userId, courseId }).unwrap()
-      console.log('Item add to cart: ', result)
       dispatch(addItemToCart(result.cartItems[result.cartItems.length - 1]))
-    } catch (error) {
-      console.log('Error adding to cart: ', error)
+      toast.success('Course added to cart please go to cart to checkout')
+    } catch (error: any) {
+      if (error.originalStatus === 400) toast.error('Course already in cart')
+      else toast.error('Failed to add course to cart')
     }
   }
-
-  console.log('enroll', enroll)
 
   return (
     <div className='p-6 bg-sky-200 relative mb-20'>
@@ -124,17 +128,17 @@ export default function CourseHeader({
           </div>
 
           {/* Enroll button */}
-          <button className='bg-blue-700 text-white py-5 w-60 rounded-lg hover:bg-blue-600 mb-2'>
+          <Button variant='primary' size='xl' isLoading={checkLoading || postLoading}>
             {enroll?.status === 'Not bought' ? (
               <div onClick={() => handleAddToCart(userId, courseURL)}>Add to cart</div>
             ) : enroll?.status === 'Not enrolled' ? (
-              <div onClick={() => handleEnroll}>Enroll</div>
+              <div onClick={() => handleEnroll()}>Enroll</div>
             ) : (
               <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>
                 Go to course
               </Link>
             )}
-          </button>
+          </Button>
           <p>
             <span className='font-bold mt-10'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span>
             already registered

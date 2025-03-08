@@ -20,6 +20,7 @@ import InputNumber from '../../../../global/Input/InputNumber'
 import InputFile from '../../../../global/Input/InputFile'
 import Box from '../../../../global/Box/Box'
 import { useAddCourseMutation } from '../../../../../redux/services/courseDetail.service'
+import { toast } from 'react-toastify'
 
 interface CourseFieldsProps {
   activeTab: string
@@ -69,7 +70,7 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
       setImagePreview(reader.result as string)
     }
 
-    setImageFile(file) // ✅ Lưu file thay vì Base64
+    setImageFile(file)
     reader.readAsDataURL(file)
   }
 
@@ -79,11 +80,8 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
 
     const videoURL = URL.createObjectURL(file)
     setVideoPreview(videoURL)
-
-    // ✅ Lưu file thay vì chỉ lưu URL
     setVideoFile(file)
   }
-  // Add a new learning outcome
   const addOutcome = () => {
     setCourseForm((prev) => ({
       ...prev,
@@ -127,7 +125,9 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
         formData.append('IntroURL', videoFile)
       }
       const response = await createCourse(formData).unwrap()
+      console.log('Course created:', response)
       setCourseId(response.data.courseId)
+      toast.success('Course created successfully')
       setActiveTab('sections')
     } catch (error) {
       console.error('Failed to create course', error)

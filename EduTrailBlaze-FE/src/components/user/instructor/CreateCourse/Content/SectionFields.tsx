@@ -4,6 +4,7 @@ import InputText from '../../../../global/Input/InputText'
 import { ArrowLeftIcon, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
 import LectureFields from './LectureFields'
 import { useCreateSectionLectureVipMutation } from '../../../../../redux/services/lecture.service'
+import { toast } from 'react-toastify'
 
 interface SectionFieldsProps {
   courseId: number | null
@@ -48,7 +49,17 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
 
   const handleCreateSecLecVip = async () => {
     if (!courseId) {
-      alert('❌ CourseId is missing. Please create a course first!')
+      // alert(' CourseId is missing. Please create a course first!')
+      toast.error('CourseId is missing. Please create a course first!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light'
+      })
       return
     }
 
@@ -75,8 +86,7 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
       })
 
       const response = await createSecLec(formData).unwrap()
-      console.log('✅ Sections Created:', response)
-
+      toast.success('Created successfully!')
       setSections([])
     } catch (error) {
       console.error('Error creating sections:', error)
