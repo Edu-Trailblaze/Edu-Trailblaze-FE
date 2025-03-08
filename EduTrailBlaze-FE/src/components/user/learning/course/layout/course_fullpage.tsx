@@ -13,6 +13,7 @@ import CourseSection from '../CourseComponents/sections/course_section'
 import CourseReview from '../CourseComponents/review/course_review'
 import CourseSuggestion from '../CourseComponents/suggestion/course_suggestion'
 import { useEffect, useState } from 'react'
+import { jwtDecode } from 'jwt-decode'
 
 export default function Course() {
   const { courseURL } = useParams()
@@ -21,10 +22,24 @@ export default function Course() {
   const detail = courseDetails?.courseDetails
   const section = courseDetails?.sectionDetails
   const sectionId = section?.map((item) => item.id) || []
+  const [userId, setUserId] = useState('')
 
   const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
     sectionId.length > 0 ? sectionId : skipToken
   )
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        setUserId(decode?.sub ?? '')
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setUserId('')
+    }
+  }, [])
 
   useEffect(() => {
     if (lecture) {
@@ -53,6 +68,7 @@ export default function Course() {
           sectionDetails={section}
           courseURL={Number(courseURL)}
           lectureURL={lectureURL}
+          userId={userId}
         />
       </div>
 

@@ -36,8 +36,8 @@ export default function Navigation({ courseDetails, courseURL, lectureURL }: Nav
     <div className='fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300 transform translate-y-0'>
       <div className='container'>
         <div className='flex items-center justify-between py-4 border-b border-gray-200'>
-          <div className='flex items-center'>
-            <img src={courseDetails.imageURL} alt='Course logo' className='w-10 rounded-full' />
+          <div className='flex items-center '>
+            <img src={courseDetails.imageURL} alt='Course logo' className='w-10 h-10 rounded-full' />
             <h2 className='font-semibold text-xl ml-5 truncate max-w-xl'>{courseDetails?.title || 'Course Title'}</h2>
           </div>
           <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>

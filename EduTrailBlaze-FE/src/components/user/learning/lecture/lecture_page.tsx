@@ -39,7 +39,7 @@ export default function LecturePage() {
   const handleLectureChange = (id: number) => {
     setActiveLectureId(id)
     setIsSidebarOpen(false)
-    router.push(`/course/${courseURL}/lecture/${id}`, { scroll: false })
+    router.push(`/student/course/${courseURL}/lecture/${id}`, { scroll: false })
   }
 
   const handleNextLecture = () => {

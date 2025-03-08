@@ -1,25 +1,69 @@
 'use client'
 import { useState } from 'react'
-
 import Link from 'next/link'
-
 import { Avatar, AvatarFallback, AvatarImage } from '../../../../../ui/avatar'
 import { formatNumber } from '../../../../../../utils/format'
 import Modal from '../../../../../global/Modal/Modal'
 import { useGetUserProfileQuery } from '../../../../../../redux/services/user.service'
+import { useGetCheckCourseStatusQuery, usePostEnrollMutation } from '../../../../../../redux/services/enroll.service'
+import { usePostCartMutation } from '../../../../../../redux/services/cart.service'
+import { useDispatch } from 'react-redux'
+import { addItemToCart } from '../../../../../../redux/slice/cart.slice'
 
 interface CourseHeaderProps extends ICourseFull {
   courseDetails: ICourseDetails
   sectionDetails: ISection[]
   courseURL: number
   lectureURL: number
+  userId: string
 }
 
-export default function CourseHeader({ courseDetails, sectionDetails, courseURL, lectureURL }: CourseHeaderProps) {
+export default function CourseHeader({
+  courseDetails,
+  sectionDetails,
+  courseURL,
+  lectureURL,
+  userId
+}: CourseHeaderProps) {
   const [isModalOpen, setModalOpen] = useState(false)
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
   const { data: instructorURL } = useGetUserProfileQuery('aca1c0c4-d195-4208-b1ed-0a89f55b7e09')
+  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
+  // const [userId, setUserId] = useState('a98526d5-35fd-461e-9c35-f7b3fe4df8dd')
+
+  const dispatch = useDispatch()
+
+  const { data: enroll } = useGetCheckCourseStatusQuery({
+    courseId: Number(courseURL),
+    studentId: 'a98526d5-35fd-461e-9c35-f7b3fe4df8dd'
+  })
+
+  const [postEnroll] = usePostEnrollMutation()
+
+  const handleEnroll = async () => {
+    try {
+      await postEnroll({
+        courseId: Number(courseURL),
+        studentId: 'a98526d5-35fd-461e-9c35-f7b3fe4df8dd'
+      }).unwrap()
+      console.log('Enrollment successful')
+    } catch (error) {
+      console.error('Enrollment failed', error)
+    }
+  }
+
+  const handleAddToCart = async (userId: string, courseId: number) => {
+    try {
+      const result = await postCart({ userId, courseId }).unwrap()
+      console.log('Item add to cart: ', result)
+      dispatch(addItemToCart(result.cartItems[result.cartItems.length - 1]))
+    } catch (error) {
+      console.log('Error adding to cart: ', error)
+    }
+  }
+
+  console.log('enroll', enroll)
 
   return (
     <div className='p-6 bg-sky-200 relative mb-20'>
@@ -78,9 +122,19 @@ export default function CourseHeader({ courseDetails, sectionDetails, courseURL,
               +{courseDetails.instructors.length} more
             </button>
           </div>
-          <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>
-            <button className='bg-blue-700 text-white py-5 w-60 rounded-lg hover:bg-blue-600 mb-2'>Go to course</button>
-          </Link>
+
+          {/* Enroll button */}
+          <button className='bg-blue-700 text-white py-5 w-60 rounded-lg hover:bg-blue-600 mb-2'>
+            {enroll?.status === 'Not bought' ? (
+              <div onClick={() => handleAddToCart(userId, courseURL)}>Add to cart</div>
+            ) : enroll?.status === 'Not enrolled' ? (
+              <div onClick={() => handleEnroll}>Enroll</div>
+            ) : (
+              <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>
+                Go to course
+              </Link>
+            )}
+          </button>
           <p>
             <span className='font-bold mt-10'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span>
             already registered

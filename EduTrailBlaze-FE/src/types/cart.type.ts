@@ -3,7 +3,7 @@ interface IPostCart {
 }
 
 interface CartCourseInformation {
-  id: number
+  id: number // courseId
   title: string
   price: number
   imageURL: string
