@@ -27,6 +27,7 @@ import ViewCart from './viewCart'
 import { FaBell } from 'react-icons/fa6'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import { useGetUserProfileQuery } from '@/redux/services/user.service'
+import { toast } from 'react-toastify'
 
 const products = [
   {
@@ -116,7 +117,7 @@ export default function WebHeader() {
 
   const handleLogout = () => {
     dispatch(logout())
-    alert(`Logout successful!`)
+    toast.success('Logout successful! Redirecting to Login...')
     router.push('/auth/login_register')
   }
 
