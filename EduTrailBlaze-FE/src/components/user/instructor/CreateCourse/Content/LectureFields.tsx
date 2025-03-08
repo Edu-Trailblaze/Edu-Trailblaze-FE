@@ -34,7 +34,7 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
         sectionId: Date.now(),
         title: '',
         lectureType: 'Video' as LectureType,
-        contentPDFFile: '',
+        contentPDFFile: null,
         description: '',
         duration: 0,
         content: ''
@@ -54,7 +54,7 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
     sectionIndex: number,
     lectureIndex: number,
     field: keyof LectureVip,
-    value: string | number | boolean
+    value: string | number | boolean | File | null
   ) => {
     setLocalLectures((prevLectures) => {
       const updatedLectures = prevLectures.map((lecture, index) =>

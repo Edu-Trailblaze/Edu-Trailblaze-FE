@@ -14,7 +14,7 @@ interface LectureItemProps {
     sectionIndex: number,
     lectureIndex: number,
     field: keyof LectureVip,
-    value: string | boolean | number
+    value: string | boolean | number | File | null
   ) => void
   totalLectures: number
 }
@@ -159,8 +159,10 @@ export default function LectureItem({
               <InputFile
                 label='Reading File'
                 name='contentPDFFile'
-                value={lecture.contentPDFFile}
-                onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', e.target.value)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null
+                  handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', file)
+                }}
                 accept='application/pdf , application/msword'
               />
             </div>

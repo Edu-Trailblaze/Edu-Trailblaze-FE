@@ -78,7 +78,7 @@ export default function Course() {
 
         {/* Navigation */}
         <div>
-          <Navigation courseDetails={detail} courseURL={Number(courseURL)} lectureURL={lectureURL} />
+          <Navigation courseDetails={detail} courseURL={Number(courseURL)} lectureURL={lectureURL} userId={userId} />
         </div>
 
         {/* Sections */}

@@ -82,6 +82,9 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
           formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Description`, lecture.description)
           formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Duration`, lecture.duration.toString())
           formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Content`, lecture.content)
+          if (lecture.contentPDFFile instanceof File) {
+            formData.append(`Sections[${sIndex}].Lectures[${lIndex}].ContentPDFFile`, lecture.contentPDFFile)
+          }
         })
       })
 
