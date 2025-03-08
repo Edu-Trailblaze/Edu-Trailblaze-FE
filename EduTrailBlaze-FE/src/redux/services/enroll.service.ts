@@ -26,4 +26,4 @@ export const enrollApi = createApi({
   })
 })
 
-export const { useGetCheckCourseStatusQuery, usePostEnrollMutation } = enrollApi
+export const { useGetCheckCourseStatusQuery, usePostEnrollMutation, useLazyGetCheckCourseStatusQuery } = enrollApi
