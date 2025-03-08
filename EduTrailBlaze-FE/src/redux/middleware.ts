@@ -11,7 +11,11 @@ import { reviewApi } from './services/review.service'
 import { quizApi } from './services/quiz.service'
 import { instructorApi } from './services/instructor.service'
 import { tagApi } from './services/tag.service'
+
+import { enrollmentApi } from './services/enrollment.service'
+
 import { enrollApi } from './services/enroll.service'
+
 
 export const apiMiddlewares: Middleware[] = [
   courseApi.middleware,
@@ -26,5 +30,9 @@ export const apiMiddlewares: Middleware[] = [
   quizApi.middleware,
   instructorApi.middleware,
   tagApi.middleware,
+
+  enrollmentApi.middleware
+
   enrollApi.middleware
+
 ]
