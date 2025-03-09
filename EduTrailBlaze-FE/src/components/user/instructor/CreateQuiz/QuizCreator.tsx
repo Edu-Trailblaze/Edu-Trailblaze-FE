@@ -43,28 +43,24 @@ const QuizCreator = () => {
     })
   }
 
-  // Remove a question from the quiz
   const removeQuestion = (index: number) => {
     const updatedQuestions = [...quiz.questions]
     updatedQuestions.splice(index, 1)
     setQuiz({ ...quiz, questions: updatedQuestions })
   }
 
-  // Update question text
   const updateQuestionText = (index: number, text: string) => {
     const updatedQuestions = [...quiz.questions]
     updatedQuestions[index].questionText = text
     setQuiz({ ...quiz, questions: updatedQuestions })
   }
 
-  // Update answer text
   const updateAnswerText = (questionIndex: number, answerIndex: number, text: string) => {
     const updatedQuestions = [...quiz.questions]
     updatedQuestions[questionIndex].answers[answerIndex].answerText = text
     setQuiz({ ...quiz, questions: updatedQuestions })
   }
 
-  // Set correct answer
   const setCorrectAnswer = (questionIndex: number, answerIndex: number) => {
     const updatedQuestions = [...quiz.questions]
     updatedQuestions[questionIndex].answers.forEach((answer, index) => {
@@ -73,7 +69,6 @@ const QuizCreator = () => {
     setQuiz({ ...quiz, questions: updatedQuestions })
   }
 
-  // Add a new answer option
   const addAnswer = (questionIndex: number) => {
     const updatedQuestions = [...quiz.questions]
     if (updatedQuestions[questionIndex].answers.length < 6) {
@@ -82,7 +77,6 @@ const QuizCreator = () => {
     }
   }
 
-  // Remove an answer option
   const removeAnswer = (questionIndex: number, answerIndex: number) => {
     const updatedQuestions = [...quiz.questions]
     if (updatedQuestions[questionIndex].answers.length > 2) {
