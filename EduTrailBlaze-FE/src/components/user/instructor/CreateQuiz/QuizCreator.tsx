@@ -9,7 +9,7 @@ const QuizCreator = () => {
   const [createQuiz, { isLoading, isError, isSuccess }] = useCreateQuizMutation()
 
   const [quiz, setQuiz] = useState<CreateQuiz>({
-    lectureId: 69,
+    lectureId: 0,
     title: '',
     passingScore: 0,
     questions: [

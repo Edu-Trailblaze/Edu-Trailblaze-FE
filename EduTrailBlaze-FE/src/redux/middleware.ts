@@ -15,7 +15,7 @@ import { tagApi } from './services/tag.service'
 import { enrollmentApi } from './services/enrollment.service'
 
 import { enrollApi } from './services/enroll.service'
-
+import { userProgressApi } from './services/userProgress.service'
 
 export const apiMiddlewares: Middleware[] = [
   courseApi.middleware,
@@ -32,7 +32,6 @@ export const apiMiddlewares: Middleware[] = [
   tagApi.middleware,
 
   enrollmentApi.middleware,
-
+  userProgressApi.middleware,
   enrollApi.middleware
-
 ]
