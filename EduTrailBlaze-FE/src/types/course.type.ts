@@ -101,3 +101,36 @@ interface CreateCourseResponse {
     courseId: number
   }
 }
+
+interface Course {
+  id: number
+  title: string
+  imageURL: string
+  description: string
+  price: number
+  duration: number
+  difficultyLevel: string
+  learningOutcomes: string[]
+  prerequisites: string
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+interface CourseDetails {
+  course: Course
+  tags: Tag[]
+  review: ReviewCourse
+  instructors: IEInstructor[]
+  enrollment: Enrollment
+}
+
+interface CourseResponseData {
+  items: CourseDetails[]
+  pageIndex: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
+}

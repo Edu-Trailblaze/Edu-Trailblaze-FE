@@ -1,5 +1,3 @@
-import { IEInstructor } from './instructor.type'
-
 interface Progress {
   lastAccessed: string // ISO 8601 date-time string
   progressPercentage: number
@@ -20,7 +18,11 @@ interface IECourse {
   courseStatus: CourseStatus
 }
 
-export interface IMyLearningData {
+interface IMyLearningData {
   tags: IETag[]
   courses: IECourse[]
+}
+
+interface Enrollment {
+  totalEnrollments: number;
 }
