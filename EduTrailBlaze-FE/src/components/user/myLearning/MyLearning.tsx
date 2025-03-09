@@ -157,7 +157,7 @@ export default function MyLearning() {
                 <div className='bg-white/10 backdrop-blur-sm rounded-lg p-4'>
                   <h3 className='text-xl sm:text-2xl font-bold'>
                     {Math.round(
-                      (myCourses?.courses?.reduce((sum, course) => sum + course.progress.progressPercentage, 0) ?? 0) /
+                      (myCourses?.courses?.reduce((sum: number, course: IECourse) => sum + course.progress.progressPercentage, 0) ?? 0) /
                         (myCourses?.courses?.length ?? 1)
                     )}
                     %
@@ -172,7 +172,7 @@ export default function MyLearning() {
                 </div> */}
                 <div className='bg-white/10 backdrop-blur-sm rounded-lg p-4'>
                   <h3 className='text-xl sm:text-2xl font-bold'>
-                    {myCourses?.courses.filter((c) => c.progress.progressPercentage === 100).length}
+                    {myCourses?.courses.filter((c: IECourse) => c.progress.progressPercentage === 100).length}
                   </h3>
                   <p className='text-blue-100 text-sm'>Completed Courses</p>
                 </div>
@@ -299,7 +299,7 @@ export default function MyLearning() {
         {/* Course list */}
         {viewMode === 'grid' ? (
           <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${animation ? 'animate-fadeIn' : ''}`}>
-            {myCourses?.courses.map((course, index) => (
+            {myCourses?.courses.map((course: IECourse, index: number) => (
               <div
                 key={index}
                 className='bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-md transition-shadow group'
@@ -383,7 +383,7 @@ export default function MyLearning() {
           </div>
         ) : (
           <div className={`space-y-4 ${animation ? 'animate-fadeIn' : ''}`}>
-            {myCourses?.courses.map((course, index) => (
+            {myCourses?.courses.map((course: IECourse, index: number) => (
               <div
                 key={index}
                 className='bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col sm:flex-row'

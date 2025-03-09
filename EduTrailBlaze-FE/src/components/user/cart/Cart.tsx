@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react'
 import { FaTags } from 'react-icons/fa6'
 import { useDispatch } from 'react-redux'
 import EmptyCart from './EmptyCart'
+import { toast } from 'react-toastify'
 
 export default function Cart() {
   const [userId, setUserId] = useState('')
@@ -75,6 +76,11 @@ export default function Cart() {
   }
 
   const handleCheckout = async () => {
+
+    if(selectedMethod === '') { 
+      toast.error('Please select the method payment')
+      return;
+    }
     try {
       const response = await postPayment({ userId, paymentMethod: selectedMethod }).unwrap()
       if (response.data) {

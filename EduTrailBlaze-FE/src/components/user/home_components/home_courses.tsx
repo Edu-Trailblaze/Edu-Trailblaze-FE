@@ -18,6 +18,7 @@ import LoginRequest from '@/components/global/requestLogin/RequestLogin'
 import Modal from 'react-modal'
 import '@/components/global/Modal/ReactModal.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 export default function HomeCourses() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -34,7 +35,7 @@ export default function HomeCourses() {
     status: coursesPagingStatus
   } = useGetCourseByIdAndTagPagingQuery({ tagId: selectedTag, studentId: userId, pageIndex: 1, pageSize: 8 })
   const { data: tags, isLoading: tagsLoading, isFetching: tagsFetching } = useGetTagQuery()
-  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError }] = usePostCartMutation()
+  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError, status: cartStatus }] = usePostCartMutation()
   const [modalOpen, setModalOpen] = useState(false)
   const dispatch = useDispatch()
 
@@ -88,14 +89,20 @@ export default function HomeCourses() {
   }
 
   const handleAddToCart = async (userId: string, courseId: number) => {
+    console.log(cartStatus)
     try {
-      const result = await postCart({ userId, courseId }).unwrap()
       if (userId === '' || userId === 'undefined') {
         setModalOpen(true)
         return
       }
-      console.log('Item add to cart: ', result)
+
+      if(cartStatus === 'rejected' || cartStatus === 'uninitialized') {
+        toast.error('This course is already added to cart')
+        return
+      }
+      const result = await postCart({ userId, courseId }).unwrap()
       dispatch(addItemToCart(result.cartItems[result.cartItems.length - 1])) // Dispatch the action with the correct payload
+      toast.success('Course added to cart please go to cart to checkout')
     } catch (error) {
       console.log('Error adding to cart: ', error)
     }
@@ -130,8 +137,6 @@ export default function HomeCourses() {
         : 'top-1/2 -translate-y-1/2 right-full mr-4'
     }
   }
-
-  console.log(freeCourses, freeCourses?.length)
 
   return (
     <>
