@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react'
 import scss from './Layout.module.scss'
 import React, { useState } from 'react'
 import Footer from '../admin/Footer/footer'
-import SideMenu from '../admin/SideMenu/SideMenu'
+import SideMenu from '../admin/sideMenu/SideMenu' 
 import AdminHeader from '../admin/Header/header'
 
 const Layout = (props: any) => {

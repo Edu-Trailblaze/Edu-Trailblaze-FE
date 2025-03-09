@@ -25,8 +25,8 @@ import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilte
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
 
 //modal
-import CourseFormModalCreate from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalCreate'
-import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalEdit'
+import CourseFormModalCreate from '@/components/admin/modal/CourseFormModal/CourseFormModalCreate' 
+import CourseFormModalEdit from '@/components/admin/modal/CourseFormModal/CourseFormModalEdit' 
 import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //icon
@@ -38,6 +38,7 @@ export type Course = {
   imageURL: string
   introURL: string
   description: string
+  duration: number
   price: number
   difficultyLevel: string
   prerequisites: string
@@ -97,6 +98,7 @@ export default function CoursesManagement() {
     imageURL: '',
     introURL: '',
     description: '',
+    duration: 0,
     price: 0,
     difficultyLevel: '',
     createdBy: '',
@@ -262,7 +264,7 @@ export default function CoursesManagement() {
       {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
       {visibleColumns['createdAt'] && (
         <TableCell>
-          <FormatDateTime date={course.createdAt} />
+          <FormatDateTime date={course.createdAt || ''} />
         </TableCell>
       )}
     </TableRow>
@@ -296,7 +298,7 @@ export default function CoursesManagement() {
                     const kw = keyword.toLowerCase()
 
                     const filtered = allCourses.filter((item) => {
-                      const itemDate = new Date(item.createdAt)
+                      const itemDate = new Date(item.createdAt || '')
                       if (from && itemDate < from) return false
                       if (to && itemDate > to) return false
 

@@ -40,8 +40,8 @@ export default function HomeCourses() {
   const [modalOpen, setModalOpen] = useState(false)
   const dispatch = useDispatch()
 
-  const paidCourses = coursesPaging?.items.filter((course) => course.course.price > 0)
-  const freeCourses = coursesPaging?.items.filter((course) => course.course.price === 0)
+  const paidCourses = coursesPaging?.items?.filter((course) => course.course.price > 0) ?? []
+  const freeCourses = coursesPaging?.items?.filter((course) => course.course.price === 0) ?? []
 
   const coursesPerSlide = 4
 
