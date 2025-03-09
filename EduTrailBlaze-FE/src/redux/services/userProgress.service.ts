@@ -8,14 +8,26 @@ export const userProgressApi = createApi({
   }),
   tagTypes: ['UserProgress'],
   endpoints: (build) => ({
-    postUserProgress: build.mutation<void, UserProgress>({
+    postUserProgress: build.mutation<void, PostUserProgress>({
       query: (body) => ({
         url: `UserProgress`,
         method: 'POST',
         body
       })
+    }),
+    getUserProgress: build.query<UserProgressResponse, UserProgress>({
+      query: ({ userId, lectureId, quizId, sectionId }) => ({
+        url: `UserProgress/get-user-progress`,
+        method: 'GET',
+        params: {
+          userId,
+          lectureId,
+          quizId,
+          sectionId
+        }
+      })
     })
   })
 })
 
-export const { usePostUserProgressMutation } = userProgressApi
+export const { usePostUserProgressMutation, useGetUserProgressQuery } = userProgressApi
