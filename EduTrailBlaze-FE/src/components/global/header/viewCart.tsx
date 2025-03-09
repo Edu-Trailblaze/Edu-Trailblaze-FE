@@ -10,7 +10,6 @@ interface CartItemProps {
 
 export default function ViewCart({ id }: CartItemProps) {
   const cart = useSelector((state: RootState) => state.cart)
-  const { isLoading, isFetching } = useGetCartQuery(id)
 
   // if (isLoading) return <span>Loading...</span>
   return (

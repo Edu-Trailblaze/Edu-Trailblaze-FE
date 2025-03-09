@@ -14,12 +14,22 @@ import React, { useEffect, useState } from 'react'
 import { FaTags } from 'react-icons/fa6'
 import { useDispatch } from 'react-redux'
 import EmptyCart from './EmptyCart'
-import { toast } from 'react-toastify'
+import Modal from 'react-modal'
+import RequestPaymentMethod from '@/components/global/requestNotification/requestPaymentMethod/RequestPaymentMethod'
+import '@/components/global/Modal/ReactModal.css'
 
 export default function Cart() {
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
-  const { data: cartItems, isLoading, isFetching } = useGetCartQuery(userId)
+  const {
+    data: cartItems,
+    isLoading,
+    isFetching,
+    refetch
+  } = useGetCartQuery(userId, {
+    skip: !userId // Chỉ fetch nếu có userId
+  })
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const [deleteCartItem, { isLoading: loadingRemove }] = useDeleteCartItemMutation()
   const [deleteAllCartItemsMutation, { isLoading: loadingRemoveAll }] = useDeleteAllCartItemsMutation()
   const {
@@ -51,6 +61,12 @@ export default function Cart() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!isFetching && cartItems?.cartItems.length === 0) {
+      setTimeout(() => refetch(), 5000) // Chỉ fetch lại sau 5 giây
+    }
+  }, [cartItems, isFetching])
+
   if (isLoading || isFetching) {
     return <LoadingPage />
   }
@@ -77,7 +93,7 @@ export default function Cart() {
 
   const handleCheckout = async () => {
     if (selectedMethod === '') {
-      toast.error('Please select the method payment')
+      setPaymentModalOpen(true)
       return
     }
     try {
@@ -96,6 +112,10 @@ export default function Cart() {
 
   if (loadingRemove || loadingRemoveAll) {
     location.reload()
+  }
+
+  const handleCloseModal = () => {
+    setPaymentModalOpen(false)
   }
 
   return (
@@ -289,6 +309,20 @@ export default function Cart() {
         </div>
       ) : (
         <EmptyCart />
+      )}
+
+      {paymentModalOpen && (
+        <Modal
+          key='unique-modal-key'
+          isOpen={paymentModalOpen}
+          onRequestClose={handleCloseModal}
+          className={'bg-transparent border-none p-0'}
+          overlayClassName='modal-overlay'
+          shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
+        >
+          <RequestPaymentMethod />
+        </Modal>
       )}
     </>
   )
