@@ -8,7 +8,7 @@ import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 //api
 import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
-import { Menu, MenuItem, IconButton, TableRow, TableCell } from '@mui/material'
+import { TableRow, TableCell } from '@mui/material'
 
 import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
@@ -18,16 +18,19 @@ import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 
 //sort filter
-import NewsSort from '@/components/admin/Filter/NewsFilter/NewsSort'
-import NewsFilter from '@/components/admin/Filter/NewsFilter/NewsFilter'
+import NewsSort from '@/components/admin/Filter/NewsSortFilter/NewsSort'
+import NewsFilter from '@/components/admin/Filter/NewsSortFilter/NewsFilter'
 
 //modal
 import NewsFormModalEdit from '@/components/admin/Modal/NewsFormModal/NewsFormModalEdit'
 import NewsFormModalCreate from '@/components/admin/Modal/NewsFormModal/NewsFormModalCreate'
-import DetailModal from '@/components/admin/Modal/DetailModal'
+// import DetailModal from '@/components/admin/Modal/DetailModal'
+import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //icon
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
+import { Filter, ArrowUpDown, Plus } from 'lucide-react'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 export type News = {
   id?: number
@@ -54,7 +57,6 @@ export default function NewsManagement() {
   const [news, setNews] = useState<News[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedNews, setSelectedNews] = useState<News | null>(null)
-  const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({})
 
   //filter
   const [isFilterOpen, setFilterOpen] = useState(false)
@@ -154,16 +156,12 @@ export default function NewsManagement() {
     setSortOpen(false)
   }
 
-  const handleClickDot = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
-    setDot((prev) => ({ ...prev, [id]: event.currentTarget }))
-  }
-
-  const handleCloseDot = (id: number) => {
-    setDot((prev) => ({ ...prev, [id]: null }))
-  }
-
   const renderRow = (news: News) => (
-    <TableRow key={news.id} hover>
+    <TableRow
+      key={news.id}
+      hover
+      onClick={() => setSelectedNews(news)} // Click toàn dòng => DetailPopup
+    >
       {visibleColumns['id'] && <TableCell>{news.id}</TableCell>}
       {visibleColumns['title'] && <TableCell>{news.title}</TableCell>}
       {visibleColumns['content'] && <TableCell>{news.content}</TableCell>}
@@ -181,39 +179,6 @@ export default function NewsManagement() {
           <FormatDateTime date={news.createdAt} />
         </TableCell>
       )}
-
-      <TableCell>
-        <IconButton onClick={(e) => handleClickDot(e, news.id!)}>
-          <EllipsisVertical size={18} />
-        </IconButton>
-
-        <Menu anchorEl={dot[news.id!]} open={Boolean(dot[news.id!])} onClose={() => handleCloseDot(news.id!)}>
-          <MenuItem
-            onClick={() => {
-              setSelectedNews(news)
-              handleCloseDot(news.id!)
-            }}
-          >
-            <Eye size={18} style={{ marginRight: '10px', color: '#1D4ED8' }} /> View
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleEditNews(news)
-              handleCloseDot(news.id!)
-            }}
-          >
-            <Pencil size={18} style={{ marginRight: '10px', color: '#F59E0B' }} /> Edit
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleDeleteNews(news.id!)
-              handleCloseDot(news.id!)
-            }}
-          >
-            <Trash2 size={18} style={{ marginRight: '10px', color: '#DC2626' }} /> Delete
-          </MenuItem>
-        </Menu>
-      </TableCell>
     </TableRow>
   )
 
@@ -301,16 +266,47 @@ export default function NewsManagement() {
         </div>
       ) : (
         <Table
-          columns={[
-            ...newsFields.filter((field) => visibleColumns[field.accessor]),
-            { label: 'Actions', accessor: 'action' }
-          ]}
+          columns={[...newsFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
           data={news}
         />
       )}
 
-      {selectedNews && <DetailModal item={selectedNews} fields={newsFields} onClose={() => setSelectedNews(null)} />}
+      {selectedNews && (
+        <DetailPopup
+          isOpen={true}
+          onClose={() => setSelectedNews(null)}
+          title='News Detail'
+          fields={[
+            { label: 'ID', value: selectedNews.id, isID: true },
+            { label: 'Title', value: selectedNews.title },
+            { label: 'imageURL', value: selectedNews.imageUrl, isImage: true },
+            { label: 'Date', value: selectedNews.createdAt, isDate: true }
+          ]}
+          widgets={[
+            {
+              label: 'Content',
+              content: selectedNews.content
+            }
+          ]}
+          actions={[
+            {
+              label: 'Update',
+              onClick: () => {
+                handleEditNews(selectedNews)
+              },
+              icon: <EditIcon fontSize='small' style={{ color: '#F59E0B' }} />
+            },
+            {
+              label: 'Delete',
+              onClick: () => {
+                handleDeleteNews(selectedNews.id!)
+              },
+              icon: <DeleteIcon fontSize='small' style={{ color: '#DC2626' }} />
+            }
+          ]}
+        />
+      )}
       <NewsFormModalCreate
         initialValues={newNews}
         setNewNews={setNewNews}

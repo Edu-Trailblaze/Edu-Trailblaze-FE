@@ -49,6 +49,17 @@ const initialState: SortColumnState = {
     rating: true,
     reviewText: true,
     createdAt: true
+  },
+  users: {
+    id: true,
+    userName: true,
+    email: true,
+    twoFactorEnabled: true,
+    lockoutEnabled: true,
+    fullName: true,
+    role: true,
+    balance: true,
+    profilePictureUrl: true
   }
 }
 
