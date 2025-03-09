@@ -9,6 +9,7 @@ import { useGetUserProfileQuery, useUpdateUserMutation } from '@/redux/services/
 import { jwtDecode } from 'jwt-decode'
 import EducationSection from './educationSection'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
+import { toast } from 'react-toastify'
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -82,13 +83,13 @@ export default function ProfilePage() {
 
     try {
       const update = await updateUser({ id: userId, body: updatedData }).unwrap()
-      alert('Profile updated successfully')
+      toast.success('Profile updated successfully')
       // setTimeout(() => {
       //   window.location.reload()
       // }, 500)
     } catch (error) {
       console.error('Failed to update profile:', error)
-      alert('Failed to update profile')
+      toast.error('Failed to update profile')
     }
   }
 
