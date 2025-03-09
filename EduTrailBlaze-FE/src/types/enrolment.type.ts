@@ -1,5 +1,5 @@
 interface Progress {
-  lastAccessed: string // ISO 8601 date-time string
+  lastAccessed: string 
   progressPercentage: number
   remainingDurationInMins: number
 }
