@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { BASE_URL } from '../../utils/config'
-import { IMyLearningData } from '@/types/enrolment.type'
 
 export const enrollmentApi = createApi({
   reducerPath: 'enrollment/api',
