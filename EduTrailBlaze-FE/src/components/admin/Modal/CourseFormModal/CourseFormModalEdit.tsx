@@ -13,6 +13,7 @@ type Course = {
   imageURL: string
   introURL: string
   description: string
+  duration: number
   price: number
   difficultyLevel: string
   createdBy: string
