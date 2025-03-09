@@ -14,7 +14,7 @@ import { addItemToCart } from '@/redux/slice/cart.slice'
 import Link from 'next/link'
 import SkeletonCard from '../../animate/skeleton/skeleton_card'
 import { useGetTagQuery } from '@/redux/services/tag.service'
-import LoginRequest from '@/components/global/requestLogin/RequestLogin'
+import LoginRequest from '@/components/global/requestNotification/requestLogin/RequestLogin'
 import Modal from 'react-modal'
 import '@/components/global/Modal/ReactModal.css'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -35,7 +35,8 @@ export default function HomeCourses() {
     status: coursesPagingStatus
   } = useGetCourseByIdAndTagPagingQuery({ tagId: selectedTag, studentId: userId, pageIndex: 1, pageSize: 8 })
   const { data: tags, isLoading: tagsLoading, isFetching: tagsFetching } = useGetTagQuery()
-  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError, status: cartStatus }] = usePostCartMutation()
+  const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError, status: cartStatus }] =
+    usePostCartMutation()
   const [modalOpen, setModalOpen] = useState(false)
   const dispatch = useDispatch()
 
@@ -531,10 +532,13 @@ export default function HomeCourses() {
 
         {modalOpen && (
           <Modal
+            key='unique-modal-key'
             isOpen={modalOpen}
             onRequestClose={handleCloseModal}
             className={'bg-transparent border-none p-0'}
             overlayClassName='modal-overlay'
+            shouldCloseOnOverlayClick={true}
+            shouldCloseOnEsc={true}
           >
             <LoginRequest />
           </Modal>
