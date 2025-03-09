@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Modal,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  IconButton
-} from '@mui/material'
+import { Modal, Box, Typography, TextField, MenuItem, FormControl, InputLabel, Select, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { Voucher } from '@/app/(Admin)/admin_dashboard/Dashboard/vouchers/page'
+
+import InputText from '@/components/global/Input/InputText'
+import InputNumber from '@/components/global/Input/InputNumber'
+import InputDate from '@/components/global/Input/InputDate'
+import Button from '@/components/global/Button/Button'
+import SelectField from '@/components/global/Select/SelectField'
 
 type VoucherFormModalEditProps = {
   initialValues: Voucher
@@ -60,118 +55,98 @@ export default function VoucherFormModalEdit({
           maxWidth: 550,
           bgcolor: 'white',
           p: 4,
-          borderRadius: 0,
+          borderRadius: 3,
           border: '1px solid #ccc',
-          position: 'relative'
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '80vh'
         }}
       >
         <IconButton onClick={onCancel} sx={{ position: 'absolute', top: 12, right: 12, color: 'gray' }}>
           <CloseIcon />
         </IconButton>
-        <Typography variant='h6' component='h2' align='center' fontWeight='bold' gutterBottom sx={{ mb: '30px' }}>
-          EDIT VOUCHER
+        <Typography variant='h4' component='h2' align='left' fontWeight='bold' gutterBottom sx={{ mb: '30px' }}>
+          UPDATE A VOUCHER
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Voucher Code</Typography>
-            <TextField
-              value={formValues.voucherCode}
-              onChange={(e) => handleChange('voucherCode', e.target.value)}
-              fullWidth
-              size='small'
-            />
-          </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Discount Type</Typography>
-            <TextField
-              value={formValues.discountType}
-              onChange={(e) => handleChange('discountType', e.target.value)}
-              fullWidth
-              size='small'
-            />
-          </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, overflowY: 'auto' }}>
+          <InputText
+            noLayout
+            label='Voucher Code'
+            name='voucherCode'
+            placeholder='Enter voucher code'
+            value={formValues.voucherCode}
+            onChange={(e) => handleChange('voucherCode', e.target.value)}
+            required
+          />
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Discount Value</Typography>
-            <TextField
-              value={formValues.discountValue}
-              onChange={(e) => handleChange('discountValue', Number(e.target.value))}
-              fullWidth
-              type='number'
-              size='small'
-              inputProps={{ min: 0 }}
-            />
-          </Box>
+          <InputText
+            noLayout
+            label='Discount Type'
+            name='discountType'
+            placeholder='Enter discount type'
+            value={formValues.discountType}
+            onChange={(e) => handleChange('discountType', e.target.value)}
+            required
+          />
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Start Date</Typography>
-            <TextField
-              value={formValues.startDate ? formValues.startDate.split('T')[0] : ''}
-              onChange={(e) => handleChange('startDate', e.target.value)}
-              fullWidth
-              type='date'
-              size='small'
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
+          <InputNumber
+            noLayout
+            label='Discount Value'
+            name='discountValue'
+            placeholder='Enter discount value'
+            value={formValues.discountValue}
+            onChange={(e) => handleChange('discountValue', Number(e.target.value))}
+            min={0}
+            required
+          />
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Expiry Date</Typography>
-            <TextField
-              value={formValues.expiryDate ? formValues.expiryDate.split('T')[0] : ''}
-              onChange={(e) => handleChange('expiryDate', e.target.value)}
-              fullWidth
-              type='date'
-              size='small'
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
+          <InputDate
+            noLayout
+            label='Start Date'
+            name='startDate'
+            placeholder='Select start date'
+            value={formValues.startDate ? formValues.startDate.split('T')[0] : ''}
+            onChange={(e) => handleChange('startDate', e.target.value)}
+            required
+          />
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Min Order Value</Typography>
-            <TextField
-              value={formValues.minimumOrderValue}
-              onChange={(e) => handleChange('minimumOrderValue', Number(e.target.value))}
-              fullWidth
-              type='number'
-              size='small'
-              inputProps={{ min: 0 }}
-            />
-          </Box>
+          <InputDate
+            noLayout
+            label='Expiry Date'
+            name='expiryDate'
+            placeholder='Select expiry date'
+            value={formValues.expiryDate ? formValues.expiryDate.split('T')[0] : ''}
+            onChange={(e) => handleChange('expiryDate', e.target.value)}
+            required
+          />
 
-          {/* CHANGED: isUsed chọn YES/NO, giữ style label-bên-trái giống NewsForm */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Is Used</Typography>
-            <FormControl fullWidth size='small'>
-              <InputLabel>Is Used</InputLabel>
-              <Select
-                value={formValues.isUsed ? 'true' : 'false'}
-                onChange={(e) => handleChange('isUsed', e.target.value === 'true')}
-                label='Is Used'
-              >
-                <MenuItem value='true'>YES</MenuItem>
-                <MenuItem value='false'>NO</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+          <InputNumber
+            noLayout
+            label='Min Order Value'
+            name='minimumOrderValue'
+            placeholder='Enter min order value'
+            value={formValues.minimumOrderValue}
+            onChange={(e) => handleChange('minimumOrderValue', Number(e.target.value))}
+            min={0}
+            required
+          />
+
+          {/* 🔹 Updated: Dùng SelectField thay cho InputSelect */}
+          <SelectField
+            noLayout
+            label='Is Used'
+            name='isUsed'
+            options={['YES', 'NO']}
+            value={formValues.isUsed ? 'YES' : 'NO'}
+            onChange={(e) => handleChange('isUsed', e.target.value === 'YES')}
+            required
+          />
+          <Button variant='DarkBlue' size='md' onClick={handleSubmit} className='w-full mt-6'>
+            SAVE CHANGES
+          </Button>
         </Box>
-
-        <Button
-          onClick={handleSubmit}
-          variant='contained'
-          sx={{
-            mt: 4,
-            bgcolor: '#00B4D8',
-            color: 'white',
-            display: 'block',
-            width: '100%',
-            borderRadius: '0px',
-            '&:hover': { bgcolor: '#0096D7' }
-          }}
-        >
-          SAVE CHANGES
-        </Button>
       </Box>
     </Modal>
   )

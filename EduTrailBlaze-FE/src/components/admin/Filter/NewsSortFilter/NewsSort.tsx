@@ -25,7 +25,10 @@ const NewsSort: React.FC<NewsSortProps> = ({ columns, visibleColumns, onApply, o
         </button>
         <h4 className='font-semibold text-gray-700'>Sort</h4>
         <button
-          onClick={() => onApply(tempVisibleColumns)}
+          onClick={() => {
+            onApply(tempVisibleColumns)
+            // onClose()
+          }}
           className='text-sm bg-black text-white px-3 py-1 rounded-md'
         >
           Done

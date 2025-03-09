@@ -29,8 +29,8 @@ import Settings from '@mui/icons-material/Settings'
 import ExitToAppIcon from '@mui/icons-material/Logout'
 import NewspaperIcon from '@mui/icons-material/Newspaper'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
-import MenuIcon from '@mui/icons-material/Menu' // Hoặc icon mũi tên
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos' // ví dụ icon mũi tên
+import MenuIcon from '@mui/icons-material/Menu'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 
@@ -39,8 +39,8 @@ import { signOut } from 'next-auth/react'
 import { Star } from 'lucide-react'
 
 //general
-const generalRoutes = ['analytics', 'news', 'courses', 'orders', 'vouchers', 'reviews']
-const generalTranslations = ['Data', 'News', 'Courses', 'Orders', 'Vouchers', 'Reviews']
+const generalRoutes = ['analytics', 'news', 'courses', 'orders', 'vouchers', 'reviews', 'users']
+const generalTranslations = ['Data', 'News', 'Courses', 'Orders', 'Vouchers', 'Reviews', 'Users']
 const generalIcons = [
   <EqualizerIcon />,
   <NewspaperIcon />,
@@ -48,7 +48,7 @@ const generalIcons = [
   <ShoppingCartIcon />,
   <CardGiftcardIcon />,
   <Star />,
-  <Paper />
+  <Person2Icon />
 ]
 
 //personal
