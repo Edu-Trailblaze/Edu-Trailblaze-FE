@@ -1,16 +1,25 @@
 import { Star } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
+import Pagination from '../../global/Pagination/Pagination'
+import { useGetCoursePagingQuery } from '../../../redux/services/courseDetail.service'
 
 interface CourseSearchProp {
-  courses: CourseDetails[]
+  searchQuery: string
 }
-export default function SearchCard({ courses }: CourseSearchProp) {
-  if (!courses.length) return <div>NO course</div>
+export default function SearchCard({ searchQuery }: CourseSearchProp) {
+  const [pageIndex, setPageIndex] = useState(1)
+
+  const { data: courses, isLoading } = useGetCoursePagingQuery(
+    { Title: searchQuery, PageIndex: pageIndex, PageSize: 10 },
+    { skip: !searchQuery }
+  )
+
+  if (isLoading) return <div>Loading...</div>
+  if (!courses?.items?.length) return <div>No courses found</div>
   return (
     <div>
-      {/* {course.items.ma} */}
-      {courses.map((courseItem, coursesIndex) => (
-        <div key={coursesIndex} className='flex border-b border-gray-200 p-4 hover:bg-gray-50'>
+      {courses.items.map((courseItem, coursesIndex) => (
+        <div key={coursesIndex} className='flex border rounded border-gray-200 p-4 hover:bg-gray-50'>
           <img
             src={courseItem.course.imageURL}
             alt={courseItem.course.title}
@@ -18,11 +27,11 @@ export default function SearchCard({ courses }: CourseSearchProp) {
           />
           <div className='ml-4 flex-1'>
             <h3 className='font-bold text-lg'>{courseItem.course.title}</h3>
-            {/* {courseItem.instructors.map((instructor, index) => (
+            {courseItem.instructors.map((instructor, index) => (
               <p key={index} className='text-sm text-gray-600'>
-                {instructor}
+                {instructor.fullname}
               </p>
-            ))} */}
+            ))}
             <div className='flex items-center mt-1'>
               <span className='text-orange-400 font-bold'>{courseItem.review.totalRatings}</span>
               <div className='flex ml-1'>
@@ -54,6 +63,15 @@ export default function SearchCard({ courses }: CourseSearchProp) {
           </div>
         </div>
       ))}
+      {courses.totalPages > 1 && (
+        <Pagination
+          pageIndex={courses.pageIndex}
+          totalPages={courses.totalPages}
+          hasNextPage={courses.hasNextPage}
+          hasPreviousPage={courses.hasPreviousPage}
+          onPageChange={setPageIndex}
+        />
+      )}
     </div>
   )
 }

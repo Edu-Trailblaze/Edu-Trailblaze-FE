@@ -5,43 +5,17 @@ import SearchSidebar from './search_sidebar'
 import SearchCard from './search_card'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useSearchParams } from 'next/navigation'
-import { useGetCoursePagingQuery } from '../../../redux/services/courseDetail.service'
+// import { useGetCoursePagingQuery } from '../../../redux/services/courseDetail.service'
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
 
-  const { data: courses, isLoading } = useGetCoursePagingQuery(
-    { Title: searchQuery, PageIndex: 1, PageSize: 10 },
-    { skip: !searchQuery }
-  )
-
-  if (!courses?.items?.length) return <h1>No course</h1>
-
-  const sampleCourses = [
-    {
-      title: 'React - The Complete Guide 2024',
-      instructor: 'Maximilian Schwarzmüller',
-      rating: 4.8,
-      reviews: 180345,
-      description: 'Master React 18, Redux, Hooks, Router & More. Build powerful React applications.',
-      price: 89.99,
-      image: '/api/placeholder/400/320',
-      bestseller: true,
-      tags: ['React', 'JavaScript', 'Web Development']
-    },
-    {
-      title: 'Ultimate React Course 2024',
-      instructor: 'Jonas Schmedtmann',
-      rating: 4.7,
-      reviews: 52891,
-      description: 'Learn modern React from beginner to advanced.',
-      price: 94.99,
-      image: '/api/placeholder/400/320',
-      bestseller: false,
-      tags: ['React', 'Frontend', 'JavaScript']
-    }
-  ]
+  // const { data: courses, isLoading } = useGetCoursePagingQuery(
+  //   { Title: searchQuery, PageIndex: 1, PageSize: 10 },
+  //   { skip: !searchQuery }
+  // )
+  // if (!courses?.items?.length) return <h1>No course</h1>
 
   return (
     <div className='min-h-screen bg-white'>
@@ -93,8 +67,8 @@ export default function SearchPage() {
               </div>
             </div>
 
-            <div className='border rounded z-0'>
-              <SearchCard courses={courses?.items || []} />
+            <div className=''>
+              <SearchCard searchQuery={searchQuery} />
             </div>
           </div>
         </div>

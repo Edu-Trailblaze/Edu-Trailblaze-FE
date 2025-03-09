@@ -126,13 +126,13 @@ interface CourseDetails {
 }
 
 interface CourseResponseData {
-  items?: CourseDetails[]
-  pageIndex?: number
-  pageSize?: number
-  totalCount?: number
-  totalPages?: number
-  hasPreviousPage?: boolean
-  hasNextPage?: boolean
+  items: CourseDetails[]
+  pageIndex: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
 }
 
 interface CourseSearchRequest {
