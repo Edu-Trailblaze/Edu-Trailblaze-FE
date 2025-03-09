@@ -126,11 +126,33 @@ interface CourseDetails {
 }
 
 interface CourseResponseData {
-  items: CourseDetails[]
-  pageIndex: number
-  pageSize: number
-  totalCount: number
-  totalPages: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
+  items?: CourseDetails[]
+  pageIndex?: number
+  pageSize?: number
+  totalCount?: number
+  totalPages?: number
+  hasPreviousPage?: boolean
+  hasNextPage?: boolean
+}
+
+interface CourseSearchRequest {
+  InstructorId?: string
+  LanguageId?: number
+  TagId?: number
+  Title?: string
+  MinRating?: number
+  MaxRating?: number
+  MinPrice?: number
+  MaxPrice?: number
+  isFree?: boolean
+  MinDuration?: number
+  MaxDuration?: number
+  HasQuiz?: boolean
+  StudentId?: string
+  DifficultyLevel?: string
+  IsDeleted?: boolean
+  PageIndex?: number
+  PageSize?: number
+  Sort?: string
+  SortDirection?: string
 }
