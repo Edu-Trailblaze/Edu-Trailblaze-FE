@@ -9,7 +9,7 @@ import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 //api
 import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
-import { Menu, MenuItem, IconButton, TableRow, TableCell } from '@mui/material'
+import { TableRow, TableCell } from '@mui/material'
 
 import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
@@ -23,12 +23,13 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import VoucherSort from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherSort'
 import VoucherFilter from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherFilter'
 //modal
-import DetailModal from '../../../../../components/admin/Modal/DetailModal'
+import DetailPopup from '@/components/global/Popup/PopupDetail'
 import VoucherFormModalCreate from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalCreate'
 import VoucherFormModalEdit from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalEdit'
 
 //icon
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
+import EditIcon from '@mui/icons-material/Edit'
+import { Filter, ArrowUpDown, Plus } from 'lucide-react'
 
 export type Voucher = {
   id?: number
@@ -59,10 +60,9 @@ export default function VouchersManagement() {
   const [vouchers, setVouchers] = useState<Voucher[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null)
-  const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({})
-  const [isSortOpen, setSortOpen] = useState(false)
 
   //filter
+  const [isSortOpen, setSortOpen] = useState(false)
   const [isFilterOpen, setFilterOpen] = useState(false)
 
   //redux filter
@@ -101,6 +101,7 @@ export default function VouchersManagement() {
         }
       })
       setVouchers(response.data.items)
+      setAllVouchers(response.data.items)
       setTotalPages(response.data.totalPages)
     } catch (error) {
       console.error('Error fetching vouchers:', error)
@@ -151,9 +152,7 @@ export default function VouchersManagement() {
       })
 
       toast.success('Voucher updated successfully!')
-
       setVouchers(vouchers.map((voucher) => (voucher.id === updatedVoucher.id ? updatedVoucher : voucher)))
-
       setEditModalOpen(false)
       setEditVoucher(null)
     } catch (error) {
@@ -168,16 +167,8 @@ export default function VouchersManagement() {
     setSortOpen(false)
   }
 
-  const handleClickDot = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
-    setDot((prev) => ({ ...prev, [id]: event.currentTarget }))
-  }
-
-  const handleCloseDot = (id: number) => {
-    setDot((prev) => ({ ...prev, [id]: null }))
-  }
-
   const renderRow = (voucher: Voucher) => (
-    <TableRow key={voucher.id} hover>
+    <TableRow key={voucher.id} hover onClick={() => setSelectedVoucher(voucher)}>
       {visibleColumns['id'] && <TableCell>{voucher.id}</TableCell>}
       {visibleColumns['discountType'] && <TableCell>{voucher.discountType}</TableCell>}
       {visibleColumns['discountValue'] && <TableCell>{voucher.discountValue}</TableCell>}
@@ -187,31 +178,6 @@ export default function VouchersManagement() {
           <FormatDateTime date={voucher.expiryDate} />
         </TableCell>
       )}
-
-      <TableCell>
-        <IconButton onClick={(e) => handleClickDot(e, voucher.id!)}>
-          <EllipsisVertical size={18} />
-        </IconButton>
-
-        <Menu anchorEl={dot[voucher.id!]} open={Boolean(dot[voucher.id!])} onClose={() => handleCloseDot(voucher.id!)}>
-          <MenuItem
-            onClick={() => {
-              setSelectedVoucher(voucher)
-              handleCloseDot(voucher.id!)
-            }}
-          >
-            <Eye size={18} style={{ marginRight: '10px', color: '#1D4ED8' }} /> View
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleEditVoucher(voucher)
-              handleCloseDot(voucher.id!)
-            }}
-          >
-            <Pencil size={18} style={{ marginRight: '10px', color: '#F59E0B' }} /> Edit
-          </MenuItem>
-        </Menu>
-      </TableCell>
     </TableRow>
   )
 
@@ -237,28 +203,80 @@ export default function VouchersManagement() {
                     dispatch(clearFilter())
                     setVouchers(allVouchers)
                   }}
+                  // onFilterApply={() => {
+                  //   //  GET fromDate, toDate, keyword từ Redux
+                  //   const from = fromDate ? new Date(fromDate) : null
+                  //   const to = toDate ? new Date(toDate) : null
+                  //   const kw = keyword.toLowerCase()
+
+                  //   // filter
+                  //   const filterVoucher = allVouchers.filter((item) => {
+                  //     const itemDate = new Date(item.expiryDate)
+                  //     if (from && itemDate < from) return false
+                  //     if (to && itemDate > to) return false
+
+                  //     if (kw) {
+                  //       const inCode = item.voucherCode.toLowerCase().includes(kw)
+                  //       const inType = item.discountType.toLowerCase().includes(kw)
+                  //       if (!inCode && !inType) return false
+                  //     }
+                  //     return true
+                  //   })
+
+                  //   setVouchers(filterVoucher)
+                  //   console.log('Filtered voucher:', filterVoucher)
+                  // }}
                   onFilterApply={() => {
                     //  GET fromDate, toDate, keyword từ Redux
                     const from = fromDate ? new Date(fromDate) : null
                     const to = toDate ? new Date(toDate) : null
                     const kw = keyword.toLowerCase()
 
-                    // filter
+                    // CHANGED: console.log để kiểm tra
+                    console.log('Filter input => from:', from, 'to:', to, 'keyword:', kw)
+
                     const filterVoucher = allVouchers.filter((item) => {
                       const itemDate = new Date(item.expiryDate)
-                      if (from && itemDate < from) return false
-                      if (to && itemDate > to) return false
+
+                      // CHANGED: log từng item
+                      console.log(
+                        'Filtering item:',
+                        item,
+                        '\n  expiryDate =',
+                        item.expiryDate,
+                        '\n  itemDate =',
+                        itemDate,
+                        '\n  from =',
+                        from,
+                        '\n  to =',
+                        to
+                      )
+
+                      if (from && itemDate < from) {
+                        console.log('  => REJECT: itemDate < from')
+                        return false
+                      }
+                      if (to && itemDate > to) {
+                        console.log('  => REJECT: itemDate > to')
+                        return false
+                      }
 
                       if (kw) {
                         const inCode = item.voucherCode.toLowerCase().includes(kw)
                         const inType = item.discountType.toLowerCase().includes(kw)
-                        if (!inCode && !inType) return false
+                        if (!inCode && !inType) {
+                          console.log('  => REJECT: no match keyword')
+                          return false
+                        }
                       }
+                      console.log('  => ACCEPTED')
                       return true
                     })
 
-                    setVouchers(filterVoucher)
+                    // CHANGED: log kết quả cuối
                     console.log('Filtered voucher:', filterVoucher)
+
+                    setVouchers(filterVoucher)
                   }}
                 />
               )}
@@ -299,17 +317,35 @@ export default function VouchersManagement() {
         </div>
       ) : (
         <Table
-          columns={[
-            ...voucherFields.filter((field) => visibleColumns[field.accessor]),
-            { label: 'Actions', accessor: 'action' }
-          ]}
+          columns={[...voucherFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
           data={vouchers}
         />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
       {selectedVoucher && (
-        <DetailModal item={selectedVoucher} fields={voucherFields} onClose={() => setSelectedVoucher(null)} />
+        <DetailPopup
+          isOpen={true}
+          onClose={() => setSelectedVoucher(null)}
+          title='Voucher Detail'
+          fields={[
+            { label: 'Voucher ID', value: selectedVoucher.id, isID: true },
+            { label: 'Discount Type', value: selectedVoucher.discountType },
+            { label: 'Discount Value', value: selectedVoucher.discountValue },
+            { label: 'Voucher Code', value: selectedVoucher.voucherCode },
+            { label: 'Expiry Date', value: selectedVoucher.expiryDate, isDate: true },
+            { label: 'Minimum Order Value', value: selectedVoucher.minimumOrderValue }
+          ]}
+          actions={[
+            {
+              label: 'Edit',
+              onClick: () => {
+                handleEditVoucher(selectedVoucher)
+              },
+              icon: <EditIcon fontSize='small' style={{ color: '#F59E0B' }} />
+            }
+          ]}
+        />
       )}
 
       <VoucherFormModalCreate

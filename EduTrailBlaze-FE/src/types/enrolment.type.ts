@@ -1,5 +1,5 @@
 interface Progress {
-  lastAccessed: string 
+  lastAccessed: string
   progressPercentage: number
   remainingDurationInMins: number
 }
@@ -18,11 +18,19 @@ interface IECourse {
   courseStatus: CourseStatus
 }
 
+interface IEInstructor {
+  id: string
+  fullname: string
+  profilePictureUrl: string
+  userName: string
+  email: string
+}
+
 interface IMyLearningData {
   tags: IETag[]
   courses: IECourse[]
 }
 
 interface Enrollment {
-  totalEnrollments: number;
+  totalEnrollments: number
 }
