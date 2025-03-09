@@ -21,7 +21,14 @@ import '@/components/global/Modal/ReactModal.css'
 export default function Cart() {
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
-  const { data: cartItems, isLoading, isFetching } = useGetCartQuery(userId)
+  const {
+    data: cartItems,
+    isLoading,
+    isFetching,
+    refetch
+  } = useGetCartQuery(userId, {
+    skip: !userId // Chỉ fetch nếu có userId
+  })
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const [deleteCartItem, { isLoading: loadingRemove }] = useDeleteCartItemMutation()
   const [deleteAllCartItemsMutation, { isLoading: loadingRemoveAll }] = useDeleteAllCartItemsMutation()
@@ -53,6 +60,12 @@ export default function Cart() {
       setUserId('')
     }
   }, [])
+
+  useEffect(() => {
+    if (!isFetching && cartItems?.cartItems.length === 0) {
+      setTimeout(() => refetch(), 5000) // Chỉ fetch lại sau 5 giây
+    }
+  }, [cartItems, isFetching])
 
   if (isLoading || isFetching) {
     return <LoadingPage />

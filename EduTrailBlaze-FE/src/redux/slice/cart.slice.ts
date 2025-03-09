@@ -11,14 +11,21 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addItemToCart: (state, action: PayloadAction<CartItem>) => {
-      console.log('addItemToCart payload:', action.payload) // Log the payload
-      state.cartItems.push(action.payload)
-      state.totalPrice += action.payload.totalCoursePrice
+      console.log('addItemToCart payload:', action.payload);
+      return {
+        ...state,
+        cartItems: [...state.cartItems, action.payload],
+        totalPrice: state.totalPrice + action.payload.totalCoursePrice
+      };
     },
     setCart: (state, action: PayloadAction<ICart>) => {
-      console.log('setCart payload:', action.payload) // Log the payload
-      state.cartItems = action.payload.cartItems
-      state.totalPrice = action.payload.totalPrice
+      console.log('setCart payload:', action.payload);
+    
+      // Kiểm tra xem state có thay đổi không
+      if (JSON.stringify(state.cartItems) !== JSON.stringify(action.payload.cartItems)) {
+        state.cartItems = action.payload.cartItems;
+        state.totalPrice = action.payload.totalPrice;
+      }
     }
   }
 })
