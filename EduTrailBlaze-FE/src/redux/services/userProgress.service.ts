@@ -8,7 +8,7 @@ export const userProgressApi = createApi({
   }),
   tagTypes: ['UserProgress'],
   endpoints: (build) => ({
-    postUserProgress: build.mutation<void, PostUserProgress>({
+    postUserProgress: build.mutation<any, PostUserProgress>({
       query: (body) => ({
         url: `UserProgress`,
         method: 'POST',

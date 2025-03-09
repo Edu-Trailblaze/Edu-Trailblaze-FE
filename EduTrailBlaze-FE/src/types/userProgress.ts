@@ -1,6 +1,6 @@
 interface PostUserProgress {
   userId: string
-  lectureId: string
+  lectureId: number
 }
 
 interface UserProgress {
