@@ -6,7 +6,7 @@ import { MdOutlineScreenShare } from 'react-icons/md'
 import { BsChatLeftText } from 'react-icons/bs'
 import { GrResources } from 'react-icons/gr'
 import { GrDocumentPerformance } from 'react-icons/gr'
-import { TbTool } from 'react-icons/tb'
+import { TbReportAnalytics, TbTool } from 'react-icons/tb'
 
 const InstructorSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -51,7 +51,8 @@ const InstructorSidebar = () => {
   }, [])
 
   const menuItems = [
-    { icon: <MdOutlineScreenShare className='w-6 h-5' />, label: 'Courses', href: '/instructor/courses' },
+    { icon: <MdOutlineScreenShare className='w-6 h-5' />, label: 'Courses', href: '/instructor/dashboard/coursePage' },
+    { icon: <TbReportAnalytics  className='w-6 h-5' />, label: 'Analytic', href: '/instructor/dashboard/analyticsPage' },
     { icon: <BsChatLeftText className='w-6 h-5' />, label: 'Communication', href: '/instructor/communication' },
     { icon: <GrDocumentPerformance className='w-6 h-5' />, label: 'Performance', href: '/instructor/performance' },
     { icon: <TbTool className='w-6 h-5' />, label: 'Tools', href: '/instructor/tools' },
