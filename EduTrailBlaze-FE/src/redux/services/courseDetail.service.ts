@@ -83,7 +83,12 @@ export const courseApi = createApi({
       query: ({ tagId, studentId }) => ({ 
         url: `Course/get-courses-by-condition?TagId=${tagId}&StudentId=${studentId}`, 
       })
-    })
+    }),
+    getCourseByIdAndTagPaging: build.query<CourseResponseData, { tagId: number; studentId: string; pageIndex: number; pageSize: number }>({
+      query: ({ tagId, studentId, pageIndex, pageSize }) => ({ 
+        url: `Course/get-paging-course-information?TagId=${tagId}&StudentId=${studentId}&PageIndex=${pageIndex}&PageSize=${pageSize}`,
+      })
+    }),
   })
 })
 
@@ -95,5 +100,6 @@ export const {
   // useUpdateCourseMutation,
   // useDeleteCourseMutation
   useGetInstructorOfCourseQuery,
-  useGetCourseByIdAndTagQuery
+  useGetCourseByIdAndTagQuery,
+  useGetCourseByIdAndTagPagingQuery
 } = courseApi
