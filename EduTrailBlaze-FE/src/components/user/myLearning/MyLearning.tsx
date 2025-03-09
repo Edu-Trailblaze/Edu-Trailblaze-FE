@@ -157,8 +157,13 @@ export default function MyLearning() {
                 <div className='bg-white/10 backdrop-blur-sm rounded-lg p-4'>
                   <h3 className='text-xl sm:text-2xl font-bold'>
                     {Math.round(
-                      (myCourses?.courses?.reduce((sum: number, course: IECourse) => sum + course.progress.progressPercentage, 0) ?? 0) /
-                        (myCourses?.courses?.length ?? 1)
+                      (myCourses?.courses?.reduce(
+                        (sum: number, course: IECourse) =>
+                          sum + (course.progress?.progressPercentage === undefined
+                            ? 0
+                            : course.progress.progressPercentage),
+                        0
+                      ) ?? 0) / (myCourses?.courses?.length ?? 1)
                     )}
                     %
                   </h3>
@@ -172,7 +177,7 @@ export default function MyLearning() {
                 </div> */}
                 <div className='bg-white/10 backdrop-blur-sm rounded-lg p-4'>
                   <h3 className='text-xl sm:text-2xl font-bold'>
-                    {myCourses?.courses.filter((c: IECourse) => c.progress.progressPercentage === 100).length}
+                    {myCourses?.courses.filter((c: IECourse) => c.progress?.progressPercentage === 100).length}
                   </h3>
                   <p className='text-blue-100 text-sm'>Completed Courses</p>
                 </div>
@@ -323,7 +328,12 @@ export default function MyLearning() {
                     <Heart className={`h-5 w-5 text-gray-400`} />
                   </button>
                   <div className='absolute bottom-0 left-0 right-0 h-2 bg-gray-200'>
-                    <div className='bg-blue-600 h-1' style={{ width: `${course.progress.progressPercentage}%` }}></div>
+                    <div
+                      className='bg-blue-600 h-1'
+                      style={{
+                        width: `${course.progress?.progressPercentage === undefined ? 0 : course.progress.progressPercentage}%`
+                      }}
+                    ></div>
                   </div>
                 </div>
 
@@ -364,17 +374,19 @@ export default function MyLearning() {
                     <div className='flex justify-between text-sm text-gray-600'>
                       <div className='flex items-center'>
                         <Clock className='h-4 w-4 mr-1 text-gray-400' />
-                        <span>{formatDate(course.progress.lastAccessed)}</span>
+                        <span>{course.progress ? formatDate(course.progress.lastAccessed) : 'N/A'}</span>
                       </div>
                       <div className='flex items-center'>
                         <Calendar className='h-4 w-4 mr-1 text-gray-400' />
-                        <span>{course.progress.remainingDurationInMins} min(s) left</span>
+                        <span>{course.progress ? course.progress.remainingDurationInMins : 'N/A'} min(s) left</span>
                       </div>
                     </div>
                   </div>
 
                   <button className='mt-4 w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 font-medium'>
-                    {course.progress.progressPercentage === 0 ? 'Start Learning' : 'Continue Learning'}
+                    {course.progress?.progressPercentage === 0 || course.progress?.progressPercentage === undefined
+                      ? 'Start Learning'
+                      : 'Continue Learning'}
                     <ChevronRight className='h-4 w-4' />
                   </button>
                 </div>
@@ -396,7 +408,12 @@ export default function MyLearning() {
                     </button>
                   </div>
                   <div className='absolute bottom-0 left-0 right-0 h-2 bg-gray-200'>
-                    <div className='bg-blue-600 h-1' style={{ width: `${course.progress.progressPercentage}%` }}></div>
+                    <div
+                      className='bg-blue-600 h-1'
+                      style={{
+                        width: `${course.progress?.progressPercentage === undefined ? 0 : course.progress.progressPercentage}%`
+                      }}
+                    ></div>
                   </div>
                 </div>
 
@@ -451,16 +468,18 @@ export default function MyLearning() {
                     <div className='flex flex-col sm:flex-row gap-4 text-sm text-gray-600'>
                       <div className='flex items-center'>
                         <Clock className='h-4 w-4 mr-1 text-gray-400' />
-                        <span>Accessed: {formatDate(course.progress.lastAccessed)}</span>
+                        <span>Accessed: {course.progress ? formatDate(course.progress.lastAccessed) : 'N/A'}</span>
                       </div>
                       <div className='flex items-center'>
                         <Calendar className='h-4 w-4 mr-1 text-gray-400' />
-                        <span>{course.progress.remainingDurationInMins} min(s) left</span>
+                        <span>{course.progress ? course.progress.remainingDurationInMins : 'N/A'} min(s) left</span>
                       </div>
                     </div>
 
                     <button className='py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 font-medium whitespace-nowrap'>
-                      {course.progress.progressPercentage === 0 ? 'Start Learning' : 'Continue Learning'}
+                      {course.progress?.progressPercentage === 0 || course.progress?.progressPercentage === undefined
+                        ? 'Start Learning'
+                        : 'Continue Learning'}
                       <ChevronRight className='h-4 w-4' />
                     </button>
                   </div>

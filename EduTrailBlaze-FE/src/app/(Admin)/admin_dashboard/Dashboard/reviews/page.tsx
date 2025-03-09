@@ -1,4 +1,6 @@
 'use client'
+import api from '@/components/config/axios'
+
 //redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
@@ -14,15 +16,15 @@ import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import dayjs from 'dayjs'
-import DetailModal from '@/components/admin/Modal/DetailModal'
+
+import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //sort filter
 import ReviewFilter from '@/components/admin/Filter/ReviewSortFilter/ReviewFilter'
 import ReviewSort from '@/components/admin/Filter/ReviewSortFilter/ReviewSort'
 
-import { Filter, ArrowUpDown, Plus, Eye, Pencil, Trash2 } from 'lucide-react'
-import api from '@/components/config/axios'
-
+//icon
+import { Filter, ArrowUpDown, Trash2 } from 'lucide-react'
 import { TableRow, TableCell } from '@mui/material'
 
 export type Review = {
@@ -33,11 +35,26 @@ export type Review = {
   createdAt: string
 }
 
+export type ReviewDetail = {
+  id: number
+  courseId: number
+  userId: string
+  rating: number
+  reviewText: string
+  createdAt: string
+  updatedAt?: string
+  user?: {
+    id: string
+    userName: string
+    email: string
+  }
+  courseTitle?: string
+}
+
 const reviewFields: { label: string; accessor: keyof Review }[] = [
   { label: 'Review ID', accessor: 'id' },
   { label: 'Course ID', accessor: 'courseId' },
   { label: 'Rating', accessor: 'rating' },
-  // { label: 'Review Text', accessor: 'reviewText' },
   { label: 'Date', accessor: 'createdAt' }
 ]
 
@@ -57,7 +74,8 @@ export default function ReviewsManagement() {
   const [loading, setLoading] = useState(true)
 
   //modal
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null)
+  // const [selectedReview, setSelectedReview] = useState<Review | null>(null)
+  const [selectedReview, setSelectedReview] = useState<ReviewDetail | null>(null)
   const [isEditModalOpen, setEditModalOpen] = useState(false)
   const [editReview, setEditReview] = useState<Review | null>(null)
 
@@ -107,6 +125,49 @@ export default function ReviewsManagement() {
     }
   }
 
+  // Gọi API /Review/{review.id}, lấy ra userId => gọi tiếp /User/{userId}
+  const handleDetail = async (review: Review) => {
+    try {
+      // 1) Gọi API lấy chi tiết review
+      const reviewResponse = await api.get(`/Review/${review.id}`)
+      const reviewData = reviewResponse.data
+
+      // Kiểm tra nếu không có userId
+      if (!reviewData.userId) {
+        console.error('Review missing userId:', reviewData)
+        toast.error('User ID not found for this review!')
+        return
+      }
+
+      // 2) Gọi API lấy thông tin user
+      const userResponse = await api.get(`/User/${reviewData.userId}`)
+      const userData = userResponse.data
+
+      // 3) Gọi API lấy thông tin khóa học
+      let courseTitle = 'Unknown Course'
+      if (reviewData.courseId) {
+        const courseResponse = await api.get(`/Course/${reviewData.courseId}`)
+        courseTitle = courseResponse.data.title // Lấy title từ API Course
+      }
+
+      // 4) Gộp thông tin review, user, course vào một object
+      const detail: ReviewDetail = {
+        ...reviewData,
+        user: userData,
+        courseTitle: courseTitle
+      }
+      setSelectedReview(detail)
+    } catch (error: any) {
+      console.error('Error fetching review details:', error)
+
+      if (error.response?.status === 404) {
+        toast.error(`Review with ID ${review.id} not found!`)
+      } else {
+        toast.error('Failed to fetch review details!')
+      }
+    }
+  }
+
   const handleDeleteReview = async (id: number) => {
     const isConfirmed = window.confirm('Bạn có chắc chắn muốn xóa review này không?')
     if (!isConfirmed) return
@@ -151,7 +212,11 @@ export default function ReviewsManagement() {
   }
 
   const renderRow = (review: Review) => (
-    <TableRow key={review.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
+    <TableRow
+      key={review.id}
+      className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'
+      onClick={() => handleDetail(review)}
+    >
       {visibleColumns['id'] && <td className='p-4'>{review.id}</td>}
       {visibleColumns['courseId'] && <td>{review.courseId}</td>}
       {visibleColumns['rating'] && <td>{review.rating}</td>}
@@ -161,17 +226,6 @@ export default function ReviewsManagement() {
           <FormatDateTime date={review.createdAt} />
         </TableCell>
       )}
-      <td className='flex mt-4 space-x-2'>
-        <button onClick={() => setSelectedReview(review)} className='text-blue-600 cursor-pointer'>
-          <Eye size={18} />
-        </button>
-        {/* <button onClick={() => openEditModal(review)} className='text-yellow-600 cursor-pointer'>
-          <Pencil size={18} />
-        </button> */}
-        <button onClick={() => handleDeleteReview(review.id!)} className='text-red-600 cursor-pointer'>
-          <Trash2 size={18} />
-        </button>
-      </td>
     </TableRow>
   )
 
@@ -221,18 +275,9 @@ export default function ReviewsManagement() {
                 />
               )}
             </div>
-
-            {/* ADD */}
-            {/* <button
-              className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
-              onClick={() => setAddModalOpen(true)}
-            >
-              <Plus size={18} />
-            </button> */}
           </div>
         </div>
       </div>
-
       {loading ? (
         <div className='flex justify-center py-6'>
           <Loader className='w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin' />
@@ -240,17 +285,43 @@ export default function ReviewsManagement() {
         </div>
       ) : (
         <Table
-          columns={[
-            ...reviewFields.filter((field) => visibleColumns[field.accessor]),
-            { label: 'Actions', accessor: 'action' }
-          ]}
+          columns={[...reviewFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
           data={reviews}
         />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
       {selectedReview && (
-        <DetailModal item={selectedReview} fields={reviewFields} onClose={() => setSelectedReview(null)} />
+        <DetailPopup
+          isOpen={true}
+          onClose={() => setSelectedReview(null)}
+          title='Review Detail'
+          fields={[
+            { label: 'Review ID', value: selectedReview.id, isID: true },
+            // { label: 'Course ID', value: selectedReview.courseId },
+            { label: 'Course Title', value: selectedReview.courseTitle },
+            // { label: 'User ID', value: selectedReview.userId },
+            { label: 'Email', value: selectedReview.user?.email || '' },
+            { label: 'Rating', value: selectedReview.rating },
+            { label: 'Date', value: selectedReview.createdAt, isDate: true }
+          ]}
+          widgets={[
+            {
+              label: 'Comment',
+              content: selectedReview.reviewText
+            }
+          ]}
+          actions={[
+            {
+              label: 'Delete',
+              icon: <Trash2 style={{ color: '#DC2626' }} />,
+              onClick: () => {
+                handleDeleteReview(selectedReview.id!)
+                setSelectedReview(null)
+              }
+            }
+          ]}
+        />
       )}
       {/* {editReview && (
         <ReviewFormModalEdit

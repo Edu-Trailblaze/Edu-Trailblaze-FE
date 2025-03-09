@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
-import { Modal, Box, Typography, TextField, Button, IconButton } from '@mui/material'
+import { Modal, Box, Typography, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { z } from 'zod'
 import { VoucherCreate } from '@/app/(Admin)/admin_dashboard/Dashboard/vouchers/page'
+
+import InputText from '@/components/global/Input/InputText'
+import InputNumber from '@/components/global/Input/InputNumber'
+import InputDate from '@/components/global/Input/InputDate'
+import Button from '@/components/global/Button/Button'
 
 const voucherSchema = z.object({
   voucherCode: z.string().min(1, 'Voucher Code is required'),
@@ -80,108 +85,93 @@ export default function VoucherFormModalCreate({
           maxWidth: 550,
           bgcolor: 'white',
           p: 4,
-          borderRadius: 0,
+          borderRadius: 3,
           border: '1px solid #ccc',
-          position: 'relative'
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '80vh'
         }}
       >
         <IconButton onClick={onCancel} sx={{ position: 'absolute', top: 12, right: 12, color: 'gray' }}>
           <CloseIcon />
         </IconButton>
-        <Typography variant='h6' component='h2' align='center' fontWeight='bold' gutterBottom sx={{ mb: '30px' }}>
-          ADD Voucher
+        <Typography variant='h4' component='h2' align='left' fontWeight='bold' gutterBottom sx={{ mb: '30px' }}>
+          CREATE A VOUCHER
         </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Voucher Code</Typography>
-            <TextField
-              label='Voucher Code'
-              value={formValues.voucherCode}
-              onChange={(e) => handleChange('voucherCode', e.target.value)}
-              fullWidth
-              size='small'
-              error={!!errors.voucherCode}
-              helperText={errors.voucherCode}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Discount Type</Typography>
-            <TextField
-              label='Discount Type'
-              value={formValues.discountType}
-              onChange={(e) => handleChange('discountType', e.target.value)}
-              fullWidth
-              size='small'
-              error={!!errors.discountType}
-              helperText={errors.discountType}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Discount Value</Typography>
-            <TextField
-              label='Discount Value'
-              type='number'
-              value={formValues.discountValue}
-              onChange={(e) => handleChange('discountValue', Number(e.target.value))}
-              fullWidth
-              size='small'
-              error={!!errors.discountValue}
-              helperText={errors.discountValue}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Start Date</Typography>
-            <TextField
-              label='Start Date'
-              type='date'
-              value={formValues.startDate ? formValues.startDate.split('T')[0] : ''}
-              onChange={(e) => handleChange('startDate', e.target.value)}
-              fullWidth
-              size='small'
-              InputLabelProps={{ shrink: true }}
-              error={!!errors.startDate}
-              helperText={errors.startDate}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>Expiry Date</Typography>
-            <TextField
-              label='Expiry Date'
-              type='date'
-              value={formValues.expiryDate ? formValues.expiryDate.split('T')[0] : ''}
-              onChange={(e) => handleChange('expiryDate', e.target.value)}
-              fullWidth
-              size='small'
-              InputLabelProps={{ shrink: true }}
-              error={!!errors.expiryDate}
-              helperText={errors.expiryDate}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ width: '40%', fontWeight: 600, textTransform: 'uppercase' }}>
-              Minimum Order Value
-            </Typography>
-            <TextField
-              label='Minimum Order Value'
-              type='number'
-              value={formValues.minimumOrderValue}
-              onChange={(e) => handleChange('minimumOrderValue', Number(e.target.value))}
-              fullWidth
-              size='small'
-              error={!!errors.minimumOrderValue}
-              helperText={errors.minimumOrderValue}
-            />
-          </Box>
-        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, overflowY: 'auto' }}>
+          <InputText
+            noLayout
+            label='Voucher Code'
+            name='voucherCode'
+            placeholder='Enter voucher code'
+            value={formValues.voucherCode}
+            onChange={(e) => handleChange('voucherCode', e.target.value)}
+            required
+            subtitle={errors.voucherCode}
+          />
 
-        <Box display='flex' justifyContent='flex-end' gap={2} mt={3}>
-          <Button onClick={handleSubmit} variant='contained' color='primary'>
-            Create
-          </Button>
-          <Button onClick={onCancel} variant='contained' color='secondary'>
-            Cancel
-          </Button>
+          <InputText
+            noLayout
+            label='Discount Type'
+            name='discountType'
+            placeholder='Enter discount type'
+            value={formValues.discountType}
+            onChange={(e) => handleChange('discountType', e.target.value)}
+            required
+            subtitle={errors.discountType}
+          />
+
+          <InputNumber
+            noLayout
+            label='Discount Value'
+            name='discountValue'
+            placeholder='Enter discount value'
+            value={formValues.discountValue}
+            onChange={(e) => handleChange('discountValue', Number(e.target.value))}
+            required
+            subtitle={errors.discountValue}
+          />
+
+          <InputDate
+            noLayout
+            label='Start Date'
+            name='startDate'
+            placeholder='Select start date'
+            value={formValues.startDate ? formValues.startDate.split('T')[0] : ''}
+            onChange={(e) => handleChange('startDate', e.target.value)}
+            required
+            subtitle={errors.startDate}
+          />
+
+          <InputDate
+            noLayout
+            label='Expiry Date'
+            name='expiryDate'
+            placeholder='Select expiry date'
+            value={formValues.expiryDate ? formValues.expiryDate.split('T')[0] : ''}
+            onChange={(e) => handleChange('expiryDate', e.target.value)}
+            required
+            subtitle={errors.expiryDate}
+          />
+
+          <InputNumber
+            noLayout
+            label='Minimum Order Value'
+            name='minimumOrderValue'
+            placeholder='Enter minimum order value'
+            value={formValues.minimumOrderValue}
+            onChange={(e) => handleChange('minimumOrderValue', Number(e.target.value))}
+            required
+            subtitle={errors.minimumOrderValue}
+          />
+
+          <Box display='flex' justifyContent='flex-end' gap={2} mt={3}>
+            <Button variant='DarkBlue' className='w-full mt-6' onClick={handleSubmit}>
+              CREATE
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Modal>

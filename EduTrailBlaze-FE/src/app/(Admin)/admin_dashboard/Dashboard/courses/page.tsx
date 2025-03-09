@@ -7,8 +7,11 @@ import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 //api
 import api from '@/components/config/axios'
+import axios from 'axios'
+
+//material
 import 'react-toastify/dist/ReactToastify.css'
-import { Menu, MenuItem, IconButton, TableRow, TableCell } from '@mui/material'
+import { TableRow, TableCell } from '@mui/material'
 
 import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
@@ -21,15 +24,13 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
 
-import axios from 'axios'
-
 //modal
 import CourseFormModalCreate from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalCreate'
 import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalEdit'
-import DetailModal from '../../../../../components/admin/Modal/DetailModal'
+import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //icon
-import { Filter, ArrowUpDown, Plus, Eye, Trash2, Pencil, EllipsisVertical } from 'lucide-react'
+import { Filter, ArrowUpDown, Plus, Trash2, Pencil } from 'lucide-react'
 
 export type Course = {
   id?: number
@@ -43,12 +44,17 @@ export type Course = {
   learningOutcomes: string[]
   createdAt?: string
   createdBy: string
+  reviewInfo?: {
+    averageRating: number
+    totalRatings: number
+  }
 }
 
 export type CourseCreate = Omit<Course, 'createdAt'>
 
 const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course'
 const USER_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/User'
+const REVIEW_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Review/get-review-info'
 
 const courseFields: { label: string; accessor: keyof Course }[] = [
   { label: 'ID', accessor: 'id' },
@@ -66,15 +72,6 @@ export default function CoursesManagement() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
-
-  //dot
-  const [dot, setDot] = useState<{ [key: number]: HTMLElement | null }>({})
-  const handleClickDot = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
-    setDot((prev) => ({ ...prev, [id]: event.currentTarget }))
-  }
-  const handleCloseDot = (id: number) => {
-    setDot((prev) => ({ ...prev, [id]: null }))
-  }
 
   //filter&sort open
   const [isFilterOpen, setFilterOpen] = useState(false)
@@ -135,26 +132,65 @@ export default function CoursesManagement() {
     fetchUserId()
   }, [])
 
+  const handleDetail = async (course: Course) => {
+    try {
+      const reviewResponse = await axios.get(`${REVIEW_API_URL}/${course.id}`)
+      const reviewInfo = reviewResponse.data // { averageRating, totalRatings }
+      setSelectedCourse({
+        ...course,
+        reviewInfo
+      })
+    } catch (error) {
+      console.error('Error fetching course review info:', error)
+      toast.error('Failed to fetch course review info!')
+      // Nếu có lỗi, vẫn hiển thị thông tin course gốc
+      setSelectedCourse(course)
+    }
+  }
+
   const handleAddCourse = async (newCourse: CourseCreate) => {
     if (!userId) {
       toast.error('User ID is not available!')
       return
     }
     try {
-      const courseToSend = {
-        ...newCourse,
-        createdBy: userId, // <--- GÁN Ở ĐÂY
-        learningOutcomes: newCourse.learningOutcomes.length > 0 ? newCourse.learningOutcomes : ['Default outcome']
-      }
-      const response = await axios.post(API_URL, courseToSend)
+      // Tạo FormData
+      const formData = new FormData()
 
+      // Append fields PascalCase
+      formData.append('Title', newCourse.title)
+      formData.append('Description', newCourse.description)
+      formData.append('Price', newCourse.price.toString())
+      formData.append('DifficultyLevel', newCourse.difficultyLevel)
+      formData.append('CreatedBy', userId)
+      formData.append('Prerequisites', newCourse.prerequisites)
+
+      // LearningOutcomes là mảng => bạn có thể append từng phần tử
+      newCourse.learningOutcomes.forEach((outcome) => {
+        formData.append('LearningOutcomes', outcome)
+      })
+
+      // Riêng ImageURL, IntroURL là file => append file
+      if (newCourse.imageURL) {
+        // newCourse.imageURL là kiểu File
+        formData.append('ImageURL', newCourse.imageURL)
+      }
+      if (newCourse.introURL) {
+        formData.append('IntroURL', newCourse.introURL)
+      }
+
+      // Gửi FormData
+      const response = await axios.post(API_URL, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       toast.success('Course created successfully!')
       setCourses([...courses, { ...response.data, createdAt: new Date().toISOString() }])
       fetchCourses()
       setAddModalOpen(false)
     } catch (error: any) {
       console.error('Error adding course:', error)
-      // Thêm đoạn này:
       if (error.response) {
         console.log('Server error response:', error.response.data)
       }
@@ -191,11 +227,8 @@ export default function CoursesManagement() {
           'Content-Type': 'application/json'
         }
       })
-
       toast.success('Course updated successfully!')
-
       setCourses(courses.map((course) => (course.id === updatedCourse.id ? updatedCourse : course)))
-
       setEditModalOpen(false)
       setEditCourse(null)
     } catch (error) {
@@ -217,7 +250,12 @@ export default function CoursesManagement() {
   }
 
   const renderRow = (course: Course) => (
-    <TableRow key={course.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'>
+    <TableRow
+      key={course.id}
+      className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'
+      hover
+      onClick={() => handleDetail(course)}
+    >
       {visibleColumns['id'] && <TableCell className='p-4'>{course.id}</TableCell>}
       {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
       {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
@@ -227,50 +265,16 @@ export default function CoursesManagement() {
           <FormatDateTime date={course.createdAt} />
         </TableCell>
       )}
-      <TableCell>
-        <IconButton onClick={(e) => handleClickDot(e, course.id!)}>
-          <EllipsisVertical size={18} />
-        </IconButton>
-
-        <Menu anchorEl={dot[course.id!]} open={Boolean(dot[course.id!])} onClose={() => handleCloseDot(course.id!)}>
-          <MenuItem
-            onClick={() => {
-              setSelectedCourse(course)
-              handleCloseDot(course.id!)
-            }}
-          >
-            <Eye size={18} style={{ marginRight: '10px', color: '#1D4ED8' }} /> View
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleEditCourse(course)
-              handleCloseDot(course.id!)
-            }}
-          >
-            <Pencil size={18} style={{ marginRight: '10px', color: '#F59E0B' }} /> Edit
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleDeleteCourse(course.id!)
-              handleCloseDot(course.id!)
-            }}
-          >
-            <Trash2 size={18} style={{ marginRight: '10px', color: '#DC2626' }} /> Delete
-          </MenuItem>
-        </Menu>
-      </TableCell>
     </TableRow>
   )
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       <ToastContainer position='top-right' autoClose={3000} />
-
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Courses Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
-
           <div className='flex items-center gap-4 self-end'>
             <div className='relative'>
               <button
@@ -287,7 +291,6 @@ export default function CoursesManagement() {
                     setAllCourses(allCourses)
                   }}
                   onFilterApply={() => {
-                    // CHANGED: Lọc theo fromDate, toDate, keyword
                     const from = fromDate ? new Date(fromDate) : null
                     const to = toDate ? new Date(toDate) : null
                     const kw = keyword.toLowerCase()
@@ -349,10 +352,7 @@ export default function CoursesManagement() {
         </div>
       ) : (
         <Table
-          columns={[
-            ...courseFields.filter((field) => visibleColumns[field.accessor]),
-            { label: 'Actions', accessor: 'action' }
-          ]}
+          columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
           data={courses}
         />
@@ -361,7 +361,68 @@ export default function CoursesManagement() {
       {/* <Pagination /> */}
 
       {selectedCourse && (
-        <DetailModal item={selectedCourse} fields={courseFields} onClose={() => setSelectedCourse(null)} />
+        <DetailPopup
+          isOpen={true}
+          onClose={() => setSelectedCourse(null)}
+          title='Course Detail'
+          fields={[
+            { label: 'ID', value: selectedCourse.id, isID: true },
+            { label: 'Title', value: selectedCourse.title },
+            { label: 'Duration', value: selectedCourse.duration },
+            { label: 'Price', value: selectedCourse.price },
+
+            { label: 'imageURL', value: selectedCourse.imageURL, isImage: true },
+            { label: 'introURL', value: selectedCourse.introURL, isVideo: true },
+
+            {
+              label: 'Difficulty',
+              value: [
+                {
+                  label: selectedCourse.difficultyLevel,
+                  color:
+                    selectedCourse.difficultyLevel === 'Beginner'
+                      ? 'green'
+                      : selectedCourse.difficultyLevel === 'Intermediate'
+                        ? 'blue'
+                        : 'red'
+                }
+              ],
+              isStatus: true
+            },
+            { label: 'Date', value: selectedCourse.createdAt, isDate: true }
+          ]}
+          widgets={[
+            {
+              label: 'Description',
+              content: selectedCourse.description
+            },
+            {
+              label: 'Prerequisites',
+              content: selectedCourse.prerequisites
+            },
+
+            {
+              label: 'Review Info',
+              content: `Average Rating: ${selectedCourse.reviewInfo?.averageRating}\nTotal Ratings: ${selectedCourse.reviewInfo?.totalRatings}`
+            }
+          ]}
+          actions={[
+            {
+              label: 'Update',
+              icon: <Pencil style={{ color: '#F59E0B' }} />,
+              onClick: () => {
+                handleEditCourse(selectedCourse)
+              }
+            },
+            {
+              label: 'Delete',
+              icon: <Trash2 style={{ color: '#DC2626' }} />,
+              onClick: () => {
+                handleDeleteCourse(selectedCourse.id!)
+              }
+            }
+          ]}
+        />
       )}
 
       <CourseFormModalCreate

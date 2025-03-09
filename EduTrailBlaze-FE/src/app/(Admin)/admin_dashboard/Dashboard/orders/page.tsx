@@ -24,10 +24,10 @@ import OrderSort from '@/components/admin/Filter/OrderSortFilter/OrderSort'
 import OrderFilter from '@/components/admin/Filter/OrderSortFilter/OrderFilter'
 
 //modal
-import DetailModal from '../../../../../components/admin/Modal/DetailModal'
+import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //icon
-import { Filter, ArrowUpDown, Plus, Eye } from 'lucide-react'
+import { Filter, ArrowUpDown } from 'lucide-react'
 
 export type Order = {
   id?: number
@@ -140,7 +140,7 @@ export default function OrdersManagement() {
   }
 
   const renderRow = (order: Order & { userName?: string }) => (
-    <TableRow key={order.id} hover>
+    <TableRow key={order.id} hover onClick={() => setSelectedOrder(order)}>
       {visibleColumns['id'] && <TableCell>{order.id}</TableCell>}
       {visibleColumns['userName'] && <TableCell>{order.userName}</TableCell>}
       {visibleColumns['orderAmount'] && <TableCell>{order.orderAmount}</TableCell>}
@@ -150,12 +150,6 @@ export default function OrdersManagement() {
         </TableCell>
       )}
       {visibleColumns['orderStatus'] && <TableCell>{order.orderStatus}</TableCell>}
-
-      <TableCell className='flex mt-4 space-x-2'>
-        <button onClick={() => setSelectedOrder(order)} className='text-blue-600 cursor-pointer'>
-          <Eye size={18} />
-        </button>
-      </TableCell>
     </TableRow>
   )
 
@@ -203,10 +197,6 @@ export default function OrdersManagement() {
                 />
               )}
             </div>
-
-            {/* <button className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'>
-              <Plus size={18} />
-            </button> */}
           </div>
         </div>
       </div>
@@ -218,17 +208,41 @@ export default function OrdersManagement() {
         </div>
       ) : (
         <Table
-          columns={[
-            ...orderFields.filter((field) => visibleColumns[field.accessor]),
-            { label: 'Actions', accessor: 'action' }
-          ]}
+          columns={[...orderFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
           data={orders}
         />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
       {selectedOrder && (
-        <DetailModal item={selectedOrder} fields={orderFields} onClose={() => setSelectedOrder(null)} />
+        <DetailPopup
+          isOpen={true}
+          onClose={() => setSelectedOrder(null)}
+          title='Order Detail'
+          fields={[
+            { label: 'Id', value: selectedOrder.id, isID: true },
+            { label: 'User Name', value: selectedOrder.userName },
+            { label: 'Amount', value: selectedOrder.orderAmount },
+            { label: 'Order Date', value: selectedOrder.orderDate },
+            {
+              label: 'Status',
+              value: [
+                {
+                  label: selectedOrder.orderStatus,
+                  color:
+                    selectedOrder.orderStatus === 'Completed'
+                      ? 'green'
+                      : selectedOrder.orderStatus === 'Pending'
+                        ? 'orange'
+                        : selectedOrder.orderStatus === 'Fail'
+                          ? 'red'
+                          : 'gray'
+                }
+              ],
+              isStatus: true // Kích hoạt render status
+            }
+          ]}
+        />
       )}
     </div>
   )

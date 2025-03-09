@@ -97,6 +97,7 @@ export default function WebHeader() {
   const [cartHovered, setCartHovered] = useState(false)
   const [userName, setUserName] = useState('')
   const [userId, setUserId] = useState('')
+  const [userRole, setUserRole] = useState('')
   const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
 
   const [searchTerm, setSearchTerm] = useState('')
@@ -108,6 +109,7 @@ export default function WebHeader() {
   }
 
   useEffect(() => {
+    const role = localStorage.getItem('role')
     const token = localStorage.getItem('accessToken')
     setIsLoggedIn(!!token)
 
@@ -117,6 +119,9 @@ export default function WebHeader() {
         console.log('decode', decode)
         setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
         setUserName((decode as any)?.fullName ?? '')
+      }
+      if (role) {
+        setUserRole(role ?? '')
       }
     } catch (error) {
       console.error('Error decoding token:', error)
@@ -130,8 +135,9 @@ export default function WebHeader() {
     router.push('/auth/login_register')
   }
 
-  const handleToggleCart = () => {
-    setCartHovered((prev) => !prev)
+  const teachOnEduRoute = () => {
+    if (userRole === 'Student') router.push('/student/welcome')
+    else router.push('/instructor/dashboard/coursePage')
   }
 
   return (
@@ -261,8 +267,8 @@ export default function WebHeader() {
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
                 <IoMdNotificationsOutline className='w-6 h-6' />
               </div>
-              <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
-                <Link href={'/student/welcome'}>Teach on EduTrail</Link>
+              <div onClick={teachOnEduRoute} className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg cursor-pointer'>
+                Teach on EduTrail
               </div>
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
                 <Link href={'/student/myLearning'}>My Learning</Link>

@@ -21,8 +21,15 @@ export const authApi = createApi({
         method: 'POST',
         body: credentials
       })
+    }),
+    changeRole : builder.mutation({ 
+      query: (userId) => ({
+        url: '/Auth/change-role',
+        method: 'POST',
+        body: userId
+      })
     })
   })
 })
 
-export const { useRegisterMutation, useLoginMutation } = authApi
+export const { useRegisterMutation, useLoginMutation, useChangeRoleMutation } = authApi

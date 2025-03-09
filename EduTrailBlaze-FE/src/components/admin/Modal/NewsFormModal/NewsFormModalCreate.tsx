@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Modal, IconButton } from '@mui/material'
+import { Modal, IconButton, Box, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { z } from 'zod'
 import { NewsCreate } from '@/app/(Admin)/admin_dashboard/Dashboard/news/page'
 
 import InputText from '@/components/global/Input/InputText'
-
+import Button from '@/components/global/Button/Button'
 const newsSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   content: z.string().min(1, 'Content is required'),
@@ -67,18 +67,31 @@ export default function NewsFormModalCreate({
         bgcolor: 'rgba(0,0,0,0.5)'
       }}
     >
-      {/* Bạn tự style thẻ bên ngoài thay vì <Box> của MUI */}
-      <div className='bg-white w-full max-w-lg p-6 rounded-md relative'>
+      <Box
+        sx={{
+          backgroundColor: 'white',
+          width: '100%',
+          maxWidth: 500, // 🔹 Updated: Định kích thước modal
+          p: 4,
+          borderRadius: 2,
+          position: 'relative'
+        }}
+      >
+        {/* Close Button */}
         <IconButton onClick={onCancel} sx={{ position: 'absolute', top: 16, right: 16, color: 'gray' }}>
           <CloseIcon />
         </IconButton>
-        <h2 className='text-center text-lg font-bold mb-6'>ADD NEWS</h2>
 
-        {/* Dùng flex-col + gap để sắp xếp các input */}
-        <div className='flex flex-col gap-4'>
-          {/* Title */}
+        {/* Title */}
+        <Typography variant='h4' component='h2' align='left' fontWeight='bold' gutterBottom sx={{ mb: '30px' }}>
+          CREATE A NEWS
+        </Typography>
+
+        {/* Form Fields */}
+        <Box display='flex' flexDirection='column' gap={2}>
+          {/* 🔹 Updated: Thay div bằng Box */}
           <InputText
-            noLayout={true} // <-- Sử dụng noLayout
+            noLayout
             label='Title'
             name='title'
             placeholder='Enter news title'
@@ -87,10 +100,8 @@ export default function NewsFormModalCreate({
             required
             helperText={errors.title}
           />
-
-          {/* Content */}
           <InputText
-            noLayout={true} // <-- Sử dụng noLayout
+            noLayout
             label='Content'
             name='content'
             placeholder='Describe the news...'
@@ -101,10 +112,8 @@ export default function NewsFormModalCreate({
             required
             helperText={errors.content}
           />
-
-          {/* Image URL */}
           <InputText
-            noLayout={true} // <-- Sử dụng noLayout
+            noLayout
             label='Image URL'
             name='imageUrl'
             placeholder='Enter image URL'
@@ -113,16 +122,13 @@ export default function NewsFormModalCreate({
             required
             helperText={errors.imageUrl}
           />
-        </div>
+        </Box>
 
-        {/* Nút ADD NEWS */}
-        <button
-          onClick={handleSubmit}
-          className='mt-6 w-full py-3 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition-all'
-        >
-          ADD NEWS
-        </button>
-      </div>
+        {/* Submit Button */}
+        <Button variant='DarkBlue' size='md' onClick={handleSubmit} className='w-full mt-4'>
+          CREATE
+        </Button>
+      </Box>
     </Modal>
   )
 }
