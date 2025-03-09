@@ -1,13 +1,16 @@
 'use client'
 import React, { useState } from 'react'
 import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2 } from 'lucide-react'
+import Button from '../../../../../global/Button/Button'
 
 interface ModuleBarProps {
   lecture: ILecture
   video?: IVideo[]
+  userId: string
+  userProgress?: UserProgressResponse
 }
 
-export default function VideoLecture({ lecture, video }: ModuleBarProps) {
+export default function VideoLecture({ lecture, video, userId, userProgress }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('English')
   const [activeTab, setActiveTab] = useState('transcript')
@@ -38,7 +41,16 @@ export default function VideoLecture({ lecture, video }: ModuleBarProps) {
       <div className='space-y-6'>
         {video?.map((v) => (
           <div key={v.id} className='space-y-4'>
-            <h1 className='text-3xl font-bold tracking-tight'>{v.title}</h1>
+            <div className='flex items-center justify-between'>
+              <h1 className='text-3xl font-bold tracking-tight'>{v.title}</h1>
+              {userProgress ? (
+                <Button disabled size='lg'>
+                  Already finished
+                </Button>
+              ) : (
+                <Button size='lg'>Make as complete</Button>
+              )}
+            </div>
             <div className='aspect-video relative rounded-xl overflow-hidden bg-black'>
               <video className='w-full h-full' controls>
                 <source src={v.videoUrl} type='video/mp4' />

@@ -16,10 +16,10 @@ import { quizApi } from './services/quiz.service'
 import { instructorApi } from './services/instructor.service'
 import { tagApi } from './services/tag.service'
 
-import { enrollmentApi } from './services/enrollment.service';
+import { enrollmentApi } from './services/enrollment.service'
 
 import { enrollApi } from './services/enroll.service'
-
+import { userProgressApi } from './services/userProgress.service'
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -44,7 +44,6 @@ export const rootReducer = combineReducers({
   [tagApi.reducerPath]: tagApi.reducer,
 
   [enrollmentApi.reducerPath]: enrollmentApi.reducer,
-
+  [userProgressApi.reducerPath]: userProgressApi.reducer,
   [enrollApi.reducerPath]: enrollApi.reducer
-
 })

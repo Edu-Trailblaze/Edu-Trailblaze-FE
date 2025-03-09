@@ -4,6 +4,7 @@ interface QuizQuestionProps {
   questionIndex: number
   totalQuestions: number
   selectedAnswer: number
+  userId: string
   handleAnswerSelection: (answerId: number) => void
   goToNextQuestion: () => void
   skipQuestion: () => void

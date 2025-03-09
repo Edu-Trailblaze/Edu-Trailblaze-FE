@@ -16,7 +16,7 @@ export const enrollApi = createApi({
         params: { courseId, studentId }
       })
     }),
-    postEnroll: build.mutation<void, PostEnroll>({
+    postEnroll: build.mutation<any, PostEnroll>({
       query: (body) => ({
         url: `Enrollment`,
         method: 'POST',
