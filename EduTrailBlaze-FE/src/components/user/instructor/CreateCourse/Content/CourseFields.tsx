@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   PlusCircleIcon,
   MinusCircleIcon,
@@ -21,7 +21,7 @@ import InputFile from '../../../../global/Input/InputFile'
 import Box from '../../../../global/Box/Box'
 import { useAddCourseMutation } from '../../../../../redux/services/courseDetail.service'
 import { toast } from 'react-toastify'
-
+import { jwtDecode } from 'jwt-decode'
 interface CourseFieldsProps {
   activeTab: string
   setActiveTab: (tab: string) => void
@@ -33,6 +33,18 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
+
+  const token = localStorage.getItem('accessToken')
+  let decodedUserId = ''
+  if (token) {
+    try {
+      const decode = jwtDecode(token)
+      decodedUserId = decode?.sub ?? ''
+    } catch (error) {
+      console.error('Error decoding token:', error)
+    }
+  }
+
   const [courseForm, setCourseForm] = useState<CreateCourse>({
     title: '',
     description: '',
@@ -42,20 +54,13 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
     price: 0,
     difficultyLevel: 'Beginner',
     learningOutcomes: [''],
-    createdBy: ''
+    createdBy: decodedUserId
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setCourseForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value
-    }))
-  }
-
-  const handleChangeNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCourseForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value ? Number(e.target.value) : ''
     }))
   }
 
@@ -211,20 +216,7 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
         />
       </div>
 
-      {/* Instructor Name */}
-
-      <InputText
-        label='Instructor Name'
-        name='createdBy'
-        required
-        subtitle='Enter the name of the instructor who created this course'
-        placeholder='Enter the name of the instructor'
-        onChange={handleChange}
-        noLayout={true}
-      />
-
       {/* Prerequisites */}
-
       <InputText
         label='Prerequisites'
         name='prerequisites'
@@ -237,7 +229,6 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
       />
 
       {/* Learning Outcomes */}
-
       <Box>
         <div className='flex justify-between items-center mb-3'>
           <label className=' text-sm font-medium text-gray-700 flex items-center'>

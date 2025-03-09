@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useGetCourseDetailsQuery } from '../../../../redux/services/courseDetail.service'
 import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
 import { useGetVideoByConditionsQuery } from '../../../../redux/services/video.service'
+import { jwtDecode } from 'jwt-decode'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()
@@ -51,6 +52,17 @@ export default function LecturePage() {
     }
   }
 
+  const token = localStorage.getItem('accessToken')
+  let decodedUserId = ''
+  if (token) {
+    try {
+      const decode = jwtDecode(token)
+      decodedUserId = decode?.sub ?? ''
+    } catch (error) {
+      console.error('Error decoding token:', error)
+    }
+  }
+
   if (courseLoading) return <LoadingPage />
   if (!course) return <div>Course not found</div>
   if (!lectures) return <div>Lecture not found</div>
@@ -69,6 +81,7 @@ export default function LecturePage() {
           setExpandedSections={setExpandedSections}
           isSidebarOpen={isSidebarOpen}
           onCloseSidebar={() => setIsSidebarOpen(false)}
+          decodedUserId={decodedUserId}
         />
 
         <div className='flex-1'>
@@ -81,6 +94,7 @@ export default function LecturePage() {
           <div className='p-4'>
             <LectureContent
               lecture={lectureContent}
+              decodedUserId={decodedUserId}
               video={video}
               lectureType={lectureType}
               onNextLecture={handleNextLecture}

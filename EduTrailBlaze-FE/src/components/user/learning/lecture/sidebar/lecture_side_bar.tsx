@@ -2,8 +2,10 @@
 'use client'
 import React from 'react'
 import { FileVideo, ChevronDown, ChevronUp, CheckCircle2, MenuIcon, X, FileText, FileQuestion } from 'lucide-react'
+import { useGetUserProgressQuery } from '../../../../../redux/services/userProgress.service'
 
 interface ModuleBarProps {
+  decodedUserId: string
   course: ICourseFull
   lectures: SectionLecture[]
   activeLectureId: number | null
@@ -15,6 +17,7 @@ interface ModuleBarProps {
 }
 
 export default function LectureSideBar({
+  decodedUserId,
   course,
   lectures,
   activeLectureId,
@@ -24,6 +27,12 @@ export default function LectureSideBar({
   isSidebarOpen,
   onCloseSidebar
 }: ModuleBarProps) {
+  if (!activeLectureId) {
+    return
+    ;<div>no activeLectureId</div>
+  }
+  const { data: userProgress } = useGetUserProgressQuery({ userId: decodedUserId, lectureId: activeLectureId })
+
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -111,7 +120,9 @@ export default function LectureSideBar({
                           <span>{item.duration} min</span>
                         </div>
                       </div>
-                      <CheckCircle2 className={`w-5 h-5 ${false ? 'text-green-500' : 'text-gray-300'}`} />
+                      <CheckCircle2
+                        className={`w-5 h-5 ${userProgress?.isCompleted ? 'text-green-500' : 'text-gray-300'}`}
+                      />
                     </div>
                   </button>
                 ))}
