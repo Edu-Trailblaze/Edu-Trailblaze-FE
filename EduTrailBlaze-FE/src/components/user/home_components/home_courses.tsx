@@ -89,15 +89,10 @@ export default function HomeCourses() {
   }
 
   const handleAddToCart = async (userId: string, courseId: number) => {
-    console.log(cartStatus)
+    console.log(cartStatus, cartError)
     try {
       if (userId === '' || userId === 'undefined') {
         setModalOpen(true)
-        return
-      }
-
-      if(cartStatus === 'rejected' || cartStatus === 'uninitialized') {
-        toast.error('This course is already added to cart')
         return
       }
       const result = await postCart({ userId, courseId }).unwrap()
@@ -105,6 +100,7 @@ export default function HomeCourses() {
       toast.success('Course added to cart please go to cart to checkout')
     } catch (error) {
       console.log('Error adding to cart: ', error)
+      if ((error as any).originalStatus === 400) toast.error('Course already in cart')
     }
   }
 

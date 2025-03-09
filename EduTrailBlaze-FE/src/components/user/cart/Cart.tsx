@@ -21,7 +21,7 @@ export default function Cart() {
   const [userName, setUserName] = useState('')
   const { data: cartItems, isLoading, isFetching } = useGetCartQuery(userId)
   const [deleteCartItem, { isLoading: loadingRemove }] = useDeleteCartItemMutation()
-  const [deleteAllCartItemsMutation, {isLoading: loadingRemoveAll}] = useDeleteAllCartItemsMutation()
+  const [deleteAllCartItemsMutation, { isLoading: loadingRemoveAll }] = useDeleteAllCartItemsMutation()
   const {
     data: cartNumber,
     isLoading: loadingNumber,
@@ -33,7 +33,7 @@ export default function Cart() {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const loadingItems = isLoading || loadingRemove || loadingRemoveAll || loadingNumber || isAddingToPayment || fetchingNumber
+  const loadingItems = isLoading || loadingNumber || isAddingToPayment || fetchingNumber
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -76,10 +76,9 @@ export default function Cart() {
   }
 
   const handleCheckout = async () => {
-
-    if(selectedMethod === '') { 
+    if (selectedMethod === '') {
       toast.error('Please select the method payment')
-      return;
+      return
     }
     try {
       const response = await postPayment({ userId, paymentMethod: selectedMethod }).unwrap()
@@ -92,8 +91,12 @@ export default function Cart() {
   }
 
   if (loadingItems) {
-      return <LoadingPage />
-    }
+    return <LoadingPage />
+  }
+
+  if (loadingRemove || loadingRemoveAll) {
+    location.reload()
+  }
 
   return (
     <>
