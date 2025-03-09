@@ -1,11 +1,23 @@
+'use client'
 import React from 'react'
 import { Search, Star, ChevronDown } from 'lucide-react'
 import SearchSidebar from './search_sidebar'
 import SearchCard from './search_card'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useSearchParams } from 'next/navigation'
+import { useGetCoursePagingQuery } from '../../../redux/services/courseDetail.service'
 
 export default function SearchPage() {
-  // const {}
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams.get('q') || ''
+
+  const { data: courses, isLoading } = useGetCoursePagingQuery(
+    { Title: searchQuery, PageIndex: 1, PageSize: 10 },
+    { skip: !searchQuery }
+  )
+
+  if (!courses?.items?.length) return <h1>No course</h1>
+
   const sampleCourses = [
     {
       title: 'React - The Complete Guide 2024',
@@ -35,7 +47,7 @@ export default function SearchPage() {
     <div className='min-h-screen bg-white'>
       <main className='max-w-7xl mx-auto px-6 py-8'>
         <div className='mb-6'>
-          <h2 className='text-2xl font-bold mb-2'>10,000 results for "react"</h2>
+          <h2 className='text-2xl font-bold mb-2'>{searchQuery && `Results for "${searchQuery}"`}</h2>
         </div>
 
         <div className='flex'>
@@ -82,9 +94,7 @@ export default function SearchPage() {
             </div>
 
             <div className='border rounded z-0'>
-              {sampleCourses.map((course, i) => (
-                <SearchCard key={i} course={course} />
-              ))}
+              <SearchCard courses={courses?.items || []} />
             </div>
           </div>
         </div>

@@ -28,6 +28,7 @@ import { FaBell } from 'react-icons/fa6'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import { useGetUserProfileQuery } from '@/redux/services/user.service'
 import { toast } from 'react-toastify'
+import { FE_URL } from '../../../utils/config'
 
 const products = [
   {
@@ -98,6 +99,14 @@ export default function WebHeader() {
   const [userId, setUserId] = useState('')
   const [userRole, setUserRole] = useState('')
   const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
+
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`)
+    }
+  }
 
   useEffect(() => {
     const role = localStorage.getItem('role')
@@ -223,11 +232,15 @@ export default function WebHeader() {
                 type='text'
                 className='w-full bg-white pl-2 text-base font-semibold outline-0'
                 placeholder='Search courses'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
               <button
                 type='button'
                 className='bg-blue-500 px-4 py-2 text-white font-medium hover:bg-blue-600 transition-colors'
                 style={{ borderRadius: '0 50px 50px 0' }}
+                onClick={handleSearch}
               >
                 Search
               </button>

@@ -9,8 +9,8 @@ export const reviewApi = createApi({
   tagTypes: ['Reviews'],
   endpoints: (build) => ({
     getReviewPaging: build.query<ReviewPaging, ReviewQuery>({
-      query: ({ pageIndex = 1, pageSize = 10, ...params }) => ({
-        url: 'Review/get-paging-review/?PageSize=2',
+      query: ({ pageIndex = 1, pageSize = 2, ...params }) => ({
+        url: 'Review/get-paging-review/',
         method: 'GET',
         params: { pageIndex, pageSize, ...params }
       }),

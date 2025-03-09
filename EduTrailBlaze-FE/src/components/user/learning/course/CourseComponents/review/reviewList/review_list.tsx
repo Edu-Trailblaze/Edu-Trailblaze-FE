@@ -9,7 +9,6 @@ import Pagination from '../../../../../../global/Pagination/Pagination'
 export default function ReviewList({ id }: { id: number }) {
   const [pageIndex, setPageIndex] = useState(1)
   const { data: reviewPaging } = useGetReviewPagingQuery({ courseId: id, pageIndex })
-  const userId = reviewPaging?.items.map((rv) => rv.userId)
 
   return (
     <div className='space-y-6'>
