@@ -11,7 +11,7 @@ interface PaginationProps {
 
 export default function Pagination({
   pageIndex = 1,
-  totalPages = 2,
+  totalPages = 5,
   hasPreviousPage = false,
   hasNextPage = false,
   onPageChange
