@@ -9,6 +9,7 @@ interface CourseStatus {
 }
 
 interface IECourse {
+  id: number
   title: string
   imageURL: string
   tags: IETag[]

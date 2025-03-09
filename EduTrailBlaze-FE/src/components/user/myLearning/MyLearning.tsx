@@ -20,6 +20,7 @@ import { useGetAllMyLearningCourseQuery, useGetMyLearningCourseByTagQuery } from
 import { useGetTagQuery } from '@/redux/services/tag.service'
 import { formatDate } from '@/helper/Util'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
+import Link from 'next/link'
 
 export default function MyLearning() {
   const [userId, setUserId] = useState('')
@@ -159,9 +160,8 @@ export default function MyLearning() {
                     {Math.round(
                       (myCourses?.courses?.reduce(
                         (sum: number, course: IECourse) =>
-                          sum + (course.progress?.progressPercentage === undefined
-                            ? 0
-                            : course.progress.progressPercentage),
+                          sum +
+                          (course.progress?.progressPercentage === undefined ? 0 : course.progress.progressPercentage),
                         0
                       ) ?? 0) / (myCourses?.courses?.length ?? 1)
                     )}
@@ -383,12 +383,14 @@ export default function MyLearning() {
                     </div>
                   </div>
 
-                  <button className='mt-4 w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 font-medium'>
-                    {course.progress?.progressPercentage === 0 || course.progress?.progressPercentage === undefined
-                      ? 'Start Learning'
-                      : 'Continue Learning'}
-                    <ChevronRight className='h-4 w-4' />
-                  </button>
+                  <Link href={`/student/course/${course.id}`}>
+                    <button className='mt-4 w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 font-medium'>
+                      {course.progress?.progressPercentage === 0 || course.progress?.progressPercentage === undefined
+                        ? 'Start Learning'
+                        : 'Continue Learning'}
+                      <ChevronRight className='h-4 w-4' />
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}
