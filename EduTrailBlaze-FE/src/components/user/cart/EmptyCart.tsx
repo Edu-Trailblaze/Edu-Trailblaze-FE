@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function EmptyCart() {
   return (
@@ -67,44 +68,46 @@ export default function EmptyCart() {
         <p className='text-xl md:text-2xl font-medium mb-6 md:mb-10 text-gray-700'>No course in the cart right now!</p>
       </motion.div>
 
-      <motion.button
-        whileHover={{ scale: 1.05, boxShadow: '0px 10px 25px rgba(37, 99, 235, 0.3)' }}
-        whileTap={{ scale: 0.95 }}
-        className='px-6 md:px-8 py-3 md:py-4 rounded-lg text-white font-bold text-lg md:text-xl relative overflow-hidden w-full max-w-xs md:max-w-md'
-        style={{
-          background: 'linear-gradient(135deg, #4F46E5 0%, #2563EB 50%, #0EA5E9 100%)',
-          boxShadow: '0px 4px 15px rgba(59, 130, 246, 0.3)'
-        }}
-      >
-        <span className='relative z-10 flex items-center justify-center'>
-          <span>Get Your Course</span>
-          <svg
-            className='w-4 h-4 md:w-5 md:h-5 ml-2'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M17 8l4 4m0 0l-4 4m4-4H3'></path>
-          </svg>
-        </span>
-        <motion.div
-          className='absolute top-0 left-0 right-0 bottom-0 opacity-30'
-          animate={{
-            background: [
-              'linear-gradient(135deg, rgba(79, 70, 229, 0) 0%, rgba(79, 70, 229, 0.8) 50%, rgba(79, 70, 229, 0) 100%)',
-              'linear-gradient(135deg, rgba(37, 99, 235, 0) 0%, rgba(37, 99, 235, 0.8) 50%, rgba(37, 99, 235, 0) 100%)',
-              'linear-gradient(135deg, rgba(14, 165, 233, 0) 0%, rgba(14, 165, 233, 0.8) 50%, rgba(14, 165, 233, 0) 100%)'
-            ],
-            left: ['-100%', '100%', '-100%']
+      <Link href={'/'}>
+        <motion.button
+          whileHover={{ scale: 1.05, boxShadow: '0px 10px 25px rgba(37, 99, 235, 0.3)' }}
+          whileTap={{ scale: 0.95 }}
+          className='px-6 md:px-8 py-3 md:py-4 rounded-lg text-white font-bold text-lg md:text-xl relative overflow-hidden w-full max-w-xs md:max-w-md'
+          style={{
+            background: 'linear-gradient(135deg, #4F46E5 0%, #2563EB 50%, #0EA5E9 100%)',
+            boxShadow: '0px 4px 15px rgba(59, 130, 246, 0.3)'
           }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            repeatType: 'loop'
-          }}
-        />
-      </motion.button>
+        >
+          <span className='relative z-10 flex items-center justify-center'>
+            <span>Get Your Course</span>
+            <svg
+              className='w-4 h-4 md:w-5 md:h-5 ml-2'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M17 8l4 4m0 0l-4 4m4-4H3'></path>
+            </svg>
+          </span>
+          <motion.div
+            className='absolute top-0 left-0 right-0 bottom-0 opacity-30'
+            animate={{
+              background: [
+                'linear-gradient(135deg, rgba(79, 70, 229, 0) 0%, rgba(79, 70, 229, 0.8) 50%, rgba(79, 70, 229, 0) 100%)',
+                'linear-gradient(135deg, rgba(37, 99, 235, 0) 0%, rgba(37, 99, 235, 0.8) 50%, rgba(37, 99, 235, 0) 100%)',
+                'linear-gradient(135deg, rgba(14, 165, 233, 0) 0%, rgba(14, 165, 233, 0.8) 50%, rgba(14, 165, 233, 0) 100%)'
+              ],
+              left: ['-100%', '100%', '-100%']
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              repeatType: 'loop'
+            }}
+          />
+        </motion.button>
+      </Link>
     </div>
   )
 }
