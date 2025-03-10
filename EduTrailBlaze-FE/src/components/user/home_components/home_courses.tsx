@@ -429,8 +429,8 @@ export default function HomeCourses() {
                               </div>
 
                               <div className='flex justify-between items-center mt-auto'>
-                                <p className='text-base md:text-lg font-bold text-gray-900 mt-auto'>
-                                  ${course.course.price}
+                                <p className='text-base md:text-lg font-bold text-gray-900'>
+                                  Free
                                 </p>
                                 <button
                                   className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'

@@ -1,6 +1,13 @@
 'use client'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { useGetUserProfileQuery } from '@/redux/services/user.service'
 import { logout } from '@/redux/slice/auth.slice'
 import { jwtDecode } from 'jwt-decode'
@@ -19,29 +26,29 @@ export default function InstructorHeader() {
   const router = useRouter()
   const [userName, setUserName] = useState('')
   const [userId, setUserId] = useState('')
-    const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
-  
-    useEffect(() => {
-      const token = localStorage.getItem('accessToken')
-  
-      try {
-        if (token) {
-          const decode = jwtDecode(token)
-          console.log('decode', decode)
-          setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
-          setUserName((decode as any)?.fullName ?? '')
-        }
-      } catch (error) {
-        console.error('Error decoding token:', error)
-        setUserId('')
+  const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        console.log('decode', decode)
+        setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
+        setUserName((decode as any)?.fullName ?? '')
       }
-    }, [])
-  
-    const handleLogout = () => {
-      dispatch(logout())
-      alert(`Logout successful!`)
-      router.push('/auth/login_register')
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setUserId('')
     }
+  }, [])
+
+  const handleLogout = () => {
+    dispatch(logout())
+    alert(`Logout successful!`)
+    router.push('/auth/login_register')
+  }
   return (
     <div>
       {/* Navigation Bar */}
@@ -52,15 +59,17 @@ export default function InstructorHeader() {
               <div className='flex-shrink-0 flex items-center'>
                 <div className='h-8 w-44 relative'>
                   <Link href={'/'}>
-                  <div className='absolute inset-0 flex items-center cursor-pointer'><img alt='EduTrailBlaze Logo' src='/assets/logos/ETB_Logo.png' className='h-8 md:h-10' /></div>
+                    <div className='absolute inset-0 flex items-center cursor-pointer'>
+                      <img alt='EduTrailBlaze Logo' src='/assets/logos/ETB_Logo.png' className='h-8 md:h-10' />
+                    </div>
                   </Link>
                 </div>
               </div>
             </div>
             <div className='flex items-center'>
-            <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
-                <Link href={'/'}>Learn on EduTrail</Link>
-              </div>
+              <Link href={'/'}>
+                <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>Learn on EduTrail</div>
+              </Link>
               <button className='ml-3 p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none'>
                 <span className='sr-only'>Notifications</span>
                 <Bell size={20} />
