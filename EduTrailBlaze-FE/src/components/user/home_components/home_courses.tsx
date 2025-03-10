@@ -19,6 +19,7 @@ import Modal from 'react-modal'
 import '@/components/global/Modal/ReactModal.css'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { formatCurrency } from '@/utils/format'
 
 export default function HomeCourses() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -231,12 +232,12 @@ export default function HomeCourses() {
                                 {/* <!-- Star icons --> */}
                                 <div className='flex justify-between items-center'>
                                   {renderStarRating(course.review.averageRating)}
-                                  <span className='text-gray-400 text-xs ml-2'>{`(${course.review.totalRatings})`}</span>
+                                  <span className='text-gray-400 text-xs ml-1'>{`(${course.review.totalRatings})`}</span>
                                 </div>
                               </div>
 
                               <div className='flex justify-between items-center mt-auto'>
-                                <p className='text-base md:text-lg font-bold text-gray-900 '>${course.course.price}</p>
+                                <p className='text-base md:text-lg font-bold text-gray-900 '>{formatCurrency(course.course.price)}</p>
 
                                 <button
                                   className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
@@ -395,7 +396,7 @@ export default function HomeCourses() {
                                 {/* <!-- Star icons --> */}
                                 <div className='flex justify-between items-center'>
                                   {renderStarRating(course.review.averageRating)}
-                                  <span className='text-gray-400 text-xs ml-2'>{`(${course.review.totalRatings})`}</span>
+                                  <span className='text-gray-400 text-xs ml-1'>{`(${course.review.totalRatings})`}</span>
                                 </div>
 
                                 <span className='text-gray-400 text-xs'>(40,856)</span>

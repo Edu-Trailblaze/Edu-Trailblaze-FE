@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
+import { formatCurrency } from '@/utils/format'
 
 interface CartItemProps {
   id: string
@@ -26,7 +27,7 @@ export default function ViewCart({ id }: CartItemProps) {
                   <p className='block font-sans font-light text-sm leading-relaxed text-inherit antialiased line-clamp-1'>
                     <strong>{cart.instructorInformation[0].userName}</strong>
                   </p>
-                  <p className='font-semibold'>{cart.cartCourseInformation.price}$</p>
+                  <p className='font-semibold'>{formatCurrency(cart.cartCourseInformation.price)}$</p>
                 </div>
               </div>
               <div className='border-b-2 mb-5'></div>
