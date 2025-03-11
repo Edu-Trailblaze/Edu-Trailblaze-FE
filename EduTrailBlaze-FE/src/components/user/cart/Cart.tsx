@@ -7,7 +7,7 @@ import {
   useDeleteAllCartItemsMutation
 } from '@/redux/services/cart.service'
 import { usePostPaymentMutation } from '@/redux/services/payment.service'
-import { formatCurrency } from '@/utils/format'
+import { formatCurrency } from '@/helper/format'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
