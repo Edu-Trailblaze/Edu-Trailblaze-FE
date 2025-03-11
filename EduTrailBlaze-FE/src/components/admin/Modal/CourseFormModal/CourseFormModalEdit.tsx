@@ -7,6 +7,7 @@ import InputNumber from '@/components/global/Input/InputNumber'
 import InputSelect from '@/components/global/Input/InputSelect'
 import Button from '@/components/global/Button/Button'
 import InputFile from '@/components/global/Input/InputFile'
+
 type Course = {
   id?: number
   title: string
@@ -19,6 +20,8 @@ type Course = {
   createdBy: string
   prerequisites: string
   learningOutcomes: string[]
+  isPublished?: string 
+
 }
 
 type CourseFormModalEditProps = {
@@ -171,6 +174,19 @@ export default function CourseFormModalEdit({
             }}
             noLayout
           />
+
+        <InputSelect
+          label='Status'
+          name='isPublished'
+          value={formValues.isPublished || 'Pending'}
+          onChange={(e) => handleChange('isPublished', e.target.value)}
+          options={[
+            { label: 'Pending', value: 'Pending' },
+            { label: 'Reject', value: 'Reject' },
+            { label: 'Approve', value: 'Approve' }
+          ]}
+          noLayout
+        />
         </Box>
 
         <Box display='flex' justifyContent='flex-end' gap={2} mt={3}>
