@@ -38,17 +38,18 @@ export type Course = {
   imageURL: string
   introURL: string
   description: string
-  duration: number
   price: number
+  duration: number
   difficultyLevel: string
   prerequisites: string
   learningOutcomes: string[]
-  createdAt?: string
   createdBy: string
+  isPublished?:string
   reviewInfo?: {
     averageRating: number
     totalRatings: number
   }
+  createdAt?: string
 }
 
 export type CourseCreate = Omit<Course, 'createdAt'>
@@ -62,6 +63,7 @@ const courseFields: { label: string; accessor: keyof Course }[] = [
   { label: 'Title', accessor: 'title' },
   { label: 'Price', accessor: 'price' },
   { label: 'Difficulty', accessor: 'difficultyLevel' },
+  { label: 'Published', accessor: 'isPublished' }, 
   { label: 'Created at', accessor: 'createdAt' }
 ]
 
@@ -137,7 +139,7 @@ export default function CoursesManagement() {
   const handleDetail = async (course: Course) => {
     try {
       const reviewResponse = await axios.get(`${REVIEW_API_URL}/${course.id}`)
-      const reviewInfo = reviewResponse.data // { averageRating, totalRatings }
+      const reviewInfo = reviewResponse.data
       setSelectedCourse({
         ...course,
         reviewInfo
@@ -145,7 +147,6 @@ export default function CoursesManagement() {
     } catch (error) {
       console.error('Error fetching course review info:', error)
       toast.error('Failed to fetch course review info!')
-      // Nếu có lỗi, vẫn hiển thị thông tin course gốc
       setSelectedCourse(course)
     }
   }
@@ -156,32 +157,22 @@ export default function CoursesManagement() {
       return
     }
     try {
-      // Tạo FormData
       const formData = new FormData()
-
-      // Append fields PascalCase
       formData.append('Title', newCourse.title)
       formData.append('Description', newCourse.description)
       formData.append('Price', newCourse.price.toString())
       formData.append('DifficultyLevel', newCourse.difficultyLevel)
       formData.append('CreatedBy', userId)
       formData.append('Prerequisites', newCourse.prerequisites)
-
-      // LearningOutcomes là mảng => bạn có thể append từng phần tử
       newCourse.learningOutcomes.forEach((outcome) => {
         formData.append('LearningOutcomes', outcome)
       })
-
-      // Riêng ImageURL, IntroURL là file => append file
       if (newCourse.imageURL) {
-        // newCourse.imageURL là kiểu File
         formData.append('ImageURL', newCourse.imageURL)
       }
       if (newCourse.introURL) {
         formData.append('IntroURL', newCourse.introURL)
       }
-
-      // Gửi FormData
       const response = await axios.post(API_URL, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -217,18 +208,35 @@ export default function CoursesManagement() {
     }
 
     try {
-      const courseToSend = {
-        ...updatedCourse,
-        courseId: updatedCourse.id,
-        learningOutcomes:
-          updatedCourse.learningOutcomes.length > 0 ? updatedCourse.learningOutcomes : ['Default outcome']
+      const formData = new FormData()
+      formData.append('CourseId', updatedCourse.id!.toString()) // Thêm CourseId
+      formData.append('Title', updatedCourse.title)
+      formData.append('Description', updatedCourse.description)
+      formData.append('Price', updatedCourse.price.toString())
+      formData.append('DifficultyLevel', updatedCourse.difficultyLevel)
+      formData.append('CreatedBy', userId)
+      formData.append('Prerequisites', updatedCourse.prerequisites)
+  
+      updatedCourse.learningOutcomes.forEach((outcome) => {
+        formData.append('LearningOutcomes', outcome)
+      })
+  
+      if (updatedCourse.imageURL) {
+        formData.append('ImageURL', updatedCourse.imageURL)
       }
-
-      await axios.put(`${API_URL}`, courseToSend, {
+      if (updatedCourse.introURL) {
+        formData.append('IntroURL', updatedCourse.introURL)
+      }
+      if (typeof updatedCourse.isPublished !== 'undefined') {
+        formData.append('IsPublished', updatedCourse.isPublished)
+      }
+  
+      await axios.put(API_URL, formData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       })
+  
       toast.success('Course updated successfully!')
       setCourses(courses.map((course) => (course.id === updatedCourse.id ? updatedCourse : course)))
       setEditModalOpen(false)
@@ -251,6 +259,20 @@ export default function CoursesManagement() {
     }
   }
 
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return { color: 'goldenrod' } 
+      case 'Reject':
+        return { color: 'red' }     
+      case 'Approve':
+        return { color: 'green' }     
+      default:
+        return {}
+    }
+  }
+
   const renderRow = (course: Course) => (
     <TableRow
       key={course.id}
@@ -262,6 +284,12 @@ export default function CoursesManagement() {
       {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
       {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
       {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
+      {/* {visibleColumns['isPublished'] && <TableCell>{course.isPublished}</TableCell>} */}
+      {visibleColumns['isPublished'] && (
+      <TableCell sx={getStatusColor(course.isPublished || '')}>
+        {course.isPublished}
+      </TableCell>
+    )}
       {visibleColumns['createdAt'] && (
         <TableCell>
           <FormatDateTime date={course.createdAt || ''} />

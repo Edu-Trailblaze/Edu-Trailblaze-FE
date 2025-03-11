@@ -19,7 +19,7 @@ import Modal from 'react-modal'
 import '@/components/global/Modal/ReactModal.css'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 import { toast } from 'react-toastify'
-import { formatCurrency } from '@/utils/format'
+import { formatCurrency } from '@/helper/format'
 
 export default function HomeCourses() {
   const [activeIndex, setActiveIndex] = useState(0)

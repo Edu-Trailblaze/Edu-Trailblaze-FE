@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../../../ui/avatar'
-import { formatNumber } from '../../../../../../utils/format'
+import { formatNumber } from '../../../../../../helper/format'
 import Modal from '../../../../../global/Modal/Modal'
 import { useGetUserProfileQuery } from '../../../../../../redux/services/user.service'
 import {
