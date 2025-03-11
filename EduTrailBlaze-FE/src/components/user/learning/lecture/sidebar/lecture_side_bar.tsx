@@ -27,11 +27,11 @@ export default function LectureSideBar({
   isSidebarOpen,
   onCloseSidebar
 }: ModuleBarProps) {
-  if (!activeLectureId) {
-    return
-    ;<div>no activeLectureId</div>
+  const { data: userProgress } = useGetUserProgressQuery({ userId: decodedUserId })
+
+  if (!userProgress) {
+    return <div>Loading...</div>
   }
-  const { data: userProgress } = useGetUserProgressQuery({ userId: decodedUserId, lectureId: activeLectureId })
 
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
@@ -121,7 +121,7 @@ export default function LectureSideBar({
                         </div>
                       </div>
                       <CheckCircle2
-                        className={`w-5 h-5 ${userProgress?.isCompleted ? 'text-green-500' : 'text-gray-300'}`}
+                        className={`w-5 h-5 ${userProgress.find((p) => p.lectureId === item.id)?.isCompleted ? 'text-green-500' : 'text-gray-300'}`}
                       />
                     </div>
                   </button>

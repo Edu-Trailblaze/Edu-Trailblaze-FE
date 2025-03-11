@@ -7,13 +7,15 @@ interface ModuleBarProps {
   lecture: ILecture
   video?: IVideo[]
   userId: string
-  userProgress?: UserProgressResponse
+  userProgress?: UserProgressResponse[]
 }
 
 export default function VideoLecture({ lecture, video, userId, userProgress }: ModuleBarProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('English')
   const [activeTab, setActiveTab] = useState('transcript')
+
+  const progress = userProgress?.find((p) => p.lectureId === lecture.id)
 
   const toggleList = () => {
     setLanguageOpen((prev) => !prev)
@@ -43,7 +45,7 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: M
           <div key={v.id} className='space-y-4'>
             <div className='flex items-center justify-between'>
               <h1 className='text-3xl font-bold tracking-tight'>{v.title}</h1>
-              {userProgress ? (
+              {progress?.isCompleted ? (
                 <Button disabled size='lg'>
                   Already finished
                 </Button>
