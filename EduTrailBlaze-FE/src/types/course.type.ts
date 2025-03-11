@@ -125,8 +125,26 @@ interface CourseDetails {
   enrollment: Enrollment
 }
 
+interface InstructorCourseDetails {
+  courseId: string
+  courseName: string
+  courseImage: string
+  completionPercentage: number
+  createdAt: string
+}
+
 interface CourseResponseData {
   items: CourseDetails[]
+  pageIndex: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
+}
+
+interface InstructorCourseResponseData {
+  items: InstructorCourseDetails[]
   pageIndex: number
   pageSize: number
   totalCount: number
@@ -151,6 +169,17 @@ interface CourseSearchRequest {
   StudentId?: string
   DifficultyLevel?: string
   IsDeleted?: boolean
+  PageIndex?: number
+  PageSize?: number
+  Sort?: string
+  SortDirection?: string
+}
+
+interface InstructorCourseSearchRequest {
+  CourseId?: number
+  InstructorId?: string
+  CourseName?: string
+  isCompleted?: boolean
   PageIndex?: number
   PageSize?: number
   Sort?: string

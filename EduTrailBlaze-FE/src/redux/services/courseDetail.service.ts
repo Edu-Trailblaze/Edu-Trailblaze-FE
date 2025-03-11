@@ -99,6 +99,14 @@ export const courseApi = createApi({
           ...params
         }
       })
+    }),
+    getInstructorCoursePaging: build.query<InstructorCourseResponseData, InstructorCourseSearchRequest>({
+      query: ({ ...params }) => ({
+        url: `Course/get-paging-course-completion-percentage`,
+        params: {
+          ...params
+        }
+      })
     })
   })
 })
@@ -113,5 +121,6 @@ export const {
   useGetInstructorOfCourseQuery,
   useGetCourseByIdAndTagQuery,
   useGetCourseByIdAndTagPagingQuery,
-  useGetCoursePagingQuery
+  useGetCoursePagingQuery,
+  useGetInstructorCoursePagingQuery
 } = courseApi
