@@ -7,7 +7,7 @@ import {
   useDeleteAllCartItemsMutation
 } from '@/redux/services/cart.service'
 import { usePostPaymentMutation } from '@/redux/services/payment.service'
-import { formatCurrency } from '@/utils/format'
+import { formatCurrency } from '@/helper/format'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -74,6 +74,7 @@ export default function Cart() {
   const handleRemoveItem = async (userId: string, courseId: number) => {
     try {
       await deleteCartItem({ userId, courseId }).unwrap()
+      location.reload()
     } catch (error) {
       console.error('Error removing item from cart:', error)
     }
@@ -82,6 +83,7 @@ export default function Cart() {
   const deleteAllCartItems = async (userId: string) => {
     try {
       await deleteAllCartItemsMutation(userId).unwrap()
+      location.reload()
     } catch (error) {
       console.error('Error removing all items from cart:', error)
     }
@@ -108,10 +110,6 @@ export default function Cart() {
 
   if (loadingItems) {
     return <LoadingPage />
-  }
-
-  if (loadingRemove || loadingRemoveAll) {
-    location.reload()
   }
 
   const handleCloseModal = () => {
@@ -185,7 +183,7 @@ export default function Cart() {
                               Remove
                             </button>
                             <p className='flex items-center font-semibold'>
-                              {cartItem.totalCoursePrice}VND
+                              {formatCurrency(cartItem.totalCoursePrice)}
                               <FaTags className='ml-2' />
                             </p>
                           </div>
@@ -200,7 +198,7 @@ export default function Cart() {
             <div className='w-full lg:w-80 flex-shrink-0'>
               <div className='bg-white p-4 rounded-lg shadow-sm border'>
                 <p className='font-semibold text-gray-500 mb-3'>Total:</p>
-                <p className='font-bold text-2xl sm:text-3xl lg:text-4xl mb-4'>{cartItems?.totalPrice} VND</p>
+                <p className='font-bold text-2xl sm:text-3xl lg:text-4xl mb-4'>{formatCurrency(cartItems?.totalPrice)}</p>
                 {/* Add Payment method here */}
 
                 <div className='mt-4'>

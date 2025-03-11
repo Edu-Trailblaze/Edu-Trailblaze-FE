@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import SkeletonCard from '../../../../../animate/skeleton/skeleton_card'
-import { formatCurrency } from '../../../../../../utils/format'
+import { formatCurrency } from '../../../../../../helper/format'
 import { useGetAllCoursesQuery } from '../../../../../../redux/services/courseDetail.service'
 
 export default function CourseSuggestion() {
@@ -38,7 +38,7 @@ export default function CourseSuggestion() {
           <div className='grid grid-cols-2 gap-6'>
             {data.slice(0, visibleCourse).map((course: any, index: any) => (
               <a
-                href={course.id ? `https://localhost:4000/student/course/${course.id}` : '#'}
+                href={course.id ? `https://localhost:3000/student/course/${course.id}` : '#'}
                 key={index}
                 className='flex items-center border rounded-lg p-4 hover:shadow-lg'
               >

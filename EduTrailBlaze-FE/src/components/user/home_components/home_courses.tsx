@@ -17,8 +17,9 @@ import { useGetTagQuery } from '@/redux/services/tag.service'
 import LoginRequest from '@/components/global/requestNotification/requestLogin/RequestLogin'
 import Modal from 'react-modal'
 import '@/components/global/Modal/ReactModal.css'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { formatCurrency } from '@/helper/format'
 
 export default function HomeCourses() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -135,6 +136,20 @@ export default function HomeCourses() {
     }
   }
 
+  const renderStarRating = (rating: number) => {
+    return (
+      <div className='flex items-center'>
+        <span className='mr-1 text-sm font-medium text-gray-700'>{rating.toFixed(1)}</span>
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : i < rating ? 'text-yellow-400 fill-yellow-400 opacity-50' : 'text-gray-300'}`}
+          />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <>
       <div>
@@ -214,37 +229,15 @@ export default function HomeCourses() {
                                 <InstructorItem courseId={course.course.id} />
                               </p>
                               <div className='flex items-center space-x-1 mb-2'>
-                                <span className='text-gray-700 text-xs md:text-sm font-medium'>4.6</span>
                                 {/* <!-- Star icons --> */}
-                                <div className='flex text-yellow-400'>
-                                  {[1, 2, 3, 4].map((star) => (
-                                    <svg
-                                      key={star}
-                                      xmlns='http://www.w3.org/2000/svg'
-                                      fill='currentColor'
-                                      viewBox='0 0 24 24'
-                                      className='w-3 h-3 md:w-4 md:h-4'
-                                    >
-                                      <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                                    </svg>
-                                  ))}
-                                  <svg
-                                    xmlns='http://www.w3.org/2000/svg'
-                                    fill='none'
-                                    stroke='currentColor'
-                                    strokeWidth='2'
-                                    viewBox='0 0 24 24'
-                                    className='w-3 h-3 md:w-4 md:h-4'
-                                  >
-                                    <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                                  </svg>
+                                <div className='flex justify-between items-center'>
+                                  {renderStarRating(course.review.averageRating)}
+                                  <span className='text-gray-400 text-xs ml-1'>{`(${course.review.totalRatings})`}</span>
                                 </div>
-
-                                <span className='text-gray-400 text-xs'>(40,856)</span>
                               </div>
 
                               <div className='flex justify-between items-center mt-auto'>
-                                <p className='text-base md:text-lg font-bold text-gray-900 '>${course.course.price}</p>
+                                <p className='text-base md:text-lg font-bold text-gray-900 '>{formatCurrency(course.course.price)}</p>
 
                                 <button
                                   className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
@@ -401,37 +394,16 @@ export default function HomeCourses() {
                               <div className='flex items-center space-x-1 mb-2'>
                                 <span className='text-gray-700 text-xs md:text-sm font-medium'>4.6</span>
                                 {/* <!-- Star icons --> */}
-                                <div className='flex text-yellow-400'>
-                                  {[1, 2, 3, 4].map((star) => (
-                                    <svg
-                                      key={star}
-                                      xmlns='http://www.w3.org/2000/svg'
-                                      fill='currentColor'
-                                      viewBox='0 0 24 24'
-                                      className='w-3 h-3 md:w-4 md:h-4'
-                                    >
-                                      <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                                    </svg>
-                                  ))}
-                                  <svg
-                                    xmlns='http://www.w3.org/2000/svg'
-                                    fill='none'
-                                    stroke='currentColor'
-                                    strokeWidth='2'
-                                    viewBox='0 0 24 24'
-                                    className='w-3 h-3 md:w-4 md:h-4'
-                                  >
-                                    <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                                  </svg>
+                                <div className='flex justify-between items-center'>
+                                  {renderStarRating(course.review.averageRating)}
+                                  <span className='text-gray-400 text-xs ml-1'>{`(${course.review.totalRatings})`}</span>
                                 </div>
 
                                 <span className='text-gray-400 text-xs'>(40,856)</span>
                               </div>
 
                               <div className='flex justify-between items-center mt-auto'>
-                                <p className='text-base md:text-lg font-bold text-gray-900 mt-auto'>
-                                  ${course.course.price}
-                                </p>
+                                <p className='text-base md:text-lg font-bold text-gray-900'>Free</p>
                                 <button
                                   className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
                                   onClick={(e) => {
