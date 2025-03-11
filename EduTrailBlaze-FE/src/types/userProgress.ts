@@ -13,6 +13,7 @@ interface UserProgress {
 interface UserProgressResponse {
   userId: string
   courseClassId: number
+  lectureId: number
   progressType: string
   progressPercentage: number
   isCompleted: boolean

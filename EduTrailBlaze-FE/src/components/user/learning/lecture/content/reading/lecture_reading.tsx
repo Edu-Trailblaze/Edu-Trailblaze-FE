@@ -6,27 +6,31 @@ import { usePostUserProgressMutation } from '../../../../../../redux/services/us
 interface ReadingLectureProps {
   lecture: ILecture
   userId: string
-  userProgress?: UserProgressResponse
+  userProgress?: UserProgressResponse[]
 }
 
 export default function ReadingLecture({ lecture, userId, userProgress }: ReadingLectureProps) {
   const [postUserProgress, { isLoading: enrollLoading }] = usePostUserProgressMutation()
 
+  const progress = userProgress?.find((p) => p.lectureId === lecture.id)
+
   const handleUserProgress = async () => {
     try {
       const response = await postUserProgress({ userId: userId, lectureId: lecture.id })
       console.log('Enrollment successful:', response)
-      window.location.reload()
+      // window.location.reload()
     } catch (error) {
       console.error('Error enrolling:', error)
     }
   }
+  console.log('lecture:', lecture.id)
+  console.log('userProgress:', userProgress)
   return (
     <div className='py-8 space-y-6'>
       <h2 className='text-3xl font-semibold mb-4'>Document</h2>
       <div className='flex justify-between items-center'>
         <p className='text-gray-700 leading-relaxed'>{lecture.description}</p>
-        {userProgress ? (
+        {progress?.isCompleted ? (
           <Button disabled size='lg'>
             Already finished
           </Button>

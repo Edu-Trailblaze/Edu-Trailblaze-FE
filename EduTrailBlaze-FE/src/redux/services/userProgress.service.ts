@@ -15,15 +15,12 @@ export const userProgressApi = createApi({
         body
       })
     }),
-    getUserProgress: build.query<UserProgressResponse, UserProgress>({
-      query: ({ userId, lectureId, quizId, sectionId }) => ({
+    getUserProgress: build.query<UserProgressResponse[], UserProgress>({
+      query: ({ ...params }) => ({
         url: `UserProgress/get-user-progress`,
         method: 'GET',
         params: {
-          userId,
-          lectureId,
-          quizId,
-          sectionId
+          ...params
         }
       })
     })
