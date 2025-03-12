@@ -15,7 +15,7 @@ import {
   MoreVertical
 } from 'lucide-react'
 import CourseDisplay from './course/courseDisplay'
-import { useSearchParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { jwtDecode } from 'jwt-decode'
 
 export default function InstructorCourses() {
@@ -24,23 +24,23 @@ export default function InstructorCourses() {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
-      const token = localStorage.getItem('accessToken')
-  
-      try {
-        if (token) {
-          const decode = jwtDecode(token)
-          setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
-        }
-      } catch (error) {
-        console.error('Error decoding token:', error)
-        setUserId('')
-      }
-    }, [])
+    const token = localStorage.getItem('accessToken')
 
-    const handleSearch = () => {
-      // This function will trigger a search when called
-      console.log('Searching for:', searchQuery);
-    };
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setUserId('')
+    }
+  }, [])
+
+  const handleSearch = () => {
+    // This function will trigger a search when called
+    console.log('Searching for:', searchQuery)
+  }
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -70,7 +70,10 @@ export default function InstructorCourses() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
-              <button onClick={handleSearch} className='absolute inset-y-0 right-0 px-3 flex items-center bg-indigo-600 text-white rounded-r-md'>
+              <button
+                onClick={handleSearch}
+                className='absolute inset-y-0 right-0 px-3 flex items-center bg-indigo-600 text-white rounded-r-md'
+              >
                 <Search size={16} />
               </button>
             </div>
@@ -95,7 +98,7 @@ export default function InstructorCourses() {
         </div>
 
         {/* Courses List */}
-        <CourseDisplay searchQuery={searchQuery} InstructorId={userId}/>
+        <CourseDisplay searchQuery={searchQuery} InstructorId={userId} />
 
         {/* Course Creation Guide */}
         <div className='mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6'>

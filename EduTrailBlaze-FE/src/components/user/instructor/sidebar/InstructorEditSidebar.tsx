@@ -6,8 +6,11 @@ import { MdOutlineScreenShare } from 'react-icons/md'
 import { BsChatLeftText } from 'react-icons/bs'
 import { IoBookOutline } from 'react-icons/io5'
 import { FaPencilAlt } from 'react-icons/fa'
+import { useParams } from 'next/navigation'
 
 const InstructorEditSidebar = () => {
+  const { courseId } = useParams()
+
   const [isExpanded, setIsExpanded] = useState(false)
   const [sidebarHeight, setSidebarHeight] = useState('100vh')
 
@@ -50,8 +53,16 @@ const InstructorEditSidebar = () => {
   }, [])
 
   const menuItems = [
-    { icon: <MdOutlineScreenShare className='w-6 h-5' />, label: 'Courses Edit', href: '/instructor/edit/edit-course' },
-    { icon: <IoBookOutline className='w-6 h-5' />, label: 'Section Edit', href: '/instructor/edit/edit-section' }
+    {
+      icon: <MdOutlineScreenShare className='w-6 h-5' />,
+      label: 'Courses Edit',
+      href: `/instructor/edit/edit-course/${courseId}`
+    },
+    {
+      icon: <IoBookOutline className='w-6 h-5' />,
+      label: 'Section Edit',
+      href: `/instructor/edit/edit-section/${courseId}`
+    }
   ]
 
   return (
