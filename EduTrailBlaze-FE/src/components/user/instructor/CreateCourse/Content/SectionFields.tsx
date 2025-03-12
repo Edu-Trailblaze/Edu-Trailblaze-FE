@@ -80,15 +80,15 @@ export default function SectionFields({ courseId }: SectionFieldsProps) {
           formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Description`, lecture.description)
           formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Duration`, lecture.duration.toString())
           formData.append(`Sections[${sIndex}].Lectures[${lIndex}].Content`, lecture.content)
-          if (lecture.contentPDFFile instanceof File) {
-            formData.append(`Sections[${sIndex}].Lectures[${lIndex}].ContentPDFFile`, lecture.contentPDFFile)
+          if (lecture.contentFile instanceof File) {
+            formData.append(`Sections[${sIndex}].Lectures[${lIndex}].ContentFile`, lecture.contentFile)
           }
         })
       })
 
-      const response = await createSecLec(formData).unwrap()
+      await createSecLec(formData).unwrap()
       toast.success('Created successfully!')
-      setSections([])
+      setSections([{ id: Date.now(), title: '', description: '', lectures: [] }])
     } catch (error) {
       console.error('Error creating sections:', error)
     }

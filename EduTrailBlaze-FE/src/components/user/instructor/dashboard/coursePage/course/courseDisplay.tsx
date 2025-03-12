@@ -46,13 +46,18 @@ export default function CourseDisplay({ searchQuery, InstructorId }: CourseSearc
                       <span className='text-gray-400 font-medium mr-1'>Finish your course</span>
                     )}
                     <div className='w-full sm:w-64 bg-gray-200 rounded-full h-2 flex-1'>
-                      <div className='bg-indigo-600 h-2 rounded-full' style={{ width: `${courseItem.completionPercentage}%` }}></div>
+                      <div
+                        className='bg-indigo-600 h-2 rounded-full'
+                        style={{ width: `${courseItem.completionPercentage}%` }}
+                      ></div>
                     </div>
-                    <span className='mt-1 sm:mt-0 sm:ml-2 text-sm text-gray-500'>{courseItem.completionPercentage}%</span>
+                    <span className='mt-1 sm:mt-0 sm:ml-2 text-sm text-gray-500'>
+                      {courseItem.completionPercentage}%
+                    </span>
                   </div>
                 </div>
                 <div className='mt-2 md:mt-0'>
-                  <Link href='/instructor/edit/edit-course'>
+                  <Link href={`/instructor/edit/edit-course/${courseItem.courseId}`}>
                     {courseItem.completionPercentage === 100 ? (
                       <span className='text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer'>
                         View Course

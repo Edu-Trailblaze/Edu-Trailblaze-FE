@@ -6,12 +6,13 @@ import { ChevronDown, ChevronUp, Edit, Plus, Trash2, Save } from 'lucide-react'
 import '@/components/global/Modal/ReactModal.css'
 import SectionFields from '../../CreateCourse/Content/SectionFields'
 import Modal from '../../../../global/Modal/Modal'
+import { useParams } from 'next/navigation'
 
 export default function EditSections() {
   const [modalOpen, setModalOpen] = useState(false)
-  const handleCloseModal = () => {
-    setModalOpen(false)
-  }
+  const params = useParams()
+  const courseId = params.courseId as string
+  console.log('Course ID:', courseId)
   const [sections, setSections] = useState([
     {
       id: 1,
@@ -412,8 +413,8 @@ export default function EditSections() {
           </div>
         )}
       </div>
-      <Modal isOpen={modalOpen} onClose={handleCloseModal} title='Add New Section'>
-        <SectionFields courseId={12} />
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title='Add New Section'>
+        <SectionFields courseId={97} />
       </Modal>
     </div>
   )

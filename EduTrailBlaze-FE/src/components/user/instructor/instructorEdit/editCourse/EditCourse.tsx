@@ -1,14 +1,15 @@
 'use client'
-// pages/courses/[id]/edit.js
 import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import React from 'react'
 
 export default function CourseEdit() {
   const router = useRouter()
-  //   const { id } = router.query;
+  const params = useParams()
+  const courseId = params.courseId as string
+  console.log('Course ID:', courseId)
 
   // State for form data
   const [courseData, setCourseData] = useState({
@@ -258,7 +259,7 @@ export default function CourseEdit() {
                                 <h3 className='text-sm font-medium text-blue-800'>Optimization tips!</h3>
                                 <div className='mt-2 text-sm text-blue-700'>
                                   <p>
-                                  Introductory images and videos can increase your course sign-up rates by up to 30%.
+                                    Introductory images and videos can increase your course sign-up rates by up to 30%.
                                   </p>
                                 </div>
                               </div>
@@ -370,7 +371,7 @@ export default function CourseEdit() {
                       <div className='grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6'>
                         <div className='sm:col-span-6'>
                           <label htmlFor='prerequisites' className='block text-sm font-medium text-gray-700 mb-1'>
-                          Basic knowledge required
+                            Basic knowledge required
                           </label>
                           <div className='mt-1'>
                             <textarea
@@ -545,7 +546,8 @@ export default function CourseEdit() {
                         )}
                       </div>
                       <p className='mt-4 text-sm text-gray-500 bg-yellow-50 p-3 rounded-lg border border-yellow-100'>
-                        <strong>Tip:</strong> Use clear action verbs (such as “create,” “analyze,” “design”) to describe the specific skills the learner will acquire.
+                        <strong>Tip:</strong> Use clear action verbs (such as “create,” “analyze,” “design”) to describe
+                        the specific skills the learner will acquire.
                       </p>
                     </div>
                   </div>

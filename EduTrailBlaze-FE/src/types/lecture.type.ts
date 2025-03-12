@@ -53,7 +53,7 @@ interface LectureVip {
   duration: number
   description: string
   lectureType: LectureType
-  contentPDFFile: File | null
+  contentFile: File | null
 }
 
 interface ResponseMessage {

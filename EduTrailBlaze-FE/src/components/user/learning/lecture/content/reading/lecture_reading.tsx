@@ -39,11 +39,12 @@ export default function ReadingLecture({ lecture, userId, userProgress }: Readin
       </div>
 
       <div className='bg-white rounded-xl border-2 border-blue-500 shadow-sm p-6'>
-        {lecture.content.split('\n').map((line, index) => (
+        {/* {lecture.content.split('\n').map((line, index) => (
           <p key={index} className='text-gray-700 leading-relaxed'>
             {line}
           </p>
-        ))}
+        ))} */}
+        {lecture.content}
       </div>
     </div>
   )
