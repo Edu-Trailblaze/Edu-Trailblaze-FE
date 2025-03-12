@@ -3,8 +3,15 @@
 import { useState } from 'react'
 import Head from 'next/head'
 import { ChevronDown, ChevronUp, Edit, Plus, Trash2, Save } from 'lucide-react'
+import '@/components/global/Modal/ReactModal.css'
+import SectionFields from '../../CreateCourse/Content/SectionFields'
+import Modal from '../../../../global/Modal/Modal'
 
 export default function EditSections() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const handleCloseModal = () => {
+    setModalOpen(false)
+  }
   const [sections, setSections] = useState([
     {
       id: 1,
@@ -103,15 +110,16 @@ export default function EditSections() {
   //   };
 
   const addNewSection = () => {
-    const newSection = {
-      id: Date.now(),
-      title: 'New Section',
-      description: 'Enter section description',
-      isExpanded: true,
-      lectures: []
-    }
-    setSections([...sections, newSection])
-    startEditSection(newSection)
+    setModalOpen(true)
+    // const newSection = {
+    //   id: Date.now(),
+    //   title: 'New Section',
+    //   description: 'Enter section description',
+    //   isExpanded: true,
+    //   lectures: []
+    // }
+    // setSections([...sections, newSection])
+    // startEditSection(newSection)
   }
 
   const addNewLecture = (sectionId: number) => {
@@ -404,6 +412,9 @@ export default function EditSections() {
           </div>
         )}
       </div>
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} title='Add New Section'>
+        <SectionFields courseId={12} />
+      </Modal>
     </div>
   )
 }

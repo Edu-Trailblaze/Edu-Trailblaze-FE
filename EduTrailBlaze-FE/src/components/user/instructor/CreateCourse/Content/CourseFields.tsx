@@ -22,13 +22,8 @@ import Box from '../../../../global/Box/Box'
 import { useAddCourseMutation } from '../../../../../redux/services/courseDetail.service'
 import { toast } from 'react-toastify'
 import { jwtDecode } from 'jwt-decode'
-interface CourseFieldsProps {
-  activeTab: string
-  setActiveTab: (tab: string) => void
-  setCourseId: (id: number) => void
-}
 
-export default function CourseFields({ activeTab, setActiveTab, setCourseId }: CourseFieldsProps) {
+export default function CourseFields() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -131,16 +126,14 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
       }
       const response = await createCourse(formData).unwrap()
       console.log('Course created:', response)
-      setCourseId(response.data.courseId)
       toast.success('Course created successfully')
-      setActiveTab('sections')
     } catch (error) {
       console.error('Failed to create course', error)
     }
   }
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 p-10'>
       {/* COURSE TITLE */}
 
       <InputText
@@ -274,11 +267,15 @@ export default function CourseFields({ activeTab, setActiveTab, setCourseId }: C
         <p className='mt-3 text-xs text-gray-500'>Good learning outcomes are specific, measurable, and achievable</p>
       </Box>
 
-      {/* Next button */}
+      <p className='mt-4 text-sm text-gray-500 bg-yellow-50 p-3 rounded-lg border border-yellow-100'>
+        <strong>Tip:</strong> Go to course dashboard to edit more (sections, lecture, video, quiz, etc.)
+      </p>
+
+      {/* Create button */}
       <div className='flex justify-end py-5'>
         <form onSubmit={handleSubmit}>
           <Button icon={<PlusCircleIcon className='h-4 w-4' />} size='ml' variant='primary' isLoading={isCreateCourse}>
-            {isCreateCourse ? 'Creating...' : 'Next: Add Sections'}
+            {isCreateCourse ? 'Creating...' : 'Create Course'}
           </Button>
         </form>
       </div>

@@ -8,14 +8,13 @@ import { toast } from 'react-toastify'
 
 interface SectionFieldsProps {
   courseId: number | null
-  activeTab: string
-  setActiveTab: (tab: string) => void
 }
 
-export default function SectionFields({ courseId, setActiveTab }: SectionFieldsProps) {
+export default function SectionFields({ courseId }: SectionFieldsProps) {
   const [createSecLec, { isLoading: loadingSecLec }] = useCreateSectionLectureVipMutation()
-  const [sections, setSections] = useState<SectionVip[]>([])
-  const [collapsedSections, setCollapsedSections] = useState<boolean[]>([])
+  // const [sections, setSections] = useState<SectionVip[]>([])
+  const [sections, setSections] = useState<SectionVip[]>([{ id: Date.now(), title: '', description: '', lectures: [] }])
+  const [collapsedSections, setCollapsedSections] = useState<boolean[]>([false])
 
   useEffect(() => {
     setCollapsedSections(sections.map(() => false))
@@ -96,7 +95,7 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
   }
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 container my-10'>
       <h2 className='text-xl font-medium text-gray-900 mb-4'>Course Content</h2>
 
       {sections.map((section, sectionIndex) => (
@@ -153,15 +152,8 @@ export default function SectionFields({ courseId, setActiveTab }: SectionFieldsP
       </Button>
 
       <div className='mt-8 flex justify-between'>
-        <Button
-          variant='outline'
-          icon={<ArrowLeftIcon className='h-5 w-5 mr-1' />}
-          onClick={() => setActiveTab('details')}
-        >
-          Back: Course Details
-        </Button>
         <Button variant='primary' onClick={handleCreateSecLecVip} isLoading={loadingSecLec}>
-          {loadingSecLec ? 'Creating...' : 'Create Course'}
+          {loadingSecLec ? 'Creating...' : 'Create'}
         </Button>
       </div>
     </div>
