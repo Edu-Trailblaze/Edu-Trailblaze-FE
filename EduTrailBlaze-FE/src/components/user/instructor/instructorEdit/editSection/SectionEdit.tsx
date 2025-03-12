@@ -412,8 +412,8 @@ export default function EditSections() {
           </div>
         )}
       </div>
-      <Modal isOpen={modalOpen} onClose={handleCloseModal} title='Add New Section'>
-        <SectionFields courseId={12} />
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title='Add New Section'>
+        <SectionFields courseId={97} />
       </Modal>
     </div>
   )
