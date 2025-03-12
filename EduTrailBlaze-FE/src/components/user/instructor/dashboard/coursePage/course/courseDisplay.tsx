@@ -52,7 +52,7 @@ export default function CourseDisplay({ searchQuery, InstructorId }: CourseSearc
                   </div>
                 </div>
                 <div className='mt-2 md:mt-0'>
-                  <Link href='/instructor/courses/edit'>
+                  <Link href='/instructor/edit/edit-course'>
                     {courseItem.completionPercentage === 100 ? (
                       <span className='text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer'>
                         View Course
