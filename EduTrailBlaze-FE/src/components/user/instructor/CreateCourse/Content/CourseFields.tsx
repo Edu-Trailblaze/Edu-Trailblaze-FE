@@ -5,13 +5,9 @@ import {
   MinusCircleIcon,
   ArrowLeftIcon,
   CircleHelp as QuestionMarkCircleIcon,
-  Video as VideoIcon,
-  Image as PhotoIcon,
-  BookOpen,
-  Clock,
-  User,
-  CheckCircle,
-  ChevronDown
+  Video,
+  Image,
+  CheckCircle
 } from 'lucide-react'
 import InputText from '../../../../global/Input/InputText'
 import Button from '../../../../global/Button/Button'
@@ -154,7 +150,7 @@ export default function CourseFields() {
           accept='image/*'
           onChange={handleImageUpload}
           preview={imagePreview}
-          icon={<PhotoIcon className='w-5 h-5 text-blue-500 mr-2' />}
+          icon={<Image className='w-5 h-5 text-blue-500 mr-2' />}
           noLayout={false}
         />
 
@@ -165,7 +161,7 @@ export default function CourseFields() {
           accept='video/*'
           onChange={handleVideoUpload}
           preview={videoPreview}
-          icon={<VideoIcon className='w-5 h-5 text-red-500 mr-2' />}
+          icon={<Video className='w-5 h-5 text-red-500 mr-2' />}
           noLayout={false}
         />
       </div>
