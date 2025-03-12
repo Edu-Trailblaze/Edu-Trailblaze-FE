@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,10 +14,33 @@ import {
   MessageCircle,
   MoreVertical
 } from 'lucide-react'
+import CourseDisplay from './course/courseDisplay'
+import { useSearchParams } from 'next/navigation'
+import { jwtDecode } from 'jwt-decode'
 
 export default function InstructorCourses() {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [userId, setUserId] = useState('')
   const [sortOption, setSortOption] = useState('newest')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+      const token = localStorage.getItem('accessToken')
+  
+      try {
+        if (token) {
+          const decode = jwtDecode(token)
+          setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
+        }
+      } catch (error) {
+        console.error('Error decoding token:', error)
+        setUserId('')
+      }
+    }, [])
+
+    const handleSearch = () => {
+      // This function will trigger a search when called
+      console.log('Searching for:', searchQuery);
+    };
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -45,8 +68,9 @@ export default function InstructorCourses() {
                 className='border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-64'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
-              <button className='absolute inset-y-0 right-0 px-3 flex items-center bg-indigo-600 text-white rounded-r-md'>
+              <button onClick={handleSearch} className='absolute inset-y-0 right-0 px-3 flex items-center bg-indigo-600 text-white rounded-r-md'>
                 <Search size={16} />
               </button>
             </div>
@@ -71,137 +95,7 @@ export default function InstructorCourses() {
         </div>
 
         {/* Courses List */}
-        <div className='space-y-4'>
-          <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-            <div className='flex flex-col md:flex-row'>
-              <div className='bg-gray-100 p-4 flex items-center md:w-60'>
-                <div className='flex-shrink-0'>
-                  <div className='w-16 h-12 bg-gray-200 flex items-center justify-center rounded'>
-                    <span className='text-xs text-gray-500'>Course</span>
-                  </div>
-                </div>
-                <div className='ml-4'>
-                  <h3 className='text-lg font-medium text-gray-900'>DRAFT</h3>
-                  <p className='text-sm text-gray-500'>Public</p>
-                </div>
-              </div>
-              <div className='flex-1 p-4 flex flex-col md:flex-row justify-between items-center'>
-                <div>
-                  <span className='text-gray-400 font-medium'>Finish your course</span>
-                </div>
-                <div className='mt-2 md:mt-0'>
-                  <Link href='/instructor/courses/edit'>
-                    <span className='text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer'>
-                      Edit / manage course
-                    </span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-            <div className='flex flex-col md:flex-row'>
-              <div className='bg-gray-100 p-4 flex items-center md:w-60'>
-                <div className='flex-shrink-0'>
-                  <div className='w-16 h-12 bg-gray-200 flex items-center justify-center rounded'>
-                    <span className='text-xs text-gray-500'>Course</span>
-                  </div>
-                </div>
-                <div className='ml-4'>
-                  <h3 className='text-lg font-medium text-gray-900'>React</h3>
-                  <p className='text-sm text-gray-500'>DRAFT Public</p>
-                </div>
-              </div>
-              <div className='flex-1 p-4 flex flex-col md:flex-row justify-between items-center'>
-                <div className='w-full md:w-auto'>
-                  <div className='flex flex-col sm:flex-row sm:items-center'>
-                    <span className='text-gray-500 font-medium mb-2 sm:mb-0 sm:mr-4'>Finish your course</span>
-                    <div className='w-full sm:w-64 bg-gray-200 rounded-full h-2 flex-1'>
-                      <div className='bg-indigo-600 h-2 rounded-full' style={{ width: '15%' }}></div>
-                    </div>
-                    <span className='mt-1 sm:mt-0 sm:ml-2 text-sm text-gray-500'>15%</span>
-                  </div>
-                </div>
-                <div className='mt-4 md:mt-0'>
-                  <Link href='/instructor/courses/react/edit'>
-                    <span className='text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer'>
-                      Continue editing
-                    </span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-            <div className='flex flex-col md:flex-row'>
-              <div className='bg-gray-100 p-4 flex items-center md:w-60'>
-                <div className='flex-shrink-0'>
-                  <div className='w-16 h-12 bg-gray-200 flex items-center justify-center rounded'>
-                    <span className='text-xs text-gray-500'>Course</span>
-                  </div>
-                </div>
-                <div className='ml-4'>
-                  <h3 className='text-lg font-medium text-gray-900'>JavaScript Basics</h3>
-                  <p className='text-sm text-gray-500'>Published</p>
-                </div>
-              </div>
-              <div className='flex-1 p-4 flex flex-col md:flex-row justify-between items-center'>
-                <div className='w-full md:w-auto'>
-                  <div className='flex flex-col sm:flex-row sm:items-center'>
-                    <span className='text-gray-500 font-medium mb-2 sm:mb-0 sm:mr-4'>Course completion</span>
-                    <div className='w-full sm:w-64 bg-gray-200 rounded-full h-2 flex-1'>
-                      <div className='bg-green-500 h-2 rounded-full' style={{ width: '100%' }}></div>
-                    </div>
-                    <span className='mt-1 sm:mt-0 sm:ml-2 text-sm text-gray-500'>100%</span>
-                  </div>
-                </div>
-                <div className='mt-4 md:mt-0'>
-                  <Link href='/instructor/courses/javascript'>
-                    <span className='text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer'>
-                      View course
-                    </span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-            <div className='flex flex-col md:flex-row'>
-              <div className='bg-gray-100 p-4 flex items-center md:w-60'>
-                <div className='flex-shrink-0'>
-                  <div className='w-16 h-12 bg-gray-200 flex items-center justify-center rounded'>
-                    <span className='text-xs text-gray-500'>Course</span>
-                  </div>
-                </div>
-                <div className='ml-4'>
-                  <h3 className='text-lg font-medium text-gray-900'>Python for Data Science</h3>
-                  <p className='text-sm text-gray-500'>Published</p>
-                </div>
-              </div>
-              <div className='flex-1 p-4 flex flex-col md:flex-row justify-between items-center'>
-                <div className='w-full md:w-auto'>
-                  <div className='flex flex-col sm:flex-row sm:items-center'>
-                    <span className='text-gray-500 font-medium mb-2 sm:mb-0 sm:mr-4'>Course completion</span>
-                    <div className='w-full sm:w-64 bg-gray-200 rounded-full h-2 flex-1'>
-                      <div className='bg-green-500 h-2 rounded-full' style={{ width: '100%' }}></div>
-                    </div>
-                    <span className='mt-1 sm:mt-0 sm:ml-2 text-sm text-gray-500'>100%</span>
-                  </div>
-                </div>
-                <div className='mt-4 md:mt-0'>
-                  <Link href='/instructor/courses/python'>
-                    <span className='text-indigo-600 hover:text-indigo-900 font-medium cursor-pointer'>
-                      View course
-                    </span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CourseDisplay searchQuery={searchQuery} InstructorId={userId}/>
 
         {/* Course Creation Guide */}
         <div className='mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
