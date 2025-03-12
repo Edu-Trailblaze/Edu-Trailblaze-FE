@@ -51,8 +51,7 @@ const InstructorEditSidebar = () => {
 
   const menuItems = [
     { icon: <MdOutlineScreenShare className='w-6 h-5' />, label: 'Courses Edit', href: '/instructor/edit/edit-course' },
-    { icon: <IoBookOutline  className='w-6 h-5' />, label: 'Section Edit', href: '/instructor/edit/edit-section' },
-    { icon: <FaPencilAlt className='w-6 h-5' />, label: 'Lecture Edit', href: '/instructor/edit/edit-lecture' }
+    { icon: <IoBookOutline className='w-6 h-5' />, label: 'Section Edit', href: '/instructor/edit/edit-section' }
   ]
 
   return (
