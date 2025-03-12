@@ -17,12 +17,12 @@ export default function LecturePage() {
 
   const { data: course, isLoading: courseLoading } = useGetCourseDetailsQuery(Number(courseURL))
   const sectionIds = course?.sectionDetails?.map((section) => section.id) || []
-  const { data: lectures } = useGetSectionLectureQuery(sectionIds)
+  const { data: lectures, isLoading: lectureLoading } = useGetSectionLectureQuery(sectionIds)
 
   const [activeLectureId, setActiveLectureId] = useState<number | null>(Number(lectureURL))
 
-  const { data: lectureContent } = useGetLectureQuery(activeLectureId ?? 0)
-  const { data: video } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })
+  const { data: lectureContent, isLoading: contentLoading } = useGetLectureQuery(activeLectureId ?? 0)
+  const { data: video, isLoading: videoLoading } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })
 
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>(() => {
     if (typeof window !== 'undefined') {
@@ -63,7 +63,7 @@ export default function LecturePage() {
     }
   }
 
-  if (courseLoading) return <LoadingPage />
+  if (courseLoading || lectureLoading || contentLoading || videoLoading) return <LoadingPage />
   if (!course) return <div>Course not found</div>
   if (!lectures) return <div>Lecture not found</div>
   if (!lectureContent) return <div>Lecture not found</div>

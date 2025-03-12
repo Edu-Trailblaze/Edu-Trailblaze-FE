@@ -55,8 +55,6 @@ export default function LectureSideBar({
     return { ...section, lectures: sectionLectures }
   })
 
-  const completedLectures = 0
-
   return (
     <div
       className={`fixed top-0 left-0 h-full bg-white w-[320px] transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 border-r border-gray-200 flex flex-col z-50`}
@@ -82,7 +80,7 @@ export default function LectureSideBar({
               <div className='text-left'>
                 <p className='font-medium text-gray-900'>{section.title}</p>
                 <p className='text-sm text-gray-500 mt-1'>
-                  {section.duration.substring(0, 8)} • {completedLectures}/{section.lectures.length} lectures
+                  {section.duration.substring(0, 8)} • {section.lectures.length} lectures
                 </p>
               </div>
               {expandedSections[section.id] ? (
@@ -120,9 +118,9 @@ export default function LectureSideBar({
                           <span>{item.duration} min</span>
                         </div>
                       </div>
-                      <CheckCircle2
+                      {/* <CheckCircle2
                         className={`w-5 h-5 ${userProgress.find((p) => p.lectureId === item.id)?.isCompleted ? 'text-green-500' : 'text-gray-300'}`}
-                      />
+                      /> */}
                     </div>
                   </button>
                 ))}

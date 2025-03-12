@@ -16,15 +16,12 @@ export default function ReadingLecture({ lecture, userId, userProgress }: Readin
 
   const handleUserProgress = async () => {
     try {
-      const response = await postUserProgress({ userId: userId, lectureId: lecture.id })
-      console.log('Enrollment successful:', response)
-      // window.location.reload()
+      await postUserProgress({ userId: userId, lectureId: lecture.id })
+      window.location.reload()
     } catch (error) {
       console.error('Error enrolling:', error)
     }
   }
-  console.log('lecture:', lecture.id)
-  console.log('userProgress:', userProgress)
   return (
     <div className='py-8 space-y-6'>
       <h2 className='text-3xl font-semibold mb-4'>Document</h2>
