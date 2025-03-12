@@ -4,7 +4,7 @@ interface SectionLecture {
 }
 
 interface ILecture {
-  sectionId: number | null
+  sectionId: number
   title: string
   content: string
   duration: string

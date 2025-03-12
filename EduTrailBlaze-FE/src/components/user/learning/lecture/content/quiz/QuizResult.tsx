@@ -1,12 +1,41 @@
+import { useEffect } from 'react'
+import { usePostUserProgressMutation } from '../../../../../../redux/services/userProgress.service'
+
 interface QuizResultProps {
+  lecture: ILecture
   score: number
   totalQuestions: number
   passingScore: number
+  userId: string
   startQuiz: () => void
   nextLecutre: () => void
 }
 
-export default function QuizResult({ score, totalQuestions, passingScore, startQuiz, nextLecutre }: QuizResultProps) {
+export default function QuizResult({
+  lecture,
+  score,
+  totalQuestions,
+  passingScore,
+  userId,
+  startQuiz,
+  nextLecutre
+}: QuizResultProps) {
+  const [postUserProgress] = usePostUserProgressMutation()
+
+  const handleUserProgress = async () => {
+    try {
+      postUserProgress({ userId: userId, lectureId: lecture.id })
+      window.location.reload()
+    } catch (error) {
+      console.error('Error enrolling:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (score >= passingScore) {
+      handleUserProgress()
+    }
+  }, [score, passingScore])
   return (
     <div className='py-6 max-w-2xl mx-auto'>
       <h1 className='text-3xl font-semibold mb-4'>Quiz Result</h1>

@@ -54,7 +54,7 @@ export default function CourseHeader({
       }).unwrap()
       window.location.reload()
     } catch (error) {
-      console.error('Enrollment failed', error)
+      toast.error('Enrollment failed' + error)
     }
   }
 

@@ -34,7 +34,7 @@ export default function LectureContent({
         <ReadingLecture lecture={lecture} userId={decodedUserId} userProgress={userProgress} />
       )}
       {lectureType === 'Quiz' && (
-        <QuizLecture quizDetail={quizData} onNextLecture={onNextLecture} userId={decodedUserId} />
+        <QuizLecture lecture={lecture} quizDetail={quizData} onNextLecture={onNextLecture} userId={decodedUserId} />
       )}
     </div>
   )

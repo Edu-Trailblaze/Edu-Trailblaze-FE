@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2 } from 'lucide-react'
 import Button from '../../../../../global/Button/Button'
+import { usePostUserProgressMutation } from '../../../../../../redux/services/userProgress.service'
 
 interface ModuleBarProps {
   lecture: ILecture
@@ -16,6 +17,17 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: M
   const [activeTab, setActiveTab] = useState('transcript')
 
   const progress = userProgress?.find((p) => p.lectureId === lecture.id)
+
+  const [postUserProgress] = usePostUserProgressMutation()
+
+  const handleUserProgress = async () => {
+    try {
+      postUserProgress({ userId: userId, lectureId: lecture.id })
+      window.location.reload()
+    } catch (error) {
+      console.error('Error enrolling:', error)
+    }
+  }
 
   const toggleList = () => {
     setLanguageOpen((prev) => !prev)
@@ -50,7 +62,9 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: M
                   Already finished
                 </Button>
               ) : (
-                <Button size='lg'>Make as complete</Button>
+                <Button onClick={handleUserProgress} size='lg'>
+                  Make as complete
+                </Button>
               )}
             </div>
             <div className='aspect-video relative rounded-xl overflow-hidden bg-black'>

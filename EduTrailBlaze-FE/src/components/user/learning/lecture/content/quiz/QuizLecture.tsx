@@ -6,10 +6,11 @@ import LoadingPage from '../../../../../animate/Loading/LoadingPage'
 interface QuizLectureProps {
   quizDetail?: QuizDetail
   userId: string
+  lecture: ILecture
   onNextLecture: () => void
 }
 
-export default function QuizLecture({ quizDetail, onNextLecture, userId }: QuizLectureProps) {
+export default function QuizLecture({ lecture, quizDetail, onNextLecture, userId }: QuizLectureProps) {
   if (!quizDetail) {
     return <LoadingPage />
   }
@@ -71,7 +72,9 @@ export default function QuizLecture({ quizDetail, onNextLecture, userId }: QuizL
   if (quizCompleted) {
     return (
       <QuizResult
+        userId={userId}
         score={calculateScore()}
+        lecture={lecture}
         totalQuestions={questions.length}
         passingScore={passingScore}
         startQuiz={startQuiz}
@@ -88,7 +91,6 @@ export default function QuizLecture({ quizDetail, onNextLecture, userId }: QuizL
       question={currentQuestion}
       answers={currentAnswers}
       questionIndex={currentQuestionIndex}
-      userId={userId}
       totalQuestions={questions.length}
       selectedAnswer={selectedAnswers[currentQuestionIndex]}
       handleAnswerSelection={handleAnswerSelection}
