@@ -10,6 +10,7 @@ import { jwtDecode } from 'jwt-decode'
 import EducationSection from './educationSection'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import { toast } from 'react-toastify'
+import SpecialtySelector from './specialty'
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -283,6 +284,8 @@ export default function ProfilePage() {
               ></textarea>
             </div> */}
           </form>
+
+          <SpecialtySelector/>
         </div>
         <EducationSection />
       </div>
