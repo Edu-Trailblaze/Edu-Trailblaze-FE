@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from 'lucide-react'
+import { ChevronDownIcon, CircleHelp } from 'lucide-react'
 import Box from '../Box/Box'
 
 interface SelectFieldProps {
@@ -6,10 +6,12 @@ interface SelectFieldProps {
   name: string
   options: string[]
   value?: string
+  helperText?: string
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void
-  subtitle?: string
+  subtitle?: React.ReactNode
   required?: boolean
   noLayout?: boolean
+  tip?: string
 }
 
 export default function SelectField({
@@ -17,6 +19,7 @@ export default function SelectField({
   name,
   options,
   value,
+  helperText,
   onChange,
   subtitle,
   required,
@@ -24,8 +27,16 @@ export default function SelectField({
 }: SelectFieldProps) {
   const content = (
     <>
-      <label htmlFor={name} className='block text-sm font-medium text-gray-500'>
+      <label htmlFor={name} className=' text-sm font-medium text-gray-500 flex'>
         {label} {required && <span className='text-red-500'>*</span>}
+        {helperText && (
+          <span className='ml-1 group relative'>
+            <CircleHelp className='h-4 w-4 text-gray-400' />
+            <span className='hidden group-hover:block absolute z-10 top-6 -left-2 w-64 p-2 bg-black text-white text-xs rounded shadow-lg'>
+              {helperText}
+            </span>
+          </span>
+        )}
       </label>
       <div className='relative'>
         <select
