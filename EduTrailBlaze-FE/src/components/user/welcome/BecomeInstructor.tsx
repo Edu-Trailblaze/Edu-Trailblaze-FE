@@ -52,7 +52,7 @@ export default function BecomeInstructor() {
       setUserChangeRole('Instructor')
       await changeRole({ userId }).unwrap()
       toast.success('You are now a teacher. Create your own courses!')
-      router.push('/instructor/create-course')
+      router.push('/instructor/create/create-course')
     } catch (error) {
       console.error('Error changing role:', error)
       toast.error('Failed to change role. Please try again.')

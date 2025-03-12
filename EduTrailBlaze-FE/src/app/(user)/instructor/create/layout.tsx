@@ -22,7 +22,9 @@ export default function RootLayout({
       </div>
       <InstructorSidebar />
       <div className='ml-16 min-h-screen'>{children}</div>
-        <WebFooter />
+      <WebFooter />
     </>
   )
 }
+
+
