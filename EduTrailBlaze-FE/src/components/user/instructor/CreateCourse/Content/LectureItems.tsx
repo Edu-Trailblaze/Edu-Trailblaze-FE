@@ -111,6 +111,7 @@ export default function LectureItem({
                 label='Lecture Type'
                 name='type'
                 options={['Reading', 'Video', 'Quiz']}
+                helperText='if you choose video please go to course to upload'
                 value={lecture.lectureType}
                 onChange={(e) => handleLectureChange(sectionIndex, lectureIndex, 'lectureType', e.target.value)}
                 required
