@@ -29,11 +29,21 @@ export const sectionApi = createApi({
 
     getSectionbyConditions: build.query<ISection[], number>({
       query: (courseId) => ({
-        url: `Section/cget-sections-by-conditions?CourseId=${courseId}`,
+        url: `Section/get-sections-by-conditions?CourseId=${courseId}`,
         method: 'GET'
       })
+    }),
+
+    updateSection: build.mutation<void, EditSection>({
+      query: (body) => ({
+        url: `Section`,
+        method: 'PUT',
+        body
+      }),
+      invalidatesTags: [{ type: 'Sections', id: 'LIST' }]
     })
   })
 })
 
-export const { useGetAllSectionsQuery, useGetSectionQuery, useGetSectionbyConditionsQuery } = sectionApi
+export const { useGetAllSectionsQuery, useGetSectionQuery, useGetSectionbyConditionsQuery, useUpdateSectionMutation } =
+  sectionApi

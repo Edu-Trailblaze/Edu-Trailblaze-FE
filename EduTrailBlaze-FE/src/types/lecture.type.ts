@@ -60,3 +60,9 @@ interface ResponseMessage {
   statusCode: number
   message: string
 }
+
+interface EditSection {
+  sectionId: number
+  title: string
+  description: string
+}
