@@ -51,28 +51,6 @@ export const courseApi = createApi({
         method: 'GET'
       })
     }),
-
-    // updateCourse: build.mutation<ICourse, { id: string; body: ICourse }>({
-    //   query(data) {
-    //     return {
-    //       url: `courses/${data.id}`,
-    //       method: 'PUT',
-    //       body: data.body
-    //     }
-    //   },
-    //   invalidatesTags: (result, error, data) => (error ? [] : [{ type: 'Courses', id: data.id }])
-    // }),
-
-    // deleteCourse: build.mutation<{}, string>({
-    //   query(id) {
-    //     return {
-    //       url: `courses/${id}`,
-    //       method: 'DELETE'
-    //     }
-    //   },
-    //   invalidatesTags: (result, error, id) => (error ? [] : [{ type: 'Courses', id }])
-    // })
-
     getInstructorOfCourse: build.query<ICourseInstructor[], number>({
       query: (id) => ({
         url: `Course/get-instructors-of-a-course?courseId=${id}`
@@ -107,6 +85,26 @@ export const courseApi = createApi({
           ...params
         }
       })
+    }),
+    getCourseById: build.query<GetCourseById, number>({
+      query: (id) => ({
+        url: `Course/${id}`
+      })
+    }),
+
+    updateCourse: build.mutation<any, FormData>({
+      query(body) {
+        try {
+          return {
+            url: `Course`,
+            method: 'PUT',
+            body
+          }
+        } catch (error: any) {
+          throw new CustomError(error.message)
+        }
+      },
+      invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     })
   })
 })
@@ -122,5 +120,7 @@ export const {
   useGetCourseByIdAndTagQuery,
   useGetCourseByIdAndTagPagingQuery,
   useGetCoursePagingQuery,
-  useGetInstructorCoursePagingQuery
+  useGetInstructorCoursePagingQuery,
+  useGetCourseByIdQuery,
+  useUpdateCourseMutation
 } = courseApi

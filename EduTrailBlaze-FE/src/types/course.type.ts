@@ -185,3 +185,28 @@ interface InstructorCourseSearchRequest {
   Sort?: string
   SortDirection?: string
 }
+
+interface GetCourseById {
+  id: number
+  title: string
+  imageURL: string
+  introURL: string
+  description: string
+  price: number
+  duration: number
+  difficultyLevel: string
+  prerequisites: string
+  learningOutcomes: string[]
+  estimatedCompletionTime: number
+  createdBy: string
+  updatedBy: string
+  isPublished: boolean
+  hasAtLeastLecture: number
+  hasVideo: boolean
+  hasQuiz: boolean
+  hasDoc: boolean
+  isDeleted: boolean
+  approvalStatus: 'Pending' | 'Approved' | 'Rejected'
+  createdAt: string
+  updatedAt: string
+}
