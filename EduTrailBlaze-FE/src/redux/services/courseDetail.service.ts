@@ -90,8 +90,22 @@ export const courseApi = createApi({
       query: (id) => ({
         url: `Course/${id}`
       })
+    }),
+
+    updateCourse: build.mutation<any, FormData>({
+      query(body) {
+        try {
+          return {
+            url: `Course`,
+            method: 'PUT',
+            body
+          }
+        } catch (error: any) {
+          throw new CustomError(error.message)
+        }
+      },
+      invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     })
-    // editCourse:
   })
 })
 
@@ -107,5 +121,6 @@ export const {
   useGetCourseByIdAndTagPagingQuery,
   useGetCoursePagingQuery,
   useGetInstructorCoursePagingQuery,
-  useGetCourseByIdQuery
+  useGetCourseByIdQuery,
+  useUpdateCourseMutation
 } = courseApi

@@ -157,11 +157,6 @@ export default function EditSections() {
   return (
     <div className='bg-gradient-to-br from-blue-50 to-indigo-50'>
       <div className='min-h-screen max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 '>
-        <Head>
-          <title>Edit Sections | Course Management</title>
-          <meta name='description' content='Edit course sections and lectures' />
-        </Head>
-
         <div>
           <div className='flex items-center'>
             <button type='button' className='mr-4 p-2 rounded-full bg-white shadow-sm hover:bg-gray-50'>

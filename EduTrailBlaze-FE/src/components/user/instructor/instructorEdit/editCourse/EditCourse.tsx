@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import InfoIcon from '@mui/icons-material/Info'
 import { useParams, useRouter } from 'next/navigation'
 import React from 'react'
-import { useGetCourseByIdQuery } from '../../../../../redux/services/courseDetail.service'
+import { useGetCourseByIdQuery, useUpdateCourseMutation } from '../../../../../redux/services/courseDetail.service'
 import LoadingPage from '../../../../animate/Loading/LoadingPage'
 import InputText from '../../../../global/Input/InputText'
 import InputNumber from '../../../../global/Input/InputNumber'
@@ -29,6 +29,7 @@ export default function CourseEdit() {
   const params = useParams()
   const courseId = params.courseId as string
   const { data: course, isLoading: courseLoading } = useGetCourseByIdQuery(Number(courseId))
+  const [updateCourse, { isLoading: isUpdating }] = useUpdateCourseMutation()
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -105,15 +106,20 @@ export default function CourseEdit() {
     e.preventDefault()
     if (!courseData) return
     try {
-      const updatedCourse = {
-        ...courseData,
-        imageURL: imageFile ? imagePreview : courseData.imageURL,
-        introURL: videoFile ? videoPreview : courseData.introURL
-      }
+      const formData = new FormData()
+      formData.append('CourseId', courseId)
+      formData.append('Title', courseData.title)
+      formData.append('Price', String(courseData.price))
+      formData.append('DifficultyLevel', courseData.difficultyLevel)
+      formData.append('Description', courseData.description)
+      formData.append('Prerequisites', courseData.prerequisites)
+      formData.append('LearningOutcomes', JSON.stringify(courseData.learningOutcomes))
+      formData.append('UpdatedBy', courseData.updatedBy)
 
-      // await updateCourse(updatedCourse).unwrap()
+      if (imageFile) formData.append('ImageURL', imageFile)
+      if (videoFile) formData.append('IntroURL', videoFile)
 
-      console.log('Course updated:', updatedCourse)
+      await updateCourse(formData).unwrap()
       alert('Course updated successfully!')
     } catch (error) {
       console.error('Error updating course:', error)
