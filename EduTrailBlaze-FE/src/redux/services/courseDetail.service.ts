@@ -91,6 +91,7 @@ export const courseApi = createApi({
         url: `Course/${id}`
       })
     })
+    // editCourse:
   })
 })
 

@@ -22,6 +22,7 @@ import {
   Trash2
 } from 'lucide-react'
 import Button from '../../../../global/Button/Button'
+import Box from '../../../../global/Box/Box'
 
 export default function CourseEdit() {
   const router = useRouter()
@@ -33,7 +34,7 @@ export default function CourseEdit() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
 
-  const [courseData, setCourseData] = useState<GetCourseById | null>(course ?? null)
+  const [courseData, setCourseData] = useState(course ?? null)
 
   useEffect(() => {
     if (course) {
@@ -45,23 +46,15 @@ export default function CourseEdit() {
   }, [course])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    if (!courseData) return
-    // const { name, value } = e.target
-    setCourseData((prevData) => ({
-      ...prevData!,
-      [e.target.name]: e.target.value
-    }))
+    const { name, value } = e.target
+    setCourseData((prevData) => (prevData ? { ...prevData, [name]: value } : null))
   }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-
     const reader = new FileReader()
-    reader.onload = () => {
-      setImagePreview(reader.result as string)
-    }
-
+    reader.onload = () => setImagePreview(reader.result as string)
     setImageFile(file)
     reader.readAsDataURL(file)
   }
@@ -70,29 +63,41 @@ export default function CourseEdit() {
     const file = event.target.files?.[0]
     if (!file) return
 
-    const videoURL = URL.createObjectURL(file)
-    setVideoPreview(videoURL)
+    if (videoPreview) {
+      URL.revokeObjectURL(videoPreview)
+    }
+
+    const newVideoURL = URL.createObjectURL(file)
     setVideoFile(file)
+    setVideoPreview(newVideoURL)
   }
 
   const handleOutcomeChange = (index: number, value: string) => {
     if (!courseData) return
     const updatedOutcomes = [...courseData.learningOutcomes]
     updatedOutcomes[index] = value
-    setCourseData({
-      ...courseData,
-      learningOutcomes: updatedOutcomes
-    })
+    setCourseData((prev) => (prev ? { ...prev, learningOutcomes: updatedOutcomes } : null))
+  }
+
+  const addOutcome = () => {
+    setCourseData((prev) => (prev ? { ...prev, learningOutcomes: [...prev.learningOutcomes, ''] } : null))
   }
 
   // Xóa outcome
   const removeOutcome = (index: number) => {
-    if (!courseData) return
-    const updatedOutcomes = courseData.learningOutcomes.filter((_, i) => i !== index)
-    setCourseData({
-      ...courseData,
-      learningOutcomes: updatedOutcomes
-    })
+    setCourseData((prev) =>
+      prev ? { ...prev, learningOutcomes: prev.learningOutcomes.filter((_, i) => i !== index) } : null
+    )
+  }
+
+  const handleReset = () => {
+    if (course) {
+      setCourseData(course)
+      setImagePreview(course.imageURL)
+      setVideoPreview(course.introURL)
+      setImageFile(course.imageURL as unknown as File)
+      setVideoFile(course.introURL as unknown as File)
+    }
   }
 
   // Xử lý submit form
@@ -100,11 +105,19 @@ export default function CourseEdit() {
     e.preventDefault()
     if (!courseData) return
     try {
-      console.log('Submitting course data:', courseData)
+      const updatedCourse = {
+        ...courseData,
+        imageURL: imageFile ? imagePreview : courseData.imageURL,
+        introURL: videoFile ? videoPreview : courseData.introURL
+      }
+
+      // await updateCourse(updatedCourse).unwrap()
+
+      console.log('Course updated:', updatedCourse)
       alert('Course updated successfully!')
-      router.push('/courses')
     } catch (error) {
       console.error('Error updating course:', error)
+      alert('Failed to update course!')
     }
   }
 
@@ -129,7 +142,7 @@ export default function CourseEdit() {
 
             <div className='p-8'>
               {courseData ? (
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className='space-y-10'>
                     {/* Basic Information Section */}
                     <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
@@ -154,7 +167,7 @@ export default function CourseEdit() {
 
                         <div className='sm:col-span-3'>
                           <InputNumber
-                            label='Price (₫)'
+                            label='Price'
                             name='price'
                             value={courseData.price}
                             onChange={handleChange}
@@ -194,11 +207,10 @@ export default function CourseEdit() {
                             label='Upload Course Image'
                             name='courseImage'
                             accept='image/*'
-                            // value={courseData.imageURL}
                             onChange={handleImageUpload}
-                            preview={courseData.imageURL}
+                            preview={imagePreview ?? courseData.imageURL}
                             icon={<Image className='w-5 h-5 text-blue-500 mr-2' />}
-                            noLayout={false}
+                            noLayout
                           />
                         </div>
 
@@ -208,9 +220,9 @@ export default function CourseEdit() {
                             name='courseVideo'
                             accept='video/*'
                             onChange={handleVideoUpload}
-                            preview={courseData.introURL}
+                            preview={videoPreview ?? courseData.introURL}
                             icon={<Video className='w-5 h-5 text-red-500 mr-2' />}
-                            noLayout={false}
+                            noLayout
                           />
                         </div>
 
@@ -258,7 +270,7 @@ export default function CourseEdit() {
                     </div>
 
                     {/* Learning Outcomes Section */}
-                    <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
+                    <Box>
                       <div className='flex items-center justify-between mb-6'>
                         <div className='flex items-center'>
                           <div className='w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3'>
@@ -266,7 +278,7 @@ export default function CourseEdit() {
                           </div>
                           <h3 className='text-lg font-semibold text-gray-800'>Learning Outcomes</h3>
                         </div>
-                        <Button variant='Green' className='gap-3'>
+                        <Button variant='Green' className='gap-3' onClick={addOutcome} type='button'>
                           <CirclePlus />
                           Add Another Outcomes
                         </Button>
@@ -285,7 +297,7 @@ export default function CourseEdit() {
                               <input
                                 type='text'
                                 value={outcome}
-                                onChange={handleChange}
+                                onChange={(e) => handleOutcomeChange(index, e.target.value)}
                                 className='block w-full bg-gray-50 focus:ring-green-500 focus:border-green-500 sm:text-sm border-0 rounded-md p-0'
                                 placeholder='Student can...'
                               />
@@ -297,64 +309,26 @@ export default function CourseEdit() {
                               >
                                 <EllipsisVertical />
                               </button>
-                              <button type='button' className='text-gray-400 hover:text-red-500 focus:outline-none p-1'>
+                              <button
+                                type='button'
+                                className='text-gray-400 hover:text-red-500 focus:outline-none p-1'
+                                onClick={() => removeOutcome(index)}
+                              >
                                 <Trash2 />
                               </button>
                             </div>
                           </div>
                         ))}
-
-                        {course?.learningOutcomes.length === 0 && (
-                          <div className='text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300'>
-                            <svg
-                              className='mx-auto h-12 w-12 text-gray-400'
-                              xmlns='http://www.w3.org/2000/svg'
-                              fill='none'
-                              viewBox='0 0 24 24'
-                              stroke='currentColor'
-                            >
-                              <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={1}
-                                d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-                              />
-                            </svg>
-                            <h3 className='mt-2 text-sm font-medium text-gray-900'>No learning results yet</h3>
-                            <p className='mt-1 text-sm text-gray-500'>Add learning outcomes to engage learners.</p>
-                            <div className='mt-4'>
-                              <button
-                                type='button'
-                                className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
-                              >
-                                <svg
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  className='h-5 w-5 mr-2'
-                                  viewBox='0 0 20 20'
-                                  fill='currentColor'
-                                >
-                                  <path
-                                    fillRule='evenodd'
-                                    d='M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z'
-                                    clipRule='evenodd'
-                                  />
-                                </svg>
-                                Add first result
-                              </button>
-                              <Button>Add first result</Button>
-                            </div>
-                          </div>
-                        )}
                       </div>
                       <p className='mt-4 text-sm text-gray-500 bg-yellow-50 p-3 rounded-lg border border-yellow-100'>
                         <strong>Tip:</strong> Use clear action verbs (such as “create,” “analyze,” “design”) to describe
                         the specific skills the learner will acquire.
                       </p>
-                    </div>
+                    </Box>
                   </div>
 
                   <div className='flex justify-end gap-3 mt-8'>
-                    <Button variant='outline' className='gap-3'>
+                    <Button variant='outline' className='gap-3' type='button' onClick={handleReset}>
                       <RotateCcw />
                       Reset
                     </Button>
