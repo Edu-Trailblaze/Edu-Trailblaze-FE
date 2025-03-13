@@ -148,7 +148,7 @@ export default function CourseEdit() {
 
             <div className='p-8'>
               {courseData ? (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} onLoad={isUpdating ? () => <LoadingPage /> : undefined}>
                   <div className='space-y-10'>
                     {/* Basic Information Section */}
                     <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
