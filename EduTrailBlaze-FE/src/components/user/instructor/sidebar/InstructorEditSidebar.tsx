@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MdOutlineScreenShare } from 'react-icons/md'
 import { BsChatLeftText } from 'react-icons/bs'
-import { IoBookOutline } from 'react-icons/io5'
+import { IoArrowUndo, IoBookOutline } from 'react-icons/io5'
 import { FaPencilAlt } from 'react-icons/fa'
 import { useParams } from 'next/navigation'
 
@@ -62,6 +62,11 @@ const InstructorEditSidebar = () => {
       icon: <IoBookOutline className='w-6 h-5' />,
       label: 'Section Edit',
       href: `/instructor/edit/edit-section/${courseId}`
+    },
+    {
+      icon: <IoArrowUndo className='w-6 h-5' />,
+      label: 'Dashboard',
+      href: `/instructor/dashboard/coursePage`
     }
   ]
 

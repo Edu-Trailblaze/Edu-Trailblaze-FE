@@ -43,7 +43,21 @@ export const lectureApi = createApi({
         method: 'POST',
         body: formData
       })
-    })
+    }),
+
+    getLectureById: build.query<ILecture, number>({
+      query: (lectureId) => ({
+        url: `Lecture/${lectureId}`
+      })
+    }), 
+    
+    putLecture: build.mutation<any, EditLecture>({
+      query: (data) => ({
+        url: 'Lecture',
+        method: 'PUT',
+        body: data
+      })
+    }),
   })
 })
 
@@ -52,5 +66,7 @@ export const {
   useGetLectureQuery,
   useGetLectureByConditionsQuery,
   useGetSectionLectureQuery,
-  useCreateSectionLectureVipMutation
+  useCreateSectionLectureVipMutation,
+  useGetLectureByIdQuery,
+  usePutLectureMutation
 } = lectureApi
