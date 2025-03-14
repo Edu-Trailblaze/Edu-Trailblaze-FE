@@ -85,9 +85,14 @@ export default function Course() {
         <div id='about' className='scroll-mt-40'>
           <CourseAbout courseDetails={detail} sectionDetails={section} />
         </div>
-        <div id='outcomes' className='scroll-mt-60'>
+        {/* <div id='outcomes' className='scroll-mt-60'>
           <CourseOutcome />
+        </div> */}
+         <div id='outcomes' className='scroll-mt-60'>
+          {/* +++ Gọi CourseOutcome (đã tách) và truyền userId, courseURL +++ */}
+          <CourseOutcome userId={userId} courseId={Number(courseURL)} />
         </div>
+
         <div id='courses' className='scroll-mt-48'>
           <CourseSection courseDetails={detail} section={section} lecture={lecture} />
         </div>
