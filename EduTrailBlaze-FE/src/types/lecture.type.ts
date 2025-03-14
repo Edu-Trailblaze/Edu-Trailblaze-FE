@@ -7,13 +7,23 @@ interface ILecture {
   sectionId: number
   title: string
   content: string
-  duration: string
+  duration: number
   description: string
   isDeleted: boolean
   createdAt: string
   updatedAt: string
   id: number
   lectureType: LectureType
+}
+
+interface EditLecture {
+  lectureId: number
+  sectionId: number
+  lectureType: string
+  title: string
+  content: string
+  description: string
+  duration: number
 }
 type LectureType = 'Reading' | 'Video' | 'Quiz'
 

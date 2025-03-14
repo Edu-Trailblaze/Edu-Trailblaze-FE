@@ -83,7 +83,7 @@ export default function ProfilePage() {
     console.log('updatedData', updatedData.get('profilePicture'))
 
     try {
-      const update = await updateUser({ id: userId, body: updatedData }).unwrap()
+      await updateUser({ id: userId, body: updatedData }).unwrap()
       toast.success('Profile updated successfully')
       // setTimeout(() => {
       //   window.location.reload()
