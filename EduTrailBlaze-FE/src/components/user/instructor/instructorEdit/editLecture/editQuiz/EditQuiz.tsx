@@ -1,16 +1,29 @@
 import Modal from '@/components/global/Modal/Modal'
 import React, { useState } from 'react'
 import QuizCreator from '../../../CreateQuiz/QuizCreator'
+import { useGetQuizDetailQuery } from '@/redux/services/quiz.service'
+import PreviewQuiz from './previewQuizModal/PreviewQuiz'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
+import { View } from 'lucide-react'
 
 interface QuizItemProp {
-    lectureId: number
-  }
+  lectureId: number
+}
 
 export default function EditQuiz({ lectureId }: QuizItemProp) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isViewQuiz, setIsViewQuiz] = useState(false)
+
   const handleAddQuiz = () => {
     setIsModalOpen(true)
   }
+
+  const handleViewQuiz = () => {
+    setIsViewQuiz(true)
+  }
+  const { data: quizData, isLoading: quizLoading, isFetching: quizFetching } = useGetQuizDetailQuery(lectureId)
+
+  if (quizLoading || quizFetching) return <LoadingPage/>
   return (
     <>
       <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
@@ -27,20 +40,31 @@ export default function EditQuiz({ lectureId }: QuizItemProp) {
             </div>
             <h3 className='text-lg font-semibold text-gray-800'>Quiz</h3>
           </div>
-          <button
-            onClick={handleAddQuiz}
-            type='button'
-            className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150'
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5 mr-2' viewBox='0 0 20 20' fill='currentColor'>
-              <path
-                fillRule='evenodd'
-                d='M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z'
-                clipRule='evenodd'
-              />
-            </svg>
-            Add Quiz
-          </button>
+          {quizData ? (
+            <button
+              onClick={handleViewQuiz}
+              type='button'
+              className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150'
+            >
+              <View className='w-5 mr-1'/>
+              View Quiz
+            </button>
+          ) : (
+            <button
+              onClick={handleAddQuiz}
+              type='button'
+              className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150'
+            >
+              <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5 mr-2' viewBox='0 0 20 20' fill='currentColor'>
+                <path
+                  fillRule='evenodd'
+                  d='M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z'
+                  clipRule='evenodd'
+                />
+              </svg>
+              Add Quiz
+            </button>
+          )}
         </div>
 
         {/* Quiz Settings */}
@@ -72,6 +96,11 @@ export default function EditQuiz({ lectureId }: QuizItemProp) {
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title='Add New Quiz'>
         <QuizCreator lectureId={lectureId} />
+      </Modal>
+
+      {/* View Quiz Modal */}
+      <Modal isOpen={isViewQuiz} onClose={() => setIsViewQuiz(false)} title='Quiz Preview'>
+        <PreviewQuiz lectureId={lectureId}/>
       </Modal>
     </>
   )
