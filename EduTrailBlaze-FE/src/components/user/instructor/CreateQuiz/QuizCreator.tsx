@@ -229,7 +229,7 @@ const QuizCreator = ({ lectureId }: QuizItemProp) => {
                 {previewMode ? 'Edit Mode' : 'Preview Mode'}
               </Button>
               <Button
-                type='button'
+                type='submit'
                 variant='DarkBlue'
                 onClick={saveQuiz}
                 isLoading={isLoading}
