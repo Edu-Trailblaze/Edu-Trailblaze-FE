@@ -1,10 +1,9 @@
 'use client'
 import { useState } from 'react'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Link from 'next/link'
-import SlowMotionVideoIcon from '@mui/icons-material/SlowMotionVideo'
 import Modal from '../../../../../global/Modal/Modal'
+import { ChevronDown, Video, Clock, FileText, User, Play, Users, BookOpen, Compass } from 'lucide-react'
 
 interface CourseSectionProps {
   courseDetails: ICourseDetails
@@ -13,7 +12,9 @@ interface CourseSectionProps {
 }
 
 export default function CourseSection({ courseDetails, section, lecture }: CourseSectionProps) {
-  const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({})
+  const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({
+    [section[0]?.id]: true // Open first section by default
+  })
   const [expandedLectures, setExpandedLectures] = useState<Record<number, boolean>>({})
   const [isModalOpen, setModalOpen] = useState(false)
 
@@ -21,132 +22,210 @@ export default function CourseSection({ courseDetails, section, lecture }: Cours
     setExpandedSections((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }))
   }
 
-  const toggleLectureExpand = (lectureId: number) => {
+  const toggleLectureExpand = (lectureId: number, event: React.MouseEvent) => {
+    event.stopPropagation()
     setExpandedLectures((prev) => ({ ...prev, [lectureId]: !prev[lectureId] }))
   }
 
+  const totalLectures = section.reduce((sum, sec) => sum + sec.numberOfLectures, 0)
+
   return (
-    <>
+    <div className=' py-8' id='courses'>
       {/* Summary */}
-      <div className=' mb-5'>
-        <div className='w-[900px]'>
-          <h1 className='text-2xl mb-3 font-semibold'>Course Content</h1>
-          <div className='flex gap-2'>
-            <p>{section.length} sections</p>
-            <p>•</p>
-            <p>{section.reduce((sum, sec) => sum + sec.numberOfLectures, 0)} lectures</p>
-            <p>•</p>
-            <p>{courseDetails.duration}min</p>
+      <div className='mb-6'>
+        <div className='flex items-center space-x-3 mb-4'>
+          <div className='h-8 w-1 bg-blue-600 rounded-full'></div>
+          <h2 className='text-2xl md:text-3xl font-bold'>Course Content</h2>
+        </div>
+
+        <div className='flex flex-wrap gap-2 items-center text-gray-600 mb-4'>
+          <div className='flex items-center'>
+            <BookOpen size={16} className='mr-1' />
+            <span>{section.length} sections</span>
+          </div>
+          <div className='w-1.5 h-1.5 rounded-full bg-gray-400'></div>
+          <div className='flex items-center'>
+            <FileText size={16} className='mr-1' />
+            <span>{totalLectures} lectures</span>
+          </div>
+          <div className='w-1.5 h-1.5 rounded-full bg-gray-400'></div>
+          <div className='flex items-center'>
+            <Clock size={16} className='mr-1' />
+            <span>{courseDetails.duration} minutes total</span>
           </div>
         </div>
       </div>
 
       {/* Course Content */}
-      <div className=' mb-10 grid grid-cols-12 select-none'>
+      <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12'>
         {/* Sections & Lectures */}
-        <div className='col-span-8 border border-gray-400 mr-12'>
-          {section.map((sec) => (
-            <div key={sec.id} className='w-full'>
-              <div
-                className='flex border-b border-gray-400 p-3 bg-gray-200 justify-between items-center cursor-pointer'
-                onClick={() => toggleExpand(sec.id)}
-              >
-                <div className='flex items-center gap-2'>
-                  {/* Icon có hiệu ứng xoay */}
-                  <div
-                    className={`transition-transform duration-500 ${
-                      expandedSections[sec.id] ? 'rotate-180' : 'rotate-0'
-                    }`}
-                  >
-                    <ExpandMoreIcon />
+        <div className='lg:col-span-8'>
+          <div className='border border-gray-200 rounded-lg overflow-hidden shadow-sm'>
+            {section.map((sec, index) => (
+              <div key={sec.id} className='border-b border-gray-200 last:border-b-0'>
+                <div
+                  className={`flex justify-between items-center px-4 py-4 cursor-pointer transition-colors duration-200 ${
+                    expandedSections[sec.id] ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'
+                  }`}
+                  onClick={() => toggleExpand(sec.id)}
+                >
+                  <div className='flex items-center space-x-3'>
+                    <div className='flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium'>
+                      {index + 1}
+                    </div>
+                    <h3 className='font-medium text-gray-900'>{sec.title}</h3>
                   </div>
-                  <span>{sec.title}</span>
+
+                  <div className='flex items-center space-x-4'>
+                    <div className='hidden sm:flex items-center text-sm text-gray-500 space-x-2'>
+                      <span className='flex items-center'>
+                        <FileText size={14} className='mr-1' />
+                        <span>
+                          {sec.numberOfLectures} {sec.numberOfLectures > 1 ? 'lectures' : 'lecture'}
+                        </span>
+                      </span>
+                      <span className='h-1 w-1 bg-gray-300 rounded-full'></span>
+                      <span className='flex items-center'>
+                        <Clock size={14} className='mr-1' />
+                        <span>{sec.duration.substring(0, 5)}</span>
+                      </span>
+                    </div>
+
+                    <ChevronDown
+                      size={20}
+                      className={`text-gray-500 transition-transform duration-300 ${
+                        expandedSections[sec.id] ? 'transform rotate-180' : ''
+                      }`}
+                    />
+                  </div>
                 </div>
 
-                <div className='flex items-center gap-1 text-sm'>
-                  <span>
-                    {sec.numberOfLectures} {sec.numberOfLectures > 1 ? 'lectures' : 'lecture'}
-                  </span>
-                  <span>•</span>
-                  <span>{sec.duration.substring(0, 5)}</span>
-                </div>
-              </div>
-
-              {expandedSections[sec.id] &&
-                lecture
-                  .filter((lec) => lec.sectionId === sec.id && lec.lectures.length > 0)
-                  .map((lec) => (
-                    <div key={lec.sectionId} className='p-3 text-sm border-b border-gray-400 flex flex-col'>
-                      {lec.lectures.map((l) => (
-                        <div key={l.id} className='gap-2 p-2'>
-                          <div className='flex items-center gap-2 w-full'>
-                            <SlowMotionVideoIcon className='hover:animate-spin' />
-                            <span>{l.title}</span>
+                <div
+                  className={`transition-all duration-300 overflow-hidden ${
+                    expandedSections[sec.id] ? 'max-h-[2000px]' : 'max-h-0'
+                  }`}
+                >
+                  {lecture
+                    .filter((lec) => lec.sectionId === sec.id && lec.lectures.length > 0)
+                    .map((lec) => (
+                      <div key={lec.sectionId} className='border-t border-gray-100'>
+                        {lec.lectures.map((l) => (
+                          <div key={l.id} className='px-4 py-3 hover:bg-gray-50'>
                             <div
-                              onClick={() => toggleLectureExpand(l.id)}
-                              className={`transition-transform duration-500 cursor-pointer ${
-                                expandedLectures[l.id] ? 'rotate-180' : 'rotate-0'
+                              className='flex items-center gap-2 cursor-pointer'
+                              onClick={(e) => toggleLectureExpand(l.id, e)}
+                            >
+                              <div className='flex-shrink-0 w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-blue-600'>
+                                <Play size={14} />
+                              </div>
+                              <div className='flex-grow'>
+                                <span className='text-gray-900'>{l.title}</span>
+                              </div>
+                              <div className='flex items-center text-sm text-gray-500 space-x-2'>
+                                <span className='whitespace-nowrap hidden sm:inline-flex items-center'>
+                                  <Clock size={14} className='mr-1' />
+                                  {l.duration} min
+                                </span>
+                                <span className='sm:hidden'>{l.duration}m</span>
+                                <ChevronDown
+                                  size={18}
+                                  className={`transition-transform duration-300 ${
+                                    expandedLectures[l.id] ? 'transform rotate-180' : ''
+                                  }`}
+                                />
+                              </div>
+                            </div>
+
+                            <div
+                              className={`ml-8 mr-2 transition-all duration-300 overflow-hidden ${
+                                expandedLectures[l.id] ? 'max-h-40 mt-2' : 'max-h-0'
                               }`}
                             >
-                              <ExpandMoreIcon className='bg-gray-300 rounded-full' />
+                              <p className='text-gray-600 text-sm bg-gray-50 p-3 rounded-md'>
+                                {l.description || 'No description provided for this lecture.'}
+                              </p>
                             </div>
-                            <div className='ml-auto'>{l.duration}min</div>
                           </div>
-
-                          {expandedLectures[l.id] && <div className='ml-8 mr-14 text-gray-600'>{l.description}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-            </div>
-          ))}
+                        ))}
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Instructors */}
-        <div className='col-span-4 border border-gray-400 px-10 py-3 h-fit'>
-          <p className='font-semibold'>Instructors</p>
-          {courseDetails?.instructors.slice(0, 2).map((instructor, index) => (
-            <div key={index} className='flex mb-5 mt-5'>
-              <Avatar>
-                <AvatarImage src={instructor.profilePictureUrl} />
-              </Avatar>
-              <div className='ml-5'>
-                <Link href='' className='text-sm underline'>
-                  {instructor.userName}
-                </Link>
-                <div className='text-xs text-gray-500'>
-                  0 Courses • {courseDetails.enrollment.totalEnrollments} learners
+        <div className='lg:col-span-4'>
+          <div className='border border-gray-200 rounded-lg p-6 shadow-sm bg-white sticky top-20'>
+            <div className='flex items-center mb-4'>
+              <User size={20} className='mr-2 text-blue-600' />
+              <h3 className='text-lg font-semibold'>Instructors</h3>
+            </div>
+
+            {courseDetails?.instructors.slice(0, 2).map((instructor, index) => (
+              <div key={index} className='flex items-center py-3 border-b border-gray-100 last:border-b-0'>
+                <Avatar className='h-12 w-12 border-2 border-blue-100'>
+                  <AvatarImage src={instructor.profilePictureUrl} alt={instructor.userName} />
+                  <AvatarFallback className='bg-blue-100 text-blue-800'>
+                    {instructor.userName.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className='ml-3'>
+                  <Link href='' className='text-blue-600 hover:text-blue-800 font-medium'>
+                    {instructor.userName}
+                  </Link>
+                  <div className='flex items-center text-xs text-gray-500 mt-1'>
+                    <Compass size={12} className='mr-1' />
+                    <span>0 Courses</span>
+                    <span className='mx-1'>•</span>
+                    <Users size={12} className='mr-1' />
+                    <span>{courseDetails.enrollment.totalEnrollments} learners</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {/* View all instructors */}
-          <button className='text-sm text-blue-700 hover:underline' onClick={() => setModalOpen(true)}>
-            View all {courseDetails?.instructors.length} instructors
-          </button>
+            {courseDetails?.instructors.length > 2 && (
+              <button
+                onClick={() => setModalOpen(true)}
+                className='w-full mt-4 bg-blue-50 text-blue-600 hover:bg-blue-100 py-2 px-4 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-200'
+              >
+                <Users size={16} className='mr-2' />
+                View all {courseDetails?.instructors.length} instructors
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Modal for all instructors */}
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} title='Instructors'>
-        <div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4'>
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} title='Course Instructors'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
           {courseDetails?.instructors.map((instructor, index) => (
-            <div key={index} className='flex space-x-3 items-center'>
-              <Avatar className='border border-gray-300'>
-                <AvatarImage src={instructor.profilePictureUrl} />
-                <AvatarFallback>Instructor</AvatarFallback>
+            <div
+              key={index}
+              className='bg-white rounded-lg p-4 border border-gray-200 flex items-center space-x-4 hover:shadow-md transition-shadow duration-200'
+            >
+              <Avatar className='h-16 w-16 border-2 border-blue-100'>
+                <AvatarImage src={instructor.profilePictureUrl} alt={instructor.userName} />
+                <AvatarFallback className='bg-blue-100 text-blue-800 text-lg'>
+                  {instructor.userName.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <Link href='' className='text-sm font-semibold'>
+                <Link href='' className='text-blue-600 hover:text-blue-800 font-medium'>
                   {instructor.userName}
                 </Link>
-                <p className='text-sm text-gray-500'>0 Courses • 0 learners</p>
+                <p className='text-sm text-gray-500 mt-1'>
+                  0 Courses • {courseDetails.enrollment.totalEnrollments} learners
+                </p>
+                <button className='text-sm text-blue-600 hover:underline mt-2'>View Profile</button>
               </div>
             </div>
           ))}
         </div>
       </Modal>
-    </>
+    </div>
   )
 }

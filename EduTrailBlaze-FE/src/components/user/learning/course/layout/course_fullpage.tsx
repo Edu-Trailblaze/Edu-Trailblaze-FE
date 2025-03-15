@@ -3,7 +3,10 @@ import { useParams } from 'next/navigation'
 import { skipToken } from '@reduxjs/toolkit/query'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import { useGetSectionLectureQuery } from '../../../../../redux/services/lecture.service'
-import { useGetCourseDetailsQuery } from '../../../../../redux/services/courseDetail.service'
+import {
+  useGetCourseDetailsQuery,
+  useGetCoursePageInformationQuery
+} from '../../../../../redux/services/courseDetail.service'
 import CourseHeader from '../CourseComponents/header/course_header'
 import CourseDetails from '../CourseComponents/sections/course_details'
 import Navigation from '../CourseComponents/navigation/course_nav'
@@ -18,10 +21,19 @@ import { jwtDecode } from 'jwt-decode'
 export default function Course() {
   const { courseURL } = useParams()
   const [lectureURL, setLectureURL] = useState<number | undefined>()
-  const { data: courseDetails, isLoading, isFetching, error } = useGetCourseDetailsQuery(Number(courseURL))
-  const detail = courseDetails?.courseDetails
-  const section = courseDetails?.sectionDetails
+  // const { data: courseDetails, isLoading, isFetching, error } = useGetCourseDetailsQuery(Number(courseURL))
+  const {
+    data: coursePage,
+    isLoading: courseLoading,
+    isFetching: courseFetching
+  } = useGetCoursePageInformationQuery(Number(courseURL))
+  // console.log('courseSectionInformation', coursePage?.courseSectionInformation)
+  // const detail = courseDetails?.courseDetails
+  const detail = coursePage?.courseSectionInformation.courseDetails
+  // const section = courseDetails?.sectionDetails
+  const section = coursePage?.courseSectionInformation.sectionDetails
   const sectionId = section?.map((item) => item.id) || []
+  const recommendedCourses = coursePage?.recommendedCourses
   const [userId, setUserId] = useState('')
 
   const { data: lecture, isFetching: isLectureFetching } = useGetSectionLectureQuery(
@@ -50,7 +62,7 @@ export default function Course() {
     }
   }, [lecture])
 
-  if (isLoading || isFetching || isLectureFetching) {
+  if (courseLoading || courseFetching || isLectureFetching) {
     return <LoadingPage />
   }
 
@@ -58,6 +70,7 @@ export default function Course() {
   if (!section) return <div>No section available.</div>
   if (!lecture) return <div>No lecture available.</div>
   if (!lectureURL) return <div>No LectureURL</div>
+  if (!recommendedCourses) return <div>No recommended courses available.</div>
 
   return (
     <div>
@@ -85,10 +98,11 @@ export default function Course() {
         <div id='about' className='scroll-mt-40'>
           <CourseAbout courseDetails={detail} sectionDetails={section} />
         </div>
+
         {/* <div id='outcomes' className='scroll-mt-60'>
           <CourseOutcome />
         </div> */}
-         <div id='outcomes' className='scroll-mt-60'>
+        <div id='outcomes' className='scroll-mt-60'>
           {/* +++ Gọi CourseOutcome (đã tách) và truyền userId, courseURL +++ */}
           <CourseOutcome userId={userId} courseId={Number(courseURL)} />
         </div>
@@ -100,7 +114,7 @@ export default function Course() {
           <CourseReview courseDetails={detail} courseId={Number(courseURL)} />
         </div>
         <div id='suggestion' className='scroll-mt-48'>
-          <CourseSuggestion />
+          <CourseSuggestion recommendedCourses={recommendedCourses} />
         </div>
       </div>
     </div>

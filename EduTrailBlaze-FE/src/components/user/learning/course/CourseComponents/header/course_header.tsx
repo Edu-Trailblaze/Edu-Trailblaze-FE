@@ -1,20 +1,16 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '../../../../../ui/avatar'
 import { formatNumber } from '../../../../../../helper/format'
 import Modal from '../../../../../global/Modal/Modal'
-import { useGetUserProfileQuery } from '../../../../../../redux/services/user.service'
-import {
-  useGetCheckCourseStatusQuery,
-  useLazyGetCheckCourseStatusQuery,
-  usePostEnrollMutation
-} from '../../../../../../redux/services/enroll.service'
+import { useGetCheckCourseStatusQuery, usePostEnrollMutation } from '../../../../../../redux/services/enroll.service'
 import { usePostCartMutation } from '../../../../../../redux/services/cart.service'
 import { useDispatch } from 'react-redux'
 import { addItemToCart } from '../../../../../../redux/slice/cart.slice'
 import Button from '../../../../../global/Button/Button'
 import { toast } from 'react-toastify'
+import { BookOpen, Star, Award, Clock, Users, ArrowRight, ShoppingCart } from 'lucide-react'
 
 interface CourseHeaderProps extends ICourseFull {
   courseDetails: ICourseDetails
@@ -38,11 +34,10 @@ export default function CourseHeader({
 
   const dispatch = useDispatch()
 
-  const {
-    data: enroll,
-    isLoading: checkLoading,
-    error
-  } = useGetCheckCourseStatusQuery({ courseId: Number(courseURL), studentId: userId })
+  const { data: enroll, isLoading: checkLoading } = useGetCheckCourseStatusQuery({
+    courseId: Number(courseURL),
+    studentId: userId
+  })
 
   const [postEnroll, { isLoading: postLoading }] = usePostEnrollMutation()
 
@@ -70,129 +65,206 @@ export default function CourseHeader({
   }
 
   return (
-    <div className='p-6 bg-sky-200 relative mb-20'>
-      <div className='flex items-center md:space-y-0 md:space-x-12 container mb-20'>
-        {/* Left Section */}
-        <div className='w-1/2'>
-          <h1 className='text-4xl font-bold text-gray-900 mb-4'>{courseDetails.title}</h1>
-          <p className='text-lg text-gray-800 mb-3'>{courseDetails.description}</p>
-          <div className='mb-5'>
-            <div className='flex gap-3 items-center'>
-              <p className='font-semibold '>Categories:</p>
-              {/* {courseDetails.tags?.map((tag, index) =>
-               <div key={index} className='bg-blue-300 rounded-full h-full  p-3'>{String(tag)}</div>
-            )} */}
-              <ul className='flex flex-wrap gap-2'>
+    <div className='relative mb-28'>
+      {/* Hero section with gradient background */}
+      <div className='bg-gradient-to-r from-sky-100 to-blue-200 p-16 md:p-24 lg:p-32 relative overflow-hidden'>
+        {/* Background pattern */}
+        <div className='absolute inset-0 opacity-10'>
+          <div className='absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-400'></div>
+          <div className='absolute top-40 left-10 w-40 h-40 rounded-full bg-blue-500'></div>
+          <div className='absolute bottom-10 right-40 w-32 h-32 rounded-full bg-blue-300'></div>
+        </div>
+
+        <div className='container'>
+          <div className='flex flex-col md:flex-row md:items-center md:space-x-8 lg:space-x-16 relative z-10'>
+            {/* Left Section */}
+            <div className='w-full md:w-1/2 mb-8 md:mb-0'>
+              <div className='inline-block bg-blue-600 text-white text-sm font-bold px-3 py-1 rounded-full mb-4'>
+                {courseDetails.difficultyLevel} Level
+              </div>
+
+              <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight'>
+                {courseDetails.title}
+              </h1>
+
+              <p className='text-lg text-gray-800 mb-6 leading-relaxed'>{courseDetails.description}</p>
+
+              <div className='flex flex-wrap gap-2 mb-6'>
+                <p className='font-semibold text-gray-700 mr-2'>Categories:</p>
                 {courseDetails.tags?.map((tag, index) => (
-                  <li
+                  <div
                     key={index}
-                    className='bg-blue-300 text-blue-900 font-medium rounded-full px-4 py-2 text-sm shadow-md transition-all duration-300 hover:bg-blue-400 hover:text-white'
+                    className='bg-white bg-opacity-70 text-blue-700 font-medium rounded-full px-4 py-1 text-sm shadow-sm transition-all duration-300 hover:bg-blue-600 hover:text-white'
                   >
                     {tag}
-                  </li>
+                  </div>
                 ))}
-              </ul>
-            </div>
-          </div>
+              </div>
 
-          <div className='flex items-center space-x-3 mb-5'>
-            {/* Display instructor images */}
-            <div className='flex -space-x-3 '>
-              {courseDetails.instructors.length > 3 && (
-                <div className='w-10 h-10 rounded-full bg-gray-200 flex items-center text-sm font-semibold border-2 border-white'>
-                  +{courseDetails.instructors.length - 3}
+              <div className='flex items-center mb-6'>
+                <div className='flex -space-x-3 mr-4'>
+                  {courseDetails.instructors
+                    .slice(0, 3)
+                    .reverse()
+                    .map((instructor, index) => (
+                      <Avatar key={index} className='border-2 border-white'>
+                        <AvatarImage src={instructor.profilePictureUrl} />
+                        <AvatarFallback className='bg-blue-200 text-blue-800'>
+                          {instructor.userName.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                  {courseDetails.instructors.length > 3 && (
+                    <div className='w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-sm font-semibold border-2 border-white text-blue-800'>
+                      +{courseDetails.instructors.length - 3}
+                    </div>
+                  )}
                 </div>
-              )}
-              {courseDetails.instructors
-                .slice(0, 3)
-                .reverse()
-                .map((instructor, index) => (
-                  <Avatar key={index}>
-                    <AvatarImage src={instructor.profilePictureUrl} />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                ))}
+
+                <div>
+                  <p className='text-gray-700 font-medium'>
+                    By{' '}
+                    <span onClick={() => setModalOpen(true)} className='text-blue-600 hover:underline'>
+                      {courseDetails.instructors[0].userName}
+                    </span>
+                    {courseDetails.instructors.length > 1 && (
+                      <button onClick={openModal} className='ml-1 text-blue-600 hover:underline font-medium'>
+                        + {courseDetails.instructors.length - 1} more
+                      </button>
+                    )}
+                  </p>
+                  <div className='flex items-center text-sm text-gray-600 mt-1'>
+                    <Users size={14} className='mr-1' />
+                    <span>{formatNumber(courseDetails.enrollment.totalEnrollments)} students enrolled</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className='flex items-center space-x-4'>
+                <Button
+                  variant='primary'
+                  size='xl'
+                  isLoading={checkLoading || postLoading || isAddingToCart}
+                  className='flex items-center justify-center gap-2 py-3 px-5 text-lg shadow-lg hover:shadow-xl transition-all duration-300'
+                >
+                  {enroll?.status === 'Not bought' ? (
+                    <div onClick={() => handleAddToCart(userId, courseURL)} className='flex items-center'>
+                      <ShoppingCart size={20} className='mr-2' /> Add to cart
+                    </div>
+                  ) : enroll?.status === 'Not enrolled' ? (
+                    <div onClick={() => handleEnroll()} className='flex items-center'>
+                      <BookOpen size={20} className='mr-2' /> Enroll now
+                    </div>
+                  ) : (
+                    <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} className='flex items-center'>
+                      <ArrowRight size={20} className='mr-2' /> Go to course
+                    </Link>
+                  )}
+                </Button>
+
+                <div className='flex items-center'>
+                  <Star size={20} className='text-yellow-500 mr-1' />
+                  <span className='font-bold text-lg'>{courseDetails.review.averageRating}</span>
+                  <span className='text-gray-500 text-sm ml-1'>
+                    ({formatNumber(courseDetails.review.totalRatings)} reviews)
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* Instructor label */}
-            <p className='text-gray-700'>
-              Instructors:{' '}
-              <a href='#' className='text-blue-600 underline'>
-                {courseDetails.instructors[0].userName}
-              </a>{' '}
-            </p>
-
-            <button onClick={openModal} className='underline font-bold text-blue-600'>
-              +{courseDetails.instructors.length} more
-            </button>
-          </div>
-
-          {/* Enroll button */}
-          <Button variant='primary' size='xl' isLoading={checkLoading || postLoading}>
-            {enroll?.status === 'Not bought' ? (
-              <div onClick={() => handleAddToCart(userId, courseURL)}>Add to cart</div>
-            ) : enroll?.status === 'Not enrolled' ? (
-              <div onClick={() => handleEnroll()}>Enroll</div>
-            ) : (
-              <Link href={`/student/course/${courseURL}/lecture/${lectureURL}`} target='_blank'>
-                Go to course
-              </Link>
-            )}
-          </Button>
-          <p>
-            <span className='font-bold mt-10'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</span>
-            already registered
-          </p>
-        </div>
-
-        {/* Right Section */}
-        <div className='w-1/2 min-h-[400px] ml-auto'>
-          <img src={courseDetails.imageURL} alt='Course Visual' className='rounded-lg shadow-lg ml-auto ' />
-        </div>
-      </div>
-
-      {/* Course details */}
-      <div className='mx-auto p-6 rounded-lg border-2 bg-white container absolute bottom-[-60px] left-0 right-0 max-w-[1320px] z-0'>
-        <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
-          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
-            <p className='font-semibold text-lg'>{sectionDetails.length} course services</p>
-            <p className='text-gray-500'>Get in-depth knowledge of a subject</p>
-          </div>
-
-          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
-            <p className='text-blue-700 font-bold text-xl '>{courseDetails.review.averageRating} ★</p>
-            <p className='text-gray-500'>({formatNumber(courseDetails.review.totalRatings)} reviews)</p>
-          </div>
-
-          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
-            <p className='font-semibold text-lg'>{courseDetails.difficultyLevel} level</p>
-            <p className='text-gray-500'>No prior experience required</p>
-          </div>
-
-          <div className='text-center md:border-r-2 border-gray-300 pr-2'>
-            <p className='font-semibold text-lg'>{courseDetails.duration} hours</p>
-            <p className='text-gray-500'>at 10 hours a week</p>
-          </div>
-
-          <div className='text-center pr-2'>
-            <p className='font-semibold text-lg'>Flexible schedule</p>
-            <p className='text-gray-500'>Learn at your own pace</p>
+            {/* Right Section */}
+            <div className='w-full md:w-1/2'>
+              <div className='relative'>
+                <div className='absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur-lg opacity-50'></div>
+                <img
+                  src={courseDetails.imageURL}
+                  alt='Course Visual'
+                  className='rounded-xl shadow-2xl object-cover w-full h-full relative z-10 border-4 border-white'
+                />
+                <div className='absolute bottom-4 left-4 bg-white bg-opacity-90 px-4 py-2 rounded-lg shadow-md z-20'>
+                  <div className='flex items-center'>
+                    <Clock size={16} className='text-blue-600 mr-2' />
+                    <span className='font-medium'>{courseDetails.duration} hours</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} title='Instructors'>
-        <div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4'>
+      {/* Course details stats card */}
+      <div className='container px-4'>
+        <div className='bg-white rounded-xl shadow-xl p-6 md:p-8 -mt-16 relative z-20 border border-gray-100'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6'>
+            <div className='flex flex-col items-center p-4 border-b sm:border-b md:border-b-0 md:border-r border-gray-200'>
+              <div className='p-3 bg-blue-100 rounded-full mb-3'>
+                <BookOpen size={24} className='text-blue-600' />
+              </div>
+              <p className='font-bold text-xl mb-1'>{sectionDetails.length}</p>
+              <p className='font-medium text-gray-800'>Course sections</p>
+              <p className='text-sm text-gray-500 text-center'>Comprehensive curriculum</p>
+            </div>
+
+            <div className='flex flex-col items-center p-4 border-b sm:border-b md:border-b-0 md:border-r border-gray-200'>
+              <div className='p-3 bg-yellow-100 rounded-full mb-3'>
+                <Star size={24} className='text-yellow-600' />
+              </div>
+              <p className='font-bold text-xl mb-1'>{courseDetails.review.averageRating} ★</p>
+              <p className='font-medium text-gray-800'>Rating</p>
+              <p className='text-sm text-gray-500 text-center'>
+                ({formatNumber(courseDetails.review.totalRatings)} reviews)
+              </p>
+            </div>
+
+            <div className='flex flex-col items-center p-4 border-b sm:border-b md:border-b-0 md:border-r border-gray-200'>
+              <div className='p-3 bg-green-100 rounded-full mb-3'>
+                <Award size={24} className='text-green-600' />
+              </div>
+              <p className='font-bold text-xl mb-1'>{courseDetails.difficultyLevel}</p>
+              <p className='font-medium text-gray-800'>Difficulty</p>
+              <p className='text-sm text-gray-500 text-center'>Suitable for all levels</p>
+            </div>
+
+            <div className='flex flex-col items-center p-4 border-b sm:border-b md:border-b-0 md:border-r border-gray-200'>
+              <div className='p-3 bg-purple-100 rounded-full mb-3'>
+                <Clock size={24} className='text-purple-600' />
+              </div>
+              <p className='font-bold text-xl mb-1'>{courseDetails.duration}</p>
+              <p className='font-medium text-gray-800'>Hours</p>
+              <p className='text-sm text-gray-500 text-center'>Self-paced learning</p>
+            </div>
+
+            <div className='flex flex-col items-center p-4'>
+              <div className='p-3 bg-red-100 rounded-full mb-3'>
+                <Users size={24} className='text-red-600' />
+              </div>
+              <p className='font-bold text-xl mb-1'>{formatNumber(courseDetails.enrollment.totalEnrollments)}</p>
+              <p className='font-medium text-gray-800'>Students</p>
+              <p className='text-sm text-gray-500 text-center'>Join the community</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Instructors Modal */}
+      <Modal isOpen={isModalOpen} onClose={closeModal} title='Course Instructors'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
           {courseDetails.instructors.map((instructor, index) => (
-            <div key={index} className='flex items-center space-x-3'>
-              <Avatar className='border-2 border-gray-300'>
+            <div
+              key={index}
+              className='rounded-lg p-4 flex items-center space-x-4 hover:shadow-md transition-shadow duration-300'
+            >
+              <Avatar className='h-16 w-16 border-2 border-blue-200'>
                 <AvatarImage src={instructor.profilePictureUrl} />
+                <AvatarFallback className='bg-blue-200 text-blue-800 text-lg'>
+                  {instructor.userName.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <p className='font-bold'>{instructor.userName}</p>
-                <p className='text-sm text-gray-500'>
-                  {0} Courses • {0} learners
-                </p>
+                <p className='font-bold text-lg'>{instructor.userName}</p>
+                <p className='text-sm text-gray-500'>Instructor</p>
+                <button className='text-blue-600 text-sm hover:underline mt-1'>View Profile</button>
               </div>
             </div>
           ))}
