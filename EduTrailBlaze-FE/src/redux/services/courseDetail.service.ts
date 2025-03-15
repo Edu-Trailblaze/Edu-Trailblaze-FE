@@ -105,6 +105,11 @@ export const courseApi = createApi({
         }
       },
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
+    }),
+    getCoursePageInformation: build.query<RecommendCourse, number>({
+      query: (id) => ({
+        url: `Course/get-course-page-information/${id}`
+      })
     })
   })
 })
@@ -114,13 +119,12 @@ export const {
   useAddCourseMutation,
   useGetCourseDetailsQuery,
   useGetCourseQuery,
-  // useUpdateCourseMutation,
-  // useDeleteCourseMutation
   useGetInstructorOfCourseQuery,
   useGetCourseByIdAndTagQuery,
   useGetCourseByIdAndTagPagingQuery,
   useGetCoursePagingQuery,
   useGetInstructorCoursePagingQuery,
   useGetCourseByIdQuery,
-  useUpdateCourseMutation
+  useUpdateCourseMutation,
+  useGetCoursePageInformationQuery
 } = courseApi

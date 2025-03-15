@@ -7,4 +7,6 @@ interface Instructor {
   image: string
   isPrimaryInstructor: boolean
   createdAt: string
+  fullname: string
+  id: string
 }

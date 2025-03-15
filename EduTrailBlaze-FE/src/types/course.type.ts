@@ -56,6 +56,7 @@ interface ICourseSuggestions {
   id: number
 }
 interface ICourseDetails {
+  id: number
   title: string
   description: string
   introURL: string
@@ -69,6 +70,7 @@ interface ICourseDetails {
   duration: number
   difficultyLevel: string
   learningOutcomes: string[]
+  approvalStatus: string
   createdAt: string
   estimatedCompletionTime: number
   updatedAt: string
@@ -209,4 +211,16 @@ interface GetCourseById {
   approvalStatus: 'Pending' | 'Approved' | 'Rejected'
   createdAt: string
   updatedAt: string
+}
+
+interface RecommendCourse {
+  courseSectionInformation: ICourseFull
+  recommendedCourses: IRecommendedCourse[]
+}
+interface IRecommendedCourse {
+  course: ICourseDetails
+  tags: Tag[]
+  review: ReviewCourse
+  instructors: IEInstructor[]
+  enrollment: Enrollment
 }
