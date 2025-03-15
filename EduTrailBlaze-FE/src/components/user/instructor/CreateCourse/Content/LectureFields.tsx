@@ -34,7 +34,7 @@ export default function LectureFields({ sectionIndex, lectures, setSections, upd
         sectionId: Date.now(),
         title: '',
         lectureType: 'Video' as LectureType,
-        contentPDFFile: null,
+        contentFile: null,
         description: '',
         duration: 0,
         content: ''

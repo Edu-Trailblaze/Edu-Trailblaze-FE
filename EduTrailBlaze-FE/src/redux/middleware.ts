@@ -17,6 +17,8 @@ import { enrollmentApi } from './services/enrollment.service'
 import { enrollApi } from './services/enroll.service'
 import { userProgressApi } from './services/userProgress.service'
 
+import { userCertificateApi } from './services/userCertificate.service'
+
 export const apiMiddlewares: Middleware[] = [
   courseApi.middleware,
   authApi.middleware,
@@ -33,5 +35,7 @@ export const apiMiddlewares: Middleware[] = [
 
   enrollmentApi.middleware,
   userProgressApi.middleware,
-  enrollApi.middleware
+  enrollApi.middleware,
+
+  userCertificateApi.middleware
 ]
