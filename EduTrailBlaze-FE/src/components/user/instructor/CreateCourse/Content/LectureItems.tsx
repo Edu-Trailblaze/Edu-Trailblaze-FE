@@ -162,7 +162,7 @@ export default function LectureItem({
                 name='contentPDFFile'
                 onChange={(e) => {
                   const file = e.target.files?.[0] || null
-                  handleLectureChange(sectionIndex, lectureIndex, 'contentPDFFile', file)
+                  handleLectureChange(sectionIndex, lectureIndex, 'contentFile', file)
                 }}
                 accept='application/pdf , application/msword'
               />

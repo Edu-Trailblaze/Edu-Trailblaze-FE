@@ -43,6 +43,8 @@ export default function CourseEdit() {
         ...prev,
         ...course
       }))
+      setImagePreview(course.imageURL)
+      setVideoPreview(course.introURL)
     }
   }, [course])
 
@@ -54,23 +56,25 @@ export default function CourseEdit() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => setImagePreview(reader.result as string)
+    // const reader = new FileReader()
+    // reader.onload = () => setImagePreview(reader.result as string)
     setImageFile(file)
-    reader.readAsDataURL(file)
+    // reader.readAsDataURL(file)
+    setImagePreview(URL.createObjectURL(file))
   }
 
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    if (videoPreview) {
-      URL.revokeObjectURL(videoPreview)
-    }
+    // if (videoPreview) {
+    //   URL.revokeObjectURL(videoPreview)
+    // }
 
-    const newVideoURL = URL.createObjectURL(file)
+    // const newVideoURL = URL.createObjectURL(file)
     setVideoFile(file)
-    setVideoPreview(newVideoURL)
+    // setVideoPreview(newVideoURL)
+    setVideoPreview(URL.createObjectURL(file))
   }
 
   const handleOutcomeChange = (index: number, value: string) => {
@@ -96,8 +100,8 @@ export default function CourseEdit() {
       setCourseData(course)
       setImagePreview(course.imageURL)
       setVideoPreview(course.introURL)
-      setImageFile(course.imageURL as unknown as File)
-      setVideoFile(course.introURL as unknown as File)
+      setImageFile(null)
+      setVideoFile(null)
     }
   }
 
