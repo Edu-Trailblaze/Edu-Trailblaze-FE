@@ -1,38 +1,26 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import Head from 'next/head'
 import { useGetLectureByIdQuery, usePutLectureMutation } from '@/redux/services/lecture.service'
 import { useParams } from 'next/navigation'
-import InputFile from '@/components/global/Input/InputFile'
 import { Check, RotateCcw } from 'lucide-react'
 import Button from '@/components/global/Button/Button'
-import { useGetVideoByConditionsQuery, usePostVideoMutation } from '@/redux/services/video.service'
 import { toast } from 'react-toastify'
 import QuizCreator from '../../CreateQuiz/QuizCreator'
 import Modal from '@/components/global/Modal/Modal'
+import EditVideo from './editVideo/EditVideo'
+import EditReadingFile from './editReadingFile/EditReadingFile'
+import EditQuiz from './editQuiz/EditQuiz'
 
 export default function EditLecture() {
   const params = useParams()
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [videoTitle, setVideoTitle] = useState('')
-  const [videoFile, setVideoFile] = useState<File | null>(null)
-  const [videoPreview, setVideoPreview] = useState<string | null>(null)
-  const [readingFileInfo, setReadingFileInfo] = useState<{
-    name: string
-    size: number
-    type: string
-    url: string
-  } | null>(null)
   const lectureId = Number(params.lectureId)
-  const sectionId = Number(params.sectionId)
   const [editLecture] = usePutLectureMutation()
-  const [postVideo] = usePostVideoMutation()
+
   const {
     data: lectureData,
     isLoading: lectureLoading,
     isFetching: lectureFetching
   } = useGetLectureByIdQuery(lectureId)
-  const {data: videoData, isLoading: videoDataLoading, isFetching: videoDataFetching} = useGetVideoByConditionsQuery({lectureId: lectureId})
 
   const [lectureInfo, setLectureInfo] = useState({
     lectureId: 0,
@@ -58,47 +46,6 @@ export default function EditLecture() {
     }
   }, [lectureData])
 
-  useEffect(() => {
-    console.log("Updated videoFile:", videoFile);
-  }, [videoFile]);
-
-  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    console.log("Selected video file:", file);
-    const videoURL = URL.createObjectURL(file)
-    setVideoPreview(videoURL)
-    setVideoFile(file)
-  }
-
-  const handleReadingFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    const fileURL = URL.createObjectURL(file)
-
-    setReadingFileInfo({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      url: fileURL
-    })
-  }
-
-  const handleRemoveFile = () => {
-    if (readingFileInfo?.url) {
-      URL.revokeObjectURL(readingFileInfo.url) // Giải phóng bộ nhớ
-    }
-
-    if (videoFile && videoPreview) {
-      URL.revokeObjectURL(videoPreview)
-      setVideoPreview(null)
-      setVideoFile(null)
-    }
-    setReadingFileInfo(null)
-  }
-
   const handleEditInformation = async () => {
     try {
       const response = await editLecture(lectureInfo).unwrap()
@@ -108,35 +55,6 @@ export default function EditLecture() {
       console.error('Edit failed:', error)
       toast.error('Edit failed!')
     }
-  }
-
-  const handlePostVideo = async () => {
-    if (!videoFile) {
-      toast.error('Please select a video file!')
-      return
-    }
-
-    console.log("Before appending to FormData, videoFile:", videoFile);
-
-    const formData = new FormData()
-    formData.append('File', videoFile)
-    formData.append('LectureId', String(lectureInfo.lectureId))
-    formData.append('Title', videoTitle)
-    console.log("FormData content:", [...formData.values()]); // Kiểm tra FormData
-
-    try {
-      const response = await postVideo(formData).unwrap()
-      console.log('Upload successful:', response)
-      toast.success('Video uploaded successfully!')
-    } catch (error) {
-      console.error('Upload failed:', error)
-      toast.error('Video upload failed!')
-      alert('Upload failed!')
-    }
-  }
-
-  const handleAddQuiz = () => {
-    setIsModalOpen(true)
   }
 
   const handleReset = () => {}
@@ -310,310 +228,28 @@ export default function EditLecture() {
                           <RotateCcw />
                           Reset
                         </Button>
-                        <Button onClick={handleEditInformation} variant='indigo'>
+                        <button
+                          onClick={handleEditInformation}
+                          type='button'
+                          className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150'
+                        >
                           <Check />
                           Save changes
-                        </Button>
+                        </button>
                       </div>
                     </div>
 
                     {/* Video Type Content */}
-                    {lectureInfo.lectureType == 'Video' && (
-                      <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
-                        <div className='flex items-center mb-6'>
-                          <div className='w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-3'>
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-5 w-5'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path d='M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z' />
-                            </svg>
-                          </div>
-                          <h3 className='text-lg font-semibold text-gray-800'>Video Content</h3>
-                        </div>
-
-                        <div className='grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-6'>
-                          <div className='sm:col-span-6'>
-                            <label htmlFor='title' className='block text-sm font-medium text-gray-700 mb-1'>
-                              Video Title
-                            </label>
-                            <div className='relative'>
-                              <input
-                                type='text'
-                                name='title'
-                                id='title'
-                                value={videoData && videoData.length > 0 ? videoData[0].title : videoTitle}
-                                onChange={(e) => setVideoTitle(e.target.value)}
-                                className='shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-300 rounded-lg p-3 border transition duration-150'
-                                placeholder='Enter video title'
-                              />
-                            </div>
-                          </div>
-                          <div className='sm:col-span-6'>
-                            <label htmlFor='videoUrl' className='block text-sm font-medium text-gray-700 mb-1'>
-                              URL Video
-                            </label>
-                            <div className='mt-1 flex rounded-lg shadow-sm'>
-                              <InputFile
-                                label='Upload Course Video'
-                                name='courseVideo'
-                                accept='video/*'
-                                onChange={handleVideoUpload}
-                                preview={videoPreview ?? (videoData && videoData.length > 0 ? videoData[0].videoUrl : '')}
-                                noLayout={false}
-                              />
-                            </div>
-                            <p className='mt-2 text-xs text-gray-500'>Supports YouTube, Vimeo, or direct video URL</p>
-                            <Button
-                              variant='outline'
-                              className='gap-3 hover:text-red-500 hover:bg-red-50'
-                              type='button'
-                              onClick={handleRemoveFile}
-                            >
-                              <RotateCcw />
-                              Reset File
-                            </Button>
-                          </div>
-
-                          {/* <div className='sm:col-span-6'>
-                          <label htmlFor='transcript' className='block text-sm font-medium text-gray-700 mb-1'>
-                            Lyric transcript (Transcript)
-                          </label>
-                          <div className='mt-1'>
-                            <textarea
-                              id='transcript'
-                              name='transcript'
-                              rows={8}
-                              className='shadow-sm focus:ring-red-500 focus:border-red-500 block w-full sm:text-sm border-gray-300 rounded-lg p-3 border transition duration-150'
-                              placeholder='Enter notes for video lectures...'
-                            />
-                          </div>
-                          <div className='mt-2 flex justify-between'>
-                            <span className='text-xs text-gray-500'>
-                              Providing transcripts will help learners easily access the content.
-                            </span>
-                            <div>
-                              <button
-                                type='button'
-                                className='inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
-                              >
-                                <svg
-                                  xmlns='http://www.w3.org/2000/svg'
-                                  className='h-4 w-4 mr-1'
-                                  viewBox='0 0 20 20'
-                                  fill='currentColor'
-                                >
-                                  <path
-                                    fillRule='evenodd'
-                                    d='M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z'
-                                    clipRule='evenodd'
-                                  />
-                                </svg>
-                                Download transcript
-                              </button>
-                            </div>
-                          </div>
-                        </div> */}
-                        </div>
-                        <div className='flex justify-end gap-3 mt-8'>
-                          <Button onClick={handlePostVideo} variant='indigo'>
-                            <Check />
-                            Save changes
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                    {lectureInfo.lectureType == 'Video' && <EditVideo lectureId={lectureId} />}
 
                     {/* Reading Type Content */}
                     {lectureInfo.lectureType == 'Reading' && (
-                      <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
-                        <div className='flex items-center mb-6'>
-                          <div className='w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3'>
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-5 w-5'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path d='M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z' />
-                            </svg>
-                          </div>
-                          <h3 className='text-lg font-semibold text-gray-800'>Reading Information</h3>
-                        </div>
-
-                        <div className='grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-6'>
-                          <div className='sm:col-span-6'>
-                            <label className='block text-sm font-medium text-gray-700 mb-1'>Document</label>
-                            <div className='mt-1'>
-                              <div className='flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg'>
-                                <div className='space-y-1 text-center'>
-                                  <svg
-                                    xmlns='http://www.w3.org/2000/svg'
-                                    className='mx-auto h-12 w-12 text-gray-400'
-                                    fill='none'
-                                    viewBox='0 0 24 24'
-                                    stroke='currentColor'
-                                  >
-                                    <path
-                                      strokeLinecap='round'
-                                      strokeLinejoin='round'
-                                      strokeWidth={1}
-                                      d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'
-                                    />
-                                  </svg>
-                                  <div className='flex text-sm text-gray-600'>
-                                    <label
-                                      htmlFor='file-upload'
-                                      className='relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none'
-                                    >
-                                      <span>Upload your file</span>
-                                      <input
-                                        onChange={handleReadingFileUpload}
-                                        id='file-upload'
-                                        name='file-upload'
-                                        type='file'
-                                        accept='.pdf,.doc,.docx'
-                                        className='sr-only'
-                                      />
-                                    </label>
-                                    <p className='pl-1'>or drag and drop</p>
-                                  </div>
-                                  <p className='text-xs text-gray-500'>maximum 10MB</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className='sm:col-span-6'>
-                            <div className='bg-gray-50 rounded-lg p-4 border border-gray-200'>
-                              <div className='flex items-center'>
-                                <div className='flex-shrink-0 h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center'>
-                                  <svg
-                                    xmlns='http://www.w3.org/2000/svg'
-                                    className='h-6 w-6 text-red-600'
-                                    fill='none'
-                                    viewBox='0 0 24 24'
-                                    stroke='currentColor'
-                                  >
-                                    <path
-                                      strokeLinecap='round'
-                                      strokeLinejoin='round'
-                                      strokeWidth={2}
-                                      d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'
-                                    />
-                                  </svg>
-                                </div>
-                                {readingFileInfo && (
-                                  <div className='ml-4 flex-1'>
-                                    <div className='flex items-center justify-between'>
-                                      <h3 className='text-sm font-medium'>{readingFileInfo?.name}</h3>
-                                      <div className='flex items-center space-x-2'>
-                                        <button
-                                          onClick={handleRemoveFile}
-                                          type='button'
-                                          className='text-gray-400 hover:text-red-500'
-                                        >
-                                          <svg
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            className='h-5 w-5'
-                                            viewBox='0 0 20 20'
-                                            fill='currentColor'
-                                          >
-                                            <path
-                                              fillRule='evenodd'
-                                              d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
-                                              clipRule='evenodd'
-                                            />
-                                          </svg>
-                                        </button>
-                                      </div>
-                                    </div>
-                                    <div className='mt-1 text-sm text-gray-500'>{readingFileInfo?.size} B</div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='flex justify-end gap-3 mt-8'>
-                          <Button onClick={handlePostVideo} variant='indigo'>
-                            <Check />
-                            Save changes
-                          </Button>
-                        </div>
-                      </div>
+                      <EditReadingFile/>
                     )}
 
                     {/* Quiz Type Content */}
                     {lectureInfo.lectureType == 'Quiz' && (
-                      <div className='bg-white p-6 rounded-lg border border-gray-100 shadow-sm'>
-                        <div className='flex items-center justify-between mb-6'>
-                          <div className='flex items-center'>
-                            <div className='w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-3'>
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                className='h-5 w-5'
-                                viewBox='0 0 20 20'
-                                fill='currentColor'
-                              >
-                                <path
-                                  fillRule='evenodd'
-                                  d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z'
-                                  clipRule='evenodd'
-                                />
-                              </svg>
-                            </div>
-                            <h3 className='text-lg font-semibold text-gray-800'>Quiz</h3>
-                          </div>
-                          <button
-                          onClick={handleAddQuiz}
-                            type='button'
-                            className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150'
-                          >
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='h-5 w-5 mr-2'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z'
-                                clipRule='evenodd'
-                              />
-                            </svg>
-                            Add Quiz
-                          </button>
-                        </div>
-
-                        {/* Quiz Settings */}
-                        {/* <div className='mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-100'>
-                          <h4 className='text-sm font-medium text-yellow-800 mb-2'>Cài đặt bài kiểm tra</h4>
-                          <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-                            <div>
-                              <label className='flex items-center'>
-                                <input
-                                  type='checkbox'
-                                  className='h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded'
-                                />
-                                <span className='ml-2 text-sm text-gray-700'>Thời gian giới hạn</span>
-                              </label>
-                            </div>
-                            <div>
-                              <label className='flex items-center'>
-                                <input
-                                  type='checkbox'
-                                  className='h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded'
-                                />
-                                <span className='ml-2 text-sm text-gray-700'>Hiển thị đáp án</span>
-                              </label>
-                            </div>
-                            <div></div>
-                          </div>
-                        </div> */}
-                      </div>
+                      <EditQuiz lectureId={lectureId}/>
                     )}
                   </div>
                 </form>
@@ -622,9 +258,6 @@ export default function EditLecture() {
           </div>
         </main>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title='Add New Quiz'>
-        <QuizCreator />
-      </Modal>
     </div>
   )
 }

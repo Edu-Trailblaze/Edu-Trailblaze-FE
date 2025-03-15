@@ -11,7 +11,7 @@ import CourseHeader from '../CourseComponents/header/course_header'
 import CourseDetails from '../CourseComponents/sections/course_details'
 import Navigation from '../CourseComponents/navigation/course_nav'
 import CourseAbout from '../CourseComponents/sections/course_about'
-// import CourseOutcome from '../CourseComponents/sections/course_outcome'
+import CourseOutcome from '../CourseComponents/sections/course_outcome'
 import CourseSection from '../CourseComponents/sections/course_section'
 import CourseReview from '../CourseComponents/review/course_review'
 import CourseSuggestion from '../CourseComponents/suggestion/course_suggestion'
@@ -98,9 +98,15 @@ export default function Course() {
         <div id='about' className='scroll-mt-40'>
           <CourseAbout courseDetails={detail} sectionDetails={section} />
         </div>
+
+        {/* <div id='outcomes' className='scroll-mt-60'>
+          <CourseOutcome />
+        </div> */}
         <div id='outcomes' className='scroll-mt-60'>
-          {/* <CourseOutcome /> */}
+          {/* +++ Gọi CourseOutcome (đã tách) và truyền userId, courseURL +++ */}
+          <CourseOutcome userId={userId} courseId={Number(courseURL)} />
         </div>
+
         <div id='courses' className='scroll-mt-48'>
           <CourseSection courseDetails={detail} section={section} lecture={lecture} />
         </div>
