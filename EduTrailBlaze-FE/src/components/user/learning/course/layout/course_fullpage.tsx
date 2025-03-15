@@ -11,7 +11,7 @@ import CourseHeader from '../CourseComponents/header/course_header'
 import CourseDetails from '../CourseComponents/sections/course_details'
 import Navigation from '../CourseComponents/navigation/course_nav'
 import CourseAbout from '../CourseComponents/sections/course_about'
-import CourseOutcome from '../CourseComponents/sections/course_outcome'
+// import CourseOutcome from '../CourseComponents/sections/course_outcome'
 import CourseSection from '../CourseComponents/sections/course_section'
 import CourseReview from '../CourseComponents/review/course_review'
 import CourseSuggestion from '../CourseComponents/suggestion/course_suggestion'
@@ -99,7 +99,7 @@ export default function Course() {
           <CourseAbout courseDetails={detail} sectionDetails={section} />
         </div>
         <div id='outcomes' className='scroll-mt-60'>
-          <CourseOutcome />
+          {/* <CourseOutcome /> */}
         </div>
         <div id='courses' className='scroll-mt-48'>
           <CourseSection courseDetails={detail} section={section} lecture={lecture} />
