@@ -10,6 +10,7 @@ import { useGetSectionbyConditionsQuery, useUpdateSectionMutation } from '../../
 import { useGetSectionLectureQuery } from '../../../../../redux/services/lecture.service'
 import LoadingPage from '../../../../animate/Loading/LoadingPage'
 import { toast } from 'react-toastify'
+import Link from 'next/link'
 
 export default function EditSections() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -202,7 +203,9 @@ export default function EditSections() {
                                   <div className='text-sm text-gray-500'>{lecture.duration}</div>
                                 </td>
                                 <td className='px-6 py-4 whitespace-nowrap text-right text-sm font-medium'>
-                                  <button className='text-blue-500 hover:text-blue-700 mr-3'>Edit</button>
+                                  <Link href={`/instructor/edit/edit-lecture/${courseId}/${section.sectionId}/${lecture.id}`}>
+                                    <button className='text-blue-500 hover:text-blue-700 mr-3'>Edit</button>
+                                  </Link>
                                   <button className='text-red-500 hover:text-red-700'>Delete</button>
                                 </td>
                               </tr>
