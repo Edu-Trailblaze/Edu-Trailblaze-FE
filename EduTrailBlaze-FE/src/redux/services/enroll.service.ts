@@ -6,9 +6,10 @@ export const enrollApi = createApi({
   reducerPath: 'Enrollment/api',
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL
-  }),
+  }), 
   tagTypes: ['Enrolls'],
   endpoints: (build) => ({
+
     getCheckCourseStatus: build.query<EnrollCourseStatus, Omit<EnrollCourseStatus, 'status'>>({
       query: ({ courseId, studentId }) => ({
         url: `Enrollment/check-course-status`,
@@ -16,14 +17,26 @@ export const enrollApi = createApi({
         params: { courseId, studentId }
       })
     }),
+
     postEnroll: build.mutation<any, PostEnroll>({
       query: (body) => ({
         url: `Enrollment`,
         method: 'POST',
         body
       })
+    }),
+
+    //new
+    getStudentCourseProgress: build.query<Progress, { studentId: string; courseId: number }>({
+    query: ({ studentId, courseId }) => ({
+      url: `Enrollment/student-course-progress`,
+      method: 'GET',
+      // Chú ý viết hoa chữ "S" và "C" giống như Swagger yêu cầu
+      params: { StudentId: studentId, CourseId: courseId }
+      })
     })
+
   })
 })
 
-export const { useGetCheckCourseStatusQuery, usePostEnrollMutation, useLazyGetCheckCourseStatusQuery } = enrollApi
+export const { useGetCheckCourseStatusQuery, usePostEnrollMutation, useLazyGetCheckCourseStatusQuery, useGetStudentCourseProgressQuery } = enrollApi
