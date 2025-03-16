@@ -18,13 +18,10 @@ const ListItemsWithIcon = ({ text }: ListItemProps) => {
 export default function CourseAbout({ courseDetails }: ICourseFull) {
   const parseLearningOutcomes = (outcomes: string[] | undefined): string[] => {
     if (!outcomes || outcomes.length === 0) return []
-    try {
-      return JSON.parse(outcomes[0]) // Chuyển chuỗi JSON thành mảng thực sự
-    } catch (error) {
-      console.error('Error parsing learning outcomes:', error)
-      return []
-    }
+
+    return outcomes
   }
+
   const learningOutcomes = parseLearningOutcomes(courseDetails?.learningOutcomes)
 
   return (
