@@ -60,10 +60,6 @@ export default function LectureSideBar({
     return { ...section, lectures: sectionLectures }
   })
 
-  // Calculate course progress
-  const totalLectures = processedSections.reduce((total, section) => total + section.lectures.length, 0)
-  const completedLectures = userProgress?.filter((p) => p.isCompleted)?.length || 0
-
   const getLectureIcon = (lectureType: string) => {
     switch (lectureType) {
       case 'Reading':
@@ -79,7 +75,7 @@ export default function LectureSideBar({
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-white w-80 transition-transform duration-300 transform ${
+      className={`min-h-screen fixed top-0 left-0 h-full bg-white w-80 transition-transform duration-300 transform ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } md:relative md:translate-x-0 border-r border-gray-200 flex flex-col z-50 shadow-md`}
     >
