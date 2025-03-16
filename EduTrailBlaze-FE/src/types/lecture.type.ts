@@ -14,16 +14,16 @@ interface ILecture {
   updatedAt: string
   id: number
   lectureType: LectureType
+  docUrl: string
 }
 
 interface EditLecture {
-  lectureId: number
-  sectionId: number
-  lectureType: string
-  title: string
-  content: string
-  description: string
-  duration: number
+  LectureId: number
+  LectureType: string
+  Title: string
+  Content: string
+  Description: string
+  Duration: number
 }
 type LectureType = 'Reading' | 'Video' | 'Quiz'
 

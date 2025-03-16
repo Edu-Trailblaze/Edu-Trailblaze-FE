@@ -1,8 +1,17 @@
 import Button from '@/components/global/Button/Button'
+import { usePutLectureMutation } from '@/redux/services/lecture.service'
 import { Check } from 'lucide-react'
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
 
-export default function EditReadingFile() {
+interface EditReadingFileProps {
+  lectureId: number
+}
+
+export default function EditReadingFile({ lectureId }: EditReadingFileProps) {
+  const [editReadingFileLecture] = usePutLectureMutation()
+  const [readingFile, setReadingFile] = useState<File | null>(null)
+  const [readingFilePreview, setReadingFilePreview] = useState<string | null>(null)
   const [readingFileInfo, setReadingFileInfo] = useState<{
     name: string
     size: number
@@ -15,6 +24,8 @@ export default function EditReadingFile() {
     if (!file) return
 
     const fileURL = URL.createObjectURL(file)
+    setReadingFile(file)
+    setReadingFilePreview(fileURL)
 
     setReadingFileInfo({
       name: file.name,
@@ -29,6 +40,28 @@ export default function EditReadingFile() {
       URL.revokeObjectURL(readingFileInfo.url) // Giải phóng bộ nhớ
     }
     setReadingFileInfo(null)
+  }
+
+  const handleUploadFile = async () => {
+    if (!readingFileInfo) {
+      toast.error('Please select a reading file!')
+      return
+    }
+    const formData = new FormData()
+    formData.append('LectureId', String(lectureId))
+    if (readingFile) {
+      formData.append('ContentFile', readingFile)
+    }
+
+    try {
+      await editReadingFileLecture(formData).unwrap()
+      toast.success('Reading file updated successfully!')
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
+    } catch (error) {
+      toast.error('Failed to upload reading file!')
+    }
   }
   return (
     <>
@@ -133,7 +166,7 @@ export default function EditReadingFile() {
           </div>
         </div>
         <div className='flex justify-end gap-3 mt-8'>
-          <Button variant='indigo'>
+          <Button onClick={handleUploadFile} variant='indigo' type='button'>
             <Check />
             Save changes
           </Button>

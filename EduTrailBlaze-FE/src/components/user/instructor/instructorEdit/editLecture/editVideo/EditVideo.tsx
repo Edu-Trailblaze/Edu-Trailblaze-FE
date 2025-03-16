@@ -60,7 +60,7 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
     console.log('FormData content:', [...formData.values()]) // Kiểm tra FormData
 
     try {
-      const response = await postVideo(formData).unwrap()
+      await postVideo(formData).unwrap()
       toast.success('Video uploaded successfully!')
     } catch (error) {
       console.error('Upload failed:', error)
