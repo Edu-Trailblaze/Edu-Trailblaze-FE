@@ -51,7 +51,7 @@ export const lectureApi = createApi({
       })
     }), 
     
-    putLecture: build.mutation<any, EditLecture>({
+    putLecture: build.mutation<any, FormData>({
       query: (data) => ({
         url: 'Lecture',
         method: 'PUT',
