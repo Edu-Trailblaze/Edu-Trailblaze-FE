@@ -7,16 +7,21 @@ import SectionFields from '../../CreateCourse/Content/SectionFields'
 import Modal from '../../../../global/Modal/Modal'
 import { useParams } from 'next/navigation'
 import { useGetSectionbyConditionsQuery, useUpdateSectionMutation } from '../../../../../redux/services/section.service'
-import { useGetSectionLectureQuery } from '../../../../../redux/services/lecture.service'
+import { useDeleteLectureMutation, useGetSectionLectureQuery } from '../../../../../redux/services/lecture.service'
 import LoadingPage from '../../../../animate/Loading/LoadingPage'
 import { toast } from 'react-toastify'
 import Link from 'next/link'
+import CreateLecture from '../../createLecture/CreateLecture'
+import '@/components/global/Modal/ReactModal.css'
+import { delay } from 'framer-motion'
 
 export default function EditSections() {
   const [modalOpen, setModalOpen] = useState(false)
+  const [isLectureModalOpen, setIsLectureModalOpen] = useState(false)
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
   const [editingSection, setEditingSection] = useState<ISection | null>(null)
   const [updateSection, { isLoading: updateSectionLoading }] = useUpdateSectionMutation()
+  const [deleteLecture] = useDeleteLectureMutation()
   const params = useParams()
 
   const courseId = params.courseId as string
@@ -87,6 +92,25 @@ export default function EditSections() {
         .finally(() => {
           setEditingSection(null)
         })
+    }
+  }
+
+  const handleAddLecture = () => {
+    setIsLectureModalOpen(true)
+  }
+
+  const handleDeleteLecture = async (lectureId: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this lecture?')
+    if (!confirmDelete) return
+
+    try {
+      await deleteLecture(lectureId).unwrap()
+      toast.success('Lecture deleted successfully.')
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
+    } catch (error) {
+      toast.error('Failed to delete lecture. Please try again.')
     }
   }
 
@@ -168,7 +192,7 @@ export default function EditSections() {
                     <div className='flex justify-between items-center mb-4'>
                       <h4 className='text-lg font-medium text-blue-700'>Lectures</h4>
                       <button
-                        // onClick={() => addNewLecture(section.id)}
+                        onClick={handleAddLecture}
                         className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded flex items-center text-sm shadow-sm'
                       >
                         <Plus size={16} className='mr-1' />
@@ -203,10 +227,17 @@ export default function EditSections() {
                                   <div className='text-sm text-gray-500'>{lecture.duration}</div>
                                 </td>
                                 <td className='px-6 py-4 whitespace-nowrap text-right text-sm font-medium'>
-                                  <Link href={`/instructor/edit/edit-lecture/${courseId}/${section.sectionId}/${lecture.id}`}>
+                                  <Link
+                                    href={`/instructor/edit/edit-lecture/${courseId}/${section.sectionId}/${lecture.id}`}
+                                  >
                                     <button className='text-blue-500 hover:text-blue-700 mr-3'>Edit</button>
                                   </Link>
-                                  <button className='text-red-500 hover:text-red-700'>Delete</button>
+                                  <button
+                                    onClick={() => handleDeleteLecture(lecture.id)}
+                                    className='text-red-500 hover:text-red-700'
+                                  >
+                                    Delete
+                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -218,6 +249,9 @@ export default function EditSections() {
                         </div>
                       )}
                     </div>
+                    <Modal isOpen={isLectureModalOpen} onClose={() => setIsLectureModalOpen(false)} title=''>
+                      <CreateLecture sectionId={section.sectionId} />
+                    </Modal>
                   </div>
                 )}
               </div>

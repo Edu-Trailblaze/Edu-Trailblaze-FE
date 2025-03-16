@@ -58,6 +58,20 @@ export const lectureApi = createApi({
         body: data
       })
     }),
+
+    createLecture: build.mutation<ResponseMessage, FormData>({
+      query: (formData) => ({
+        url: 'Lecture/create-lecture',
+        method: 'POST',
+        body: formData
+      })
+    }),
+    deleteLecture: build.mutation<any, number>({ 
+      query: (lectureId) => ({
+        url: `Lecture/${lectureId}`,
+        method: 'DELETE'
+      })
+    }),
   })
 })
 
@@ -68,5 +82,7 @@ export const {
   useGetSectionLectureQuery,
   useCreateSectionLectureVipMutation,
   useGetLectureByIdQuery,
-  usePutLectureMutation
+  usePutLectureMutation,
+  useCreateLectureMutation,
+  useDeleteLectureMutation
 } = lectureApi

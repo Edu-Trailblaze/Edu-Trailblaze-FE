@@ -12,8 +12,8 @@ export default function VideoEditForm() {
   const [isSaving, setIsSaving] = useState(false)
   const [notification, setNotification] = useState({ show: false, message: '', type: '' })
   const [videoTitle, setVideoTitle] = useState('')
-    const [videoFile, setVideoFile] = useState<File | null>(null)
-    const [videoPreview, setVideoPreview] = useState<string | null>(null)
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [videoPreview, setVideoPreview] = useState<string | null>(null)
 
   interface FormData {
     title: string
@@ -28,22 +28,22 @@ export default function VideoEditForm() {
   }
 
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0]
-      if (!file) return
-  
-      console.log('Selected video file:', file)
-      const videoURL = URL.createObjectURL(file)
-      setVideoPreview(videoURL)
-      setVideoFile(file)
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    console.log('Selected video file:', file)
+    const videoURL = URL.createObjectURL(file)
+    setVideoPreview(videoURL)
+    setVideoFile(file)
+  }
+
+  const handleRemoveFile = () => {
+    if (videoFile && videoPreview) {
+      URL.revokeObjectURL(videoPreview)
+      setVideoPreview(null)
+      setVideoFile(null)
     }
-  
-    const handleRemoveFile = () => {
-      if (videoFile && videoPreview) {
-        URL.revokeObjectURL(videoPreview)
-        setVideoPreview(null)
-        setVideoFile(null)
-      }
-    }
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target
