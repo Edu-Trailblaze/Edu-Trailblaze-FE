@@ -113,14 +113,6 @@ export default function EditLecture() {
     url: string
   }
 
-  const handleClickViewFile = ({ url }: HandleClickViewFileProps): void => {
-    const newUrl = url + '?fl_attachment=true';
-    console.log('newUrl:', newUrl);
-    window.open(newUrl, '_blank', 'noopener,noreferrer');
-  };
-  
-  
-
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50'>
       <div className='flex'>
@@ -427,16 +419,9 @@ export default function EditLecture() {
                                   <div className='ml-4 flex-1'>
                                     <div className='flex items-center justify-between'>
                                       <h3 className='text-sm font-medium'>Your current Reading File</h3>
-                                      <div className='flex items-center space-x-2 p-2 rounded hover:bg-blue-100 hover:text-blue-500'>
-                                        <button
-                                          type='button'
-                                          onClick={() => handleClickViewFile({ url: lectureData.docUrl })}
-                                          className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-                                        >
-                                          View/Download File
-                                        </button>
-                                      </div>
+                                      <p>{lectureData.docUrl}</p>
                                     </div>
+                                    <div className='mt-1 text-sm text-gray-500'>Please copy the link and paste it in your browser to view and download</div>
                                   </div>
                                 )}
                               </div>
