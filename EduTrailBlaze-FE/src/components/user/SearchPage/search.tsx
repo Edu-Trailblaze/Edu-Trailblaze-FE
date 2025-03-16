@@ -11,12 +11,6 @@ export default function SearchPage() {
   const searchParams = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
 
-  // const { data: courses, isLoading } = useGetCoursePagingQuery(
-  //   { Title: searchQuery, PageIndex: 1, PageSize: 10 },
-  //   { skip: !searchQuery }
-  // )
-  // if (!courses?.items?.length) return <h1>No course</h1>
-
   return (
     <div className='min-h-screen bg-white'>
       <main className='max-w-7xl mx-auto px-6 py-8'>
@@ -24,7 +18,7 @@ export default function SearchPage() {
           <h2 className='text-2xl font-bold mb-2'>{searchQuery && `Results for "${searchQuery}"`}</h2>
         </div>
 
-        <div className='flex'>
+        {/* <div className='flex'>
           <SearchSidebar />
 
           <div className='flex-1'>
@@ -65,13 +59,13 @@ export default function SearchPage() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            </div> */}
 
-            <div className=''>
-              <SearchCard searchQuery={searchQuery} />
-            </div>
-          </div>
+        <div className=''>
+          <SearchCard searchQuery={searchQuery} />
         </div>
+        {/* </div>
+        </div> */}
       </main>
     </div>
   )

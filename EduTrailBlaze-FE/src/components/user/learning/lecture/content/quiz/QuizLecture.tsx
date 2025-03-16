@@ -3,26 +3,32 @@ import QuizIntro from './QuizIntro'
 import QuizResult from './QuizResult'
 import QuizQuestion from './QuizQuestion'
 import LoadingPage from '../../../../../animate/Loading/LoadingPage'
+import { useGetQuizDetailQuery } from '@/redux/services/quiz.service'
 
 interface QuizLectureProps {
-  quizDetail?: QuizDetail
   userId: string
   lecture: ILecture
   onNextLecture: () => void
 }
 
-export default function QuizLecture({ lecture, quizDetail, onNextLecture, userId }: QuizLectureProps) {
-  if (!quizDetail) {
-    return <LoadingPage />
-  }
-  const { id, passingScore, questions, title } = quizDetail
-
-  const answers = questions.flatMap((q) => q.answers)
+export default function QuizLecture({ lecture, onNextLecture, userId }: QuizLectureProps) {
+  const { data: quizData } = useGetQuizDetailQuery(lecture.id)
 
   const [quizStarted, setQuizStarted] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState<number[]>(Array(questions.length).fill(-1))
+  const [selectedAnswers, setSelectedAnswers] = useState<number[]>([])
   const [quizCompleted, setQuizCompleted] = useState(false)
+
+  if (!quizData) {
+    return (
+      <div>
+        <LoadingPage />
+      </div>
+    )
+  }
+
+  const { passingScore, questions, title } = quizData
+  const answers = questions.flatMap((q) => q.answers)
 
   const startQuiz = () => {
     setQuizStarted(true)
@@ -67,7 +73,7 @@ export default function QuizLecture({ lecture, quizDetail, onNextLecture, userId
   }
 
   if (!quizStarted && !quizCompleted) {
-    return <QuizIntro quiz={quizDetail} startQuiz={startQuiz} onSkipQuiz={handleSkipQuiz} />
+    return <QuizIntro quiz={quizData} startQuiz={startQuiz} onSkipQuiz={handleSkipQuiz} />
   }
 
   if (quizCompleted) {

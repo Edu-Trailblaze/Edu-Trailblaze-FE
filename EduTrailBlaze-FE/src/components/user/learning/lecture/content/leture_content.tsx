@@ -23,7 +23,6 @@ export default function LectureContent({
   onNextLecture
 }: LectureContentProps) {
   const { data: userProgress } = useGetUserProgressQuery({ userId: decodedUserId, lectureId: lecture.id })
-  const { data: quizData } = useGetQuizDetailQuery(lecture.id)
 
   const renderLectureTypeIcon = () => {
     switch (lectureType) {
@@ -56,7 +55,7 @@ export default function LectureContent({
           <ReadingLecture lecture={lecture} userId={decodedUserId} userProgress={userProgress} />
         )}
         {lectureType === 'Quiz' && (
-          <QuizLecture lecture={lecture} quizDetail={quizData} onNextLecture={onNextLecture} userId={decodedUserId} />
+          <QuizLecture lecture={lecture} onNextLecture={onNextLecture} userId={decodedUserId} />
         )}
       </div>
     </div>
