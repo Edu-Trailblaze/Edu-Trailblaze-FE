@@ -1,5 +1,6 @@
+import SideMenu from '@/components/admin/SideMenu/sidemenu'
+
 import React from 'react'
-import SideMenu from './sidemenu'
 
 export default {
   children: '',

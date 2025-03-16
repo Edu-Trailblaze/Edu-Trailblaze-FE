@@ -18,7 +18,6 @@ import {
   ListSubheader,
   Divider
 } from '@mui/material'
-import { Paper, useMediaQuery } from '@mui/material'
 import scss from './SideMenu.module.scss'
 
 import EqualizerIcon from '@mui/icons-material/Equalizer'
