@@ -140,12 +140,12 @@ export default function CourseHeader({
                 </div>
               </div>
 
-              <div className='flex items-center space-x-4'>
+              <div className='flex items-center gap-4'>
                 <Button
                   variant='primary'
                   size='xl'
                   isLoading={checkLoading || postLoading || isAddingToCart}
-                  className='flex items-center justify-center gap-2 py-3 px-5 text-lg shadow-lg hover:shadow-xl transition-all duration-300'
+                  className='flex items-center justify-center py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300'
                 >
                   {enroll?.status === 'Not bought' ? (
                     <div onClick={() => handleAddToCart(userId, courseURL)} className='flex items-center'>
