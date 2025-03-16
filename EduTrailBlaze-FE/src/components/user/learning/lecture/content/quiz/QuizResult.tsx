@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { usePostUserProgressMutation } from '../../../../../../redux/services/userProgress.service'
+import { toast } from 'react-toastify'
 
 interface QuizResultProps {
   lecture: ILecture
@@ -24,8 +25,11 @@ export default function QuizResult({
 
   const handleUserProgress = async () => {
     try {
-      postUserProgress({ userId: userId, lectureId: lecture.id })
-      window.location.reload()
+      await postUserProgress({ userId: userId, lectureId: lecture.id })
+      toast.success('Quiz completed!')
+      setTimeout(() => {
+        window.location.reload()
+      }, 3000)
     } catch (error) {
       console.error('Error enrolling:', error)
     }
