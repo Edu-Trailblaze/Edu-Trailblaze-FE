@@ -90,12 +90,12 @@ export default function QuizQuestion({
             >
               Skip Question
             </button>
-            <button
+            {/* <button
               onClick={onSkipQuiz}
               className='w-full sm:w-auto border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-sm font-medium'
             >
               Skip Quiz
-            </button>
+            </button> */}
           </div>
           <button
             onClick={goToNextQuestion}
