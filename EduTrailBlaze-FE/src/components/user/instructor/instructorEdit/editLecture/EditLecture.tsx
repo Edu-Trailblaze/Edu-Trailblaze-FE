@@ -8,10 +8,12 @@ import { toast } from 'react-toastify'
 import EditVideo from './editVideo/EditVideo'
 import EditReadingFile from './editReadingFile/EditReadingFile'
 import EditQuiz from './editQuiz/EditQuiz'
+import Link from 'next/link'
 
 export default function EditLecture() {
   const params = useParams()
   const lectureId = Number(params.lectureId)
+  const courseId = Number(params.courseId)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [editLecture] = usePutLectureMutation()
 
@@ -122,20 +124,22 @@ export default function EditLecture() {
             {/* Header */}
             <div className='mb-8'>
               <div className='flex items-center'>
-                <button type='button' className='mr-4 p-2 rounded-full bg-white shadow-sm hover:bg-gray-50'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-5 w-5 text-gray-500'
-                    viewBox='0 0 20 20'
-                    fill='currentColor'
-                  >
-                    <path
-                      fillRule='evenodd'
-                      d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
-                      clipRule='evenodd'
-                    />
-                  </svg>
-                </button>
+                <Link href={`/instructor/edit/edit-section/${courseId}`}>
+                  <button type='button' className='mr-4 p-2 rounded-full bg-white shadow-sm hover:bg-gray-50'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='h-5 w-5 text-gray-500'
+                      viewBox='0 0 20 20'
+                      fill='currentColor'
+                    >
+                      <path
+                        fillRule='evenodd'
+                        d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
+                        clipRule='evenodd'
+                      />
+                    </svg>
+                  </button>
+                </Link>
                 <div>
                   <h1 className='text-3xl font-bold text-indigo-900'>Editing Lecture</h1>
                   <p className='mt-2 text-gray-600'>Update your lecture content and information</p>
@@ -421,7 +425,9 @@ export default function EditLecture() {
                                       <h3 className='text-sm font-medium'>Your current Reading File</h3>
                                       <p>{lectureData.docUrl}</p>
                                     </div>
-                                    <div className='mt-1 text-sm text-gray-500'>Please copy the link and paste it in your browser to view and download</div>
+                                    <div className='mt-1 text-sm text-gray-500'>
+                                      Please copy the link and paste it in your browser to view and download
+                                    </div>
                                   </div>
                                 )}
                               </div>
