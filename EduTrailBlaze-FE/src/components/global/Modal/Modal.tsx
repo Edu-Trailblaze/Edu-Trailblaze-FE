@@ -23,11 +23,11 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         <div>{children}</div>
 
         {/* Modal Footer */}
-        <div className='mt-6 flex justify-end'>
+        {/* <div className='mt-6 flex justify-end'>
           <button onClick={onClose} className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700'>
             OK
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   )
