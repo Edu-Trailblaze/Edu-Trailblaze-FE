@@ -30,12 +30,12 @@ export default function QuizIntro({ quiz, startQuiz, onSkipQuiz }: QuizIntroProp
                 />
               </svg>
             </button>
-            <button
+            {/* <button
               onClick={onSkipQuiz}
               className='w-full sm:w-auto bg-gray-100 text-gray-700 font-medium py-3 px-8 rounded-lg hover:bg-gray-200 transition-colors duration-200'
             >
               Skip Quiz
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
