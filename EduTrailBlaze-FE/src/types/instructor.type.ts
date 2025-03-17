@@ -25,3 +25,10 @@ export interface DataPoint {
   toDate: string;   // ISO 8601 date-time string
   data: number;
 }
+
+export interface TopCourse {
+  title: string, 
+  numberOfStudents: number,
+  revenue: number,
+  rating: number
+}

@@ -12,13 +12,15 @@ import {
   useGetInstructorCoursesQuery,
   useGetInstructorEnrollmentsQuery,
   useGetInstructorRatingQuery,
-  useGetInstructorRevenueQuery
+  useGetInstructorRevenueQuery,
+  useGetTopCourseQuery
 } from '@/redux/services/instructor.service'
 import { jwtDecode } from 'jwt-decode'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import { formatCurrency } from '@/helper/format'
 import { RevenueChart } from './RevenueLineChart/RevenueChart'
 import { EnrollmentChart } from './EnrollmentBarChart/EnrollmentChart'
+import Link from 'next/link'
 
 export default function InstructorAnalytics() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('month')
@@ -42,23 +44,23 @@ export default function InstructorAnalytics() {
   const {
     data: enrollments,
     isLoading: enrollmentLoading,
-    isError: enrollmentError
   } = useGetInstructorEnrollmentsQuery({ InstructorId, Time })
   const {
     data: revenue,
     isLoading: revenueLoading,
-    isError: revenueError
   } = useGetInstructorRevenueQuery({ InstructorId, Time })
   const {
     data: rating,
     isLoading: ratingLoading,
-    isError: ratingError
   } = useGetInstructorRatingQuery({ InstructorId, Time })
   const {
     data: completion,
     isLoading: completionLoading,
-    isError: completionError
   } = useGetCourseCompletionRateQuery(InstructorId)
+  const {
+    data: topCourses,
+    isLoading: topCoursesLoading,
+  } = useGetTopCourseQuery({ InstructorId, top: 5 })
 
   // Mock data - in a real app, this would come from an API
   const analytics = {
@@ -93,7 +95,7 @@ export default function InstructorAnalytics() {
     setTime(newTime)
   }
 
-  if (isLoading || enrollmentLoading || revenueLoading || ratingLoading) return <LoadingPage />
+  if (isLoading || enrollmentLoading || revenueLoading || ratingLoading || completionLoading || topCoursesLoading) return <LoadingPage />
 
   return (
     <>
@@ -230,16 +232,16 @@ export default function InstructorAnalytics() {
                   </tr>
                 </thead>
                 <tbody className='bg-white divide-y divide-gray-200'>
-                  {analytics.topCourses.map((course) => (
-                    <tr key={course.id} className='hover:bg-blue-50'>
+                  {topCourses?.map((course, index) => (
+                    <tr key={index} className='hover:bg-blue-50'>
                       <td className='px-6 py-4 whitespace-nowrap'>
                         <div className='text-sm font-medium text-gray-900'>{course.title}</div>
                       </td>
                       <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='text-sm text-gray-500'>{course.students}</div>
+                        <div className='text-sm text-gray-500'>{course.numberOfStudents}</div>
                       </td>
                       <td className='px-6 py-4 whitespace-nowrap'>
-                        <div className='text-sm text-gray-500'>${course.revenue.toLocaleString()}</div>
+                        <div className='text-sm text-gray-500'>${formatCurrency(course.revenue)}</div>
                       </td>
                       <td className='px-6 py-4 whitespace-nowrap'>
                         <div className='flex items-center'>
@@ -254,7 +256,7 @@ export default function InstructorAnalytics() {
             </div>
 
             <div className='mt-6 text-center'>
-              <button className='text-blue-600 hover:text-blue-800 font-medium'>View All Courses</button>
+              <Link href={'/instructor/dashboard/coursePage'} className='text-blue-600 hover:text-blue-800 font-medium'>View All Courses</Link>
             </div>
           </div>
         </main>
