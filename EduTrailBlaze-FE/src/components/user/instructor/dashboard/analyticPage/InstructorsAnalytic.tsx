@@ -21,6 +21,8 @@ import {
 import { jwtDecode } from 'jwt-decode'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import { formatCurrency } from '@/helper/format'
+import { RevenueChart } from './RevenueLineChart/RevenueChart'
+import { EnrollmentChart } from './EnrollmentBarChart/EnrollmentChart'
 
 export default function InstructorAnalytics() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('month')
@@ -56,7 +58,11 @@ export default function InstructorAnalytics() {
     isLoading: ratingLoading,
     isError: ratingError
   } = useGetInstructorRatingQuery({ InstructorId, Time })
-  const {data: completion, isLoading: completionLoading, isError: completionError} = useGetCourseCompletionRateQuery(InstructorId)
+  const {
+    data: completion,
+    isLoading: completionLoading,
+    isError: completionError
+  } = useGetCourseCompletionRateQuery(InstructorId)
 
   // Mock data - in a real app, this would come from an API
   const analytics = {
@@ -85,10 +91,10 @@ export default function InstructorAnalytics() {
     ]
   }
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => { 
-    const newTime = e.target.value;
-    setSelectedTimeframe(newTime);
-    setTime(newTime); 
+  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTime = e.target.value
+    setSelectedTimeframe(newTime)
+    setTime(newTime)
   }
 
   console.log(courses, enrollments, revenue, rating)
@@ -190,61 +196,20 @@ export default function InstructorAnalytics() {
 
           {/* Charts Section */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
-            <div className='bg-white rounded-lg shadow-md p-6'>
-              <div className='flex justify-between items-center mb-6'>
-                <h2 className='text-lg font-semibold text-gray-800'>Student Enrollment</h2>
-                <button className='text-blue-600 hover:text-blue-800'>
-                  <MoreHorizontal className='h-5 w-5' />
-                </button>
-              </div>
-              {/* Chart placeholder - in a real app, you'd use a chart library */}
-              <div className='h-64 bg-gray-100 rounded-md flex items-center justify-center'>
-                <BarChart2 className='h-12 w-12 text-blue-400' />
-                <span className='ml-2 text-gray-500'>Enrollment chart would go here</span>
-              </div>
-              <div className='mt-4 text-center'>
-                <p className='text-gray-600'>
-                  {analytics.studentsGrowth > 0 ? 'Growing' : 'Declining'} by{' '}
-                  <span className='font-medium text-blue-600'>{analytics.studentsGrowth}%</span> compared to previous{' '}
-                  {selectedTimeframe}
-                </p>
-              </div>
-            </div>
+            <EnrollmentChart />
 
-            <div className='bg-white rounded-lg shadow-md p-6'>
-              <div className='flex justify-between items-center mb-6'>
-                <h2 className='text-lg font-semibold text-gray-800'>Revenue Overview</h2>
-                <button className='text-blue-600 hover:text-blue-800'>
-                  <MoreHorizontal className='h-5 w-5' />
-                </button>
-              </div>
-              {/* Chart placeholder - in a real app, you'd use a chart library */}
-              <div className='h-64 bg-gray-100 rounded-md flex items-center justify-center'>
-                <TrendingUp className='h-12 w-12 text-blue-400' />
-                <span className='ml-2 text-gray-500'>Revenue chart would go here</span>
-              </div>
-              <div className='mt-4 text-center'>
-                <p className='text-gray-600'>
-                  {analytics.revenueGrowth > 0 ? 'Growing' : 'Declining'} by{' '}
-                  <span className='font-medium text-blue-600'>{analytics.revenueGrowth}%</span> compared to previous{' '}
-                  {selectedTimeframe}
-                </p>
-              </div>
-            </div>
+            <RevenueChart />
           </div>
 
           {/* Course Completion */}
           <div className='bg-white rounded-lg shadow-md p-6 mb-8'>
             <h2 className='text-lg font-semibold text-gray-800 mb-4'>Course Completion Rate</h2>
             <div className='w-full bg-gray-200 rounded-full h-4'>
-              <div
-                className='bg-blue-600 h-4 rounded-full'
-                style={{ width: `${completion}%` }}
-              ></div>
+              <div className='bg-blue-600 h-4 rounded-full' style={{ width: `${completion}%` }}></div>
             </div>
             <p className='mt-2 text-gray-600 text-center'>
-              <span className='font-medium text-blue-600'>{completion}%</span> of enrolled students
-              complete their courses
+              <span className='font-medium text-blue-600'>{completion}%</span> of enrolled students complete their
+              courses
             </p>
           </div>
 
