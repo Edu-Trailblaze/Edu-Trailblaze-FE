@@ -1,4 +1,5 @@
 'use client'
+import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import Pagination from '@/components/global/Pagination/Pagination'
 import { useGetInstructorCoursePagingQuery } from '@/redux/services/courseDetail.service'
 import Link from 'next/link'
@@ -7,18 +8,20 @@ import React, { useState } from 'react'
 interface CourseSearchProp {
   InstructorId: string | undefined
   searchQuery: string | undefined
+  tagId: number | undefined
 }
-export default function CourseDisplay({ searchQuery, InstructorId }: CourseSearchProp) {
+export default function CourseDisplay({ searchQuery, InstructorId, tagId }: CourseSearchProp) {
   const [pageIndex, setPageIndex] = useState(1)
 
-  const { data: courses, isLoading } = useGetInstructorCoursePagingQuery({
+  const { data: courses, isLoading, isFetching } = useGetInstructorCoursePagingQuery({
     InstructorId: InstructorId,
     CourseName: searchQuery,
+    TagId: tagId ?? undefined,
     PageIndex: pageIndex,
     PageSize: 4
   })
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading || isFetching) return <div>Loading...</div>
   if (!courses?.items) return <div>No courses found</div>
   return (
     <>
