@@ -20,6 +20,7 @@ import {
 } from '@/redux/services/instructor.service'
 import { jwtDecode } from 'jwt-decode'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
+import { formatCurrency } from '@/helper/format'
 
 export default function InstructorAnalytics() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('month')
@@ -175,11 +176,11 @@ export default function InstructorAnalytics() {
               <div>
                 <p className='text-gray-500 text-sm'>Revenue This Month</p>
                 <div className='flex items-center mt-1'>
-                  <span className='text-2xl font-bold'>{revenue?.currentData}</span>
+                  <span className='text-2xl font-bold'>{formatCurrency(revenue?.currentData)}</span>
                   {revenue?.comparisonData !== undefined && revenue?.comparisonData >= 0 ? (
-                    <span className='text-green-500 ml-2 text-sm'>+ {revenue?.comparisonData}</span>
+                    <span className='text-green-500 ml-2 text-sm'>+ {formatCurrency(revenue?.comparisonData)}</span>
                   ) : (
-                    <span className='text-red-500 ml-2 text-sm'>- {revenue?.comparisonData}</span>
+                    <span className='text-red-500 ml-2 text-sm'>- {formatCurrency(revenue?.comparisonData)}</span>
                   )}
                 </div>
               </div>

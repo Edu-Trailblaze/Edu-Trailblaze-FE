@@ -186,6 +186,7 @@ interface InstructorCourseSearchRequest {
   PageSize?: number
   Sort?: string
   SortDirection?: string
+  TagId?: number
 }
 
 interface GetCourseById {

@@ -204,7 +204,7 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
           shouldCloseOnOverlayClick={true}
           shouldCloseOnEsc={true}
         >
-          <VideoEditForm />
+          <VideoEditForm lectureId={lectureId}/>
         </Modal>
       </div>
     </>

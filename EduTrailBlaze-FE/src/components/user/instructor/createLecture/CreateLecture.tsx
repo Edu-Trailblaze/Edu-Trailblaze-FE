@@ -41,7 +41,16 @@ export default function CreateLecture({ sectionId }: LectureInfoProps) {
     }
   }
 
-  const handleReset = () => {}
+  const handleReset = () => {
+    setLectureInfo({
+      sectionId: sectionId,
+      lectureType: '',
+      title: '',
+      content: '',
+      description: '',
+      duration: 0
+    })
+  }
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50'>
@@ -213,6 +222,9 @@ export default function CreateLecture({ sectionId }: LectureInfoProps) {
                           </div>
                         </div>
                       </div>
+                      <p className='mt-4 text-sm text-gray-500 bg-yellow-50 p-3 rounded-lg border border-yellow-100'>
+                        <strong>Tip:</strong> Go to edit lecture to add more (video, reading file, quiz, etc.)
+                      </p>
                       <div className='flex justify-end gap-3 mt-8'>
                         <Button variant='outline' className='gap-3' type='button' onClick={handleReset}>
                           <RotateCcw />
