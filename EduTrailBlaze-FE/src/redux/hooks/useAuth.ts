@@ -11,5 +11,5 @@ export function useAuth() {
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
-  return { role, isInstructor: role === 'Instructor', isStudent: role === 'Student' }
+  return { role, isInstructor: role === 'Instructor', isStudent: role === 'Student', isAdmin: role === 'Admin' }
 }
