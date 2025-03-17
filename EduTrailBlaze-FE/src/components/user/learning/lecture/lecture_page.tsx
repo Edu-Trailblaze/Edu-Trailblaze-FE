@@ -22,6 +22,7 @@ export default function LecturePage() {
   const [activeLectureId, setActiveLectureId] = useState<number | null>(Number(lectureURL))
 
   const { data: lectureContent, isLoading: contentLoading } = useGetLectureQuery(activeLectureId ?? 0)
+  console.log('LLLLLLLL', lectureContent)
   const { data: video, isLoading: videoLoading } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })
 
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>(() => {
