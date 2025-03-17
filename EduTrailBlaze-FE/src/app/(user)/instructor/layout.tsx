@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
+import InstructorSidebar from '@/components/user/instructor/sidebar/InstructorSidebar'
 import InstructorHeader from '@/components/user/instructor/instructorHeader/InstructorHeader'
 import WebFooter from '@/components/global/footer/footer'
 import '@/app/(user)/instructor/layout.css'
-import InstructorEditSidebar from '@/components/user/instructor/sidebar/InstructorEditSidebar'
 
 export const metadata: Metadata = {
   title: 'Edutrail Blaze',
@@ -19,7 +19,7 @@ export default function RootLayout({
       <div className='sticky top-0 z-10'>
         <InstructorHeader />
       </div>
-      <InstructorEditSidebar />
+      <InstructorSidebar />
       <div className='ml-16 min-h-screen'>{children}</div>
       <WebFooter />
     </>

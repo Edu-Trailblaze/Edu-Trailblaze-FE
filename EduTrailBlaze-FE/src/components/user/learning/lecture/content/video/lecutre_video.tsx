@@ -1,24 +1,23 @@
 'use client'
 import React, { useState } from 'react'
-import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2, CheckCircle, Play } from 'lucide-react'
+import { ChevronDown, ChevronUp, Globe, Download, FileText, Volume2, CheckCircle, Play, Clock } from 'lucide-react'
 import Button from '../../../../../global/Button/Button'
 import { usePostUserProgressMutation } from '../../../../../../redux/services/userProgress.service'
 import { toast } from 'react-toastify'
 
-interface ModuleBarProps {
+interface VideoLectureProps {
   lecture: ILecture
   video?: IVideo[]
   userId: string
   userProgress?: UserProgressResponse[]
 }
 
-export default function VideoLecture({ lecture, video, userId, userProgress }: ModuleBarProps) {
+export default function VideoLecture({ lecture, video, userId, userProgress }: VideoLectureProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('English')
   const [activeTab, setActiveTab] = useState('transcript')
 
   const progress = userProgress?.find((p) => p.lectureId === lecture.id)
-
   const [postUserProgress, { isLoading }] = usePostUserProgressMutation()
 
   const handleUserProgress = async () => {
@@ -55,37 +54,62 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: M
 
   return (
     <div className='space-y-8'>
+      {/* Header with duration and completion status */}
+      <div className='flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm'>
+        <div className='flex items-center gap-3'>
+          <div className='bg-blue-100 p-2 rounded-full'>
+            <Play className='w-5 h-5 text-blue-600' />
+          </div>
+          <div>
+            <h3 className='font-medium text-gray-800'>{lecture.title}</h3>
+            <div className='flex items-center gap-2 text-sm text-gray-600'>
+              <Clock className='w-4 h-4' />
+              <span>{lecture.duration} minutes</span>
+            </div>
+          </div>
+        </div>
+
+        {progress?.isCompleted ? (
+          <Button
+            disabled
+            size='lg'
+            className='flex items-center gap-2 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
+          >
+            <CheckCircle className='w-5 h-5' />
+            <span>Completed</span>
+          </Button>
+        ) : (
+          <Button
+            onClick={handleUserProgress}
+            size='lg'
+            isLoading={isLoading}
+            className='flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white transition-colors'
+          >
+            Mark as complete
+          </Button>
+        )}
+      </div>
+
       {/* Video Player */}
       {video?.map((v) => (
-        <div key={v.id} className='space-y-6'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <Play className='w-5 h-5 text-blue-600' />
-              <p className='text-sm text-gray-600'>{lecture.duration} minutes</p>
-            </div>
-
-            {progress?.isCompleted ? (
-              <Button
-                disabled
-                size='lg'
-                className='flex items-center gap-2 bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
-              >
-                <CheckCircle className='w-5 h-5' />
-                <span>Completed</span>
-              </Button>
-            ) : (
-              <Button onClick={handleUserProgress} size='lg' isLoading={isLoading} className='flex items-center gap-2'>
-                Mark as complete
-              </Button>
-            )}
-          </div>
-
-          {/* Video Player */}
-          <div className='aspect-video rounded-xl overflow-hidden bg-black shadow-lg'>
-            <video className='w-full h-full' controls poster='/api/placeholder/800/450'>
+        <div key={v.id} className='space-y-4'>
+          <div className='aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-gray-800'>
+            <video className='w-full h-full' controls poster='/api/placeholder/800/450' preload='metadata'>
               <source src={v.videoUrl} type='video/mp4' />
               Your browser does not support the video tag.
             </video>
+          </div>
+
+          {/* Video controls below player */}
+          <div className='flex justify-end gap-3'>
+            <button className='flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm'>
+              <Download className='w-4 h-4' />
+              Download Video
+            </button>
+            <button className='flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors text-sm'>
+              <FileText className='w-4 h-4' />
+              Show Transcript
+            </button>
           </div>
         </div>
       ))}
@@ -95,9 +119,9 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: M
         <div className='p-6'>
           <div className='flex items-center gap-2 mb-4'>
             <Volume2 className='w-5 h-5 text-blue-600' />
-            <h2 className='text-xl font-semibold'>Lecture Summary</h2>
+            <h2 className='text-xl font-semibold text-gray-800'>Lecture Summary</h2>
           </div>
-          <p className='text-gray-700 leading-relaxed'>{lecture.content}</p>
+          <div className='prose prose-blue max-w-none text-gray-700 leading-relaxed'>{lecture.content}</div>
         </div>
       </div>
 
@@ -127,117 +151,122 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: M
             onClick={() => setActiveTab('download')}
           >
             <Download className='w-4 h-4' />
-            Download
+            Downloads
           </button>
         </div>
 
         {/* Tab Content */}
         <div className='p-6'>
           {activeTab === 'transcript' && (
-            <div className='flex flex-col md:flex-row gap-6'>
-              {/* Language Selector - Mobile First */}
-              <div className='md:hidden w-full mb-4'>
-                <div className='relative'>
-                  <button
-                    className='w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors'
-                    onClick={toggleList}
-                  >
-                    <div className='flex items-center gap-2'>
-                      <Globe className='w-4 h-4 text-blue-600' />
-                      <span>{selectedLanguage}</span>
-                    </div>
-                    {languageListOpen ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}
-                  </button>
-
-                  {languageListOpen && (
-                    <div className='absolute w-full mt-2 bg-white border-2 border-blue-500 rounded-lg shadow-lg z-50'>
-                      <div className='max-h-64 overflow-auto p-2'>
-                        {languages.map((language) => (
-                          <button
-                            key={language.id}
-                            className='w-full text-left px-3 py-2 hover:bg-blue-50 rounded-md transition-colors'
-                            onClick={() => {
-                              setSelectedLanguage(language.name)
-                              setLanguageOpen(false)
-                            }}
-                          >
-                            {language.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
+            <div className='flex gap-6'>
               {/* Transcript Text */}
-              <div className='flex-1 p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto'>
+              <div className='flex-1 p-5 bg-gray-50 rounded-lg max-h-96 overflow-y-auto border border-gray-200'>
                 <p className='text-gray-700 leading-relaxed whitespace-pre-line'>
                   [MUSIC] Hello and welcome to this demonstration on using RegEx Builder in studio...
                 </p>
               </div>
-
-              {/* Language Selector - Desktop */}
-              <div className='hidden md:block w-64'>
-                <div className='relative'>
-                  <button
-                    className='w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors'
-                    onClick={toggleList}
-                  >
-                    <div className='flex items-center gap-2'>
-                      <Globe className='w-4 h-4 text-blue-600' />
-                      <span>{selectedLanguage}</span>
-                    </div>
-                    {languageListOpen ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}
-                  </button>
-
-                  {languageListOpen && (
-                    <div className='absolute w-full mt-2 bg-white border-2 border-blue-500 rounded-lg shadow-lg z-50'>
-                      <div className='max-h-64 overflow-auto p-2'>
-                        {languages.map((language) => (
-                          <button
-                            key={language.id}
-                            className='w-full text-left px-3 py-2 hover:bg-blue-50 rounded-md transition-colors'
-                            onClick={() => {
-                              setSelectedLanguage(language.name)
-                              setLanguageOpen(false)
-                            }}
-                          >
-                            {language.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
           )}
 
-          {activeTab === 'download' && (
-            <div className='p-6'>
-              <div className='flex flex-col gap-4'>
-                <div className='flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors'>
-                  <div className='flex items-center gap-3'>
-                    <FileText className='w-5 h-5 text-blue-600' />
-                    <div>
-                      <p className='font-medium'>Transcript</p>
-                      <p className='text-sm text-gray-500'>Download lecture transcript as PDF</p>
-                    </div>
-                  </div>
-                  <Button className='px-4'>Download</Button>
-                </div>
+          {/* Language Selector */}
+          {/* <div className='w-64'>
+                <div className='sticky top-4'>
+                  <div className='mb-3 text-sm font-medium text-gray-700'>Select Language</div>
+                  <div className='relative overflow-visible'>
+                    <button
+                      className='w-full flex items-center justify-between px-4 py-3 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors'
+                      onClick={toggleList}
+                      aria-expanded={languageListOpen}
+                      aria-haspopup='listbox'
+                    >
+                      <div className='flex items-center gap-2'>
+                        <Globe className='w-4 h-4 text-blue-600' />
+                        <span>{selectedLanguage}</span>
+                      </div>
+                      {languageListOpen ? <ChevronUp className='w-4 h-4' /> : <ChevronDown className='w-4 h-4' />}
+                    </button>
 
-                <div className='flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors'>
-                  <div className='flex items-center gap-3'>
-                    <Download className='w-5 h-5 text-blue-600' />
-                    <div>
-                      <p className='font-medium'>Video</p>
-                      <p className='text-sm text-gray-500'>Download lecture video (MP4)</p>
-                    </div>
+                    {languageListOpen && (
+                      <div className='absolute w-full left-0 top-full mt-2 bg-white border-2 border-blue-500 rounded-lg shadow-lg z-50'>
+                        <div className='max-h-64 overflow-auto p-2'>
+                          {languages.map((language) => (
+                            <button
+                              key={language.id}
+                              className={`w-full text-left px-3 py-2 hover:bg-blue-50 rounded-md transition-colors ${
+                                selectedLanguage === language.name ? 'bg-blue-50 text-blue-600 font-medium' : ''
+                              }`}
+                              onClick={() => {
+                                setSelectedLanguage(language.name)
+                                setLanguageOpen(false)
+                              }}
+                            >
+                              {language.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div> */}
+
+          {/* Add download transcript button */}
+          {/* <button className='w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors'>
+                    <Download className='w-4 h-4' />
+                    Download Transcript
+                  </button> */}
+          {/* </div>
+              </div>
+            </div>
+          )} */}
+
+          {activeTab === 'download' && (
+            <div className='grid grid-cols-1 gap-4'>
+              <div className='flex items-center justify-between p-5 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all'>
+                <div className='flex items-center gap-4'>
+                  <div className='bg-blue-50 p-3 rounded-full'>
+                    <FileText className='w-6 h-6 text-blue-600' />
                   </div>
-                  <Button className='px-4'>Download</Button>
+                  <div>
+                    <p className='font-medium text-gray-800'>Lecture Transcript</p>
+                    <p className='text-sm text-gray-500'>Download lecture transcript as PDF</p>
+                  </div>
                 </div>
+                <Button className='px-4 bg-blue-600 hover:bg-blue-700 text-white transition-colors'>
+                  <Download className='w-4 h-4 mr-2' />
+                  Download
+                </Button>
+              </div>
+
+              <div className='flex items-center justify-between p-5 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all'>
+                <div className='flex items-center gap-4'>
+                  <div className='bg-blue-50 p-3 rounded-full'>
+                    <Download className='w-6 h-6 text-blue-600' />
+                  </div>
+                  <div>
+                    <p className='font-medium text-gray-800'>Video File</p>
+                    <p className='text-sm text-gray-500'>Download lecture video (MP4)</p>
+                  </div>
+                </div>
+                <Button className='px-4 bg-blue-600 hover:bg-blue-700 text-white transition-colors'>
+                  <Download className='w-4 h-4 mr-2' />
+                  Download
+                </Button>
+              </div>
+
+              {/* Additional resources */}
+              <div className='flex items-center justify-between p-5 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all'>
+                <div className='flex items-center gap-4'>
+                  <div className='bg-blue-50 p-3 rounded-full'>
+                    <FileText className='w-6 h-6 text-blue-600' />
+                  </div>
+                  <div>
+                    <p className='font-medium text-gray-800'>Lecture Notes</p>
+                    <p className='text-sm text-gray-500'>Download supplementary materials (PDF)</p>
+                  </div>
+                </div>
+                <Button className='px-4 bg-blue-600 hover:bg-blue-700 text-white transition-colors'>
+                  <Download className='w-4 h-4 mr-2' />
+                  Download
+                </Button>
               </div>
             </div>
           )}
