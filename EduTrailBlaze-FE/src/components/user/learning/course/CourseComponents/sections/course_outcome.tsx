@@ -190,11 +190,6 @@ export default function CourseOutcome({ userId, courseId }: ICourseOutcomeProps)
   // Nếu chưa hoàn thành => hiển thị progress, KHÔNG render certificate
   if (!isCompleted) {
     return (
-<<<<<<< Updated upstream
-      <div>
-        <p>Progress: {progressPercentage}%</p>
-        <p>Bạn chưa hoàn thành khóa học, hãy tiếp tục!</p>
-=======
       <div className="w-full max-w-4xl my-8">
         <div className="mb-2 flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-800">Tiến độ khóa học</h3>
@@ -228,7 +223,6 @@ export default function CourseOutcome({ userId, courseId }: ICourseOutcomeProps)
             </div>
           </div>
         </div>
->>>>>>> Stashed changes
       </div>
     )
   }

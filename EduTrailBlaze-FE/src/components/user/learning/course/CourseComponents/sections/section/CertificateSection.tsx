@@ -17,13 +17,6 @@ export function CertificateSection({ userId, courseId }: ICertificateSectionProp
     error: errorCertificate
   } = useGetUserCertificateByConditionsQuery({ CourseId: courseId, UserId: userId })
 
-<<<<<<< Updated upstream
-  if (isLoadingCertificate) return <div>Đang tải chứng chỉ...</div>
-  if (errorCertificate) return <div>Có lỗi khi tải chứng chỉ</div>
-  if (!certificate) {
-    return <div>Hoàn thành 100% nhưng chưa có Certificate!</div>
-  }
-=======
   if (isLoadingCertificate)
     return (
       <div className="flex items-center justify-center p-8 border rounded-lg shadow-md bg-gray-50">
@@ -88,7 +81,6 @@ export function CertificateSection({ userId, courseId }: ICertificateSectionProp
       )
     }
   
->>>>>>> Stashed changes
 
   // Hiển thị certificate
   return (
