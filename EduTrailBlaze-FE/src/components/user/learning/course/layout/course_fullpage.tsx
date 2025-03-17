@@ -103,7 +103,6 @@ export default function Course() {
           <CourseOutcome />
         </div> */}
         <div id='outcomes' className='scroll-mt-60'>
-          {/* +++ Gọi CourseOutcome (đã tách) và truyền userId, courseURL +++ */}
           <CourseOutcome userId={userId} courseId={Number(courseURL)} />
         </div>
 

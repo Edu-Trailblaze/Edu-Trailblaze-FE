@@ -104,7 +104,6 @@
 import React from 'react'
 import { useGetStudentCourseProgressQuery } from '@/redux/services/enroll.service'
 import { CertificateSection } from '../sections/section/CertificateSection'
-// ^^^ import component vừa tạo, kiểm tra đường dẫn
 
 interface ICourseOutcomeProps {
   userId: string
@@ -112,7 +111,6 @@ interface ICourseOutcomeProps {
 }
 
 export default function CourseOutcome({ userId, courseId }: ICourseOutcomeProps) {
-  // Gọi API progress
   const {
     data: progressData,
     isLoading: isLoadingProgress,
@@ -136,7 +134,7 @@ export default function CourseOutcome({ userId, courseId }: ICourseOutcomeProps)
     return (
       <div>
         <p>Progress: {progressPercentage}%</p>
-        <p>Bạn chưa hoàn thành khóa học!</p>
+        <p>Bạn chưa hoàn thành khóa học, hãy tiếp tục!</p>
       </div>
     )
   }
