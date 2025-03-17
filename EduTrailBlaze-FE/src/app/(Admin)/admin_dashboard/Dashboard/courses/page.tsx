@@ -19,13 +19,14 @@ import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
+import Pagination from '@/components/admin/Pagination/Pagination'
 
 //sort filter
 import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
 
 //modal
-import CourseFormModalCreate from '@/components/admin/modal/CourseFormModal/CourseFormModalCreate' 
+import CourseFormModalCreate from '@/components/admin/modal/CourseFormModal/CourseFormModalCreate'
 import CourseFormModalEdit from '@/components/admin/modal/CourseFormModal/CourseFormModalEdit' 
 import DetailPopup from '@/components/global/Popup/PopupDetail'
 
@@ -108,6 +109,12 @@ export default function CoursesManagement() {
     learningOutcomes: []
   })
 
+
+  //pagination
+    const [pageIndex, setPageIndex] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const pageSize = 10
+
   const fetchUserId = async () => {
     try {
       const response = await axios.get(USER_API_URL)
@@ -119,6 +126,7 @@ export default function CoursesManagement() {
     }
   }
 
+  //old
   const fetchCourses = async () => {
     try {
       const response = await axios.get(API_URL)
@@ -130,6 +138,24 @@ export default function CoursesManagement() {
       setLoading(false)
     }
   }
+
+//new
+  // const fetchCourse = async (page: number) => {
+  //   setLoading(true)
+  //   try {
+  //     const response = await api.get('/Course/get-paging-course-information', {
+  //       params: { pageIndex: page, pageSize }
+  //     })
+  //     setCourses(response.data.items)
+  //     setAllCourses(response.data.items)
+  //     setTotalPages(response.data.totalPages)
+  //   } catch (error) {
+  //     console.error('Error fetching reviews:', error)
+  //     toast.error('Failed to fetch reviews!')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   useEffect(() => {
     fetchCourses()
@@ -345,7 +371,7 @@ export default function CoursesManagement() {
               )}
             </div>
 
-            {/* CHANGED: Nút Sort (mở CourseSort) */}
+            {/* Sort */}
             <div className='relative'>
               <button
                 className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
@@ -364,7 +390,7 @@ export default function CoursesManagement() {
               )}
             </div>
 
-            {/* Nút + mở modal thêm Course */}
+            {/* ADD */}
             <button
               className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
               onClick={() => setAddModalOpen(true)}
@@ -389,6 +415,8 @@ export default function CoursesManagement() {
       )}
 
       {/* <Pagination /> */}
+      <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
+      
 
       {selectedCourse && (
         <DetailPopup
