@@ -19,3 +19,9 @@ export interface IEInstructor {
   userName: string
   email: string
 }
+
+export interface DataPoint {
+  fromDate: string; // ISO 8601 date-time string
+  toDate: string;   // ISO 8601 date-time string
+  data: number;
+}
