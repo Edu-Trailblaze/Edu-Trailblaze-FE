@@ -6,10 +6,6 @@ import {
   BookOpen,
   DollarSign,
   Star,
-  Calendar,
-  BarChart2,
-  TrendingUp,
-  MoreHorizontal
 } from 'lucide-react'
 import {
   useGetCourseCompletionRateQuery,
@@ -96,8 +92,6 @@ export default function InstructorAnalytics() {
     setSelectedTimeframe(newTime)
     setTime(newTime)
   }
-
-  console.log(courses, enrollments, revenue, rating)
 
   if (isLoading || enrollmentLoading || revenueLoading || ratingLoading) return <LoadingPage />
 
@@ -196,9 +190,9 @@ export default function InstructorAnalytics() {
 
           {/* Charts Section */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
-            <EnrollmentChart />
+            <EnrollmentChart userId={InstructorId} time={Time}/>
 
-            <RevenueChart />
+            <RevenueChart userId={InstructorId} time={Time}/>
           </div>
 
           {/* Course Completion */}

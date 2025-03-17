@@ -37,7 +37,12 @@ export const instructorApi = createApi({
       query: ({ InstructorId, Time }) => ({
         url: `InstructorDashboard/get-nearest-time-for-enrollments?InstructorId=${InstructorId}&Time=${Time}`
       })
-    })
+    }),
+    getRevenueData: build.query<DataPoint[], { InstructorId: string; Time: string }>({
+      query: ({ InstructorId, Time }) => ({
+        url: `InstructorDashboard/get-nearest-time-for-revenue?InstructorId=${InstructorId}&Time=${Time}`
+      })
+    }),
   })
 })
 
@@ -47,5 +52,6 @@ export const {
   useGetInstructorRatingQuery,
   useGetInstructorRevenueQuery,
   useGetCourseCompletionRateQuery,
-  useGetEnrollmentDataQuery
+  useGetEnrollmentDataQuery,
+  useGetRevenueDataQuery
 } = instructorApi
