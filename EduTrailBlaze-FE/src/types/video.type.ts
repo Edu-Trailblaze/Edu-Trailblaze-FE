@@ -6,6 +6,7 @@ interface IVideo {
   isDeleted: boolean
   createdAt: string
   updatedAt: string
+  transcript: string
   id: number
 }
 

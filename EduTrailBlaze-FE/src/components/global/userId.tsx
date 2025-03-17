@@ -1,7 +1,7 @@
 import { jwtDecode } from 'jwt-decode'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-export default function getUserId() {
+export default function useUserId() {
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
 
@@ -20,4 +20,6 @@ export default function getUserId() {
       setUserId('')
     }
   }, [])
+
+  return { userId, userName }
 }

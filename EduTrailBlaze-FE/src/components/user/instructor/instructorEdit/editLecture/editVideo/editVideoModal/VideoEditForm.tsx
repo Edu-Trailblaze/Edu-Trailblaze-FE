@@ -1,24 +1,50 @@
 // components/VideoEditForm.js
 import InputFile from '@/components/global/Input/InputFile'
-import { useState } from 'react'
+import { useGetVideoByConditionsQuery, usePutVideoMutation } from '@/redux/services/video.service'
+import { useState, useEffect } from 'react'
 
-export default function VideoEditForm() {
-  const [formData, setFormData] = useState({
-    title: '',
-    videoUrl: '',
-    transcript: ''
-  })
+interface VideoEditFormProps {
+  lectureId: number
+}
+
+export default function VideoEditForm({ lectureId }: VideoEditFormProps) {
   const [previewUrl, setPreviewUrl] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [notification, setNotification] = useState({ show: false, message: '', type: '' })
   const [videoTitle, setVideoTitle] = useState('')
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
+  const {
+    data: videoData,
+    isLoading: videoLoading,
+    isFetching: videoFetching
+  } = useGetVideoByConditionsQuery({ lectureId: lectureId })
+  const [putVideo] = usePutVideoMutation()
+
+  const [videoInfo, setVideoInfo] = useState({
+    VideoId: 0,
+    Title: '',
+    VideoFile: '',
+    Transcript: ''
+  })
+
+  useEffect(() => {
+    if (videoData && videoData.length > 0) {
+      setVideoInfo({
+        VideoId: videoData[0].id,
+        Title: videoData[0].title,
+        VideoFile: videoData[0].videoUrl,
+        Transcript: videoData[0].transcript ?? ''
+      })
+      setVideoPreview(videoData[0].videoUrl || '')
+    }
+  }, [videoData])
 
   interface FormData {
-    title: string
-    videoUrl: string
-    transcript: string
+    VideoId: number
+    Title: string
+    VideoFile: string
+    Transcript: string
   }
 
   interface Notification {
@@ -45,52 +71,41 @@ export default function VideoEditForm() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData((prev: FormData) => ({ ...prev, [name]: value }))
+    setVideoInfo((prev) => ({ ...prev, [name]: value }))
 
-    // Update preview if video URL changes
-    if (name === 'videoUrl' && value) {
-      try {
-        const url = new URL(value)
-        // Check if it's a YouTube URL
-        if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
-          const videoId = url.hostname.includes('youtube.com') ? url.searchParams.get('v') : url.pathname.slice(1)
-          setPreviewUrl(`https://www.youtube.com/embed/${videoId}`)
-        } else {
-          setPreviewUrl(value)
-        }
-      } catch (e) {
-        setPreviewUrl('')
-      }
+    if (name === 'VideoFile' && value) {
+      setVideoPreview(value)
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSaving(true)
 
     try {
-      // Simulate API call
-      await new Promise<void>((resolve) => setTimeout(resolve, 1500))
+      const formData = new FormData()
+      formData.append('VideoId', videoInfo.VideoId.toString())
+      formData.append('Title', videoInfo.Title)
+      formData.append('Transcript', videoInfo.Transcript)
 
-      setNotification({
-        show: true,
-        message: 'Video has been updated successfully!',
-        type: 'success'
-      })
+      if (videoFile) {
+        formData.append('VideoFile', videoFile)
+      }
 
-      setTimeout(() => {
-        setNotification({ show: false, message: '', type: '' })
-      }, 3000)
+      await putVideo(formData).unwrap()
+
+      setNotification({ show: true, message: 'Video updated successfully!', type: 'success' })
+
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
     } catch (error) {
-      setNotification({
-        show: true,
-        message: 'An error occurred while saving the video.',
-        type: 'error'
-      })
+      setNotification({ show: true, message: 'Failed to update video.', type: 'error' })
     } finally {
       setIsSaving(false)
+      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000)
     }
   }
 
@@ -128,14 +143,14 @@ export default function VideoEditForm() {
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
           <div className='space-y-6'>
             <div>
-              <label htmlFor='title' className='block text-sm font-medium text-gray-700 mb-1'>
+              <label htmlFor='Title' className='block text-sm font-medium text-gray-700 mb-1'>
                 Video Title
               </label>
               <input
                 type='text'
-                id='title'
-                name='title'
-                value={formData.title}
+                id='Title'
+                name='Title'
+                value={videoInfo.Title}
                 onChange={handleChange}
                 className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all'
                 placeholder='Enter video title...'
@@ -144,23 +159,22 @@ export default function VideoEditForm() {
             </div>
 
             <div>
-              <label htmlFor='videoUrl' className='block text-sm font-medium text-gray-700 mb-1'>
+              <label htmlFor='VideoFile' className='block text-sm font-medium text-gray-700 mb-1'>
                 Video URL
               </label>
               <InputFile
                 label='Upload Course Video'
-                name='videoUrl'
+                name='VideoFile'
                 accept='video/*'
                 onChange={handleVideoUpload}
-                preview={videoPreview}
                 noLayout={false}
               />
             </div>
 
-            {previewUrl && (
+            {videoPreview && (
               <div className='aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden'>
                 <iframe
-                  src={previewUrl}
+                  src={videoPreview}
                   className='w-full h-full'
                   frameBorder='0'
                   allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
@@ -171,13 +185,13 @@ export default function VideoEditForm() {
           </div>
 
           <div>
-            <label htmlFor='transcript' className='block text-sm font-medium text-gray-700 mb-1'>
+            <label htmlFor='Transcript' className='block text-sm font-medium text-gray-700 mb-1'>
               Transcript
             </label>
             <textarea
-              id='transcript'
-              name='transcript'
-              value={formData.transcript}
+              id='Transcript'
+              name='Transcript'
+              value={videoInfo.Transcript}
               onChange={handleChange}
               rows={15}
               className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none'
@@ -187,12 +201,6 @@ export default function VideoEditForm() {
         </div>
 
         <div className='flex justify-end gap-4'>
-          <button
-            type='button'
-            className='px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors'
-          >
-            Cancel
-          </button>
           <button
             type='submit'
             disabled={isSaving}
