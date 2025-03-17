@@ -2,7 +2,7 @@
 import React from 'react'
 import Button from '../../../../../global/Button/Button'
 import { usePostUserProgressMutation } from '../../../../../../redux/services/userProgress.service'
-import { BookOpen, CheckCircle, Clock } from 'lucide-react'
+import { CheckCircle, FileText, Download } from 'lucide-react'
 import { toast } from 'react-toastify'
 
 interface ReadingLectureProps {
@@ -31,12 +31,7 @@ export default function ReadingLecture({ lecture, userId, userProgress }: Readin
   return (
     <div className='space-y-6'>
       {/* Progress indicator */}
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center space-x-2'>
-          <Clock className='w-5 h-5 text-gray-500' />
-          <span className='text-sm text-gray-500'>{lecture.duration} min read</span>
-        </div>
-
+      <div className='flex justify-end items-center '>
         <div>
           {progress?.isCompleted ? (
             <Button
@@ -63,17 +58,32 @@ export default function ReadingLecture({ lecture, userId, userProgress }: Readin
       {/* Content */}
       <div className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
         <div className='p-6'>
-          <div className='prose prose-blue max-w-none'>
-            {typeof lecture.content === 'string' ? (
-              lecture.content.split('\n').map((line, index) => (
-                <p key={index} className='text-gray-700 leading-relaxed mb-4'>
-                  {line}
-                </p>
-              ))
-            ) : (
-              <div dangerouslySetInnerHTML={{ __html: lecture.content }} />
-            )}
-          </div>
+          <h1 className='font-semibold text-2xl'>Content</h1>
+          <div className='prose prose-blue max-w-none'>{lecture.title}</div>
+
+          {/* Enhanced document display */}
+          {lecture.docUrl && (
+            <div className='flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-100 mt-5'>
+              <div className='flex items-center space-x-3'>
+                <div className='bg-blue-100 p-2 rounded-md'>
+                  <FileText className='w-6 h-6 text-blue-600' />
+                </div>
+                <div>
+                  <h3 className='font-medium text-blue-800'>{lecture.content}</h3>
+                  <p className='text-sm text-blue-600'>Document attachment</p>
+                </div>
+              </div>
+              <a
+                href={lecture.docUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors'
+              >
+                <Download className='w-4 h-4' />
+                View Document
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
