@@ -13,11 +13,11 @@ export default function ViewCart({ id }: CartItemProps) {
   const cart = useSelector((state: RootState) => state.cart)
   const { data } = useGetCartQuery(id)
 
-  const cartItemsToRender = cart.cartItems.length > 0 ? cart.cartItems : data?.cartItems ?? [];
+  const cartItemsToRender = cart.cartItems.length > 0 ? cart.cartItems : (data?.cartItems ?? [])
 
   // if (isLoading) return <span>Loading...</span>
   return (
-    <div className='absolute mt-4 w-80 -translate-x-[46%] p-4 bg-white shadow-2xl rounded-xl border border-gray-400 z-10'>
+    <div className='absolute mt-4 w-80 -translate-x-[46%] p-4 bg-white shadow-2xl rounded-xl border border-gray-400 z-50'>
       {cartItemsToRender.length > 0 ? (
         cartItemsToRender.map((cart, index) => (
           <div key={index}>
