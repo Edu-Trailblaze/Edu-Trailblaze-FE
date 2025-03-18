@@ -8,19 +8,15 @@ export const paymentApi = createApi({
       headers.set('Content-Type', 'application/json')
       return headers
     },
-    responseHandler: (response) => response.text().then((text) => ({ data: text }))
   }),
   tagTypes: ['Payment'],
   endpoints: (build) => ({
-    postPayment: build.mutation<any, { userId: string; paymentMethod: string }>({
-      query: (body) => ({
-        url: `Order/place-order`,
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['Payment']
-    })
+    getPayment: build.query<PaymentResponse, number>({
+      query: (id) => ({
+        url: `Payment/${id}`
+      })
+    }),
   })
 })
 
-export const { usePostPaymentMutation } = paymentApi
+export const { useGetPaymentQuery } = paymentApi

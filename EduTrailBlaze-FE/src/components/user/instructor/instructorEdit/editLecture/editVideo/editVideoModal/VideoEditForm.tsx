@@ -204,7 +204,7 @@ export default function VideoEditForm({ lectureId }: VideoEditFormProps) {
           <button
             type='submit'
             disabled={isSaving}
-            className={`px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg flex items-center gap-2 ${isSaving ? 'opacity-75 cursor-not-allowed' : 'hover:from-indigo-700 hover:to-purple-700'} transition-all`}
+            className={`px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg flex justify-center items-center gap-2 ${isSaving ? 'opacity-75 cursor-not-allowed' : 'hover:from-indigo-700 hover:to-purple-700'} transition-all`}
           >
             {isSaving ? (
               <>
