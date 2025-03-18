@@ -22,6 +22,7 @@ import { toast } from 'react-toastify'
 import { formatCurrency } from '@/helper/format'
 
 export default function HomeCourses() {
+  const [isSaving, setIsSaving] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
   const [userId, setUserId] = useState('')
@@ -237,17 +238,45 @@ export default function HomeCourses() {
                               </div>
 
                               <div className='flex justify-between items-center mt-auto'>
-                                <p className='text-base md:text-lg font-bold text-gray-900 '>{formatCurrency(course.course.price)}</p>
+                                <p className='text-base md:text-lg font-bold text-gray-900 '>
+                                  {formatCurrency(course.course.price)}
+                                </p>
 
                                 <button
-                                  className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
+                                  className={`w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 flex justify-center items-center gap-2 ${isAddingToCart ? 'opacity-75 cursor-not-allowed' : 'hover:from-blue-600 hover:to-blue-900'} text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base`}
                                   onClick={(e) => {
                                     e.preventDefault()
                                     handleAddToCart(userId, course.course.id)
                                   }}
                                   disabled={isAddingToCart}
                                 >
-                                  {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+                                  {isAddingToCart ? (
+                                    <>
+                                      <svg
+                                        className='animate-spin h-5 w-5 text-white'
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        fill='none'
+                                        viewBox='0 0 24 24'
+                                      >
+                                        <circle
+                                          className='opacity-25'
+                                          cx='12'
+                                          cy='12'
+                                          r='10'
+                                          stroke='currentColor'
+                                          strokeWidth='4'
+                                        ></circle>
+                                        <path
+                                          className='opacity-75'
+                                          fill='currentColor'
+                                          d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                        ></path>
+                                      </svg>
+                                      Adding...
+                                    </>
+                                  ) : (
+                                    <p>Add to Cart</p>
+                                  )}
                                 </button>
                               </div>
                             </div>
