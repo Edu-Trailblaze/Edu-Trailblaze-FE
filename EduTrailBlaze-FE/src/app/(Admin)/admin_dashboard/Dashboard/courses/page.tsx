@@ -177,11 +177,52 @@ export default function CoursesManagement() {
     }
   }
 
-  const handleAddCourse = async (newCourse: CourseCreate) => {
+  // const handleAddCourse = async (newCourse: CourseCreate) => {
+  //   if (!userId) {
+  //     toast.error('User ID is not available!')
+  //     return
+  //   }
+  //   try {
+  //     const formData = new FormData()
+  //     formData.append('Title', newCourse.title)
+  //     formData.append('Description', newCourse.description)
+  //     formData.append('Price', newCourse.price.toString())
+  //     formData.append('DifficultyLevel', newCourse.difficultyLevel)
+  //     formData.append('CreatedBy', userId)
+  //     formData.append('Prerequisites', newCourse.prerequisites)
+  //     newCourse.learningOutcomes.forEach((outcome) => {
+  //       formData.append('LearningOutcomes', outcome)
+  //     })
+  //     if (newCourse.imageURL) {
+  //       formData.append('ImageURL', newCourse.imageURL)
+  //     }
+  //     if (newCourse.introURL) {
+  //       formData.append('IntroURL', newCourse.introURL)
+  //     }
+  //     const response = await axios.post(API_URL, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data'
+  //       }
+  //     })
+  //     toast.success('Course created successfully!')
+  //     setCourses([...courses, { ...response.data, createdAt: new Date().toISOString() }])
+  //     fetchCourses()
+  //     setAddModalOpen(false)
+  //   } catch (error: any) {
+  //     console.error('Error adding course:', error)
+  //     if (error.response) {
+  //       console.log('Server error response:', error.response.data)
+  //     }
+  //     toast.error('Failed to create course!')
+  //   }
+  // }
+
+  const handleAddCourse = async (newCourse: CourseCreate, selectedTagIds: number[]) => {
     if (!userId) {
       toast.error('User ID is not available!')
       return
     }
+  
     try {
       const formData = new FormData()
       formData.append('Title', newCourse.title)
@@ -193,19 +234,35 @@ export default function CoursesManagement() {
       newCourse.learningOutcomes.forEach((outcome) => {
         formData.append('LearningOutcomes', outcome)
       })
+  
       if (newCourse.imageURL) {
         formData.append('ImageURL', newCourse.imageURL)
       }
       if (newCourse.introURL) {
         formData.append('IntroURL', newCourse.introURL)
       }
+  
+      // 1. Tạo Course
       const response = await axios.post(API_URL, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
+      const createdCourse = response.data
+      const courseId = createdCourse.id // ID của course vừa tạo
+  
+      // 2. Tạo CourseTag cho mỗi tagId đã chọn
+      await Promise.all(
+        selectedTagIds.map((tagId) =>
+          axios.post('https://edu-trailblaze.azurewebsites.net/api/CourseTag', {
+            courseId,
+            tagId
+          })
+        )
+      )
+  
       toast.success('Course created successfully!')
-      setCourses([...courses, { ...response.data, createdAt: new Date().toISOString() }])
+      setCourses([...courses, { ...createdCourse, createdAt: new Date().toISOString() }])
       fetchCourses()
       setAddModalOpen(false)
     } catch (error: any) {
@@ -216,6 +273,8 @@ export default function CoursesManagement() {
       toast.error('Failed to create course!')
     }
   }
+
+
 
   const handleEditCourse = (course: Course) => {
     setEditCourse(course)

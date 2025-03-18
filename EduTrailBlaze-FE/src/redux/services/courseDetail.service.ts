@@ -51,6 +51,7 @@ export const courseApi = createApi({
         method: 'GET'
       })
     }),
+    
     getInstructorOfCourse: build.query<ICourseInstructor[], number>({
       query: (id) => ({
         url: `Course/get-instructors-of-a-course?courseId=${id}`
