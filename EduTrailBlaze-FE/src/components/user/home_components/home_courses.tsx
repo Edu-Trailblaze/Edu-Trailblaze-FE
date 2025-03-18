@@ -10,7 +10,7 @@ import { formatDate } from '@/helper/Util'
 import { jwtDecode } from 'jwt-decode'
 import { usePostCartMutation } from '@/redux/services/cart.service'
 import { useDispatch } from 'react-redux'
-import { addItemToCart } from '@/redux/slice/cart.slice'
+import { addItemToCart, setCart } from '@/redux/slice/cart.slice'
 import Link from 'next/link'
 import SkeletonCard from '../../animate/skeleton/skeleton_card'
 import { useGetTagQuery } from '@/redux/services/tag.service'
@@ -22,7 +22,6 @@ import { toast } from 'react-toastify'
 import { formatCurrency } from '@/helper/format'
 
 export default function HomeCourses() {
-  const [isSaving, setIsSaving] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
   const [userId, setUserId] = useState('')
@@ -100,6 +99,7 @@ export default function HomeCourses() {
       }
       const result = await postCart({ userId, courseId }).unwrap()
       dispatch(addItemToCart(result.cartItems[result.cartItems.length - 1])) // Dispatch the action with the correct payload
+      dispatch(setCart(result.cartItems))
       toast.success('Course added to cart please go to cart to checkout')
     } catch (error) {
       console.log('Error adding to cart: ', error)

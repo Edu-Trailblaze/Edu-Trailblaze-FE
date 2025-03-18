@@ -8,7 +8,7 @@ import { MdAttachMoney, MdOutlineShoppingCart, MdLanguage, MdOutlineSupportAgent
 import { IoLogOut } from 'react-icons/io5'
 import Link from 'next/link'
 import { logout } from '../../../redux/slice/auth.slice'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import {
   DropdownMenu,
@@ -22,13 +22,14 @@ import {
 import { Avatar, AvatarImage } from '../../ui/avatar'
 import { jwtDecode } from 'jwt-decode'
 import { FaUserCog, FaUserEdit } from 'react-icons/fa'
-import { useGetCartQuery } from '@/redux/services/cart.service'
+import { useGetCartQuery, useGetNumberOfCartItemsQuery } from '@/redux/services/cart.service'
 import ViewCart from './viewCart'
 import { FaBell } from 'react-icons/fa6'
 import { IoMdNotificationsOutline } from 'react-icons/io'
 import { useGetUserProfileQuery } from '@/redux/services/user.service'
 import { toast } from 'react-toastify'
 import { FE_URL } from '../../../utils/config'
+import { RootState } from '@/redux/store'
 
 const products = [
   {
@@ -89,6 +90,7 @@ const languageOptions = [
 ]
 
 export default function WebHeader() {
+  const totalItems = useSelector((state: RootState) => state.cart.totalItems)
   const dispatch = useDispatch()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -99,6 +101,7 @@ export default function WebHeader() {
   const [userId, setUserId] = useState('')
   const [userRole, setUserRole] = useState('')
   const { data: profile, isLoading, isFetching } = useGetUserProfileQuery(userId)
+  const { data: cartNumbers } = useGetNumberOfCartItemsQuery(userId)
 
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -158,6 +161,7 @@ export default function WebHeader() {
             <div className='relative cursor-pointer p-2'>
               <Link href={'/student/shopping_cart'}>
                 <MdOutlineShoppingCart className='w-6 h-6 text-gray-700' />
+                {totalItems > 0 && <span className='cart-count'>{totalItems}</span>}
               </Link>
             </div>
 
@@ -249,14 +253,23 @@ export default function WebHeader() {
           {/* Cart Icon - hidden on mobile (shown in mobile menu button area) */}
           <div
             className='hidden lg:block cursor-pointer hover:bg-blue-100 p-2 rounded-md'
-            onMouseEnter={() => setCartHovered(true)}
+            onMouseEnter={() => totalItems > 0 && setCartHovered(true)}
             onMouseLeave={() => setCartHovered(false)}
           >
             <Link href={'/student/shopping_cart'}>
-              <MdOutlineShoppingCart className='w-6 h-6 hover:text-blue-600' />
+              {totalItems > 0 ? (
+                <span className='absolute top-[0.2rem] right-[30.5rem] bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full'>
+                  {totalItems}
+                </span>
+              ) : (
+                <span className='absolute top-[0.2rem] right-[30.5rem] bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full'>
+                  {cartNumbers}
+                </span>
+              )}
+              <MdOutlineShoppingCart className='w-8 h-6 hover:text-blue-600' />
             </Link>
 
-            {cartHovered && <ViewCart id={userId} />}
+            {cartHovered && totalItems > 0 && <ViewCart id={userId} />}
           </div>
         </div>
 
@@ -267,7 +280,10 @@ export default function WebHeader() {
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
                 <IoMdNotificationsOutline className='w-6 h-6' />
               </div>
-              <div onClick={teachOnEduRoute} className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg cursor-pointer'>
+              <div
+                onClick={teachOnEduRoute}
+                className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg cursor-pointer'
+              >
                 Teach on EduTrail
               </div>
               <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>
