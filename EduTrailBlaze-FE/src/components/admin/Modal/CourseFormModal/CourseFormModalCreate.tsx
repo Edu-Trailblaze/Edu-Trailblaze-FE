@@ -490,7 +490,7 @@ export default function CourseFormModalCreate({
                 ))}
             </Select>
           </FormControl>
-        
+        </Box>
 
         {/* Nút CREATE A COURSE */}
         <Box display='flex' justifyContent='flex-end' gap={2} mt={3}>
