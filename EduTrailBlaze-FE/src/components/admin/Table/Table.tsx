@@ -54,7 +54,7 @@ const Table = ({
                         />
                     </TableCell>
                     {columns.map((col) => (
-                        <TableCell
+                        < 
                             key={col.accessor}
                             className={col.className}
                             sx={{
@@ -67,7 +67,7 @@ const Table = ({
                             }}
                         >
                             {col.label}
-                        </TableCell>
+                        </>
                     ))}
                 </TableRow>
             </TableHead> */}

@@ -51,9 +51,9 @@ const generalIcons = [
 ]
 
 //personal
-const personalRoutes = ['profile', 'notifications', 'settings', '']
-const personalTranslations = ['Profile', 'Notification', 'Settings', 'Sign Out']
-const personalIcons = [<Person2Icon />, <NotificationsIcon />, <Settings />, <ExitToAppIcon />]
+const personalRoutes = ['profile', 'notifications', '']
+const personalTranslations = ['Profile', 'Notification', 'Sign Out']
+const personalIcons = [<Person2Icon />, <NotificationsIcon />, <ExitToAppIcon />]
 
 export default function SideMenu({
   isCollapsed,
