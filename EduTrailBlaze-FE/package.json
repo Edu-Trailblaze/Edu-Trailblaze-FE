@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:prod": "env-cmd -f .env.production tsc --noEmit && next lint && next dev --experimental-https",
     "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
@@ -41,6 +42,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "env-cmd": "^10.1.0",
     "firebase": "^11.1.0",
     "framer-motion": "^12.4.10",
     "http": "^0.0.1-security",
