@@ -1,4 +1,4 @@
-import { DataPoint, IInstructor } from '@/types/instructor.type'
+import { DataPoint, IInstructor, TopCourse } from '@/types/instructor.type'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const instructorApi = createApi({
@@ -37,7 +37,17 @@ export const instructorApi = createApi({
       query: ({ InstructorId, Time }) => ({
         url: `InstructorDashboard/get-nearest-time-for-enrollments?InstructorId=${InstructorId}&Time=${Time}`
       })
-    })
+    }),
+    getRevenueData: build.query<DataPoint[], { InstructorId: string; Time: string }>({
+      query: ({ InstructorId, Time }) => ({
+        url: `InstructorDashboard/get-nearest-time-for-revenue?InstructorId=${InstructorId}&Time=${Time}`
+      })
+    }),
+    getTopCourse: build.query<TopCourse[], { InstructorId: string; top: number }>({
+      query: ({ InstructorId, top }) => ({
+        url: `InstructorDashboard/get-top-performing-courses?instructorId=${InstructorId}&top=${top}`
+      })
+    }),
   })
 })
 
@@ -47,5 +57,7 @@ export const {
   useGetInstructorRatingQuery,
   useGetInstructorRevenueQuery,
   useGetCourseCompletionRateQuery,
-  useGetEnrollmentDataQuery
+  useGetEnrollmentDataQuery,
+  useGetRevenueDataQuery,
+  useGetTopCourseQuery
 } = instructorApi

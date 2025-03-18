@@ -19,8 +19,13 @@ export const paymentApi = createApi({
         body: body
       }),
       invalidatesTags: ['Payment']
-    })
+    }),
+    getPayment: build.query<PaymentResponse, number>({
+      query: (id) => ({
+        url: `Payment/${id}`
+      })
+    }),
   })
 })
 
-export const { usePostPaymentMutation } = paymentApi
+export const { usePostPaymentMutation, useGetPaymentQuery } = paymentApi
