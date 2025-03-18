@@ -11,7 +11,9 @@ import Link from 'next/link'
 const PaymentSuccess = () => {
   const searchParams = useSearchParams()
   const paymentId = searchParams.get('paymentId')
+  console.log(paymentId)
   const { data, isFetching, isLoading } = useGetPaymentQuery(Number(paymentId))
+  console.log(data)
 
   if (isLoading || isFetching) return <LoadingPage />
 
@@ -55,7 +57,7 @@ const PaymentSuccess = () => {
           </button>
 
           <Link href={'/'}>
-            <button className='w-full bg-white text-gray-600 py-2 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2'>
+            <button className='w-full mt-4 bg-white text-gray-600 py-2 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2'>
               <ArrowLeft className='w-4 h-4' />
               Return to Home
             </button>

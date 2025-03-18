@@ -6,7 +6,7 @@ import {
   useGetNumberOfCartItemsQuery,
   useDeleteAllCartItemsMutation
 } from '@/redux/services/cart.service'
-import { usePostPaymentMutation } from '@/redux/services/payment.service'
+import { usePostPaymentMutation } from '@/redux/services/order.service'
 import { formatCurrency } from '@/helper/format'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from 'next/navigation'

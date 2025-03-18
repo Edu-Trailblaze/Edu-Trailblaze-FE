@@ -21,6 +21,7 @@ import { enrollmentApi } from './services/enrollment.service'
 import { enrollApi } from './services/enroll.service'
 import { userProgressApi } from './services/userProgress.service'
 import { userCertificateApi } from './services/userCertificate.service'
+import { orderApi } from './services/order.service'
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -48,7 +49,7 @@ export const rootReducer = combineReducers({
   [userProgressApi.reducerPath]: userProgressApi.reducer,
   [enrollApi.reducerPath]: enrollApi.reducer,
 
-  [userCertificateApi.reducerPath]:userCertificateApi.reducer
-
+  [userCertificateApi.reducerPath]:userCertificateApi.reducer,
+  [orderApi.reducerPath]:orderApi.reducer
 
 })
