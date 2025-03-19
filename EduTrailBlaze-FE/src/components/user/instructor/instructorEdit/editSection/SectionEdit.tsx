@@ -6,7 +6,11 @@ import '@/components/global/Modal/ReactModal.css'
 import SectionFields from '../../CreateCourse/Content/SectionFields'
 import Modal from '../../../../global/Modal/Modal'
 import { useParams } from 'next/navigation'
-import { useGetSectionbyConditionsQuery, useUpdateSectionMutation } from '../../../../../redux/services/section.service'
+import {
+  useDeleteSectionMutation,
+  useGetSectionbyConditionsQuery,
+  useUpdateSectionMutation
+} from '../../../../../redux/services/section.service'
 import { useDeleteLectureMutation, useGetSectionLectureQuery } from '../../../../../redux/services/lecture.service'
 import LoadingPage from '../../../../animate/Loading/LoadingPage'
 import { toast } from 'react-toastify'
@@ -14,6 +18,7 @@ import Link from 'next/link'
 import CreateLecture from '../../createLecture/CreateLecture'
 import '@/components/global/Modal/ReactModal.css'
 import { delay } from 'framer-motion'
+import Button from '@/components/global/Button/Button'
 
 export default function EditSections() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -21,6 +26,7 @@ export default function EditSections() {
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
   const [editingSection, setEditingSection] = useState<ISection | null>(null)
   const [updateSection, { isLoading: updateSectionLoading }] = useUpdateSectionMutation()
+  const [deleteSection] = useDeleteSectionMutation()
   const [deleteLecture] = useDeleteLectureMutation()
   const params = useParams()
 
@@ -97,6 +103,21 @@ export default function EditSections() {
 
   const handleAddLecture = () => {
     setIsLectureModalOpen(true)
+  }
+
+  const handleDeleteSection = async (sectionId: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this section?')
+    if (!confirmDelete) return
+
+    try {
+      await deleteSection(sectionId).unwrap()
+      toast.success('Section deleted successfully.')
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
+    } catch (error) {
+      toast.error('Failed to delete section. Please try again.')
+    }
   }
 
   const handleDeleteLecture = async (lectureId: number) => {
@@ -177,7 +198,10 @@ export default function EditSections() {
                     >
                       <Edit size={18} />
                     </button>
-                    <button className='text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100'>
+                    <button
+                      onClick={() => handleDeleteSection(section.sectionId)}
+                      className='text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100'
+                    >
                       <Trash2 size={18} />
                     </button>
                     {expandedSections[section.sectionId] ? (
@@ -308,13 +332,14 @@ export default function EditSections() {
                 >
                   Cancel
                 </button>
-                <button
+                <Button
                   onClick={saveSection}
+                  isLoading={updateSectionLoading}
                   className='px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center'
                 >
                   <Save size={18} className='mr-2' />
                   Save Changes
-                </button>
+                </Button>
               </div>
             </div>
           </div>

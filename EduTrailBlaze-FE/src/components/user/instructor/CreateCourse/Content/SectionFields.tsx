@@ -14,7 +14,6 @@ interface SectionFieldsProps {
 export default function SectionFields({ courseId }: SectionFieldsProps) {
   const route = useRouter()
   const [createSecLec, { isLoading: loadingSecLec }] = useCreateSectionLectureVipMutation()
-  // const [sections, setSections] = useState<SectionVip[]>([])
   const [sections, setSections] = useState<SectionVip[]>([{ id: Date.now(), title: '', description: '', lectures: [] }])
   const [collapsedSections, setCollapsedSections] = useState<boolean[]>([false])
 
