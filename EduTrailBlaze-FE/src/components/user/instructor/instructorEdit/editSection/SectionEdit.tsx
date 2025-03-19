@@ -6,7 +6,11 @@ import '@/components/global/Modal/ReactModal.css'
 import SectionFields from '../../CreateCourse/Content/SectionFields'
 import Modal from '../../../../global/Modal/Modal'
 import { useParams } from 'next/navigation'
-import { useGetSectionbyConditionsQuery, useUpdateSectionMutation } from '../../../../../redux/services/section.service'
+import {
+  useDeleteSectionMutation,
+  useGetSectionbyConditionsQuery,
+  useUpdateSectionMutation
+} from '../../../../../redux/services/section.service'
 import { useDeleteLectureMutation, useGetSectionLectureQuery } from '../../../../../redux/services/lecture.service'
 import LoadingPage from '../../../../animate/Loading/LoadingPage'
 import { toast } from 'react-toastify'
@@ -14,6 +18,7 @@ import Link from 'next/link'
 import CreateLecture from '../../createLecture/CreateLecture'
 import '@/components/global/Modal/ReactModal.css'
 import { delay } from 'framer-motion'
+import Button from '@/components/global/Button/Button'
 
 export default function EditSections() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -21,6 +26,7 @@ export default function EditSections() {
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>({})
   const [editingSection, setEditingSection] = useState<ISection | null>(null)
   const [updateSection, { isLoading: updateSectionLoading }] = useUpdateSectionMutation()
+  const [deleteSection] = useDeleteSectionMutation()
   const [deleteLecture] = useDeleteLectureMutation()
   const params = useParams()
 
@@ -97,6 +103,21 @@ export default function EditSections() {
 
   const handleAddLecture = () => {
     setIsLectureModalOpen(true)
+  }
+
+  const handleDeleteSection = async (sectionId: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this section?')
+    if (!confirmDelete) return
+
+    try {
+      await deleteSection(sectionId).unwrap()
+      toast.success('Section deleted successfully.')
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
+    } catch (error) {
+      toast.error('Failed to delete section. Please try again.')
+    }
   }
 
   const handleDeleteLecture = async (lectureId: number) => {
@@ -177,7 +198,10 @@ export default function EditSections() {
                     >
                       <Edit size={18} />
                     </button>
-                    <button className='text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100'>
+                    <button
+                      onClick={() => handleDeleteSection(section.sectionId)}
+                      className='text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100'
+                    >
                       <Trash2 size={18} />
                     </button>
                     {expandedSections[section.sectionId] ? (
@@ -308,64 +332,18 @@ export default function EditSections() {
                 >
                   Cancel
                 </button>
-                <button
+                <Button
                   onClick={saveSection}
+                  isLoading={updateSectionLoading}
                   className='px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center'
                 >
                   <Save size={18} className='mr-2' />
                   Save Changes
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
-
-        {/* Edit Lecture Modal */}
-        {/* {editingLecture && (
-          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-            <div className='bg-white rounded-lg shadow-xl w-full max-w-md p-6'>
-              <h3 className='text-xl font-semibold mb-4 text-gray-800'>Edit Lecture</h3>
-              <div className='space-y-4'>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>Lecture Title</label>
-                  <input
-                    type='text'
-                    name='title'
-                    value={editingLecture.title}
-                    //   onChange={handleLectureChange}
-                    className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>Duration</label>
-                  <input
-                    type='text'
-                    name='duration'
-                    value={editingLecture.duration}
-                    //   onChange={handleLectureChange}
-                    placeholder='e.g., 45 min'
-                    className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
-                </div>
-              </div>
-              <div className='flex justify-end space-x-3 mt-6'>
-                <button
-                  onClick={() => setEditingLecture(null)}
-                  className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50'
-                >
-                  Cancel
-                </button>
-                <button
-                  // onClick={saveLecture}
-                  className='px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center'
-                >
-                  <Save size={18} className='mr-2' />
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          </div>
-        )} */}
       </div>
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title='Add New Section'>
         <SectionFields courseId={Number(courseId)} />

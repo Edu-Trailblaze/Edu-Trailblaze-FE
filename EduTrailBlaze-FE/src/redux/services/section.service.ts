@@ -41,9 +41,22 @@ export const sectionApi = createApi({
         body
       }),
       invalidatesTags: [{ type: 'Sections', id: 'LIST' }]
+    }),
+
+    deleteSection: build.mutation<void, number>({
+      query: (id) => ({
+        url: `Section/${id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: [{ type: 'Sections', id: 'LIST' }]
     })
   })
 })
 
-export const { useGetAllSectionsQuery, useGetSectionQuery, useGetSectionbyConditionsQuery, useUpdateSectionMutation } =
-  sectionApi
+export const {
+  useGetAllSectionsQuery,
+  useGetSectionQuery,
+  useGetSectionbyConditionsQuery,
+  useUpdateSectionMutation,
+  useDeleteSectionMutation
+} = sectionApi
