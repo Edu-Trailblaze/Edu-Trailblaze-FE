@@ -31,7 +31,8 @@ npm run dev
 ```  
 
 ## 📸 Screenshots  
-*(Add screenshots here to showcase the UI)*  
+![Image](https://github.com/user-attachments/assets/b2fa4565-6f2b-4857-83eb-e436590e7068) 
+![Image](https://github.com/user-attachments/assets/aff4aab1-0b2d-4f9b-bc2d-03503cdb95fd)
 
 ## 🎯 Roadmap  
 - ✅ Basic authentication & authorization  
