@@ -253,7 +253,7 @@ export default function WebHeader() {
           {/* Cart Icon - hidden on mobile (shown in mobile menu button area) */}
           <div
             className='hidden lg:block cursor-pointer hover:bg-blue-100 p-2 rounded-md'
-            onMouseEnter={() => totalItems > 0 && setCartHovered(true)}
+            onMouseEnter={() => setCartHovered(true)}
             onMouseLeave={() => setCartHovered(false)}
           >
             <Link href={'/student/shopping_cart'}>
@@ -269,7 +269,7 @@ export default function WebHeader() {
               <MdOutlineShoppingCart className='w-8 h-6 hover:text-blue-600' />
             </Link>
 
-            {cartHovered && totalItems > 0 && <ViewCart id={userId} />}
+            {cartHovered && <ViewCart id={userId} />}
           </div>
         </div>
 
