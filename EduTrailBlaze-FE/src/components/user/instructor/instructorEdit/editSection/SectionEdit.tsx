@@ -319,53 +319,6 @@ export default function EditSections() {
             </div>
           </div>
         )}
-
-        {/* Edit Lecture Modal */}
-        {/* {editingLecture && (
-          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-            <div className='bg-white rounded-lg shadow-xl w-full max-w-md p-6'>
-              <h3 className='text-xl font-semibold mb-4 text-gray-800'>Edit Lecture</h3>
-              <div className='space-y-4'>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>Lecture Title</label>
-                  <input
-                    type='text'
-                    name='title'
-                    value={editingLecture.title}
-                    //   onChange={handleLectureChange}
-                    className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>Duration</label>
-                  <input
-                    type='text'
-                    name='duration'
-                    value={editingLecture.duration}
-                    //   onChange={handleLectureChange}
-                    placeholder='e.g., 45 min'
-                    className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
-                </div>
-              </div>
-              <div className='flex justify-end space-x-3 mt-6'>
-                <button
-                  onClick={() => setEditingLecture(null)}
-                  className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50'
-                >
-                  Cancel
-                </button>
-                <button
-                  // onClick={saveLecture}
-                  className='px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center'
-                >
-                  <Save size={18} className='mr-2' />
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          </div>
-        )} */}
       </div>
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title='Add New Section'>
         <SectionFields courseId={Number(courseId)} />

@@ -5,12 +5,14 @@ import { ArrowLeftIcon, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
 import LectureFields from './LectureFields'
 import { useCreateSectionLectureVipMutation } from '../../../../../redux/services/lecture.service'
 import { toast } from 'react-toastify'
+import { useRouter } from 'next/navigation'
 
 interface SectionFieldsProps {
   courseId: number | null
 }
 
 export default function SectionFields({ courseId }: SectionFieldsProps) {
+  const route = useRouter()
   const [createSecLec, { isLoading: loadingSecLec }] = useCreateSectionLectureVipMutation()
   // const [sections, setSections] = useState<SectionVip[]>([])
   const [sections, setSections] = useState<SectionVip[]>([{ id: Date.now(), title: '', description: '', lectures: [] }])
@@ -48,21 +50,12 @@ export default function SectionFields({ courseId }: SectionFieldsProps) {
 
   const handleCreateSecLecVip = async () => {
     if (!courseId) {
-      toast.error('CourseId is missing. Please create a course first!', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light'
-      })
+      toast.error('CourseId is missing. Please create a course first!')
       return
     }
 
     if (sections.length === 0) {
-      alert('⚠️ Please add at least one section.')
+      toast.error('⚠️ Please add at least one section.')
       return
     }
 
@@ -87,10 +80,11 @@ export default function SectionFields({ courseId }: SectionFieldsProps) {
       })
 
       await createSecLec(formData).unwrap()
-      toast.success('Created successfully!')
+      toast.success('Created Sections successfully!')
       setSections([{ id: Date.now(), title: '', description: '', lectures: [] }])
+      route.push('/instructor/dashboard/coursePage')
     } catch (error) {
-      console.error('Error creating sections:', error)
+      toast.error('Error creating sections')
     }
   }
 
