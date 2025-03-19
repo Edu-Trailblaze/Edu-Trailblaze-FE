@@ -8,6 +8,7 @@ import { useGetTagQuery } from '@/redux/services/tag.service'
 import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import { Listbox } from '@headlessui/react'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
+import * as signalR from '@microsoft/signalr'
 
 export default function InstructorCourses() {
   const [userId, setUserId] = useState('')
@@ -15,6 +16,14 @@ export default function InstructorCourses() {
   const [searchQuery, setSearchQuery] = useState('')
   const [tagSelected, setTagSelected] = useState<number | undefined>(undefined)
   const { data: tagData, isLoading: tagLoading, isFetching: tagFetching } = useGetTagQuery()
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  interface Notification {
+    message: string;
+    imageUrl: string;
+    createdAt: string;
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
@@ -28,7 +37,41 @@ export default function InstructorCourses() {
       console.error('Error decoding token:', error)
       setUserId('')
     }
+
+    // Initialize SignalR connection
+    const newConnection = new signalR.HubConnectionBuilder()
+    .withUrl("https://edu-trailblaze.azurewebsites.net/notifications-hub", {
+      accessTokenFactory: () => localStorage.getItem("accessToken") || "",
+    })
+    .withAutomaticReconnect()
+    .build();
+  
+
+    setConnection(newConnection);
+
+    return () => {
+      newConnection.stop();
+    }
   }, [])
+
+useEffect(() => {
+    if (connection) {
+      connection
+        .start()
+        .then(() => console.log("Connected to SignalR!"))
+        .catch(err => console.error("SignalR Connection Failed", err));
+
+        connection.on("ReceiveNotification", (notification: Notification) => {
+          console.log("New Notification:", notification);
+          setNotifications(prev => [notification, ...prev]); // Add new notifications at the top
+        });
+
+      return () => {
+        connection.off("ReceiveNotification");
+        connection.stop();
+      };
+    }
+  }, [connection]);
 
   const handleSearch = () => {
     // This function will trigger a search when called
@@ -206,7 +249,28 @@ export default function InstructorCourses() {
         <div className='mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
           <h2 className='text-xl font-bold text-gray-800 mb-4'>Recent Activity</h2>
           <div className='space-y-4'>
-            <div className='flex'>
+          {notifications.length === 0 ? (
+          <p className='text-sm text-gray-500'>No recent activity</p>
+        ) : (
+          notifications.map((notif, index) => (
+            <div key={index} className='flex'>
+              <div className='flex-shrink-0 mr-3'>
+                <img
+                  src={notif.imageUrl || 'https://via.placeholder.com/32'} 
+                  alt="User Profile"
+                  className='h-8 w-8 rounded-full'
+                />
+              </div>
+              <div>
+                <p className='text-sm text-gray-600'>
+                  <span className='font-medium text-gray-900'>{notif.message}</span>
+                </p>
+                <p className='text-xs text-gray-500 mt-1'>{new Date(notif.createdAt).toLocaleString()}</p>
+              </div>
+            </div>
+          ))
+        )}
+            {/*<div className='flex'>
               <div className='flex-shrink-0 mr-3'>
                 <div className='h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center'>
                   <span className='text-xs font-medium'>SJ</span>
@@ -220,7 +284,7 @@ export default function InstructorCourses() {
                 <p className='text-xs text-gray-500 mt-1'>2 hours ago</p>
               </div>
             </div>
-            <div className='flex'>
+             <div className='flex'>
               <div className='flex-shrink-0 mr-3'>
                 <div className='h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center'>
                   <span className='text-xs font-medium'>MB</span>
@@ -261,7 +325,7 @@ export default function InstructorCourses() {
                 </p>
                 <p className='text-xs text-gray-500 mt-1'>2 days ago</p>
               </div>
-            </div>
+            </div> */}
           </div>
           <Link href='/instructor/activity'>
             <span className='text-sm text-indigo-600 hover:text-indigo-800 mt-4 inline-block cursor-pointer'>
