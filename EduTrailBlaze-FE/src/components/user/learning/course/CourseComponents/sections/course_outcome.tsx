@@ -149,9 +149,9 @@ export default function CourseOutcome({ userId, courseId }: ICourseOutcomeProps)
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-red-800">Không thể tải thông tin tiến độ</h3>
+            <h3 className="text-lg font-medium text-red-800">Unable to load progress information</h3>
           </div>
-          <p className="text-red-700 ml-12">Hãy enroll khóa học để cập nhật tiến độ hoặc liên hệ hỗ trợ nếu lỗi vẫn tiếp tục.</p>
+          <p className="text-red-700 ml-12">Please enroll in the course to stay updated on progress or contact support if the error persists.</p>
         </div>
       )
 
