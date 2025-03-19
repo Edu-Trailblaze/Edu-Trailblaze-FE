@@ -11,3 +11,8 @@ interface IETag {
   id: number
   name: string
 }
+
+interface InstructorSpecialties {
+    userId: string;
+    tag: number[];
+}

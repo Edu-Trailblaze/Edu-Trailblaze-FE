@@ -1,25 +1,50 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Check, X } from 'lucide-react'
-import { useGetTagQuery } from '@/redux/services/tag.service'
+import { useGetInstructorSpecialtiesQuery, useGetTagQuery, usePostTagMutation } from '@/redux/services/tag.service'
 
-const SpecialtySelector = () => {
+interface SpecialtiesProp {
+  userId: string
+}
+
+const SpecialtySelector = ({ userId }: SpecialtiesProp) => {
   const { data: specialtiesData, isFetching: specialtiesFetching, isLoading: specialtiesLoading } = useGetTagQuery()
-  const [selectedTag, setSelectedTag] = useState<number[]>([])
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([])
+  const {
+    data: specialtiesIns,
+    isFetching: specialtiesInsFetching,
+    isLoading: specialtiesInsLoading
+  } = useGetInstructorSpecialtiesQuery(userId)
+  const [postTags, { isLoading: isSaving }] = usePostTagMutation()
+
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
   const [isExpanded, setIsExpanded] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const toggleSpecialty = (specialty: string): void => {
-    if (selectedSpecialties.includes(specialty)) {
-      setSelectedSpecialties(selectedSpecialties.filter((item) => item !== specialty))
-    } else {
-      setSelectedSpecialties([...selectedSpecialties, specialty])
+  useEffect(() => {
+    if (specialtiesIns?.tag) {
+      setSelectedTagIds(specialtiesIns.tag)
+    }
+  }, [specialtiesIns])
+
+  interface ToggleSpecialty {
+    (tagId: number): void
+  }
+
+  const toggleSpecialty: ToggleSpecialty = (tagId) => {
+    setSelectedTagIds((prev) => (prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]))
+  }
+
+  const handleSave = async () => {
+    try {
+      await postTags({ userId, tagId: selectedTagIds }).unwrap()
+      setIsExpanded(false)
+    } catch (error) {
+      console.error('Failed to save specialties:', error)
     }
   }
 
-  const filteredSpecialties = specialtiesData?.filter((specialty: ITag) =>
-    specialty.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredSpecialties = useMemo(() => {
+    return specialtiesData?.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase())) ?? []
+  }, [searchQuery, specialtiesData])
 
   return (
     <div className='bg-white rounded-lg shadow-sm mb-6'>
@@ -37,18 +62,18 @@ const SpecialtySelector = () => {
       <div className='p-4 md:p-6'>
         <p className='text-sm text-gray-500 mb-3'>Your teaching expertise areas:</p>
         <div className='flex flex-wrap gap-2'>
-          {selectedSpecialties.length > 0 ? (
-            selectedSpecialties.map((specialty) => (
-              <div
-                key={specialty}
-                className='bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center text-sm'
-              >
-                {specialty}
-                <button onClick={() => toggleSpecialty(specialty)} className='ml-2 text-blue-500 hover:text-blue-700'>
-                  <X className='w-3 h-3' />
-                </button>
-              </div>
-            ))
+        {(specialtiesIns?.tag && specialtiesIns.tag.length > 0 || selectedTagIds.length > 0) ? (
+            [...new Set([...specialtiesIns?.tag ?? [], ...selectedTagIds])].map((tagId) => {
+              const specialty = specialtiesData?.find((s) => s.id === tagId)
+              return (
+                <div key={tagId} className='bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center text-sm'>
+                  {specialty?.name}
+                  <button onClick={() => toggleSpecialty(tagId)} className='ml-2 text-blue-500 hover:text-blue-700'>
+                    <X className='w-3 h-3' />
+                  </button>
+                </div>
+              )
+            })
           ) : (
             <p className='text-gray-400 italic'>No specialties selected</p>
           )}
@@ -69,22 +94,26 @@ const SpecialtySelector = () => {
           </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
-            {filteredSpecialties?.map((specialty, index) => (
+            {filteredSpecialties?.map((specialty) => (
               <div
-                key={index}
-                onClick={() => toggleSpecialty(specialty.name)}
+                key={specialty.id}
+                onClick={() => toggleSpecialty(specialty.id)}
                 className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center ${
-                  selectedSpecialties.includes(specialty.name)
+                  selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
                 }`}
               >
                 <div
                   className={`w-5 h-5 mr-2 rounded-full flex items-center justify-center ${
-                    selectedSpecialties.includes(specialty.name) ? 'bg-blue-500' : 'border border-gray-300'
+                    selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)
+                      ? 'bg-blue-500'
+                      : 'border border-gray-300'
                   }`}
                 >
-                  {selectedSpecialties.includes(specialty.name) && <Check className='w-3 h-3 text-white' />}
+                  {(selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)) && (
+                    <Check className='w-3 h-3 text-white' />
+                  )}
                 </div>
                 <span className='text-sm'>{specialty.name}</span>
               </div>
@@ -93,10 +122,11 @@ const SpecialtySelector = () => {
 
           <div className='mt-4 flex justify-end'>
             <button
-              onClick={() => setIsExpanded(false)}
+              onClick={handleSave}
               className='px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700'
+              disabled={isSaving}
             >
-              Save
+              {isSaving ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>

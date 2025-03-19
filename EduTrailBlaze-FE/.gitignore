@@ -52,3 +52,6 @@ server.js
 localhost-key.pem
 localhost.pem
 certificates
+
+#/ Hide Api Url
+src/utils/config.ts

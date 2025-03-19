@@ -285,7 +285,7 @@ export default function ProfilePage() {
             </div> */}
           </form>
 
-          <SpecialtySelector/>
+          <SpecialtySelector userId={userId}/>
         </div>
         <EducationSection />
       </div>

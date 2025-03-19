@@ -1,9 +1,10 @@
+import { BASE_URL } from '@/utils/config';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const orderApi = createApi({
   reducerPath: 'order/api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://edu-trailblaze.azurewebsites.net/api/',
+    baseUrl: BASE_URL,
     prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json')
       return headers
