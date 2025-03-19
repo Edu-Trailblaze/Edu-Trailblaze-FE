@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import Footer from '../admin/Footer/footer'
 
 import AdminHeader from '../admin/Header/header'
-import SideMenu from '@/components/admin/SideMenu/sidemenu'
+import SideMenu from '@/components/admin/SideMenu/sideMenu'
 
 const Layout = (props: any) => {
   const { data: session } = useSession()

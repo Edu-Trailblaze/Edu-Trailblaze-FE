@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Divider } from '@mui/material'
-import SettingSideBar from '../../../../../components/admin/SideMenu/SettingSideBar'
+import SettingSideBar from '@/components/admin/SideMenu/SettingSideBar' 
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   return (
