@@ -52,6 +52,7 @@ const SpecialtySelector = ({ userId }: SpecialtiesProp) => {
         <h2 className='text-xl font-medium'>Specialties</h2>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
+          disabled={specialtiesFetching || specialtiesInsFetching}
           className='px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 flex items-center'
         >
           {isExpanded ? 'Close' : 'Select Specialties'}
@@ -62,8 +63,8 @@ const SpecialtySelector = ({ userId }: SpecialtiesProp) => {
       <div className='p-4 md:p-6'>
         <p className='text-sm text-gray-500 mb-3'>Your teaching expertise areas:</p>
         <div className='flex flex-wrap gap-2'>
-        {(specialtiesIns?.tag && specialtiesIns.tag.length > 0 || selectedTagIds.length > 0) ? (
-            [...new Set([...specialtiesIns?.tag ?? [], ...selectedTagIds])].map((tagId) => {
+          {(specialtiesIns?.tag && specialtiesIns.tag.length > 0) || selectedTagIds.length > 0 ? (
+            [...new Set([...(specialtiesIns?.tag ?? []), ...selectedTagIds])].map((tagId) => {
               const specialty = specialtiesData?.find((s) => s.id === tagId)
               return (
                 <div key={tagId} className='bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center text-sm'>
@@ -93,32 +94,36 @@ const SpecialtySelector = ({ userId }: SpecialtiesProp) => {
             />
           </div>
 
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
-            {filteredSpecialties?.map((specialty) => (
-              <div
-                key={specialty.id}
-                onClick={() => toggleSpecialty(specialty.id)}
-                className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center ${
-                  selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
-                }`}
-              >
+          {specialtiesFetching || specialtiesInsFetching ? (
+            <p className='text-center text-gray-500'>Loading...</p>
+          ) : (
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
+              {filteredSpecialties?.map((specialty) => (
                 <div
-                  className={`w-5 h-5 mr-2 rounded-full flex items-center justify-center ${
+                  key={specialty.id}
+                  onClick={() => toggleSpecialty(specialty.id)}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center ${
                     selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)
-                      ? 'bg-blue-500'
-                      : 'border border-gray-300'
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
                   }`}
                 >
-                  {(selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)) && (
-                    <Check className='w-3 h-3 text-white' />
-                  )}
+                  <div
+                    className={`w-5 h-5 mr-2 rounded-full flex items-center justify-center ${
+                      selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)
+                        ? 'bg-blue-500'
+                        : 'border border-gray-300'
+                    }`}
+                  >
+                    {(selectedTagIds.includes(specialty.id) || specialtiesIns?.tag.includes(specialty.id)) && (
+                      <Check className='w-3 h-3 text-white' />
+                    )}
+                  </div>
+                  <span className='text-sm'>{specialty.name}</span>
                 </div>
-                <span className='text-sm'>{specialty.name}</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className='mt-4 flex justify-end'>
             <button
