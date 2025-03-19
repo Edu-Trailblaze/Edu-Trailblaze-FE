@@ -9,6 +9,7 @@ export default function SearchPage() {
   const searchParams = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
   const [sortBy, setSortBy] = useState('most_popular')
+  const [minRating, setMinRating] = useState<number | undefined>(undefined)
 
   return (
     <div className='min-h-screen bg-white'>
@@ -18,7 +19,7 @@ export default function SearchPage() {
         </div>
 
         <div className='flex'>
-          <SearchSidebar />
+          <SearchSidebar onChangeRating={setMinRating} />
 
           <div className='flex-1'>
             <div className='mb-4 flex justify-between items-center'>
@@ -55,7 +56,7 @@ export default function SearchPage() {
             </div>
 
             <div>
-              <SearchCard searchQuery={searchQuery} sortBy={sortBy} />
+              <SearchCard searchQuery={searchQuery} sortBy={sortBy} minRating={minRating} />
             </div>
           </div>
         </div>

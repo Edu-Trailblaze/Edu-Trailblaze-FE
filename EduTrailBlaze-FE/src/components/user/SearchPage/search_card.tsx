@@ -7,12 +7,13 @@ import Link from 'next/link'
 interface CourseSearchProp {
   searchQuery: string
   sortBy: string
+  minRating?: number
 }
-export default function SearchCard({ searchQuery, sortBy }: CourseSearchProp) {
+export default function SearchCard({ searchQuery, sortBy, minRating }: CourseSearchProp) {
   const [pageIndex, setPageIndex] = useState(1)
 
   const { data: courses, isLoading } = useGetCoursePagingQuery(
-    { Title: searchQuery, PageIndex: pageIndex, PageSize: 10, Sort: sortBy },
+    { Title: searchQuery, PageIndex: pageIndex, PageSize: 10, Sort: sortBy, MinRating: minRating },
     { skip: !searchQuery }
   )
 
