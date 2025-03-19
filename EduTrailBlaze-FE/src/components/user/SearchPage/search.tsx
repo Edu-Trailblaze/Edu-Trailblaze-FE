@@ -1,15 +1,14 @@
 'use client'
-import React from 'react'
-import { Search, Star, ChevronDown } from 'lucide-react'
+import React, { useState } from 'react'
 import SearchSidebar from './search_sidebar'
 import SearchCard from './search_card'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useSearchParams } from 'next/navigation'
-// import { useGetCoursePagingQuery } from '../../../redux/services/courseDetail.service'
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
+  const [sortBy, setSortBy] = useState('most_popular')
 
   return (
     <div className='min-h-screen bg-white'>
@@ -18,33 +17,27 @@ export default function SearchPage() {
           <h2 className='text-2xl font-bold mb-2'>{searchQuery && `Results for "${searchQuery}"`}</h2>
         </div>
 
-        {/* <div className='flex'>
+        <div className='flex'>
           <SearchSidebar />
 
           <div className='flex-1'>
             <div className='mb-4 flex justify-between items-center'>
               <div className='flex items-center gap-2'>
                 <span>Sort by:</span>
-                <Select defaultValue='mostRelevant'>
+                <Select defaultValue='most_popular' onValueChange={setSortBy}>
                   <SelectTrigger className='w-[180px]'>
-                    <SelectValue placeholder='Most Relevant' />
+                    <SelectValue placeholder='Most Poplular' />
                   </SelectTrigger>
                   <SelectContent className='bg-white shadow-lg'>
                     <SelectGroup>
                       <SelectItem
-                        value='mostRelevant'
+                        value='most_popular'
                         className='data-[state=checked]:bg-blue-500 data-[state=checked]:text-white'
                       >
-                        Most Relevant
+                        Most Poplular
                       </SelectItem>
                       <SelectItem
-                        value='mostReviewed'
-                        className='data-[state=checked]:bg-blue-500 data-[state=checked]:text-white'
-                      >
-                        Most Reviewed
-                      </SelectItem>
-                      <SelectItem
-                        value='highestRated'
+                        value='highest_rated'
                         className='data-[state=checked]:bg-blue-500 data-[state=checked]:text-white'
                       >
                         Highest Rated
@@ -59,13 +52,13 @@ export default function SearchPage() {
                   </SelectContent>
                 </Select>
               </div>
-            </div> */}
+            </div>
 
-        <div className=''>
-          <SearchCard searchQuery={searchQuery} />
+            <div>
+              <SearchCard searchQuery={searchQuery} sortBy={sortBy} />
+            </div>
+          </div>
         </div>
-        {/* </div>
-        </div> */}
       </main>
     </div>
   )

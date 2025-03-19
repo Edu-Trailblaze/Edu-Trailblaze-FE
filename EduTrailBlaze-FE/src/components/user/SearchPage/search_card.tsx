@@ -6,12 +6,13 @@ import Link from 'next/link'
 
 interface CourseSearchProp {
   searchQuery: string
+  sortBy: string
 }
-export default function SearchCard({ searchQuery }: CourseSearchProp) {
+export default function SearchCard({ searchQuery, sortBy }: CourseSearchProp) {
   const [pageIndex, setPageIndex] = useState(1)
 
   const { data: courses, isLoading } = useGetCoursePagingQuery(
-    { Title: searchQuery, PageIndex: pageIndex, PageSize: 10 },
+    { Title: searchQuery, PageIndex: pageIndex, PageSize: 10, Sort: sortBy },
     { skip: !searchQuery }
   )
 
