@@ -145,7 +145,7 @@ export default function CourseHeader({
                   variant='primary'
                   size='xl'
                   isLoading={checkLoading || postLoading || isAddingToCart}
-                  className='flex items-center justify-center py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300'
+                  className='flex items-center justify-center py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105'
                 >
                   {enroll?.status === 'Not bought' ? (
                     <div onClick={() => handleAddToCart(userId, courseURL)} className='flex items-center'>
