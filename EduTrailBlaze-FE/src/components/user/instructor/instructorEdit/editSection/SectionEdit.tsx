@@ -141,7 +141,7 @@ export default function EditSections() {
         <div>
           <div className='flex items-center'>
             <Link href={`/instructor/edit/edit-course/${courseId}`}>
-              <button type='button' className='mr-4 p-2 rounded-full bg-white shadow-sm hover:bg-gray-50'>
+              <button type='button' className='mr-4 p-2 rounded-full bg-white shadow-sm hover:bg-gray-50 hover:scale-105'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   className='h-5 w-5 text-gray-500'
@@ -167,7 +167,7 @@ export default function EditSections() {
           <div className='flex justify-end items-center mb-8'>
             <button
               onClick={addNewSection}
-              className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow-md transition-colors duration-200'
+              className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow-md transition-colors duration-300 hover:scale-105'
             >
               <Plus size={20} className='mr-2' />
               Add New Section
@@ -219,7 +219,7 @@ export default function EditSections() {
                       <h4 className='text-lg font-medium text-blue-700'>Lectures</h4>
                       <button
                         onClick={handleAddLecture}
-                        className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded flex items-center text-sm shadow-sm'
+                        className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded flex items-center text-sm shadow-sm hover:scale-105'
                       >
                         <Plus size={16} className='mr-1' />
                         Add Lecture

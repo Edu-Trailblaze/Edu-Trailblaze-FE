@@ -180,7 +180,7 @@ useEffect(() => {
             </div>
 
             <Link href={'/instructor/create/create-course'}>
-              <button className='inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none'>
+              <button className='w-32 transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 flex justify-center items-center text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'>
                 New course
               </button>
             </Link>

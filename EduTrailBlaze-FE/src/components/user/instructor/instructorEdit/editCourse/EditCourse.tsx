@@ -291,7 +291,7 @@ export default function CourseEdit() {
                           </div>
                           <h3 className='text-lg font-semibold text-gray-800'>Learning Outcomes</h3>
                         </div>
-                        <Button variant='Green' className='gap-3' onClick={addOutcome} type='button'>
+                        <Button variant='Green' className='gap-3 hover:scale-105' onClick={addOutcome} type='button'>
                           <CirclePlus />
                           Add Another Outcomes
                         </Button>
