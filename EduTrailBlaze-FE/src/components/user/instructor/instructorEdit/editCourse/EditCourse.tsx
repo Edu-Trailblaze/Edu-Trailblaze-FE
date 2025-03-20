@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import Button from '../../../../global/Button/Button'
 import Box from '../../../../global/Box/Box'
+import { toast } from 'react-toastify'
 
 export default function CourseEdit() {
   const router = useRouter()
@@ -117,17 +118,19 @@ export default function CourseEdit() {
       formData.append('DifficultyLevel', courseData.difficultyLevel)
       formData.append('Description', courseData.description)
       formData.append('Prerequisites', courseData.prerequisites)
-      formData.append('LearningOutcomes', JSON.stringify(courseData.learningOutcomes))
+      courseData.learningOutcomes.forEach((outcome) => {
+        formData.append('LearningOutcomes', outcome)
+      })
       formData.append('UpdatedBy', courseData.updatedBy)
 
       if (imageFile) formData.append('ImageURL', imageFile)
       if (videoFile) formData.append('IntroURL', videoFile)
 
       await updateCourse(formData).unwrap()
-      alert('Course updated successfully!')
+      toast.success('Course updated successfully!')
     } catch (error) {
       console.error('Error updating course:', error)
-      alert('Failed to update course!')
+      toast.error('Failed to update course! Please check again')
     }
   }
 

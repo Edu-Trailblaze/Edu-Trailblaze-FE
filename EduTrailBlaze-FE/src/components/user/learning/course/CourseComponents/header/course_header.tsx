@@ -65,7 +65,7 @@ export default function CourseHeader({
   }
 
   return (
-    <div className='relative mb-28'>
+    <div className='relative mb-28 z-10'>
       {/* Hero section with gradient background */}
       <div className='bg-gradient-to-r from-sky-100 to-blue-200 p-16 md:p-24 lg:p-32 relative overflow-hidden'>
         {/* Background pattern */}
@@ -76,7 +76,7 @@ export default function CourseHeader({
         </div>
 
         <div className='container'>
-          <div className='flex flex-col md:flex-row md:items-center md:space-x-8 lg:space-x-16 relative z-10'>
+          <div className='flex flex-col md:flex-row md:items-center md:space-x-8 lg:space-x-16 relative '>
             {/* Left Section */}
             <div className='w-full md:w-1/2 mb-8 md:mb-0'>
               <div className='inline-block bg-blue-600 text-white text-sm font-bold px-3 py-1 rounded-full mb-4'>

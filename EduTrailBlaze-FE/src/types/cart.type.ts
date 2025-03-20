@@ -34,6 +34,7 @@ interface CartItem {
 interface ICart {
   cartItems: CartItem[]
   totalPrice: number
+  totalItems: number
 }
 
 interface ICartNumber {}

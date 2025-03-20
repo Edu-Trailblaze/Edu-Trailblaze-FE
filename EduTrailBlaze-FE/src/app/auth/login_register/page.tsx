@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 
 export default function LoginRegister() {
+  const [isSaving, setIsSaving] = useState(false)
   const dispatch = useDispatch()
   const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
@@ -38,6 +39,7 @@ export default function LoginRegister() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSaving(true)
     try {
       const response = await login({ email, password }).unwrap()
       dispatch(setCredentials(response.message.data))
@@ -45,11 +47,14 @@ export default function LoginRegister() {
     } catch (err) {
       toast.error('Login failed. Please try again.')
       console.error('Login failed', err)
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSaving(true)
     if (password !== confirmPassword) {
       toast.error('Passwords do not match!')
       return
@@ -66,6 +71,8 @@ export default function LoginRegister() {
     } catch (err) {
       console.error('Registration failed:', err)
       toast.error('Registration failed. Please try again.')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -127,15 +134,71 @@ export default function LoginRegister() {
                 <LiaEyeSlashSolid fill='gray' className='absolute top-1/2 right-3 -translate-y-1/2 font-bold' />
                 <p className='text-xs mt-3 text-blue-500 underline cursor-pointer'>Forgot your password?</p>
               </div>
-              <button className='bg-blue-500 rounded-xl text-white py-2' type='submit'>
-                Log in
+              <button
+                className='bg-blue-500 rounded-xl text-white py-2 flex justify-center items-center gap-2'
+                type='submit'
+              >
+                {isSaving ? (
+                  <>
+                    <svg
+                      className='animate-spin h-5 w-5 text-white'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                    >
+                      <circle
+                        className='opacity-25'
+                        cx='12'
+                        cy='12'
+                        r='10'
+                        stroke='currentColor'
+                        strokeWidth='4'
+                      ></circle>
+                      <path
+                        className='opacity-75'
+                        fill='currentColor'
+                        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                      ></path>
+                    </svg>
+                  </>
+                ) : (
+                  'Login'
+                )}
               </button>
             </form>
             <div className='border-t-[1px] mt-4 border-[#9ca3af]'></div>
             <div className='flex mt-8 justify-center text-sm'>
               <p className='mr-1'>New to EduTrailBlaze?</p>
-              <button className='text-blue-500 underline' onClick={() => setIsLogin(false)}>
-                Register
+              <button
+                className='text-blue-500 underline flex justify-center items-center gap-2'
+                onClick={() => setIsLogin(false)}
+              >
+                {isSaving ? (
+                  <>
+                    <svg
+                      className='animate-spin h-5 w-5 text-white'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                    >
+                      <circle
+                        className='opacity-25'
+                        cx='12'
+                        cy='12'
+                        r='10'
+                        stroke='currentColor'
+                        strokeWidth='4'
+                      ></circle>
+                      <path
+                        className='opacity-75'
+                        fill='currentColor'
+                        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                      ></path>
+                    </svg>
+                  </>
+                ) : (
+                  'Register'
+                )}
               </button>
             </div>
 

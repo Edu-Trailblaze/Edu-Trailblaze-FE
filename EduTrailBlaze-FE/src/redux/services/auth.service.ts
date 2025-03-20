@@ -1,6 +1,5 @@
+import { BASE_URL } from '@/utils/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
-const BASE_URL = 'https://edu-trailblaze.azurewebsites.net/api' // Thay bằng URL thật của bạn
 
 export const authApi = createApi({
   reducerPath: 'authApi',

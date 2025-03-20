@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:prod": "env-cmd -f .env.production tsc --noEmit && next lint && next dev --experimental-https",
     "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
@@ -19,6 +20,7 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
+    "@microsoft/signalr": "^8.0.7",
     "@mui/icons-material": "^6.1.10",
     "@mui/lab": "^6.0.0-beta.25",
     "@mui/material": "^6.4.3",
@@ -41,6 +43,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "env-cmd": "^10.1.0",
     "firebase": "^11.1.0",
     "framer-motion": "^12.4.10",
     "http": "^0.0.1-security",
