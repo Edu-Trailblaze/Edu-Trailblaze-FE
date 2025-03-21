@@ -16,6 +16,7 @@ import InputText from '../../../global/Input/InputText'
 import InputNumber from '../../../global/Input/InputNumber'
 import Button from '../../../global/Button/Button'
 import { useCreateQuizMutation } from '../../../../redux/services/quiz.service'
+import { toast } from 'react-toastify'
 
 interface QuizItemProp {
   lectureId: number
@@ -157,12 +158,14 @@ const QuizCreator = ({ lectureId }: QuizItemProp) => {
         }
       }
 
-      const response = await createQuiz(quiz).unwrap()
-      console.log('response', response)
-      alert('Quiz saved successfully!')
+      await createQuiz(quiz).unwrap()
+      toast.success('Quiz saved successfully!')
+      setTimeout(function () {
+        window.location.reload()
+      }, 2000)
     } catch (error) {
       console.error('Error saving quiz:', error)
-      alert('Failed to save quiz. Please try again.')
+      toast.error('Failed to save quiz. Please try again.')
     }
   }
 
@@ -229,7 +232,7 @@ const QuizCreator = ({ lectureId }: QuizItemProp) => {
                 {previewMode ? 'Edit Mode' : 'Preview Mode'}
               </Button>
               <Button
-                type='submit'
+                type='button'
                 variant='DarkBlue'
                 onClick={saveQuiz}
                 isLoading={isLoading}
@@ -450,7 +453,7 @@ const QuizCreator = ({ lectureId }: QuizItemProp) => {
                                 variant='ghost'
                                 disabled={question.answers.length <= 2}
                                 onClick={() => removeAnswer(questionIndex, answerIndex)}
-                                className='w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-full'
+                                className='w-12 h-12 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-full'
                               >
                                 <Trash2 size={16} />
                               </Button>

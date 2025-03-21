@@ -38,7 +38,7 @@ export default function EditLecture() {
     Description: '',
     Content: '',
     Title: '',
-    Duration: 0
+    Duration: 1
   })
 
   useEffect(() => {
