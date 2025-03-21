@@ -1,5 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit'
 import { courseApi } from './services/courseDetail.service'
+import { courseTagApi } from './services/courseTag.service'
 import { authApi } from './services/auth.service'
 import { lectureApi } from './services/lecture.service'
 import { sectionApi } from './services/section.service'
@@ -22,6 +23,7 @@ import { orderApi } from './services/order.service'
 
 export const apiMiddlewares: Middleware[] = [
   courseApi.middleware,
+  courseTagApi.middleware,
   authApi.middleware,
   lectureApi.middleware,
   sectionApi.middleware,

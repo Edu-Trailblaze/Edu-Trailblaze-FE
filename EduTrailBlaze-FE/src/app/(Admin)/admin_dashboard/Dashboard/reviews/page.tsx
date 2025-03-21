@@ -105,25 +105,25 @@ export default function ReviewsManagement() {
     fetchReviews(pageIndex)
   }, [pageIndex])
 
-  const openEditModal = (review: Review) => {
-    setEditReview(review)
-    setEditModalOpen(true)
-  }
+  // const openEditModal = (review: Review) => {
+  //   setEditReview(review)
+  //   setEditModalOpen(true)
+  // }
 
-  const handleEditReview = async (updatedReview: Review) => {
-    try {
-      await api.put(`/Review/${updatedReview.id}`, {
-        rating: updatedReview.rating,
-        reviewText: updatedReview.reviewText
-      })
-      toast.success('Review updated successfully!')
-      setEditModalOpen(false)
-      fetchReviews(pageIndex)
-    } catch (error) {
-      console.error('Error updating review:', error)
-      toast.error('Failed to update review!')
-    }
-  }
+  // const handleEditReview = async (updatedReview: Review) => {
+  //   try {
+  //     await api.put(`/Review/${updatedReview.id}`, {
+  //       rating: updatedReview.rating,
+  //       reviewText: updatedReview.reviewText
+  //     })
+  //     toast.success('Review updated successfully!')
+  //     setEditModalOpen(false)
+  //     fetchReviews(pageIndex)
+  //   } catch (error) {
+  //     console.error('Error updating review:', error)
+  //     toast.error('Failed to update review!')
+  //   }
+  // }
 
   // Gọi API /Review/{review.id}, lấy ra userId => gọi tiếp /User/{userId}
   const handleDetail = async (review: Review) => {
@@ -132,7 +132,7 @@ export default function ReviewsManagement() {
       const reviewResponse = await api.get(`/Review/${review.id}`)
       const reviewData = reviewResponse.data
 
-      // Kiểm tra nếu không có userId
+      // check userId
       if (!reviewData.userId) {
         console.error('Review missing userId:', reviewData)
         toast.error('User ID not found for this review!')

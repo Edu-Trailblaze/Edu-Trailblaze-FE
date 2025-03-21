@@ -115,7 +115,6 @@ export default function OrdersManagement() {
   }, [pageIndex])
 
   const handleFilterApply = () => {
-    // parse fromDate, toDate bằng dayjs (nếu fromDate, toDate là ISO: 'YYYY-MM-DD')
     const from = fromDate ? dayjs(fromDate) : null
     const to = toDate ? dayjs(toDate) : null
     const kw = keyword.toLowerCase()
@@ -239,7 +238,7 @@ export default function OrdersManagement() {
                           : 'gray'
                 }
               ],
-              isStatus: true // Kích hoạt render status
+              isStatus: true 
             }
           ]}
         />
