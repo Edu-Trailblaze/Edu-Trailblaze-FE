@@ -1,96 +1,105 @@
 'use client'
+
 //redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
-//api
-import api from '@/components/config/axios'
+// React, libs
 import axios from 'axios'
-
-//material
 import 'react-toastify/dist/ReactToastify.css'
 import { TableRow, TableCell } from '@mui/material'
-
 import { useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
+
+//components
 import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import Pagination from '@/components/admin/Pagination/Pagination'
-
-//sort filter
 import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
-
-//modal
 import CourseFormModalCreate from '@/components/admin/modal/CourseFormModal/CourseFormModalCreate'
 import CourseFormModalEdit from '@/components/admin/modal/CourseFormModal/CourseFormModalEdit' 
 import DetailPopup from '@/components/global/Popup/PopupDetail'
-
+import StatusModal from '@/components/admin/Modal/CourseFormModal/CourseStatusModal'
 //icon
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil } from 'lucide-react'
 
+//type
+import { Course, CourseCreate } from '../../../../../types/course.type' 
+
 //redux
+ import { useAddCourseTagMutation } from '@/redux/services/courseTag.service'
+ import { useLazyGetReviewInfoQuery } from '@/redux/services/review.service'
  import {
-     useGetCoursePagingQuery,
-     useAddCourseMutation,
-     useUpdateCourseMutation,
-     useDeleteCourseMutation
-   } from '@/redux/services/courseDetail.service'
-  
-import { useLazyGetReviewInfoQuery } from '@/redux/services/review.service'
+   useGetCoursePagingQuery,
+   useGetCourseQuery ,
+   useAddCourseMutation,
+   useUpdateCourseMutation,
+   useDeleteCourseMutation,
+   useApproveCourseMutation 
+ } from '@/redux/services/courseDetail.service'
 
-export type Course = {
-  id?: number
-  title: string
-  imageURL: string
-  introURL: string
-  description: string
-  price: number
-  duration: number
-  difficultyLevel: string
-  prerequisites: string
-  learningOutcomes: string[]
-  createdBy: string
-  isPublished?:string
-  reviewInfo?: {
-    averageRating: number
-    totalRatings: number
-  }
-  createdAt?: string
-}
+// export type Course = {
 
-export type CourseCreate = Omit<Course, 'createdAt'>
+//   id?: number
+//   title: string
+//   imageURL: string
+//   introURL: string
+//   description: string
+//   price: number
+//   duration: number
+//   difficultyLevel: string
+//   prerequisites: string
+//   learningOutcomes: string[]
+//   createdBy: string
+//   isPublished?:string
+//   reviewInfo?: {
+//     averageRating: number
+//     totalRatings: number
+//   }
+//   createdAt?: string
+// }
 
-const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course'
+// export type CourseCreate = Omit<Course, 'createdAt'>
+
+// const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course'
+// const REVIEW_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Review/get-review-info'
 const USER_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/User'
-const REVIEW_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Review/get-review-info'
 
-const courseFields: { label: string; accessor: keyof Course }[] = [
+type CourseKey = Extract<keyof Course, string>;
+
+// const courseFields: { label: string; accessor: keyof Course }[] = [
+  const courseFields: { label: string; accessor: CourseKey }[] = [
   { label: 'ID', accessor: 'id' },
   { label: 'Title', accessor: 'title' },
   { label: 'Price', accessor: 'price' },
+  { label: 'Duration', accessor: 'duration' },
   { label: 'Difficulty', accessor: 'difficultyLevel' },
-  { label: 'Published', accessor: 'isPublished' }, 
+  { label: 'Status', accessor: 'approvalStatus' },
   { label: 'Created at', accessor: 'createdAt' }
 ]
 
 export default function CoursesManagement() {
   const dispatch = useDispatch()
 
+  //state
   const [userId, setUserId] = useState('')
   const [allCourses, setAllCourses] = useState<Course[]>([])
   const [courses, setCourses] = useState<Course[]>([])
-  // const [loading, setLoading] = useState(true)
+  // const [selectedCourse, setSelectedCourse] = useState<CourseDetails | null>(null)
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null)
 
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const [isStatusModalOpen, setStatusModalOpen] = useState(false)
+  const [statusCourseId, setStatusCourseId] = useState<number | null>(null)
+  const [statusCurrent, setStatusCurrent] = useState<CourseApprovalStatus>('Pending')
 
-  //filter&sort open
-  const [isFilterOpen, setFilterOpen] = useState(false)
-  const [isSortOpen, setSortOpen] = useState(false)
+ //filter&sort 
+ const [isFilterOpen, setFilterOpen] = useState(false)
+ const [isSortOpen, setSortOpen] = useState(false)
 
   //redux filter
   const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
@@ -122,19 +131,30 @@ export default function CoursesManagement() {
 
 
   //pagination
-    const [pageIndex, setPageIndex] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
-    const pageSize = 10
-     const {
-         data: pagingData,
-         isLoading,
-         isError
-       } = useGetCoursePagingQuery({
-         pageIndex,
-         pageSize
-         // Nếu muốn truyền filter server-side, thêm fromDate, toDate, keyword...
-         // fromDate, toDate, keyword
-       })
+  const [pageIndex, setPageIndex] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const pageSize = 10
+
+  //RTK
+  const {
+    data: pagingData,
+    isLoading,
+    isError
+  } = useGetCoursePagingQuery({
+     PageIndex: pageIndex,
+     PageSize: pageSize
+  })
+  const { data: detailData, isLoading: detailLoading, isError: detailError } = useGetCourseQuery(selectedCourseId ?? 0, {
+    skip: selectedCourseId === null
+  })
+  const [addCourseMutation] = useAddCourseMutation()
+  const [updateCourseMutation] = useUpdateCourseMutation()
+  const [deleteCourseMutation] = useDeleteCourseMutation()
+  const [addCourseTag] = useAddCourseTagMutation()
+  const [approveCourse] = useApproveCourseMutation()
+
+  const [triggerGetReviewInfo, { data: reviewData, isFetching: isReviewFetching }] = useLazyGetReviewInfoQuery()
+
   const fetchUserId = async () => {
     try {
       const response = await axios.get(USER_API_URL)
@@ -146,47 +166,32 @@ export default function CoursesManagement() {
     }
   }
 
-  //old
-  // const fetchCourses = async () => {
-  //   try {
-  //     const response = await axios.get(API_URL)
-  //     setCourses(response.data)
-  //     setAllCourses(response.data)
-  //   } catch (error) {
-  //     console.error('Error fetching courses:', error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+  useEffect(() => {
+    fetchUserId()
+  }, [])
 
 
   useEffect(() => {
-    // fetchCourses()
-    fetchUserId()
       if (pagingData?.items) {
-          setAllCourses(pagingData.items)
-          setCourses(pagingData.items)
+        setAllCourses(pagingData.items.map((item) => item.course))
+        setCourses(pagingData.items.map((item) => item.course))
          }
         if (pagingData?.totalPages) {
           setTotalPages(pagingData.totalPages)
         }
-  }, [])
+  }, [pagingData])
 
   const handleDetail = async (course: Course) => {
     try {
-      const reviewResponse = await axios.get(`${REVIEW_API_URL}/${course.id}`)
-      const reviewInfo = reviewResponse.data
-      setSelectedCourse({
-        ...course,
-        reviewInfo
-      })
+      setSelectedCourseId(course.id) 
+
+      // also fetch review if you want
+      await triggerGetReviewInfo(course.id!).unwrap()
     } catch (error) {
       console.error('Error fetching course review info:', error)
       toast.error('Failed to fetch course review info!')
-      setSelectedCourse(course)
     }
   }
-
   // const handleAddCourse = async (newCourse: CourseCreate) => {
   //   if (!userId) {
   //     toast.error('User ID is not available!')
@@ -241,7 +246,7 @@ export default function CoursesManagement() {
       formData.append('DifficultyLevel', newCourse.difficultyLevel)
       formData.append('CreatedBy', userId)
       formData.append('Prerequisites', newCourse.prerequisites)
-      newCourse.learningOutcomes.forEach((outcome) => {
+      newCourse.learningOutcomes.forEach((outcome: string) => {
         formData.append('LearningOutcomes', outcome)
       })
   
@@ -253,27 +258,36 @@ export default function CoursesManagement() {
       }
   
       // 1. Tạo Course
-      const response = await axios.post(API_URL, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      const createdCourse = response.data
-      const courseId = createdCourse.id // ID của course vừa tạo
-  
+      // const response = await axios.post(API_URL, formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // })
+      // const createdCourse = response.data
+      
+      const createdCourse = await addCourseMutation(formData).unwrap()
+      // const courseId = createdCourse.id // ID của course vừa tạo
+      const courseId = createdCourse.data.courseId // ID của course vừa tạo
+
       // 2. Tạo CourseTag cho mỗi tagId đã chọn
+      // await Promise.all(
+      //   selectedTagIds.map((tagId) =>
+      //     axios.post('https://edu-trailblaze.azurewebsites.net/api/CourseTag', {
+      //       courseId,
+      //       tagId
+      //     })
+      //   )
+      // )
+
       await Promise.all(
         selectedTagIds.map((tagId) =>
-          axios.post('https://edu-trailblaze.azurewebsites.net/api/CourseTag', {
-            courseId,
-            tagId
-          })
+          addCourseTag({ courseId, tagId }).unwrap()
+          )
         )
-      )
   
       toast.success('Course created successfully!')
-      setCourses([...courses, { ...createdCourse, createdAt: new Date().toISOString() }])
-      fetchCourses()
+      // setCourses([...courses, { ...createdCourse, createdAt: new Date().toISOString() }])
+      // fetchCourses()
       setAddModalOpen(false)
     } catch (error: any) {
       console.error('Error adding course:', error)
@@ -304,7 +318,7 @@ export default function CoursesManagement() {
 
     try {
       const formData = new FormData()
-      formData.append('CourseId', updatedCourse.id!.toString()) // Thêm CourseId
+      formData.append('CourseId', updatedCourse.id!.toString())
       formData.append('Title', updatedCourse.title)
       formData.append('Description', updatedCourse.description)
       formData.append('Price', updatedCourse.price.toString())
@@ -312,7 +326,7 @@ export default function CoursesManagement() {
       formData.append('CreatedBy', userId)
       formData.append('Prerequisites', updatedCourse.prerequisites)
   
-      updatedCourse.learningOutcomes.forEach((outcome) => {
+      updatedCourse.learningOutcomes.forEach((outcome: string) => {
         formData.append('LearningOutcomes', outcome)
       })
   
@@ -326,14 +340,15 @@ export default function CoursesManagement() {
         formData.append('IsPublished', updatedCourse.isPublished)
       }
   
-      await axios.put(API_URL, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      // await axios.put(API_URL, formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // })
+      await updateCourseMutation(formData).unwrap()
   
       toast.success('Course updated successfully!')
-      setCourses(courses.map((course) => (course.id === updatedCourse.id ? updatedCourse : course)))
+      // setCourses(courses.map((course) => (course.id === updatedCourse.id ? updatedCourse : course)))
       setEditModalOpen(false)
       setEditCourse(null)
     } catch (error) {
@@ -342,15 +357,31 @@ export default function CoursesManagement() {
     }
   }
 
+
   const handleDeleteCourse = async (courseId: number) => {
     if (!window.confirm('Are you sure you want to delete this course?')) return
     try {
-      await axios.delete(`${API_URL}?courseId=${courseId}`)
-      setCourses(courses.filter((c) => c.id !== courseId))
+      console.log('Deleting course ID:', courseId)
+      await deleteCourseMutation(courseId).unwrap()
       toast.success('Course deleted successfully!')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting course:', error)
+      if (error.data) {
+        console.error('Server error response:', error.data)
+      }
       toast.error('Failed to delete course!')
+    }
+  }
+
+  
+
+    const handleApproveOrReject = async (courseId: number, newStatus: CourseApprovalStatus) => {
+    try {
+      await approveCourse({ courseId, status: newStatus }).unwrap()
+      toast.success('Course status updated successfully!')
+    } catch (error) {
+      console.error('Error updating course status:', error)
+      toast.error('Failed to update course status!')
     }
   }
 
@@ -378,13 +409,16 @@ export default function CoursesManagement() {
       {visibleColumns['id'] && <TableCell className='p-4'>{course.id}</TableCell>}
       {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
       {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
+      {visibleColumns['duration'] && <TableCell>{course.duration}</TableCell>}
       {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
+      {visibleColumns['approvalStatus'] && <TableCell>{course.approvalStatus}</TableCell>}
+
       {/* {visibleColumns['isPublished'] && <TableCell>{course.isPublished}</TableCell>} */}
-      {visibleColumns['isPublished'] && (
+      {/* {visibleColumns['isPublished'] && (
       <TableCell sx={getStatusColor(course.isPublished || '')}>
         {course.isPublished}
       </TableCell>
-    )}
+    )} */}
       {visibleColumns['createdAt'] && (
         <TableCell>
           <FormatDateTime date={course.createdAt || ''} />
@@ -490,70 +524,74 @@ export default function CoursesManagement() {
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
       
 
-      {selectedCourse && (
-        <DetailPopup
-          isOpen={true}
-          onClose={() => setSelectedCourse(null)}
-          title='Course Detail'
-          fields={[
-            { label: 'ID', value: selectedCourse.id, isID: true },
-            { label: 'Title', value: selectedCourse.title },
-            { label: 'Duration', value: selectedCourse.duration },
-            { label: 'Price', value: selectedCourse.price },
+      {detailData && selectedCourseId !== null && (
+  <DetailPopup
+    isOpen={true}
+    onClose={() => setSelectedCourseId(null)}
+    title='Course Detail'
+    fields={[
+      { label: 'ID', value: detailData.id, isID: true },
+      { label: 'Title', value: detailData.title },
+      { label: 'Duration', value: detailData.duration },
+      { label: 'Price', value: detailData.price },
+      { label: 'imageURL', value: detailData.imageURL, isImage: true },
+      { label: 'introURL', value: detailData.introURL, isVideo: true },
+      {
+        label: 'Difficulty',
+        value: [
+          {
+            label: detailData.difficultyLevel,
+            color:
+              detailData.difficultyLevel === 'Beginner'
+                ? 'green'
+                : detailData.difficultyLevel === 'Intermediate'
+                ? 'blue'
+                : 'red'
+          }
+        ],
+        isStatus: true
+      },
+      {
+        label: 'Date',
+        value: detailData.createdAt,
+        isDate: true
+      }
+    ]}
+    widgets={[
+      {
+        label: 'Description',
+        content: detailData.description
+      },
+      {
+        label: 'Prerequisites',
+        content: detailData.prerequisites
+      }
+    ]}
+    actions={[
+      {
+        label: 'Delete',
+        icon: <Trash2 style={{ color: '#DC2626' }} />,
+        onClick: () => {
+          // Gọi hàm xóa, param detailData.id
+          handleDeleteCourse(detailData.id)
+        }
+      },
+      {
+        label: 'Change Status',
+        icon: <Pencil style={{ color: '#F59E0B' }} />,
+        onClick: () => {
+          if (!detailData) return
+          setStatusCourseId(detailData.id)
+          setStatusCurrent(detailData.approvalStatus as CourseApprovalStatus)
+          setStatusModalOpen(true)
+        }
+      },
 
-            { label: 'imageURL', value: selectedCourse.imageURL, isImage: true },
-            { label: 'introURL', value: selectedCourse.introURL, isVideo: true },
 
-            {
-              label: 'Difficulty',
-              value: [
-                {
-                  label: selectedCourse.difficultyLevel,
-                  color:
-                    selectedCourse.difficultyLevel === 'Beginner'
-                      ? 'green'
-                      : selectedCourse.difficultyLevel === 'Intermediate'
-                        ? 'blue'
-                        : 'red'
-                }
-              ],
-              isStatus: true
-            },
-            { label: 'Date', value: selectedCourse.createdAt, isDate: true }
-          ]}
-          widgets={[
-            {
-              label: 'Description',
-              content: selectedCourse.description
-            },
-            {
-              label: 'Prerequisites',
-              content: selectedCourse.prerequisites
-            },
 
-            {
-              label: 'Review Info',
-              content: `Average Rating: ${selectedCourse.reviewInfo?.averageRating}\nTotal Ratings: ${selectedCourse.reviewInfo?.totalRatings}`
-            }
-          ]}
-          actions={[
-            {
-              label: 'Update',
-              icon: <Pencil style={{ color: '#F59E0B' }} />,
-              onClick: () => {
-                handleEditCourse(selectedCourse)
-              }
-            },
-            {
-              label: 'Delete',
-              icon: <Trash2 style={{ color: '#DC2626' }} />,
-              onClick: () => {
-                handleDeleteCourse(selectedCourse.id!)
-              }
-            }
-          ]}
-        />
-      )}
+    ]}
+  />
+)}
 
       <CourseFormModalCreate
         initialValues={newCourse}
@@ -561,6 +599,17 @@ export default function CoursesManagement() {
         onSubmit={handleAddCourse}
         onCancel={() => setAddModalOpen(false)}
         isOpen={isAddModalOpen}
+      />
+
+      <StatusModal
+        isOpen={isStatusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        currentStatus={statusCurrent}
+        onSubmit={(newStatus) => {
+          if (!statusCourseId) return
+          handleApproveOrReject(statusCourseId, newStatus)
+          setStatusModalOpen(false)
+        }}
       />
 
       {editCourse && (

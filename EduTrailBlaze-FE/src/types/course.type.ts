@@ -225,3 +225,23 @@ interface IRecommendedCourse {
   instructors: IEInstructor[]
   enrollment: Enrollment
 }
+
+interface CourseCreate  {
+  title: string
+  imageURL: string
+  introURL: string
+  description: string
+  price: number
+  difficultyLevel: string
+  createdBy: string
+  prerequisites: string
+  learningOutcomes: string[]
+}
+
+
+type CourseApprovalStatus = 'Approved' | 'Rejected' | 'Pending'
+
+interface ApproveCourseRequest {
+  courseId: number
+  status: CourseApprovalStatus
+}
