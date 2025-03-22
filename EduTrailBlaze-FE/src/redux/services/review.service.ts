@@ -22,8 +22,21 @@ export const reviewApi = createApi({
         method: 'GET'
       }),
       providesTags: ['Reviews']
-    })
+    }),
+    getReviewInfo: build.query<ReviewInfo, number>({ // <-- MỚI
+         query: (courseId) => ({
+           url: `Review/get-review-info/${courseId}`,
+           method: 'GET'
+         }),
+         providesTags: ['Reviews']
+       })
+
   })
 })
 
-export const { useGetRatingDetailQuery, useGetReviewPagingQuery } = reviewApi
+export const {
+  useGetRatingDetailQuery,
+  useGetReviewPagingQuery,
+  useGetReviewInfoQuery,       // <-- MỚI
+  useLazyGetReviewInfoQuery,   // <-- MỚI
+} = reviewApi

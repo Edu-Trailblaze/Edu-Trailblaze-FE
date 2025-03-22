@@ -47,3 +47,10 @@ interface ReviewProps {
   courseDetails: ICourseDetails
   courseId: number
 }
+
+
+interface ReviewInfo {
+  averageRating: number
+  totalRatings: number
+  // Nếu API trả về thêm trường khác, bạn khai báo ở đây
+}

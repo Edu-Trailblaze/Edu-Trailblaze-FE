@@ -33,6 +33,16 @@ import DetailPopup from '@/components/global/Popup/PopupDetail'
 //icon
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil } from 'lucide-react'
 
+//redux
+ import {
+     useGetCoursePagingQuery,
+     useAddCourseMutation,
+     useUpdateCourseMutation,
+     useDeleteCourseMutation
+   } from '@/redux/services/courseDetail.service'
+  
+import { useLazyGetReviewInfoQuery } from '@/redux/services/review.service'
+
 export type Course = {
   id?: number
   title: string
@@ -74,7 +84,8 @@ export default function CoursesManagement() {
   const [userId, setUserId] = useState('')
   const [allCourses, setAllCourses] = useState<Course[]>([])
   const [courses, setCourses] = useState<Course[]>([])
-  const [loading, setLoading] = useState(true)
+  // const [loading, setLoading] = useState(true)
+
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
 
   //filter&sort open
@@ -114,7 +125,16 @@ export default function CoursesManagement() {
     const [pageIndex, setPageIndex] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const pageSize = 10
-
+     const {
+         data: pagingData,
+         isLoading,
+         isError
+       } = useGetCoursePagingQuery({
+         pageIndex,
+         pageSize
+         // Nếu muốn truyền filter server-side, thêm fromDate, toDate, keyword...
+         // fromDate, toDate, keyword
+       })
   const fetchUserId = async () => {
     try {
       const response = await axios.get(USER_API_URL)
@@ -127,39 +147,29 @@ export default function CoursesManagement() {
   }
 
   //old
-  const fetchCourses = async () => {
-    try {
-      const response = await axios.get(API_URL)
-      setCourses(response.data)
-      setAllCourses(response.data)
-    } catch (error) {
-      console.error('Error fetching courses:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-//new
-  // const fetchCourse = async (page: number) => {
-  //   setLoading(true)
+  // const fetchCourses = async () => {
   //   try {
-  //     const response = await api.get('/Course/get-paging-course-information', {
-  //       params: { pageIndex: page, pageSize }
-  //     })
-  //     setCourses(response.data.items)
-  //     setAllCourses(response.data.items)
-  //     setTotalPages(response.data.totalPages)
+  //     const response = await axios.get(API_URL)
+  //     setCourses(response.data)
+  //     setAllCourses(response.data)
   //   } catch (error) {
-  //     console.error('Error fetching reviews:', error)
-  //     toast.error('Failed to fetch reviews!')
+  //     console.error('Error fetching courses:', error)
   //   } finally {
   //     setLoading(false)
   //   }
   // }
 
+
   useEffect(() => {
-    fetchCourses()
+    // fetchCourses()
     fetchUserId()
+      if (pagingData?.items) {
+          setAllCourses(pagingData.items)
+          setCourses(pagingData.items)
+         }
+        if (pagingData?.totalPages) {
+          setTotalPages(pagingData.totalPages)
+        }
   }, [])
 
   const handleDetail = async (course: Course) => {
@@ -460,11 +470,14 @@ export default function CoursesManagement() {
         </div>
       </div>
 
-      {loading ? (
+      {/* {loading ? ( */}
+      {isLoading ? (
         <div className='flex justify-center py-6'>
           <Loader className='w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin' />
           <p className='mt-2 text-gray-500 text-sm'>Loading courses...</p>
         </div>
+        ) : isError ? (
+            <p className='text-red-500 text-sm'>Failed to load courses!</p>
       ) : (
         <Table
           columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
