@@ -9,6 +9,7 @@ interface ReadingLectureProps {
   lecture: ILecture
   userId: string
   userProgress?: UserProgressResponse[]
+  // refetchUserProgress: () => void
 }
 
 export default function ReadingLecture({ lecture, userId, userProgress }: ReadingLectureProps) {
@@ -20,9 +21,9 @@ export default function ReadingLecture({ lecture, userId, userProgress }: Readin
     try {
       await postUserProgress({ userId: userId, lectureId: lecture.id })
       toast.success('Lecture completed!')
-      setTimeout(() => {
-        window.location.reload()
-      }, 2000)
+      // if (refetchUserProgress) {
+      //   refetchUserProgress()
+      // }
     } catch (error) {
       console.error('Error enrolling:', error)
     }
