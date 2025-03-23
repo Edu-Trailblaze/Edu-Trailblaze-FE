@@ -9,10 +9,10 @@ interface QuizLectureProps {
   userId: string
   lecture: ILecture
   onNextLecture: () => void
-  refetchUserProgress: () => void
+  // refetchUserProgress: () => void
 }
 
-export default function QuizLecture({ lecture, onNextLecture, userId, refetchUserProgress }: QuizLectureProps) {
+export default function QuizLecture({ lecture, onNextLecture, userId }: QuizLectureProps) {
   const { data: quizData } = useGetQuizDetailQuery(lecture.id)
 
   const [quizStarted, setQuizStarted] = useState(false)
@@ -87,7 +87,7 @@ export default function QuizLecture({ lecture, onNextLecture, userId, refetchUse
         passingScore={passingScore}
         startQuiz={startQuiz}
         nextLecutre={onNextLecture}
-        refetchUserProgress={refetchUserProgress}
+        // refetchUserProgress={refetchUserProgress}
       />
     )
   }

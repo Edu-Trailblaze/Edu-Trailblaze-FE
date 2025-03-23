@@ -9,10 +9,10 @@ interface ReadingLectureProps {
   lecture: ILecture
   userId: string
   userProgress?: UserProgressResponse[]
-  refetchUserProgress: () => void
+  // refetchUserProgress: () => void
 }
 
-export default function ReadingLecture({ lecture, userId, userProgress, refetchUserProgress }: ReadingLectureProps) {
+export default function ReadingLecture({ lecture, userId, userProgress }: ReadingLectureProps) {
   const [postUserProgress, { isLoading: enrollLoading }] = usePostUserProgressMutation()
 
   const progress = userProgress?.find((p) => p.lectureId === lecture.id)
@@ -21,9 +21,9 @@ export default function ReadingLecture({ lecture, userId, userProgress, refetchU
     try {
       await postUserProgress({ userId: userId, lectureId: lecture.id })
       toast.success('Lecture completed!')
-      if (refetchUserProgress) {
-        refetchUserProgress()
-      }
+      // if (refetchUserProgress) {
+      //   refetchUserProgress()
+      // }
     } catch (error) {
       console.error('Error enrolling:', error)
     }

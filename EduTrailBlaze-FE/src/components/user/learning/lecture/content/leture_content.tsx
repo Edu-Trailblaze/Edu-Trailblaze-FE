@@ -12,7 +12,7 @@ interface LectureContentProps {
   video?: IVideo[]
   lectureType: string
   onNextLecture: () => void
-  refetchUserProgress: () => void
+  // refetchUserProgress: () => void
 }
 
 export default function LectureContent({
@@ -20,8 +20,8 @@ export default function LectureContent({
   decodedUserId,
   video,
   lectureType,
-  onNextLecture,
-  refetchUserProgress
+  onNextLecture
+  // refetchUserProgress
 }: LectureContentProps) {
   const { data: userProgress } = useGetUserProgressQuery({ userId: decodedUserId, lectureId: lecture.id })
 
@@ -59,7 +59,7 @@ export default function LectureContent({
             video={video}
             userId={decodedUserId}
             userProgress={userProgress}
-            refetchUserProgress={refetchUserProgress}
+            // refetchUserProgress={refetchUserProgress}
           />
         )}
         {lectureType === 'Reading' && (
@@ -67,7 +67,7 @@ export default function LectureContent({
             lecture={lecture}
             userId={decodedUserId}
             userProgress={userProgress}
-            refetchUserProgress={refetchUserProgress}
+            // refetchUserProgress={refetchUserProgress}
           />
         )}
         {lectureType === 'Quiz' && (
@@ -75,7 +75,7 @@ export default function LectureContent({
             lecture={lecture}
             onNextLecture={onNextLecture}
             userId={decodedUserId}
-            refetchUserProgress={refetchUserProgress}
+            // refetchUserProgress={refetchUserProgress}
           />
         )}
       </div>
