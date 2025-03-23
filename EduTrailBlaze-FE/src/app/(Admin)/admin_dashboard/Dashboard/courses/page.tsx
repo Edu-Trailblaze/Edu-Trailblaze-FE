@@ -373,8 +373,6 @@ export default function CoursesManagement() {
     }
   }
 
-  
-
     const handleApproveOrReject = async (courseId: number, newStatus: CourseApprovalStatus) => {
     try {
       await approveCourse({ courseId, status: newStatus }).unwrap()
