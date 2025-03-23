@@ -47,20 +47,18 @@ function AdminHeader() {
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Typography
-            variant='h6'
-            noWrap
-            component='a'
-            href=''
-            sx={{
-              mr: 6,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 800,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none'
-            }}
-          >
+           variant='h6'
+           noWrap
+           sx={{
+             mr: 6,
+             display: { xs: 'none', md: 'flex' },
+             fontFamily: 'monospace',
+             fontWeight: 800,
+             letterSpacing: '.2rem',
+             color: 'inherit',
+             textDecoration: 'none'
+           }}
+         >
             {/* <img alt='' src='/assets/logos/ETB_Logo.png' className='w-40 h-30' /> */}
             <Link href={'/admin_dashboard'}>EduTrailBlaze</Link>
           </Typography>
