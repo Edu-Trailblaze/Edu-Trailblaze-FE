@@ -411,13 +411,6 @@ export default function CoursesManagement() {
       {visibleColumns['duration'] && <TableCell>{course.duration}</TableCell>}
       {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
       {visibleColumns['approvalStatus'] && <TableCell>{course.approvalStatus}</TableCell>}
-
-      {/* {visibleColumns['isPublished'] && <TableCell>{course.isPublished}</TableCell>} */}
-      {/* {visibleColumns['isPublished'] && (
-      <TableCell sx={getStatusColor(course.isPublished || '')}>
-        {course.isPublished}
-      </TableCell>
-    )} */}
       {visibleColumns['createdAt'] && (
         <TableCell>
           <FormatDateTime date={course.createdAt || ''} />
@@ -585,6 +578,15 @@ export default function CoursesManagement() {
           setStatusModalOpen(true)
         }
       },
+      {
+        label: 'Update',
+        icon: <Pencil style={{ color: '#F59E0B' }} />,
+        onClick: () => {
+          if (!detailData) return
+          // Gọi hàm mở modal edit
+          handleEditCourse(detailData)
+        }
+      }
 
 
 

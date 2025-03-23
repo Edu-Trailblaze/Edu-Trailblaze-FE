@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react'
 import scss from './Layout.module.scss'
-import React, { useState } from 'react'
+import React from 'react'
 import Footer from '../admin/Footer/footer'
 
 import AdminHeader from '../admin/Header/header'
@@ -13,11 +13,11 @@ const Layout = (props: any) => {
       <AdminHeader />
       <main className={scss.layout}>
         {/* SideMenu */}
-        {session && (
+        {/* {session && ( */}
           <aside className={scss.sideMenu}>
             <SideMenu />
           </aside>
-        )}
+        {/* )} */}
 
         {/* Nội dung (Dashboard) */}
         <section className={scss.content}>
