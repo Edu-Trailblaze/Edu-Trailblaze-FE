@@ -24,7 +24,7 @@ interface ModuleBarProps {
   isSidebarOpen: boolean
   onCloseSidebar: () => void
   // refetchUserProgress: () => void
-  userProgress: UserProgressResponse[] | undefined
+  // userProgress: UserProgressResponse[] | undefined
 }
 
 export default function LectureSideBar({
@@ -36,11 +36,11 @@ export default function LectureSideBar({
   expandedSections,
   setExpandedSections,
   isSidebarOpen,
-  onCloseSidebar,
+  onCloseSidebar
   // refetchUserProgress,
-  userProgress
+  // userProgress
 }: ModuleBarProps) {
-  // const { data: userProgress, isLoading: progressLoading } = useGetUserProgressQuery({ userId: decodedUserId })
+  const { data: userProgress, isLoading: progressLoading } = useGetUserProgressQuery({ userId: decodedUserId })
 
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({

@@ -63,11 +63,11 @@ export default function LecturePage() {
       console.error('Error decoding token:', error)
     }
   }
-  const {
-    data: userProgress,
-    isLoading: progressLoading,
-    refetch: refetchUserProgress
-  } = useGetUserProgressQuery({ userId: decodedUserId })
+  // const {
+  //   data: userProgress,
+  //   isLoading: progressLoading,
+  //   refetch: refetchUserProgress
+  // } = useGetUserProgressQuery({ userId: decodedUserId })
 
   if (courseLoading || lectureLoading || contentLoading || videoLoading) return <LoadingPage />
   if (!course) return <div>Course not found</div>
@@ -89,7 +89,7 @@ export default function LecturePage() {
           onCloseSidebar={() => setIsSidebarOpen(false)}
           decodedUserId={decodedUserId}
           // refetchUserProgress={refetchUserProgress}
-          userProgress={userProgress}
+          // userProgress={userProgress}
         />
 
         <div className='flex-1'>
@@ -106,7 +106,7 @@ export default function LecturePage() {
               video={video}
               lectureType={lectureType}
               onNextLecture={handleNextLecture}
-              refetchUserProgress={refetchUserProgress}
+              // refetchUserProgress={refetchUserProgress}
             />
           </div>
         </div>
