@@ -67,7 +67,7 @@ export const courseApi = createApi({
       { tagId: number; studentId: string; pageIndex: number; pageSize: number }
     >({
       query: ({ tagId, studentId, pageIndex, pageSize }) => ({
-        url: `Course/get-paging-course-information?TagId=${tagId}&StudentId=${studentId}&PageIndex=${pageIndex}&PageSize=${pageSize}`
+        url: `Course/get-paging-course-information?TagId=${tagId}&StudentId=${studentId}&IsPublished=true&PageIndex=${pageIndex}&PageSize=${pageSize}`
       })
     }),
     getCoursePaging: build.query<CourseResponseData, CourseSearchRequest>({

@@ -349,11 +349,11 @@ export default function WebHeader() {
               </div>
             </>
           ) : (
-            <>
+            <div className='flex justify-evenly w-[365px]'>
               <Link href={'/auth/login_register'}>
                 <button
                   type='button'
-                  className='select-none rounded-full bg-blue-500 py-2 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none'
+                  className='w-28 select-none rounded-full bg-blue-500 py-2 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none'
                 >
                   Login
                 </button>
@@ -361,12 +361,12 @@ export default function WebHeader() {
               <Link href={'/auth/login_register'}>
                 <button
                   type='button'
-                  className='select-none rounded-full bg-white py-2 px-6 text-center font-sans text-xs font-bold uppercase text-blue-500 shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none'
+                  className='w-28 select-none rounded-full bg-white py-2 px-6 text-center font-sans text-xs font-bold uppercase text-blue-500 shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none'
                 >
                   Register
                 </button>
               </Link>
-            </>
+            </div>
           )}
 
           {/* Language Button */}
