@@ -12,6 +12,7 @@ interface LectureContentProps {
   video?: IVideo[]
   lectureType: string
   onNextLecture: () => void
+  // refetchUserProgress: () => void
 }
 
 export default function LectureContent({
@@ -20,6 +21,7 @@ export default function LectureContent({
   video,
   lectureType,
   onNextLecture
+  // refetchUserProgress
 }: LectureContentProps) {
   const { data: userProgress } = useGetUserProgressQuery({ userId: decodedUserId, lectureId: lecture.id })
 
@@ -52,13 +54,29 @@ export default function LectureContent({
 
       <div className='p-6'>
         {lectureType === 'Video' && (
-          <VideoLecture lecture={lecture} video={video} userId={decodedUserId} userProgress={userProgress} />
+          <VideoLecture
+            lecture={lecture}
+            video={video}
+            userId={decodedUserId}
+            userProgress={userProgress}
+            // refetchUserProgress={refetchUserProgress}
+          />
         )}
         {lectureType === 'Reading' && (
-          <ReadingLecture lecture={lecture} userId={decodedUserId} userProgress={userProgress} />
+          <ReadingLecture
+            lecture={lecture}
+            userId={decodedUserId}
+            userProgress={userProgress}
+            // refetchUserProgress={refetchUserProgress}
+          />
         )}
         {lectureType === 'Quiz' && (
-          <QuizLecture lecture={lecture} onNextLecture={onNextLecture} userId={decodedUserId} />
+          <QuizLecture
+            lecture={lecture}
+            onNextLecture={onNextLecture}
+            userId={decodedUserId}
+            // refetchUserProgress={refetchUserProgress}
+          />
         )}
       </div>
     </div>

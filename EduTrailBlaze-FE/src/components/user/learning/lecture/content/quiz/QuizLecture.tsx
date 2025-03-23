@@ -9,6 +9,7 @@ interface QuizLectureProps {
   userId: string
   lecture: ILecture
   onNextLecture: () => void
+  // refetchUserProgress: () => void
 }
 
 export default function QuizLecture({ lecture, onNextLecture, userId }: QuizLectureProps) {
@@ -86,6 +87,7 @@ export default function QuizLecture({ lecture, onNextLecture, userId }: QuizLect
         passingScore={passingScore}
         startQuiz={startQuiz}
         nextLecutre={onNextLecture}
+        // refetchUserProgress={refetchUserProgress}
       />
     )
   }

@@ -13,7 +13,8 @@ export const userProgressApi = createApi({
         url: `UserProgress`,
         method: 'POST',
         body
-      })
+      }),
+      invalidatesTags: ['UserProgress']
     }),
     getUserProgress: build.query<UserProgressResponse[], UserProgress>({
       query: ({ ...params }) => ({
@@ -22,7 +23,8 @@ export const userProgressApi = createApi({
         params: {
           ...params
         }
-      })
+      }),
+      providesTags: ['UserProgress']
     })
   })
 })
