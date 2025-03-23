@@ -10,6 +10,7 @@ interface QuizResultProps {
   userId: string
   startQuiz: () => void
   nextLecutre: () => void
+  refetchUserProgress: () => void
 }
 
 export default function QuizResult({
@@ -19,7 +20,8 @@ export default function QuizResult({
   passingScore,
   userId,
   startQuiz,
-  nextLecutre
+  nextLecutre,
+  refetchUserProgress
 }: QuizResultProps) {
   const [postUserProgress] = usePostUserProgressMutation()
 
@@ -27,9 +29,9 @@ export default function QuizResult({
     try {
       await postUserProgress({ userId: userId, lectureId: lecture.id })
       toast.success('Quiz completed!')
-      setTimeout(() => {
-        window.location.reload()
-      }, 3000)
+      if (refetchUserProgress) {
+        refetchUserProgress()
+      }
     } catch (error) {
       console.error('Error enrolling:', error)
     }

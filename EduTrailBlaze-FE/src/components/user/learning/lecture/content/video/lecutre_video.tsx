@@ -10,9 +10,10 @@ interface VideoLectureProps {
   video?: IVideo[]
   userId: string
   userProgress?: UserProgressResponse[]
+  refetchUserProgress: () => void
 }
 
-export default function VideoLecture({ lecture, video, userId, userProgress }: VideoLectureProps) {
+export default function VideoLecture({ lecture, video, userId, userProgress, refetchUserProgress }: VideoLectureProps) {
   const [languageListOpen, setLanguageOpen] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('English')
   const [activeTab, setActiveTab] = useState('transcript')
@@ -24,9 +25,9 @@ export default function VideoLecture({ lecture, video, userId, userProgress }: V
     try {
       await postUserProgress({ userId: userId, lectureId: lecture.id })
       toast.success('Lecture completed!')
-      setTimeout(() => {
-        window.location.reload()
-      }, 2000)
+      if (refetchUserProgress) {
+        refetchUserProgress()
+      }
     } catch (error) {
       console.error('Error enrolling:', error)
     }

@@ -23,6 +23,8 @@ interface ModuleBarProps {
   setExpandedSections: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>
   isSidebarOpen: boolean
   onCloseSidebar: () => void
+  // refetchUserProgress: () => void
+  userProgress: UserProgressResponse[] | undefined
 }
 
 export default function LectureSideBar({
@@ -34,9 +36,11 @@ export default function LectureSideBar({
   expandedSections,
   setExpandedSections,
   isSidebarOpen,
-  onCloseSidebar
+  onCloseSidebar,
+  // refetchUserProgress,
+  userProgress
 }: ModuleBarProps) {
-  const { data: userProgress, isLoading: progressLoading } = useGetUserProgressQuery({ userId: decodedUserId })
+  // const { data: userProgress, isLoading: progressLoading } = useGetUserProgressQuery({ userId: decodedUserId })
 
   const toggleExpand = (index: number) => {
     setExpandedSections((prev) => ({
