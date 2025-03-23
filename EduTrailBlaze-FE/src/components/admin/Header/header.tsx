@@ -19,7 +19,7 @@ import { useTheme } from '@mui/material'
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-function AdminHeader({ isCollapsed }: { isCollapsed: boolean }) {
+function AdminHeader() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
   const { data: session } = useSession()
   const theme = useTheme()
@@ -38,8 +38,10 @@ function AdminHeader({ isCollapsed }: { isCollapsed: boolean }) {
       position='static'
       sx={{
         zIndex: 1300,
-        marginLeft: isCollapsed ? '57px' : '200px',
-        width: `calc(100% - ${isCollapsed ? 57 : 200}px)`
+        // marginLeft: isCollapsed ? '57px' : '200px',
+        // width: `calc(100% - ${isCollapsed ? 57 : 200}px)`
+          marginLeft: '200px',
+        width: 'calc(100% - 200px)'
       }}
     >
       <Container maxWidth='xl'>

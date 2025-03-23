@@ -7,6 +7,7 @@ import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 // React, libs
+import {jwtDecode} from 'jwt-decode'
 import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
 import { TableRow, TableCell } from '@mui/material'
@@ -68,7 +69,6 @@ import { Course, CourseCreate } from '../../../../../types/course.type'
 
 // const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course'
 // const REVIEW_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Review/get-review-info'
-const USER_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/User'
 
 type CourseKey = Extract<keyof Course, string>;
 
@@ -155,20 +155,18 @@ export default function CoursesManagement() {
 
   const [triggerGetReviewInfo, { data: reviewData, isFetching: isReviewFetching }] = useLazyGetReviewInfoQuery()
 
-  const fetchUserId = async () => {
-    try {
-      const response = await axios.get(USER_API_URL)
-      if (response.data.length > 0) {
-        setUserId(response.data[0].id)
-      }
-    } catch (error) {
-      console.error('Error fetching user ID:', error)
-    }
-  }
-
-  useEffect(() => {
-    fetchUserId()
-  }, [])
+   useEffect(() => {
+       const token = localStorage.getItem('accessToken')
+       if (token) {
+         try {
+           const decoded: any = jwtDecode(token)
+           setUserId(decoded?.sub ?? '')
+         } catch (error) {
+           console.error('Error decoding token:', error)
+           setUserId('')
+         }
+       }
+     }, [])
 
 
   useEffect(() => {
@@ -233,10 +231,10 @@ export default function CoursesManagement() {
   // }
 
   const handleAddCourse = async (newCourse: CourseCreate, selectedTagIds: number[]) => {
-    if (!userId) {
-      toast.error('User ID is not available!')
-      return
-    }
+     if (!userId) {
+         toast.error('User ID is not available!') // hoặc 'User not logged in' tuỳ ý
+         return
+       }
   
     try {
       const formData = new FormData()
@@ -316,6 +314,12 @@ export default function CoursesManagement() {
       return
     }
 
+     // Nếu userId rỗng, nghĩa là chưa decode được token
+     if (!userId) {
+       toast.error('User ID is not available!')
+       return
+     }
+
     try {
       const formData = new FormData()
       formData.append('CourseId', updatedCourse.id!.toString())
@@ -323,7 +327,6 @@ export default function CoursesManagement() {
       formData.append('Description', updatedCourse.description)
       formData.append('Price', updatedCourse.price.toString())
       formData.append('DifficultyLevel', updatedCourse.difficultyLevel)
-      formData.append('CreatedBy', userId)
       formData.append('Prerequisites', updatedCourse.prerequisites)
   
       updatedCourse.learningOutcomes.forEach((outcome: string) => {
@@ -336,10 +339,8 @@ export default function CoursesManagement() {
       if (updatedCourse.introURL) {
         formData.append('IntroURL', updatedCourse.introURL)
       }
-      if (typeof updatedCourse.isPublished !== 'undefined') {
-        formData.append('IsPublished', updatedCourse.isPublished)
-      }
-  
+      formData.append('UpdatedBy', userId)
+      
       // await axios.put(API_URL, formData, {
       //   headers: {
       //     'Content-Type': 'multipart/form-data'

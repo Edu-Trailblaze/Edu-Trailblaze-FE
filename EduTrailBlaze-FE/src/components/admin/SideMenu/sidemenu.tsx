@@ -55,17 +55,11 @@ const personalRoutes = ['profile', 'notifications', '']
 const personalTranslations = ['Profile', 'Notification', 'Sign Out']
 const personalIcons = [<Person2Icon />, <NotificationsIcon />, <ExitToAppIcon />]
 
-export default function SideMenu({
-  isCollapsed,
-  setIsCollapsed
-}: {
-  isCollapsed: boolean
-  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>
-}) {
-  //collapse sidemenu
-  const handleToggleSidebar = () => {
-    setIsCollapsed((prev) => !prev)
-  }
+export default function SideMenu() {
+
+  // const handleToggleSidebar = () => {
+  //   setIsCollapsed((prev) => !prev)
+  // }
 
   //notification (số thông báo)
   const [notificationsCount] = useState(3)
@@ -92,13 +86,13 @@ export default function SideMenu({
     <Drawer
       variant='permanent'
       sx={{
-        width: isCollapsed ? 57 : 200,
+        width:  200,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           position: 'fixed',
           top: 0,
           left: 0,
-          width: isCollapsed ? 57 : 200,
+          width:  200,
           boxSizing: 'border-box',
           height: '100vh',
           overflowX: 'hidden',
@@ -111,11 +105,6 @@ export default function SideMenu({
       {/* ADDED: Bọc toàn bộ nội dung bằng Box, chia làm top + bottom */}
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box>
-          <ListItemButton onClick={handleToggleSidebar}>
-            <ListItemIcon>{isCollapsed ? <MenuIcon /> : <ArrowBackIosIcon />}</ListItemIcon>
-            {!isCollapsed && <ListItemText primary='Collapse' />}
-          </ListItemButton>
-          <Divider />
 
           {/* GENERAL */}
           <List>
@@ -124,7 +113,7 @@ export default function SideMenu({
                 <Link href={`/admin_dashboard/Dashboard/${generalRoutes[index]}`} className={scss.link}>
                   <ListItemButton onClick={() => handleListItemButtonClick(text)}>
                     <ListItemIcon>{generalIcons[index]}</ListItemIcon>
-                    {!isCollapsed && <ListItemText primary={text} />}
+                   <ListItemText primary={text} />
                   </ListItemButton>
                 </Link>
               </ListItem>
@@ -135,16 +124,12 @@ export default function SideMenu({
             {personalTranslations.map((text, index) => (
               <ListItem key={text} disablePadding>
                 <Link href={`/admin_dashboard/Dashboard/${personalRoutes[index]}`} className={scss.link}>
-                  <ListItemButton
-                    onClick={() => handleListItemButtonClick(text)}
-                    sx={{ display: 'flex', alignItems: 'center' }}
-                  >
+                  <ListItemButton onClick={() => handleListItemButtonClick(text)}>
                     <ListItemIcon>{personalIcons[index]}</ListItemIcon>
-                    {!isCollapsed && (
-                      <>
-                        <ListItemText primary={text} sx={{ flexGrow: 1 }} />
-                        {text === 'Notification' && <Badge badgeContent={notificationsCount} color='error' />}
-                      </>
+                    <ListItemText primary={text} />
+                    {/* Notification Badge */}
+                    {text === 'Notification' && (
+                      <Badge badgeContent={notificationsCount} color='error' sx={{ ml: 1 }} />
                     )}
                   </ListItemButton>
                 </Link>
@@ -156,13 +141,12 @@ export default function SideMenu({
         {/* BOTTOM BOX: PERSONAL + 3-chấm */}
         <Box sx={{ mt: 'auto' }}>
           <Divider />
-
           {/* Nút 3 chấm */}
           <ListItemButton onClick={handleProfileClick}>
             <ListItemIcon>
               <MoreVertIcon />
             </ListItemIcon>
-            {!isCollapsed && <ListItemText primary='Profile Menu' />}
+            <ListItemText primary='Profile Menu' />
           </ListItemButton>
           <Menu anchorEl={anchorEl} open={openProfileMenu} onClose={handleCloseProfileMenu}>
             <MenuItem
