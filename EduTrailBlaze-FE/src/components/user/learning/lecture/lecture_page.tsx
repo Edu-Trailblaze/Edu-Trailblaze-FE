@@ -9,6 +9,7 @@ import { useGetCourseDetailsQuery } from '../../../../redux/services/courseDetai
 import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
 import { useGetVideoByConditionsQuery } from '../../../../redux/services/video.service'
 import { jwtDecode } from 'jwt-decode'
+import { useGetUserProgressQuery } from '@/redux/services/userProgress.service'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()
@@ -22,7 +23,6 @@ export default function LecturePage() {
   const [activeLectureId, setActiveLectureId] = useState<number | null>(Number(lectureURL))
 
   const { data: lectureContent, isLoading: contentLoading } = useGetLectureQuery(activeLectureId ?? 0)
-  console.log('LLLLLLLL', lectureContent)
   const { data: video, isLoading: videoLoading } = useGetVideoByConditionsQuery({ lectureId: activeLectureId })
 
   const [expandedSections, setExpandedSections] = useState<{ [key: number]: boolean }>(() => {
@@ -63,6 +63,11 @@ export default function LecturePage() {
       console.error('Error decoding token:', error)
     }
   }
+  const {
+    data: userProgress,
+    isLoading: progressLoading,
+    refetch: refetchUserProgress
+  } = useGetUserProgressQuery({ userId: decodedUserId })
 
   if (courseLoading || lectureLoading || contentLoading || videoLoading) return <LoadingPage />
   if (!course) return <div>Course not found</div>
@@ -83,6 +88,8 @@ export default function LecturePage() {
           isSidebarOpen={isSidebarOpen}
           onCloseSidebar={() => setIsSidebarOpen(false)}
           decodedUserId={decodedUserId}
+          // refetchUserProgress={refetchUserProgress}
+          userProgress={userProgress}
         />
 
         <div className='flex-1'>
@@ -99,6 +106,7 @@ export default function LecturePage() {
               video={video}
               lectureType={lectureType}
               onNextLecture={handleNextLecture}
+              refetchUserProgress={refetchUserProgress}
             />
           </div>
         </div>
