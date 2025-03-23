@@ -84,7 +84,7 @@ const EducationSection = () => {
       </div>
 
       {/* Courses Section */}
-      <div className='bg-white rounded-lg p-6'>
+      {/* <div className='bg-white rounded-lg p-6'>
         <div className='flex items-center gap-2 mb-6'>
           <h3 className='text-lg font-semibold'>Courses</h3>
           <button className='text-gray-500 hover:text-gray-700'>
@@ -129,7 +129,7 @@ const EducationSection = () => {
           <ChevronDown className={`mr-1 transform ${showAllCourses ? 'rotate-180' : ''}`} size={16} />
           Show all 10 courses
         </button>
-      </div>
+      </div> */}
     </div>
   )
 }
