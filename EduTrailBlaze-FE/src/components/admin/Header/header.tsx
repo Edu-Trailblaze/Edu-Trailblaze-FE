@@ -15,15 +15,34 @@ import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import ToggleButton from '@/components/global/toggle_button/toggle_button'
 import { useTheme } from '@mui/material'
+import { jwtDecode } from 'jwt-decode'
 
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function AdminHeader({ isCollapsed }: { isCollapsed: boolean }) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
+  const [userName, setUserName] = React.useState('')
+  const [userId, setUserId] = React.useState('')
   const { data: session } = useSession()
   const theme = useTheme()
   const userProfile = session?.user?.image as string
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+
+    try {
+      if (token) {
+        const decode = jwtDecode(token)
+        console.log('decode', decode)
+        setUserId(decode?.sub ?? '') // Use optional chaining and nullish coalescing
+        setUserName((decode as any)?.fullName ?? '')
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error)
+      setUserId('')
+    }
+  }, [])
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -83,7 +102,7 @@ function AdminHeader({ isCollapsed }: { isCollapsed: boolean }) {
             EduTrailBlaze
           </Typography>
           <Box sx={{ paddingRight: 5, marginLeft: 'auto', display: { xs: 'none', md: 'flex' } }}>
-            <Typography>Signed in as {session?.user?.email}</Typography>
+            <Typography>Signed in as {userName}</Typography>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title='Open profile settings'>
