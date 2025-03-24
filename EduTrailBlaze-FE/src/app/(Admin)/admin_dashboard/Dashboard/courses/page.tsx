@@ -38,37 +38,12 @@ import { Course, CourseCreate } from '../../../../../types/course.type'
  import {
    useGetCoursePagingQuery,
    useGetCourseQuery ,
+   useGetCourseDetailsQuery,
    useAddCourseMutation,
    useUpdateCourseMutation,
    useDeleteCourseMutation,
    useApproveCourseMutation 
  } from '@/redux/services/courseDetail.service'
-
-// export type Course = {
-
-//   id?: number
-//   title: string
-//   imageURL: string
-//   introURL: string
-//   description: string
-//   price: number
-//   duration: number
-//   difficultyLevel: string
-//   prerequisites: string
-//   learningOutcomes: string[]
-//   createdBy: string
-//   isPublished?:string
-//   reviewInfo?: {
-//     averageRating: number
-//     totalRatings: number
-//   }
-//   createdAt?: string
-// }
-
-// export type CourseCreate = Omit<Course, 'createdAt'>
-
-// const API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Course'
-// const REVIEW_API_URL = 'https://edu-trailblaze.azurewebsites.net/api/Review/get-review-info'
 
 type CourseKey = Extract<keyof Course, string>;
 
@@ -144,7 +119,7 @@ export default function CoursesManagement() {
      PageIndex: pageIndex,
      PageSize: pageSize
   })
-  const { data: detailData, isLoading: detailLoading, isError: detailError } = useGetCourseQuery(selectedCourseId ?? 0, {
+  const { data: detailData, isLoading: detailLoading, isError: detailError } = useGetCourseDetailsQuery(selectedCourseId ?? 0, {
     skip: selectedCourseId === null
   })
   const [addCourseMutation] = useAddCourseMutation()
@@ -182,8 +157,6 @@ export default function CoursesManagement() {
   const handleDetail = async (course: Course) => {
     try {
       setSelectedCourseId(course.id) 
-
-      // also fetch review if you want
       await triggerGetReviewInfo(course.id!).unwrap()
     } catch (error) {
       console.error('Error fetching course review info:', error)
@@ -232,7 +205,7 @@ export default function CoursesManagement() {
 
   const handleAddCourse = async (newCourse: CourseCreate, selectedTagIds: number[]) => {
      if (!userId) {
-         toast.error('User ID is not available!') // hoặc 'User not logged in' tuỳ ý
+         toast.error('User ID is not available!') 
          return
        }
   
@@ -385,40 +358,71 @@ export default function CoursesManagement() {
   }
 
 
-  const getStatusColor = (status: string) => {
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case 'Pending':
+  //       return { color: 'goldenrod' } 
+  //     case 'Reject':
+  //       return { color: 'red' }     
+  //     case 'Approve':
+  //       return { color: 'green' }     
+  //     default:
+  //       return {}
+  //   }
+  // }
+
+  function getStatusColor(status: string) {
     switch (status) {
       case 'Pending':
-        return { color: 'goldenrod' } 
-      case 'Reject':
-        return { color: 'red' }     
-      case 'Approve':
-        return { color: 'green' }     
+        return { color: 'goldenrod' }
+      case 'Rejected':
+        return { color: 'red' }
+      case 'Approved':
+        return { color: 'green' }
       default:
         return {}
     }
   }
 
-  const renderRow = (course: Course) => (
-    <TableRow
-      key={course.id}
-      className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'
-      hover
-      onClick={() => handleDetail(course)}
-    >
-      {visibleColumns['id'] && <TableCell className='p-4'>{course.id}</TableCell>}
-      {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
-      {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
-      {visibleColumns['duration'] && <TableCell>{course.duration}</TableCell>}
-      {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
-      {visibleColumns['approvalStatus'] && <TableCell>{course.approvalStatus}</TableCell>}
-      {visibleColumns['createdAt'] && (
-        <TableCell>
-          <FormatDateTime date={course.createdAt || ''} />
-        </TableCell>
-      )}
-    </TableRow>
-  )
+  function transformStatus(rawStatus: string | undefined): string {
+    if (!rawStatus) return ''
+    if (rawStatus === 'Reject') return 'Rejected'
+    if (rawStatus === 'Approve') return 'Approved'
+    return rawStatus
+  }
 
+  const renderRow = (course: Course) => {
+    const transformed = transformStatus(course.approvalStatus)
+  
+    return (
+      <TableRow
+        key={course.id}
+        className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-gray-100'
+        hover
+        onClick={() => handleDetail(course)}
+      >
+        {visibleColumns['id'] && <TableCell className='p-4'>{course.id}</TableCell>}
+        {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
+        {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
+        {visibleColumns['duration'] && <TableCell>{course.duration}</TableCell>}
+        {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
+  
+        {/* Status */}
+        {visibleColumns['approvalStatus'] && (
+          <TableCell sx={getStatusColor(transformed)}>
+            {transformed || 'N/A'}
+          </TableCell>
+        )}
+  
+        {visibleColumns['createdAt'] && (
+          <TableCell>
+            <FormatDateTime date={course.createdAt || ''} />
+          </TableCell>
+        )}
+      </TableRow>
+    )
+  }
+  
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       <ToastContainer position='top-right' autoClose={3000} />
@@ -514,85 +518,116 @@ export default function CoursesManagement() {
 
       {/* <Pagination /> */}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
-      
 
       {detailData && selectedCourseId !== null && (
-  <DetailPopup
-    isOpen={true}
-    onClose={() => setSelectedCourseId(null)}
-    title='Course Detail'
-    fields={[
-      { label: 'ID', value: detailData.id, isID: true },
-      { label: 'Title', value: detailData.title },
-      { label: 'Duration', value: detailData.duration },
-      { label: 'Price', value: detailData.price },
-      { label: 'imageURL', value: detailData.imageURL, isImage: true },
-      { label: 'introURL', value: detailData.introURL, isVideo: true },
-      {
-        label: 'Difficulty',
-        value: [
-          {
-            label: detailData.difficultyLevel,
-            color:
-              detailData.difficultyLevel === 'Beginner'
-                ? 'green'
-                : detailData.difficultyLevel === 'Intermediate'
-                ? 'blue'
-                : 'red'
-          }
-        ],
-        isStatus: true
-      },
-      {
-        label: 'Date',
-        value: detailData.createdAt,
-        isDate: true
-      }
-    ]}
-    widgets={[
-      {
-        label: 'Description',
-        content: detailData.description
-      },
-      {
-        label: 'Prerequisites',
-        content: detailData.prerequisites
-      }
-    ]}
-    actions={[
-      {
-        label: 'Delete',
-        icon: <Trash2 style={{ color: '#DC2626' }} />,
-        onClick: () => {
-          // Gọi hàm xóa, param detailData.id
-          handleDeleteCourse(detailData.id)
-        }
-      },
-      {
-        label: 'Change Status',
-        icon: <Pencil style={{ color: '#F59E0B' }} />,
-        onClick: () => {
-          if (!detailData) return
-          setStatusCourseId(detailData.id)
-          setStatusCurrent(detailData.approvalStatus as CourseApprovalStatus)
-          setStatusModalOpen(true)
-        }
-      },
-      {
-        label: 'Update',
-        icon: <Pencil style={{ color: '#F59E0B' }} />,
-        onClick: () => {
-          if (!detailData) return
-          // Gọi hàm mở modal edit
-          handleEditCourse(detailData)
-        }
-      }
+        <DetailPopup
+          isOpen={true}
+          onClose={() => setSelectedCourseId(null)}
+          title='Course Detail'
+          fields={[
+            { label: 'ID', value: detailData.courseDetails?.id, isID: true },
+            { label: 'Instructor',
+              value: detailData.courseDetails?.instructors
+              ?.map((inst) => inst.fullname)
+              .join(', ') || 'No instructors',
+            isName:true
+            },
+            { label: 'Title', value: detailData.courseDetails?.title },
+            { label: 'Duration', value: detailData.courseDetails?.duration },
+            { label: 'Price', value: detailData.courseDetails?.price },
+            { label: 'Enrollements', value: detailData.courseDetails?.enrollment?.totalEnrollments },
+            { label: 'imageURL', value: detailData.courseDetails?.imageURL, isImage: true },
+            { label: 'introURL', value: detailData.courseDetails?.introURL, isVideo: true },
+            {
+              label: 'Difficulty',
+              value: [
+                {
+                  label: detailData.courseDetails?.difficultyLevel,
+                  color:
+                    detailData.courseDetails?.difficultyLevel === 'Beginner'
+                      ? 'green'
+                      : detailData.courseDetails?.difficultyLevel === 'Intermediate'
+                      ? 'blue'
+                      : 'red'
+                }
+              ],
+              isStatus: true
+            },
+            { label: 'Tag', value: detailData.courseDetails?.tags?.join(', ') || 'No tags' },
 
+            {
+              label: 'Date',
+              value: detailData.courseDetails?.createdAt,
+              isDate: true
+            }
+          ]}
+          widgets={[
+            {
+              label: 'Description',
+              content: detailData.courseDetails?.description
+            },
+            {
+              label: 'Prerequisites',
+              content: detailData.courseDetails?.prerequisites
+            },
+            {
+              label: 'Review Info',
+              content: `Average Rating: ${
+                detailData.courseDetails?.review?.averageRating ?? 0
+              }\nTotal Ratings: ${detailData.courseDetails?.review?.totalRatings ?? 0}`
+            },
+            {
+              label: 'Section Details',
+              content: detailData.sectionDetails
+                ?.map(
+                  (sec, idx) =>
+                    `Section ${idx + 1}: ${sec.title}\nLectures: ${
+                      sec.numberOfLectures
+                    }\nDuration: ${sec.duration}\n`
+                )
+                .join('\n') || 'No sections'
+            }
+          ]}
 
-
-    ]}
-  />
-)}
+          actions={[
+            {
+              label: 'Delete',
+              icon: <Trash2 style={{ color: '#DC2626' }} />,
+              onClick: () => {
+                if (!selectedCourseId) {
+                  console.log('No course id => cannot delete');
+                  return;
+                }
+                handleDeleteCourse(selectedCourseId);
+              }
+            },
+            {
+              label: 'Change Status',
+              icon: <Pencil style={{ color: '#F59E0B' }} />,
+              onClick: () => {
+                if (!selectedCourseId) {
+                  console.log('No course id => cannot change status');
+                  return;
+                }
+                setStatusCourseId(selectedCourseId);
+                setStatusCurrent(
+                  detailData.courseDetails?.approvalStatus as CourseApprovalStatus
+                );
+                setStatusModalOpen(true);
+              }
+            },
+            {
+              label: 'Update',
+              icon: <Pencil style={{ color: '#F59E0B' }} />,
+              onClick: () => {
+                if (!detailData?.courseDetails)return
+                // Gọi hàm mở modal edit
+                handleEditCourse(detailData.courseDetails)
+              }
+            }
+          ]}
+        />
+      )}
 
       <CourseFormModalCreate
         initialValues={newCourse}

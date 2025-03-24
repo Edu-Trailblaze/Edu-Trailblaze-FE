@@ -65,7 +65,7 @@ interface ICourseDetails {
   instructors: Instructor[]
   review: ReviewCourse
   enrollment: Enrollment
-  languages: string[]
+  languages: string[] 
   price: number
   duration: number
   difficultyLevel: string

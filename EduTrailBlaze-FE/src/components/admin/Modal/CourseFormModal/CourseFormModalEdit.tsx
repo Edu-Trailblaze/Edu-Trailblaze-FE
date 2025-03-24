@@ -175,18 +175,6 @@ export default function CourseFormModalEdit({
             noLayout
           />
 
-        <InputSelect
-          label='Status'
-          name='isPublished'
-          value={formValues.isPublished || 'Pending'}
-          onChange={(e) => handleChange('isPublished', e.target.value)}
-          options={[
-            { label: 'Pending', value: 'Pending' },
-            { label: 'Reject', value: 'Reject' },
-            { label: 'Approve', value: 'Approve' }
-          ]}
-          noLayout
-        />
         </Box>
 
         <Box display='flex' justifyContent='flex-end' gap={2} mt={3}>
