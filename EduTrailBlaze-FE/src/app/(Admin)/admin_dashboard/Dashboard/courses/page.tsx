@@ -297,7 +297,6 @@ export default function CoursesManagement() {
       return
     }
 
-     // Nếu userId rỗng, nghĩa là chưa decode được token
      if (!userId) {
        toast.error('User ID is not available!')
        return
@@ -607,15 +606,41 @@ export default function CoursesManagement() {
                 setStatusModalOpen(true);
               }
             },
+            // {
+            //   label: 'Update',
+            //   icon: <Pencil style={{ color: '#F59E0B' }} />,
+            //   onClick: () => {
+            //     if (!detailData?.courseDetails)return
+            //     // Gọi hàm mở modal edit
+            //     handleEditCourse(detailData.courseDetails)
+            //   }
+            // }
             {
               label: 'Update',
               icon: <Pencil style={{ color: '#F59E0B' }} />,
               onClick: () => {
-                if (!detailData?.courseDetails)return
-                // Gọi hàm mở modal edit
-                handleEditCourse(detailData.courseDetails)
+                if (!detailData?.courseDetails) return;
+            
+                // Chỗ này: detailData.courseDetails có thể thiếu id,
+                // ta dùng selectedCourseId thay thế:
+                const c: Course = {
+                  id: selectedCourseId,
+                  title: detailData.courseDetails.title ?? '',
+                  imageURL: detailData.courseDetails.imageURL ?? '',
+                  introURL: detailData.courseDetails.introURL ?? '',
+                  description: detailData.courseDetails.description ?? '',
+                  duration: detailData.courseDetails.duration ?? 0,
+                  price: detailData.courseDetails.price ?? 0,
+                  difficultyLevel: detailData.courseDetails.difficultyLevel ?? '',
+                  updatedBy: '',
+                  prerequisites: detailData.courseDetails.prerequisites ?? '',
+                  learningOutcomes: detailData.courseDetails.learningOutcomes ?? []
+                };
+            
+                handleEditCourse(c);
               }
             }
+            
           ]}
         />
       )}

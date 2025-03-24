@@ -43,13 +43,13 @@ export default function CourseFormModalEdit({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('formValues khi submit:', formValues); // kiểm tra formValues.price
+    console.log('formValues khi submit:', formValues); 
     onSubmit(formValues)
   }
 
   useEffect(() => {
     if (initialValues) {
-      console.log('initialValues trong form edit:', initialValues); // debug
+      console.log('initialValues trong form edit:', initialValues); 
       setFormValues(initialValues)
     }
   }, [initialValues])
