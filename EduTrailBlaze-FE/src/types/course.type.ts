@@ -117,6 +117,8 @@ interface Course {
   createdBy: string
   createdAt: string
   updatedAt: string
+  updatedBy?: string;      
+
 }
 
 interface CourseDetails {

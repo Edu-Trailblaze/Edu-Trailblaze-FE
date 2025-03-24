@@ -30,7 +30,7 @@ import StatusModal from '@/components/admin/Modal/CourseFormModal/CourseStatusMo
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil } from 'lucide-react'
 
 //type
-import { Course, CourseCreate } from '../../../../../types/course.type' 
+import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type' 
 
 //redux
  import { useAddCourseTagMutation } from '@/redux/services/courseTag.service'
@@ -45,6 +45,9 @@ import { Course, CourseCreate } from '../../../../../types/course.type'
    useApproveCourseMutation 
  } from '@/redux/services/courseDetail.service'
 
+// ------------------ HÀM CHUYỂN ĐỔI (ICourseDetails -> Course) ------------------
+
+
 type CourseKey = Extract<keyof Course, string>;
 
 // const courseFields: { label: string; accessor: keyof Course }[] = [
@@ -57,6 +60,9 @@ type CourseKey = Extract<keyof Course, string>;
   { label: 'Status', accessor: 'approvalStatus' },
   { label: 'Created at', accessor: 'createdAt' }
 ]
+
+
+
 
 export default function CoursesManagement() {
   const dispatch = useDispatch()
@@ -272,11 +278,15 @@ export default function CoursesManagement() {
 
 
   const handleEditCourse = (course: Course) => {
+    console.log('course trước khi edit:', course); 
+
     setEditCourse(course)
     setEditModalOpen(true)
   }
 
   const handleUpdateCourse = async (updatedCourse: Course) => {
+    console.log('updatedCourse khi update:', updatedCourse); 
+
     if (
       !updatedCourse.title ||
       !updatedCourse.description ||
@@ -313,12 +323,7 @@ export default function CoursesManagement() {
         formData.append('IntroURL', updatedCourse.introURL)
       }
       formData.append('UpdatedBy', userId)
-      
-      // await axios.put(API_URL, formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // })
+
       await updateCourseMutation(formData).unwrap()
   
       toast.success('Course updated successfully!')
@@ -356,20 +361,6 @@ export default function CoursesManagement() {
       toast.error('Failed to update course status!')
     }
   }
-
-
-  // const getStatusColor = (status: string) => {
-  //   switch (status) {
-  //     case 'Pending':
-  //       return { color: 'goldenrod' } 
-  //     case 'Reject':
-  //       return { color: 'red' }     
-  //     case 'Approve':
-  //       return { color: 'green' }     
-  //     default:
-  //       return {}
-  //   }
-  // }
 
   function getStatusColor(status: string) {
     switch (status) {
@@ -525,7 +516,7 @@ export default function CoursesManagement() {
           onClose={() => setSelectedCourseId(null)}
           title='Course Detail'
           fields={[
-            { label: 'ID', value: detailData.courseDetails?.id, isID: true },
+            { label: 'ID', value: selectedCourseId, isID: true },
             { label: 'Instructor',
               value: detailData.courseDetails?.instructors
               ?.map((inst) => inst.fullname)
@@ -576,17 +567,17 @@ export default function CoursesManagement() {
                 detailData.courseDetails?.review?.averageRating ?? 0
               }\nTotal Ratings: ${detailData.courseDetails?.review?.totalRatings ?? 0}`
             },
-            {
-              label: 'Section Details',
-              content: detailData.sectionDetails
-                ?.map(
-                  (sec, idx) =>
-                    `Section ${idx + 1}: ${sec.title}\nLectures: ${
-                      sec.numberOfLectures
-                    }\nDuration: ${sec.duration}\n`
-                )
-                .join('\n') || 'No sections'
-            }
+            // {
+            //   label: 'Section Details',
+            //   content: detailData.sectionDetails
+            //     ?.map(
+            //       (sec, idx) =>
+            //         `Section ${idx + 1}: ${sec.title}\nLectures: ${
+            //           sec.numberOfLectures
+            //         }\nDuration: ${sec.duration}\n`
+            //     )
+            //     .join('\n') || 'No sections'
+            // }
           ]}
 
           actions={[

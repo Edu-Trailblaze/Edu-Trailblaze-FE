@@ -138,6 +138,20 @@ export default function OrdersManagement() {
     console.log('Filtered orders:', filtered)
   }
 
+
+  function getOrderStatusColor(status: string) {
+    switch (status) {
+      case 'Completed':
+        return { color: 'green' }
+      case 'Failed':
+        return { color: 'red' }
+      case 'Pending':
+        return { color: 'goldenrod' }
+      default:
+        return {}
+    }
+  }
+
   const renderRow = (order: Order & { userName?: string }) => (
     <TableRow key={order.id} hover onClick={() => setSelectedOrder(order)}>
       {visibleColumns['id'] && <TableCell>{order.id}</TableCell>}
@@ -148,7 +162,12 @@ export default function OrdersManagement() {
           <FormatDateTime date={order.orderDate} />
         </TableCell>
       )}
-      {visibleColumns['orderStatus'] && <TableCell>{order.orderStatus}</TableCell>}
+      {/* {visibleColumns['orderStatus'] && <TableCell>{order.orderStatus}</TableCell>} */}
+      {visibleColumns['orderStatus'] && (
+      <TableCell sx={getOrderStatusColor(order.orderStatus)}>
+        {order.orderStatus}
+      </TableCell>
+    )}
     </TableRow>
   )
 
