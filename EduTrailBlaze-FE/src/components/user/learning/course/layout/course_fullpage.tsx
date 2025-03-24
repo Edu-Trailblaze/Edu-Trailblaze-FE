@@ -17,6 +17,7 @@ import CourseReview from '../CourseComponents/review/course_review'
 import CourseSuggestion from '../CourseComponents/suggestion/course_suggestion'
 import { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
+import NotAvailable from '@/app/not-available/page'
 
 export default function Course() {
   const { courseURL } = useParams()
@@ -68,7 +69,7 @@ export default function Course() {
 
   if (!detail) return <div>No course available.</div>
   if (!section) return <div>No section available.</div>
-  if (!lecture) return <div>No lecture available.</div>
+  if (!lecture) return <NotAvailable />
   if (!lectureURL) return <div>No LectureURL</div>
   if (!recommendedCourses) return <div>No recommended courses available.</div>
 

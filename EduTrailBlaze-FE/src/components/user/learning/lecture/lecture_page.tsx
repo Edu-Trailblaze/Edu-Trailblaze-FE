@@ -9,7 +9,7 @@ import { useGetCourseDetailsQuery } from '../../../../redux/services/courseDetai
 import { useGetLectureQuery, useGetSectionLectureQuery } from '../../../../redux/services/lecture.service'
 import { useGetVideoByConditionsQuery } from '../../../../redux/services/video.service'
 import { jwtDecode } from 'jwt-decode'
-import { useGetUserProgressQuery } from '@/redux/services/userProgress.service'
+import NotAvailable from '@/app/not-available/page'
 
 export default function LecturePage() {
   const { courseURL, lectureURL } = useParams()
@@ -71,8 +71,18 @@ export default function LecturePage() {
 
   if (courseLoading || lectureLoading || contentLoading || videoLoading) return <LoadingPage />
   if (!course) return <div>Course not found</div>
-  if (!lectures) return <div>Lecture not found</div>
-  if (!lectureContent) return <div>Lecture not found</div>
+  if (!lectures)
+    return (
+      <div>
+        <NotAvailable />
+      </div>
+    )
+  if (!lectureContent)
+    return (
+      <div>
+        <NotAvailable />
+      </div>
+    )
   if (!video) return <div>Video not found</div>
 
   return (
