@@ -523,8 +523,18 @@ export default function CoursesManagement() {
             isName:true
             },
             { label: 'Title', value: detailData.courseDetails?.title },
-            { label: 'Duration', value: detailData.courseDetails?.duration },
-            { label: 'Price', value: detailData.courseDetails?.price },
+            {
+              label: 'Duration',
+              value: detailData.courseDetails?.duration
+                ? detailData.courseDetails?.duration + ' hours'
+                : 'N/A'
+            },
+            {
+              label: 'Price',
+              value: detailData.courseDetails?.price
+                ? detailData.courseDetails?.price  + ' $'
+                : 'N/A'
+            },
             { label: 'Enrollements', value: detailData.courseDetails?.enrollment?.totalEnrollments },
             { label: 'imageURL', value: detailData.courseDetails?.imageURL, isImage: true },
             { label: 'introURL', value: detailData.courseDetails?.introURL, isVideo: true },
@@ -560,6 +570,11 @@ export default function CoursesManagement() {
               label: 'Prerequisites',
               content: detailData.courseDetails?.prerequisites
             },
+            {
+                label: 'Learning Outcomes',
+                content:
+                  detailData.courseDetails?.learningOutcomes?.join('\n') || 'No outcomes'
+              },
             {
               label: 'Review Info',
               content: `Average Rating: ${
@@ -620,9 +635,7 @@ export default function CoursesManagement() {
               icon: <Pencil style={{ color: '#F59E0B' }} />,
               onClick: () => {
                 if (!detailData?.courseDetails) return;
-            
-                // Chỗ này: detailData.courseDetails có thể thiếu id,
-                // ta dùng selectedCourseId thay thế:
+
                 const c: Course = {
                   id: selectedCourseId,
                   title: detailData.courseDetails.title ?? '',
