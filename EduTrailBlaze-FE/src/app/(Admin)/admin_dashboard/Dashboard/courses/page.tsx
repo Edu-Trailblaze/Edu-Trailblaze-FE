@@ -27,7 +27,7 @@ import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFor
 import DetailPopup from '@/components/global/Popup/PopupDetail'
 import StatusModal from '@/components/admin/Modal/CourseFormModal/CourseStatusModal'
 //icon
-import { Filter, ArrowUpDown, Plus, Trash2, Pencil } from 'lucide-react'
+import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot } from 'lucide-react'
 
 //type
 import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type' 
@@ -42,10 +42,11 @@ import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course
    useAddCourseMutation,
    useUpdateCourseMutation,
    useDeleteCourseMutation,
-   useApproveCourseMutation 
+   useApproveCourseMutation,
+   useApproveCourseByAIMutation 
  } from '@/redux/services/courseDetail.service'
 
-// ------------------ HÀM CHUYỂN ĐỔI (ICourseDetails -> Course) ------------------
+
 
 
 type CourseKey = Extract<keyof Course, string>;
@@ -133,6 +134,7 @@ export default function CoursesManagement() {
   const [deleteCourseMutation] = useDeleteCourseMutation()
   const [addCourseTag] = useAddCourseTagMutation()
   const [approveCourse] = useApproveCourseMutation()
+  const [approveCourseByAI] = useApproveCourseByAIMutation();
 
   const [triggerGetReviewInfo, { data: reviewData, isFetching: isReviewFetching }] = useLazyGetReviewInfoQuery()
 
@@ -579,44 +581,44 @@ export default function CoursesManagement() {
           ]}
 
           actions={[
-            {
-              label: 'Delete',
-              icon: <Trash2 style={{ color: '#DC2626' }} />,
-              onClick: () => {
-                if (!selectedCourseId) {
-                  console.log('No course id => cannot delete');
-                  return;
-                }
-                handleDeleteCourse(selectedCourseId);
-              }
-            },
-            {
-              label: 'Change Status',
-              icon: <Pencil style={{ color: '#F59E0B' }} />,
-              onClick: () => {
-                if (!selectedCourseId) {
-                  console.log('No course id => cannot change status');
-                  return;
-                }
-                setStatusCourseId(selectedCourseId);
-                setStatusCurrent(
-                  detailData.courseDetails?.approvalStatus as CourseApprovalStatus
-                );
-                setStatusModalOpen(true);
-              }
-            },
+
             // {
-            //   label: 'Update',
-            //   icon: <Pencil style={{ color: '#F59E0B' }} />,
+            //   label: 'Change Status',
+            //   icon: <RefreshCw style={{ color: '#F59E0B' }} />,
             //   onClick: () => {
-            //     if (!detailData?.courseDetails)return
-            //     // Gọi hàm mở modal edit
-            //     handleEditCourse(detailData.courseDetails)
+            //     if (!selectedCourseId) {
+            //       console.log('No course id => cannot change status');
+            //       return;
+            //     }
+            //     setStatusCourseId(selectedCourseId);
+            //     setStatusCurrent(
+            //       detailData.courseDetails?.approvalStatus as CourseApprovalStatus
+            //     );
+            //     setStatusModalOpen(true);
             //   }
-            // }
+            // },
+            {
+              label: 'Approve by AI',
+              icon: <Bot style={{ color: '#14B8A6' }} />,
+              onClick: async () => {
+                if (!selectedCourseId) {
+                  console.log('No course id => cannot approve by AI');
+                  return;
+                }
+                try {
+                  // Gọi mutation RTK Query
+                  await approveCourseByAI(selectedCourseId).unwrap();
+                  toast.success('AI approval successful!');
+                } catch (error: any) {
+                  console.error('Error approving course by AI:', error);
+                  toast.error('Failed to approve course by AI!');
+                }
+              }
+            },
+
             {
               label: 'Update',
-              icon: <Pencil style={{ color: '#F59E0B' }} />,
+              icon: <Pencil style={{ color: '#3B82F6' }} />,
               onClick: () => {
                 if (!detailData?.courseDetails) return;
 
@@ -636,7 +638,18 @@ export default function CoursesManagement() {
             
                 handleEditCourse(c);
               }
-            }
+            },
+            {
+              label: 'Delete',
+              icon: <Trash2 style={{ color: '#DC2626' }} />,
+              onClick: () => {
+                if (!selectedCourseId) {
+                  console.log('No course id => cannot delete');
+                  return;
+                }
+                handleDeleteCourse(selectedCourseId);
+              }
+            },
             
           ]}
         />

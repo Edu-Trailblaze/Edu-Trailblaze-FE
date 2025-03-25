@@ -132,6 +132,14 @@ export const courseApi = createApi({
       }),
       invalidatesTags: []
     }),
+
+    approveCourseByAI: build.mutation<any, number>({
+      query: (courseId) => ({
+        url: `AdminDashboard/approve-course-by-ai?courseId=${courseId}`,
+        method: 'PUT'
+      }),
+      invalidatesTags: []
+    }),
     
   })
 })
@@ -150,5 +158,6 @@ export const {
   useUpdateCourseMutation,
   useDeleteCourseMutation,
   useGetCoursePageInformationQuery,
-  useApproveCourseMutation
+  useApproveCourseMutation,
+  useApproveCourseByAIMutation
 } = courseApi
