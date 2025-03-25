@@ -14,10 +14,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <CustomerGuard>
+    // <CustomerGuard>
+    <>
       <WebHeader />
       <div className='min-h-screen'>{children}</div>
       <WebFooter />
-    </CustomerGuard>
+    </>
+    // </CustomerGuard>
   )
 }
