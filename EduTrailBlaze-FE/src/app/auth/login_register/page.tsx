@@ -43,7 +43,12 @@ export default function LoginRegister() {
     try {
       const response = await login({ email, password }).unwrap()
       dispatch(setCredentials(response.message.data))
-      router.push('/')
+
+      if (localStorage.getItem('role') === 'Admin') {
+        router.push('/admin_dashboard/Dashboard/courses')
+      } else {
+        router.push('/')
+      }
     } catch (err) {
       toast.error('Login failed. Please try again.')
       console.error('Login failed', err)
