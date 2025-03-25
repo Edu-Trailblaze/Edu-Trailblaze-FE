@@ -150,7 +150,7 @@ export default function WebHeader() {
         <div className='flex items-center mr-10'>
           <Link href={'/'} className='flex items-center'>
             <span className='sr-only'>EduTrailBlaze</span>
-            <img alt='EduTrailBlaze Logo' src='/assets/logos/ETB_Logo.png' className='h-8 md:h-10' />
+            <img alt='EduTrailBlaze Logo' src='https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871415/ETB_Logo_vpv1gu.png' className='h-8 md:h-10' />
           </Link>
         </div>
 
