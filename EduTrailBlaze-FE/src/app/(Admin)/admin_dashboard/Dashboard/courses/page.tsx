@@ -30,7 +30,46 @@ import StatusModal from '@/components/admin/Modal/CourseFormModal/CourseStatusMo
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot } from 'lucide-react'
 
 //type
-import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type' 
+// import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type' 
+
+interface Course {
+  id: number
+  title: string
+  introURL?:string
+  imageURL: string
+  description: string
+  price: number
+  duration: number
+  difficultyLevel: string
+  learningOutcomes: string[]
+  prerequisites: string
+  createdBy?: string
+  createdAt?: string
+  updatedAt?: string
+  updatedBy?: string;  
+  approvalStatus?:string;
+
+}
+
+
+interface CourseCreate  {
+  title: string
+  imageURL: string
+  introURL: string
+  duration:number
+  description: string
+  price: number
+  difficultyLevel: string
+  createdBy: string
+  prerequisites: string
+  learningOutcomes: string[]
+}
+
+interface ApproveCourseRequest {
+  courseId: number
+  status: CourseApprovalStatus
+}
+
 
 //redux
  import { useAddCourseTagMutation } from '@/redux/services/courseTag.service'
@@ -528,7 +567,7 @@ export default function CoursesManagement() {
               label: 'Difficulty',
               value: [
                 {
-                  label: detailData.courseDetails?.difficultyLevel,
+                  label: detailData.courseDetails?.difficultyLevel??'N/A',
                   color:
                     detailData.courseDetails?.difficultyLevel === 'Beginner'
                       ? 'green'
@@ -550,11 +589,11 @@ export default function CoursesManagement() {
           widgets={[
             {
               label: 'Description',
-              content: detailData.courseDetails?.description
+              content: detailData.courseDetails?.description ?? 'No description available'
             },
             {
               label: 'Prerequisites',
-              content: detailData.courseDetails?.prerequisites
+              content: detailData.courseDetails?.prerequisites ?? 'No prerequisites available'
             },
             {
                 label: 'Learning Outcomes',
@@ -634,6 +673,7 @@ export default function CoursesManagement() {
                   updatedBy: '',
                   prerequisites: detailData.courseDetails.prerequisites ?? '',
                   learningOutcomes: detailData.courseDetails.learningOutcomes ?? []
+
                 };
             
                 handleEditCourse(c);
