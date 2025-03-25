@@ -7,6 +7,9 @@ import { addItemToCart } from '../../../../../../redux/slice/cart.slice'
 import { toast } from 'react-toastify'
 import Button from '../../../../../global/Button/Button'
 import { Menu, X, ShoppingCart, BookOpen, ArrowRight, ChevronDown } from 'lucide-react'
+import LoginModal from 'react-modal'
+import '@/components/global/Modal/ReactModal.css'
+import LoginRequest from '@/components/global/requestNotification/requestLogin/RequestLogin'
 
 interface NavigationProps {
   courseDetails: ICourseDetails
@@ -20,6 +23,10 @@ export default function Navigation({ courseDetails, courseURL, lectureURL, userI
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('about')
   const navRef = useRef<HTMLDivElement>(null)
+  const [modelLogin, setModalLogin] = useState(false)
+  const handleCloseModal = () => {
+    setModalLogin(false)
+  }
   const dispatch = useDispatch()
 
   const [postCart, { isLoading: isAddingToCart }] = usePostCartMutation()
@@ -51,7 +58,8 @@ export default function Navigation({ courseDetails, courseURL, lectureURL, userI
       toast.success('Course added to cart please go to cart to checkout')
     } catch (error: any) {
       if (error.originalStatus === 400) toast.error('Course already in cart')
-      else toast.error('Failed to add course to cart')
+      // else toast.error('Failed to add course to cart')
+      else setModalLogin(true)
     }
   }
 
@@ -148,7 +156,7 @@ export default function Navigation({ courseDetails, courseURL, lectureURL, userI
               isLoading={checkLoading || postLoading || isAddingToCart}
               className='hidden md:flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-300'
             >
-              {enroll?.status === 'Not bought' ? (
+              {enroll?.status === 'Not bought' || !enroll ? (
                 <div onClick={() => handleAddToCart(userId, courseURL)} className='flex items-center'>
                   <ShoppingCart size={18} className='mr-1' />
                   <span className='hidden lg:inline'>Add to cart</span>
@@ -249,6 +257,20 @@ export default function Navigation({ courseDetails, courseURL, lectureURL, userI
           }}
         ></div>
       </div>
+
+      {modelLogin && (
+        <LoginModal
+          key='unique-modal-key'
+          isOpen={modelLogin}
+          onRequestClose={handleCloseModal}
+          className={'bg-transparent border-none p-0'}
+          overlayClassName='modal-overlay'
+          shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
+        >
+          <LoginRequest />
+        </LoginModal>
+      )}
     </div>
   )
 }

@@ -36,7 +36,7 @@ export default function LoginRequest() {
                 d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
               ></path>
             </svg>
-            <h3 className='font-medium text-white text-sm'>Thông báo</h3>
+            <h3 className='font-medium text-white text-sm'>Notification</h3>
           </div>
         </div>
 

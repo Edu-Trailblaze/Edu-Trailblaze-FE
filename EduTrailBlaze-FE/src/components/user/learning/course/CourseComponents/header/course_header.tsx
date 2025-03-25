@@ -11,6 +11,9 @@ import { addItemToCart } from '../../../../../../redux/slice/cart.slice'
 import Button from '../../../../../global/Button/Button'
 import { toast } from 'react-toastify'
 import { BookOpen, Star, Award, Clock, Users, ArrowRight, ShoppingCart } from 'lucide-react'
+import LoginRequest from '@/components/global/requestNotification/requestLogin/RequestLogin'
+import LoginModal from 'react-modal'
+import '@/components/global/Modal/ReactModal.css'
 
 interface CourseHeaderProps extends ICourseFull {
   courseDetails: ICourseDetails
@@ -31,7 +34,7 @@ export default function CourseHeader({
   const openModal = () => setModalOpen(true)
   const closeModal = () => setModalOpen(false)
   const [postCart, { isLoading: isAddingToCart }] = usePostCartMutation()
-
+  const [modelLogin, setModalLogin] = useState(false)
   const dispatch = useDispatch()
 
   const { data: enroll, isLoading: checkLoading } = useGetCheckCourseStatusQuery({
@@ -40,6 +43,10 @@ export default function CourseHeader({
   })
 
   const [postEnroll, { isLoading: postLoading }] = usePostEnrollMutation()
+
+  const handleCloseModal = () => {
+    setModalLogin(false)
+  }
 
   const handleEnroll = async () => {
     try {
@@ -60,7 +67,8 @@ export default function CourseHeader({
       toast.success('Course added to cart please go to cart to checkout')
     } catch (error: any) {
       if (error.originalStatus === 400) toast.error('Course already in cart')
-      else toast.error('Failed to add course to cart')
+      // else toast.error('Please login to add course to cart')
+      else setModalLogin(true)
     }
   }
 
@@ -147,7 +155,7 @@ export default function CourseHeader({
                   isLoading={checkLoading || postLoading || isAddingToCart}
                   className='flex items-center justify-center py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105'
                 >
-                  {enroll?.status === 'Not bought' ? (
+                  {enroll?.status === 'Not bought' || !enroll ? (
                     <div onClick={() => handleAddToCart(userId, courseURL)} className='flex items-center'>
                       <ShoppingCart size={20} className='mr-2' /> Add to cart
                     </div>
@@ -270,6 +278,20 @@ export default function CourseHeader({
           ))}
         </div>
       </Modal>
+
+      {modelLogin && (
+        <LoginModal
+          key='unique-modal-key'
+          isOpen={modelLogin}
+          onRequestClose={handleCloseModal}
+          className={'bg-transparent border-none p-0'}
+          overlayClassName='modal-overlay'
+          shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
+        >
+          <LoginRequest />
+        </LoginModal>
+      )}
     </div>
   )
 }
