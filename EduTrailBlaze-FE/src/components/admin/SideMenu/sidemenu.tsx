@@ -221,8 +221,12 @@ const generalIcons = [
 ]
 
 // Personal section
-const personalRoutes = ["profile", "notifications", ""]
-const personalTranslations = ["Profile", "Notification", "Sign Out"]
+// const personalRoutes = ["profile", "notifications", ""]
+// const personalTranslations = ["Profile", "Notification", "Sign Out"]
+
+const personalRoutes = ["profile"]
+const personalTranslations = ["Profile"]
+
 const personalIcons = [
   <Person2Icon key="profile" fontSize="small" />,
   <NotificationsIcon key="notifications" fontSize="small" />,

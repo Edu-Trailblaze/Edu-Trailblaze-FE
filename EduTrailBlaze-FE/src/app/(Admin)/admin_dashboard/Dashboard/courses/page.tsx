@@ -65,6 +65,8 @@ interface CourseCreate  {
   learningOutcomes: string[]
 }
 
+type CourseApprovalStatus = 'Approved' | 'Rejected' | 'Pending'
+
 interface ApproveCourseRequest {
   courseId: number
   status: CourseApprovalStatus
@@ -621,21 +623,21 @@ export default function CoursesManagement() {
 
           actions={[
 
-            // {
-            //   label: 'Change Status',
-            //   icon: <RefreshCw style={{ color: '#F59E0B' }} />,
-            //   onClick: () => {
-            //     if (!selectedCourseId) {
-            //       console.log('No course id => cannot change status');
-            //       return;
-            //     }
-            //     setStatusCourseId(selectedCourseId);
-            //     setStatusCurrent(
-            //       detailData.courseDetails?.approvalStatus as CourseApprovalStatus
-            //     );
-            //     setStatusModalOpen(true);
-            //   }
-            // },
+            {
+              label: 'Change Status',
+              icon: <RefreshCw style={{ color: '#F59E0B' }} />,
+              onClick: () => {
+                if (!selectedCourseId) {
+                  console.log('No course id => cannot change status');
+                  return;
+                }
+                setStatusCourseId(selectedCourseId);
+                setStatusCurrent(
+                  detailData.courseDetails?.approvalStatus as CourseApprovalStatus
+                );
+                setStatusModalOpen(true);
+              }
+            },
             {
               label: 'Approve by AI',
               icon: <Bot style={{ color: '#14B8A6' }} />,
