@@ -232,32 +232,13 @@ export default function VouchersManagement() {
                     const to = toDate ? new Date(toDate) : null
                     const kw = keyword.toLowerCase()
 
-                    // CHANGED: console.log để kiểm tra
-                    console.log('Filter input => from:', from, 'to:', to, 'keyword:', kw)
-
                     const filterVoucher = allVouchers.filter((item) => {
-                      const itemDate = new Date(item.expiryDate)
-
-                      // CHANGED: log từng item
-                      console.log(
-                        'Filtering item:',
-                        item,
-                        '\n  expiryDate =',
-                        item.expiryDate,
-                        '\n  itemDate =',
-                        itemDate,
-                        '\n  from =',
-                        from,
-                        '\n  to =',
-                        to
-                      )
+                    const itemDate = new Date(item.expiryDate)
 
                       if (from && itemDate < from) {
-                        console.log('  => REJECT: itemDate < from')
                         return false
                       }
                       if (to && itemDate > to) {
-                        console.log('  => REJECT: itemDate > to')
                         return false
                       }
 
@@ -265,16 +246,11 @@ export default function VouchersManagement() {
                         const inCode = item.voucherCode.toLowerCase().includes(kw)
                         const inType = item.discountType.toLowerCase().includes(kw)
                         if (!inCode && !inType) {
-                          console.log('  => REJECT: no match keyword')
                           return false
                         }
                       }
-                      console.log('  => ACCEPTED')
                       return true
                     })
-
-                    // CHANGED: log kết quả cuối
-                    console.log('Filtered voucher:', filterVoucher)
 
                     setVouchers(filterVoucher)
                   }}

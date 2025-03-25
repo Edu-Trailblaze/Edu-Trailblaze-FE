@@ -31,7 +31,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { BASE_URL } from '../../utils/config'
 import { IUserCertificateRequest, IUserCertificate } from '../../types/userCertificate.type'
-
+ 
 export const userCertificateApi = createApi({
   reducerPath: 'userCertificate/api',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),

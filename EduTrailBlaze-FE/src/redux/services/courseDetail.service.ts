@@ -51,6 +51,7 @@ export const courseApi = createApi({
         method: 'GET'
       })
     }),
+    
     getInstructorOfCourse: build.query<ICourseInstructor[], number>({
       query: (id) => ({
         url: `Course/get-instructors-of-a-course?courseId=${id}`
@@ -106,11 +107,40 @@ export const courseApi = createApi({
       },
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     }),
+
+    deleteCourse: build.mutation<void, number>({ // <-- MỚI
+      query: (courseId) => ({
+        url: `Course?courseId=${courseId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Courses', id: 'LIST' }
+      ]
+    }),
+
     getCoursePageInformation: build.query<RecommendCourse, number>({
       query: (id) => ({
         url: `Course/get-course-page-information/${id}`
       })
-    })
+    }),
+
+    approveCourse: build.mutation<void, ApproveCourseRequest>({
+      query: (body) => ({
+        url: 'AdminDashboard/approve-course',
+        method: 'PUT',
+        body
+      }),
+      invalidatesTags: []
+    }),
+
+    approveCourseByAI: build.mutation<any, number>({
+      query: (courseId) => ({
+        url: `AdminDashboard/approve-course-by-ai?courseId=${courseId}`,
+        method: 'PUT'
+      }),
+      invalidatesTags: []
+    }),
+    
   })
 })
 
@@ -126,5 +156,8 @@ export const {
   useGetInstructorCoursePagingQuery,
   useGetCourseByIdQuery,
   useUpdateCourseMutation,
-  useGetCoursePageInformationQuery
+  useDeleteCourseMutation,
+  useGetCoursePageInformationQuery,
+  useApproveCourseMutation,
+  useApproveCourseByAIMutation
 } = courseApi

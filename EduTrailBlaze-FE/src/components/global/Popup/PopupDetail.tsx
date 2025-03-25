@@ -18,6 +18,7 @@ interface DetailField {
   isVideo?: boolean
   isID?: boolean
   isStatus?: boolean
+  isName?: boolean
 }
 
 interface DetailWidget {
@@ -113,6 +114,14 @@ export default function DetailPopup({ isOpen, onClose, title, fields, widgets, a
               } else {
                 // CHANGED: Nếu không thuộc các kiểu đặc biệt, ép về React.ReactNode
                 displayValue = field.value as React.ReactNode
+              }
+
+              if (field.isName) {
+                displayValue = (
+                  <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold">
+                    {displayValue}
+                  </span>
+                )
               }
 
               return (

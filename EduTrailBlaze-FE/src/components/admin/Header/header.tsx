@@ -20,7 +20,7 @@ import { jwtDecode } from 'jwt-decode'
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-function AdminHeader({ isCollapsed }: { isCollapsed: boolean }) {
+function AdminHeader() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
   const [userName, setUserName] = React.useState('')
   const [userId, setUserId] = React.useState('')
@@ -57,27 +57,27 @@ function AdminHeader({ isCollapsed }: { isCollapsed: boolean }) {
       position='static'
       sx={{
         zIndex: 1300,
-        marginLeft: isCollapsed ? '57px' : '200px',
-        width: `calc(100% - ${isCollapsed ? 57 : 200}px)`
+        // marginLeft: isCollapsed ? '57px' : '200px',
+        // width: `calc(100% - ${isCollapsed ? 57 : 200}px)`
+          marginLeft: '200px',
+        width: 'calc(100% - 200px)'
       }}
     >
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Typography
-            variant='h6'
-            noWrap
-            component='a'
-            href=''
-            sx={{
-              mr: 6,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 800,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none'
-            }}
-          >
+           variant='h6'
+           noWrap
+           sx={{
+             mr: 6,
+             display: { xs: 'none', md: 'flex' },
+             fontFamily: 'monospace',
+             fontWeight: 800,
+             letterSpacing: '.2rem',
+             color: 'inherit',
+             textDecoration: 'none'
+           }}
+         >
             {/* <img alt='' src='/assets/logos/ETB_Logo.png' className='w-40 h-30' /> */}
             <Link href={'/admin_dashboard'}>EduTrailBlaze</Link>
           </Typography>
