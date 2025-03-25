@@ -6,11 +6,11 @@ import { RxDotFilled } from 'react-icons/rx'
 
 export default function ImageSlider() {
   const slides = [
-    { url: '/assets/slides/pic1.jpg' },
-    { url: '/assets/slides/pic2.jpg' },
-    { url: '/assets/slides/pic3.jpg' },
-    { url: '/assets/slides/pic4.jpg' },
-    { url: '/assets/slides/pic5.jpg' }
+    { url: 'https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871948/pic4_x7vp9z.jpg' },
+    { url: 'https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871947/pic2_cr8s7t.jpg' },
+    { url: 'https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871948/pic5_ttmpzn.jpg' },
+    { url: 'https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871947/pic3_l9y6j6.jpg' },
+    { url: 'https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871947/pic1_chwtte.jpg' }
   ]
 
   const [currentIndex, setCurrentIndex] = useState(0)
