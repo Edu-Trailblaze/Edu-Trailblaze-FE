@@ -16,7 +16,7 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
-  const [postVideo] = usePostVideoMutation()
+  const [postVideo, { isLoading: createLoading }] = usePostVideoMutation()
   const {
     data: videoData,
     isLoading: videoDataLoading,
@@ -72,7 +72,7 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
     setIsVideoModalOpen(true)
   }
 
-  const handleCloseModal = () => { 
+  const handleCloseModal = () => {
     setIsVideoModalOpen(false)
   }
   return (
@@ -185,14 +185,14 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
               Edit Video
             </button>
           ) : (
-            <button
+            <Button
               onClick={handlePostVideo}
-              type='button'
+              isLoading={createLoading}
               className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150'
             >
               <Check />
               Save changes
-            </button>
+            </Button>
           )}
         </div>
         <Modal
@@ -204,7 +204,7 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
           shouldCloseOnOverlayClick={true}
           shouldCloseOnEsc={true}
         >
-          <VideoEditForm lectureId={lectureId}/>
+          <VideoEditForm lectureId={lectureId} />
         </Modal>
       </div>
     </>
