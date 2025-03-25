@@ -74,6 +74,7 @@ interface ICourseDetails {
   createdAt: string
   estimatedCompletionTime: number
   updatedAt: string
+  prerequisites?:string
 }
 interface ICourseFull {
   courseDetails?: ICourseDetails

@@ -528,7 +528,7 @@ export default function CoursesManagement() {
               label: 'Difficulty',
               value: [
                 {
-                  label: detailData.courseDetails?.difficultyLevel,
+                  label: detailData.courseDetails?.difficultyLevel??'N/A',
                   color:
                     detailData.courseDetails?.difficultyLevel === 'Beginner'
                       ? 'green'
@@ -550,11 +550,11 @@ export default function CoursesManagement() {
           widgets={[
             {
               label: 'Description',
-              content: detailData.courseDetails?.description
+              content: detailData.courseDetails?.description ?? 'No description available'
             },
             {
               label: 'Prerequisites',
-              content: detailData.courseDetails?.prerequisites
+              content: detailData.courseDetails?.prerequisites ?? 'No prerequisites available'
             },
             {
                 label: 'Learning Outcomes',
