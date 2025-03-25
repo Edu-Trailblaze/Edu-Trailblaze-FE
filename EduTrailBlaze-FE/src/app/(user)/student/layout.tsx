@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import WebHeader from '@/components/global/header/header'
 import WebFooter from '@/components/global/footer/footer'
+import CustomerGuard from '@/components/global/CustomerGuard'
 
 export const metadata: Metadata = {
   title: 'Edutrail Blaze',
@@ -13,10 +14,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <>
+    <CustomerGuard>
       <WebHeader />
       <div className='min-h-screen'>{children}</div>
       <WebFooter />
-    </>
+    </CustomerGuard>
   )
 }
