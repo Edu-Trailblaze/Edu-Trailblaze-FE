@@ -10,7 +10,7 @@ export default function MakeDiffer() {
       </div>
       <div className='flex justify-evenly pt-28'>
         <div className='text-center'>
-          <img src='/assets/logos/personalized_learning.png' alt='' className='rounded-[50%] h-[180px] ml-[60px]'></img>
+          <img src='https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871611/personalized_learning_jw0jyy.png' alt='' className='rounded-[50%] h-[180px] ml-[60px]'></img>
           <h1 className='text-xl font-semibold mt-2 mb-7'>Personalized learning</h1>
           <p className='w-[300px]'>
             Students practice at their own pace, first filling in gaps in their understanding and then accelerating
@@ -18,7 +18,7 @@ export default function MakeDiffer() {
           </p>
         </div>
         <div className='text-center'>
-          <img src='/assets/logos/trusted_content.png' alt='' className='rounded-[50%] h-[180px] ml-[60px]'></img>
+          <img src='https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871622/trusted_content_qwjrdp.png' alt='' className='rounded-[50%] h-[180px] ml-[60px]'></img>
           <h1 className='text-xl font-semibold mt-2 mb-7'>Trusted content</h1>
           <p className='w-[300px]'>
             Created by experts, EduTrailBlaze’s library of trusted practice and lessons covers math, science, and more.
@@ -26,7 +26,7 @@ export default function MakeDiffer() {
           </p>
         </div>
         <div className='text-center'>
-          <img src='/assets/logos/tool_teacher.avif' alt='' className='rounded-[50%] h-[180px] ml-[60px]'></img>
+          <img src='https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871644/tool_teacher_b1qfcj.avif' alt='' className='rounded-[50%] h-[180px] ml-[60px]'></img>
           <h1 className='text-xl font-semibold mt-2 mb-7'>Tools to empower teachers</h1>
           <p className='w-[300px]'>
             With EduTrailBlaze, teachers can identify gaps in their students’ understanding, tailor instruction, and
