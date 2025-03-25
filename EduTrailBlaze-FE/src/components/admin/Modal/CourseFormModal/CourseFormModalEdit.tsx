@@ -9,19 +9,21 @@ import Button from '@/components/global/Button/Button'
 import InputFile from '@/components/global/Input/InputFile'
 
 type Course = {
-  id?: number
+  id: number
   title: string
-  imageURL: string
   introURL?: string
+  imageURL: string
   description: string
-  duration: number
   price: number
+  duration: number
   difficultyLevel: string
-  createdBy: string
-  prerequisites: string
   learningOutcomes: string[]
-  isPublished?: string 
-
+  prerequisites: string
+  createdBy?: string
+  createdAt?: string
+  updatedAt?: string
+  updatedBy?: string
+  approvalStatus?: string
 }
 
 type CourseFormModalEditProps = {
@@ -43,13 +45,13 @@ export default function CourseFormModalEdit({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('formValues khi submit:', formValues); 
+    console.log('formValues khi submit:', formValues)
     onSubmit(formValues)
   }
 
   useEffect(() => {
     if (initialValues) {
-      console.log('initialValues trong form edit:', initialValues); 
+      console.log('initialValues trong form edit:', initialValues)
       setFormValues(initialValues)
     }
   }, [initialValues])
@@ -177,7 +179,6 @@ export default function CourseFormModalEdit({
             }}
             noLayout
           />
-
         </Box>
 
         <Box display='flex' justifyContent='flex-end' gap={2} mt={3}>
