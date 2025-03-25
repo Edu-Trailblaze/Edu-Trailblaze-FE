@@ -12,7 +12,7 @@ type Course = {
   id?: number
   title: string
   imageURL: string
-  introURL: string
+  introURL?: string
   description: string
   duration: number
   price: number

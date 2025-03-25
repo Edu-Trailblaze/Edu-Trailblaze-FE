@@ -108,6 +108,7 @@ interface CreateCourseResponse {
 interface Course {
   id: number
   title: string
+  introURL?:string
   imageURL: string
   description: string
   price: number
