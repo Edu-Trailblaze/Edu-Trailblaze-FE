@@ -24,8 +24,8 @@ import VoucherSort from '../../../../../components/admin/Filter/VoucherSortFilte
 import VoucherFilter from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherFilter'
 //modal
 import DetailPopup from '@/components/global/Popup/PopupDetail'
-import VoucherFormModalCreate from '@/components/admin/modal/VoucherFormModal/VoucherFormModalCreate' 
-import VoucherFormModalEdit from '@/components/admin/modal/VoucherFormModal/VoucherFormModalEdit' 
+import VoucherFormModalCreate from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalCreate' 
+import VoucherFormModalEdit from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalEdit' 
 
 //icon
 import EditIcon from '@mui/icons-material/Edit'

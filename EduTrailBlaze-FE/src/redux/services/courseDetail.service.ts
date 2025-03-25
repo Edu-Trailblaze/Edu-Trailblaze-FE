@@ -108,7 +108,7 @@ export const courseApi = createApi({
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     }),
 
-    deleteCourse: build.mutation<void, number>({ // <-- MỚI
+    deleteCourse: build.mutation<void, number>({ 
       query: (courseId) => ({
         url: `Course?courseId=${courseId}`,
         method: 'DELETE'

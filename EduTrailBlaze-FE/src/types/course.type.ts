@@ -74,6 +74,7 @@ interface ICourseDetails {
   createdAt: string
   estimatedCompletionTime: number
   updatedAt: string
+  prerequisites?:string
 }
 interface ICourseFull {
   courseDetails?: ICourseDetails
@@ -107,6 +108,7 @@ interface CreateCourseResponse {
 interface Course {
   id: number
   title: string
+  introURL?:string
   imageURL: string
   description: string
   price: number
