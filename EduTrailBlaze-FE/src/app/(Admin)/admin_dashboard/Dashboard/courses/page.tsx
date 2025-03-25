@@ -233,28 +233,12 @@ export default function CoursesManagement() {
       if (newCourse.introURL) {
         formData.append('IntroURL', newCourse.introURL)
       }
-  
-      // 1. Tạo Course
-      // const response = await axios.post(API_URL, formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // })
-      // const createdCourse = response.data
+
       
       const createdCourse = await addCourseMutation(formData).unwrap()
       // const courseId = createdCourse.id // ID của course vừa tạo
       const courseId = createdCourse.data.courseId // ID của course vừa tạo
 
-      // 2. Tạo CourseTag cho mỗi tagId đã chọn
-      // await Promise.all(
-      //   selectedTagIds.map((tagId) =>
-      //     axios.post('https://edu-trailblaze.azurewebsites.net/api/CourseTag', {
-      //       courseId,
-      //       tagId
-      //     })
-      //   )
-      // )
 
       await Promise.all(
         selectedTagIds.map((tagId) =>
@@ -480,12 +464,12 @@ export default function CoursesManagement() {
             </div>
 
             {/* ADD */}
-            <button
+            {/* <button
               className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
               onClick={() => setAddModalOpen(true)}
             >
               <Plus size={18} />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
