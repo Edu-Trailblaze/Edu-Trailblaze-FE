@@ -211,7 +211,7 @@ import { usePathname } from "next/navigation"
 const generalRoutes = [ "news", "courses", "orders", "vouchers", "reviews", "users"]
 const generalTranslations = ["News", "Courses", "Orders", "Vouchers", "Reviews", "Users"]
 const generalIcons = [
-  <EqualizerIcon key="analytics" fontSize="small" />,
+  // <EqualizerIcon key="analytics" fontSize="small" />,
   <NewspaperIcon key="news" fontSize="small" />,
   <SchoolIcon key="courses" fontSize="small" />,
   <ShoppingCartIcon key="orders" fontSize="small" />,
