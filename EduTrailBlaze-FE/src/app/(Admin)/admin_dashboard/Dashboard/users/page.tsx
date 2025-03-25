@@ -52,7 +52,7 @@ const userFields: { label: string; accessor: keyof User }[] = [
   { label: 'Phone Number', accessor: 'phoneNumber' },
   { label: 'Role', accessor: 'role' },
   { label: 'Balance', accessor: 'balance' },
-  { label: 'Profile Picture', accessor: 'profilePictureUrl' }
+  { label: 'Profile', accessor: 'profilePictureUrl' }
 ]
 
 export default function UserManagement() {
@@ -185,13 +185,79 @@ export default function UserManagement() {
     }
   }
 
+  function getRoleStyle(role: string) {
+    switch (role) {
+      case 'Admin':
+        return {
+          backgroundColor: '#FF0000',
+          color: 'white',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          marginRight: '6px',
+          marginBottom: '6px',
+          display: 'inline-block'
+        }
+      case 'Student':
+        return {
+          backgroundColor: '#8FD3FE',
+          color: 'white',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          marginRight: '6px',
+          marginBottom: '6px',
+          display: 'inline-block'
+        }
+      case 'Instructor':
+        return {
+          backgroundColor: 'green',
+          color: 'white',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          marginRight: '6px',
+          marginBottom: '6px',
+          display: 'inline-block'
+        }
+      case 'Customer':
+        return {
+          backgroundColor: '#FDD97C',
+          color: 'white',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          marginRight: '6px',
+          marginBottom: '6px',
+          display: 'inline-block'
+        }
+      default:
+        return {
+          backgroundColor: 'gray',
+          color: 'white',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          marginRight: '6px',
+          marginBottom: '6px',
+          display: 'inline-block'
+        }
+    }
+  }
+
   const renderRow = (user: User) => (
     <TableRow key={user.id} hover onClick={() => handleDetail(user)}>
       {visibleColumns['fullName'] && <TableCell>{user.fullName}</TableCell>}
       {visibleColumns['email'] && <TableCell>{user.email}</TableCell>}
       {visibleColumns['phoneNumber'] && <TableCell>{user.phoneNumber}</TableCell>}
-      {visibleColumns['role'] && <TableCell>{user.role.join(', ')}</TableCell>}
-      {visibleColumns['balance'] && <TableCell>{user.balance}</TableCell>}
+      {visibleColumns['role'] && (
+      <TableCell>
+        <div style={{ whiteSpace: 'pre' }}>
+          {user.role.map((r, idx) => (
+            <span key={idx} style={getRoleStyle(r)}>
+              {r}
+              {idx < user.role.length - 1 ? '\n' : ''}
+            </span>
+          ))}
+        </div>
+      </TableCell>
+    )} 
+   {visibleColumns['balance'] && <TableCell>{user.balance}</TableCell>}
       {visibleColumns['profilePictureUrl'] && (
         <TableCell>
           <img
@@ -287,24 +353,64 @@ export default function UserManagement() {
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
 
       {selectedUser && (
-        <DetailPopup
-          isOpen={true}
-          onClose={() => setSelectedUser(null)}
-          title='User Detail'
-          fields={[
-            { label: 'User Name', value: selectedUser.userName },
-            { label: 'Email', value: selectedUser.email },
-            { label: 'Full Name', value: selectedUser.fullName },
-            { label: 'Phone Number', value: selectedUser.phoneNumber },
-            { label: 'Role', value: selectedUser.role },
-            { label: 'Balance', value: selectedUser.balance },
-            {
-              label: 'Profile Picture',
-              value: (
-                <img src={selectedUser.profilePictureUrl} alt='Profile' className='w-16 h-16 object-cover rounded' />
-              )
-            }
-          ]}
+  <DetailPopup
+    isOpen={true}
+    onClose={() => setSelectedUser(null)}
+    title='User Detail'
+    fields={[
+      {
+        label: 'User Name',
+        value: selectedUser.userName || 'N/A'
+      },
+      {
+        label: 'Email',
+        value: selectedUser.email || 'N/A'
+      },
+      {
+        label: 'Full Name',
+        value: selectedUser.fullName || 'N/A'
+      },
+      {
+        label: 'Phone Number',
+        value: selectedUser.phoneNumber || 'N/A'
+      },
+      {
+        label: 'Role',
+        value:
+          selectedUser.role && selectedUser.role.length > 0
+            ? selectedUser.role.map((r) => ({
+                label: r,
+                color:
+                  r === 'Admin'
+                    ? '#FF0000'
+                    : r === 'Student'
+                    ? '#8FD3FE'
+                    : r === 'Instructor'
+                    ? 'green'
+                    : r === 'Customer'
+                    ? '#FDD97C'
+                    : 'gray'
+              }))
+            : [{ label: 'N/A', color: 'gray' }],
+        isStatus: true
+      },
+      {
+        label: 'Balance',
+        value: selectedUser.balance ?? 'N/A'
+      },
+      {
+        label: 'Profile Image',
+        value: selectedUser.profilePictureUrl ? (
+          <img
+            src={selectedUser.profilePictureUrl}
+            alt='Profile'
+            className='w-16 h-16 object-cover rounded'
+          />
+        ) : (
+          'N/A'
+        )
+      }
+    ]}
           // actions={[
           //   {
           //     label: 'Assign role',
