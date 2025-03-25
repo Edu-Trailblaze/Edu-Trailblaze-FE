@@ -16,6 +16,10 @@ import Link from 'next/link'
 import ToggleButton from '@/components/global/toggle_button/toggle_button'
 import { useTheme } from '@mui/material'
 import { jwtDecode } from 'jwt-decode'
+import { useDispatch } from 'react-redux'
+import { useRouter } from 'next/navigation'
+import { logout } from '@/redux/slice/auth.slice'
+import { toast } from 'react-toastify'
 
 const pages = ['Products', 'Pricing', 'Blog']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
@@ -23,6 +27,8 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 function AdminHeader() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
   const [userName, setUserName] = React.useState('')
+  const dispatch = useDispatch()
+  const router = useRouter()
   const [userId, setUserId] = React.useState('')
   const { data: session } = useSession()
   const theme = useTheme()
@@ -44,12 +50,20 @@ function AdminHeader() {
     }
   }, [])
 
+  console.log(userName)
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
   }
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null)
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    toast.success('Logout successful! Redirecting to Login...')
+    router.push('/auth/login_register')
   }
 
   return (
@@ -59,25 +73,25 @@ function AdminHeader() {
         zIndex: 1300,
         // marginLeft: isCollapsed ? '57px' : '200px',
         // width: `calc(100% - ${isCollapsed ? 57 : 200}px)`
-          marginLeft: '200px',
+        marginLeft: '200px',
         width: 'calc(100% - 200px)'
       }}
     >
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Typography
-           variant='h6'
-           noWrap
-           sx={{
-             mr: 6,
-             display: { xs: 'none', md: 'flex' },
-             fontFamily: 'monospace',
-             fontWeight: 800,
-             letterSpacing: '.2rem',
-             color: 'inherit',
-             textDecoration: 'none'
-           }}
-         >
+            variant='h6'
+            noWrap
+            sx={{
+              mr: 6,
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'monospace',
+              fontWeight: 800,
+              letterSpacing: '.2rem',
+              color: 'inherit',
+              textDecoration: 'none'
+            }}
+          >
             {/* <img alt='' src='/assets/logos/ETB_Logo.png' className='w-40 h-30' /> */}
             <Link href={'/admin_dashboard'}>EduTrailBlaze</Link>
           </Typography>
@@ -134,10 +148,8 @@ function AdminHeader() {
                   <Typography textAlign='center'>Profile</Typography>
                 </Link>
               </MenuItem>
-              <MenuItem onClick={() => (session ? signOut() : '')}>
-                <Typography sx={{ textAlign: 'center' }}>
-                  {session ? 'Logout' : <Link href={'/auth/login_register'}>Login</Link>}
-                </Typography>
+              <MenuItem onClick={() => handleLogout()}>
+                <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
               </MenuItem>
             </Menu>
           </Box>
