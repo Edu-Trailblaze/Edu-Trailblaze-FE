@@ -3,23 +3,19 @@ import { Modal, Box, Typography, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@/components/global/Button/Button'
 import InputSelect from '@/components/global/Input/InputSelect'
-import { CourseApprovalStatus } from '@/types/course.type'
+// import { CourseApprovalStatus } from '@/types/course.type'
 
+type CourseApprovalStatus = 'Approved' | 'Rejected' | 'Pending'
 interface StatusModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (newStatus: CourseApprovalStatus) => void
-  currentStatus?: CourseApprovalStatus  // giá trị ban đầu
+  currentStatus?: CourseApprovalStatus // giá trị ban đầu
 }
 
 const STATUS_OPTIONS: CourseApprovalStatus[] = ['Approved', 'Rejected', 'Pending']
 
-export default function StatusModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  currentStatus = 'Pending'
-}: StatusModalProps) {
+export default function StatusModal({ isOpen, onClose, onSubmit, currentStatus = 'Pending' }: StatusModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<CourseApprovalStatus>(currentStatus)
 
   useEffect(() => {
@@ -33,11 +29,7 @@ export default function StatusModal({
   }
 
   return (
-    <Modal
-      open={isOpen}
-      onClose={onClose}
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-    >
+    <Modal open={isOpen} onClose={onClose} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Box
         sx={{
           width: '100%',
@@ -53,22 +45,12 @@ export default function StatusModal({
         }}
       >
         {/* Icon Close giống form edit */}
-        <IconButton
-          onClick={onClose}
-          sx={{ position: 'absolute', top: 12, right: 12, color: 'gray' }}
-        >
+        <IconButton onClick={onClose} sx={{ position: 'absolute', top: 12, right: 12, color: 'gray' }}>
           <CloseIcon />
         </IconButton>
 
         {/* Tiêu đề giống form edit */}
-        <Typography
-          variant='h4'
-          component='h2'
-          align='left'
-          fontWeight='bold'
-          gutterBottom
-          sx={{ mb: '30px' }}
-        >
+        <Typography variant='h4' component='h2' align='left' fontWeight='bold' gutterBottom sx={{ mb: '30px' }}>
           UPDATE STATUS
         </Typography>
 

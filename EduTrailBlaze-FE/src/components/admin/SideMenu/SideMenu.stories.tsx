@@ -1,4 +1,4 @@
-import SideMenu from '@/components/admin/SideMenu/sideMenu'
+import SideMenu from '@/components/admin/SideMenu/sidemenu'
 
 import React from 'react'
 

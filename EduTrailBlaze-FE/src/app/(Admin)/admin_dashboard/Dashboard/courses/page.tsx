@@ -7,7 +7,7 @@ import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 // React, libs
-import {jwtDecode} from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
 import { TableRow, TableCell } from '@mui/material'
@@ -22,20 +22,20 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import Pagination from '@/components/admin/Pagination/Pagination'
 import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
-import CourseFormModalCreate from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalCreate'
-import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalEdit' 
+import CourseFormModalCreate from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalCreate'
+import CourseFormModalEdit from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalEdit'
 import DetailPopup from '@/components/global/Popup/PopupDetail'
-import StatusModal from '@/components/admin/Modal/CourseFormModal/CourseStatusModal'
+import StatusModal from '@/components/admin/modal/CourseFormModal/CourseStatusModal'
 //icon
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot } from 'lucide-react'
 
 //type
-// import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type' 
+// import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type'
 
-interface Course {
+export interface Course {
   id: number
   title: string
-  introURL?:string
+  introURL?: string
   imageURL: string
   description: string
   price: number
@@ -46,23 +46,26 @@ interface Course {
   createdBy?: string
   createdAt?: string
   updatedAt?: string
-  updatedBy?: string;  
-  approvalStatus?:string;
-
+  updatedBy?: string
+  approvalStatus?: string
 }
 
-
-interface CourseCreate  {
+export interface CourseCreate {
+  id: number
   title: string
+  introURL?: string
   imageURL: string
-  introURL: string
-  duration:number
   description: string
   price: number
+  duration: number
   difficultyLevel: string
-  createdBy: string
-  prerequisites: string
   learningOutcomes: string[]
+  prerequisites: string
+  createdBy?: string
+  createdAt?: string
+  updatedAt?: string
+  updatedBy?: string
+  approvalStatus?: string
 }
 
 interface ApproveCourseRequest {
@@ -70,28 +73,24 @@ interface ApproveCourseRequest {
   status: CourseApprovalStatus
 }
 
-
 //redux
- import { useAddCourseTagMutation } from '@/redux/services/courseTag.service'
- import { useLazyGetReviewInfoQuery } from '@/redux/services/review.service'
- import {
-   useGetCoursePagingQuery,
-   useGetCourseQuery ,
-   useGetCourseDetailsQuery,
-   useAddCourseMutation,
-   useUpdateCourseMutation,
-   useDeleteCourseMutation,
-   useApproveCourseMutation,
-   useApproveCourseByAIMutation 
- } from '@/redux/services/courseDetail.service'
+import { useAddCourseTagMutation } from '@/redux/services/courseTag.service'
+import { useLazyGetReviewInfoQuery } from '@/redux/services/review.service'
+import {
+  useGetCoursePagingQuery,
+  useGetCourseQuery,
+  useGetCourseDetailsQuery,
+  useAddCourseMutation,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation,
+  useApproveCourseMutation,
+  useApproveCourseByAIMutation
+} from '@/redux/services/courseDetail.service'
 
-
-
-
-type CourseKey = Extract<keyof Course, string>;
+type CourseKey = Extract<keyof Course, string>
 
 // const courseFields: { label: string; accessor: keyof Course }[] = [
-  const courseFields: { label: string; accessor: CourseKey }[] = [
+const courseFields: { label: string; accessor: CourseKey }[] = [
   { label: 'ID', accessor: 'id' },
   { label: 'Title', accessor: 'title' },
   { label: 'Price', accessor: 'price' },
@@ -100,9 +99,6 @@ type CourseKey = Extract<keyof Course, string>;
   { label: 'Status', accessor: 'approvalStatus' },
   { label: 'Created at', accessor: 'createdAt' }
 ]
-
-
-
 
 export default function CoursesManagement() {
   const dispatch = useDispatch()
@@ -118,9 +114,9 @@ export default function CoursesManagement() {
   const [statusCourseId, setStatusCourseId] = useState<number | null>(null)
   const [statusCurrent, setStatusCurrent] = useState<CourseApprovalStatus>('Pending')
 
- //filter&sort 
- const [isFilterOpen, setFilterOpen] = useState(false)
- const [isSortOpen, setSortOpen] = useState(false)
+  //filter&sort
+  const [isFilterOpen, setFilterOpen] = useState(false)
+  const [isSortOpen, setSortOpen] = useState(false)
 
   //redux filter
   const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
@@ -147,9 +143,9 @@ export default function CoursesManagement() {
     difficultyLevel: '',
     createdBy: '',
     prerequisites: '',
-    learningOutcomes: []
+    learningOutcomes: [],
+    id: Date.now()
   })
-
 
   //pagination
   const [pageIndex, setPageIndex] = useState(1)
@@ -162,10 +158,14 @@ export default function CoursesManagement() {
     isLoading,
     isError
   } = useGetCoursePagingQuery({
-     PageIndex: pageIndex,
-     PageSize: pageSize
+    PageIndex: pageIndex,
+    PageSize: pageSize
   })
-  const { data: detailData, isLoading: detailLoading, isError: detailError } = useGetCourseDetailsQuery(selectedCourseId ?? 0, {
+  const {
+    data: detailData,
+    isLoading: detailLoading,
+    isError: detailError
+  } = useGetCourseDetailsQuery(selectedCourseId ?? 0, {
     skip: selectedCourseId === null
   })
   const [addCourseMutation] = useAddCourseMutation()
@@ -173,37 +173,36 @@ export default function CoursesManagement() {
   const [deleteCourseMutation] = useDeleteCourseMutation()
   const [addCourseTag] = useAddCourseTagMutation()
   const [approveCourse] = useApproveCourseMutation()
-  const [approveCourseByAI] = useApproveCourseByAIMutation();
+  const [approveCourseByAI] = useApproveCourseByAIMutation()
 
   const [triggerGetReviewInfo, { data: reviewData, isFetching: isReviewFetching }] = useLazyGetReviewInfoQuery()
 
-   useEffect(() => {
-       const token = localStorage.getItem('accessToken')
-       if (token) {
-         try {
-           const decoded: any = jwtDecode(token)
-           setUserId(decoded?.sub ?? '')
-         } catch (error) {
-           console.error('Error decoding token:', error)
-           setUserId('')
-         }
-       }
-     }, [])
-
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token)
+        setUserId(decoded?.sub ?? '')
+      } catch (error) {
+        console.error('Error decoding token:', error)
+        setUserId('')
+      }
+    }
+  }, [])
 
   useEffect(() => {
-      if (pagingData?.items) {
-        setAllCourses(pagingData.items.map((item) => item.course))
-        setCourses(pagingData.items.map((item) => item.course))
-         }
-        if (pagingData?.totalPages) {
-          setTotalPages(pagingData.totalPages)
-        }
+    if (pagingData?.items) {
+      setAllCourses(pagingData.items.map((item) => item.course))
+      setCourses(pagingData.items.map((item) => item.course))
+    }
+    if (pagingData?.totalPages) {
+      setTotalPages(pagingData.totalPages)
+    }
   }, [pagingData])
 
   const handleDetail = async (course: Course) => {
     try {
-      setSelectedCourseId(course.id) 
+      setSelectedCourseId(course.id)
       await triggerGetReviewInfo(course.id!).unwrap()
     } catch (error) {
       console.error('Error fetching course review info:', error)
@@ -251,11 +250,11 @@ export default function CoursesManagement() {
   // }
 
   const handleAddCourse = async (newCourse: CourseCreate, selectedTagIds: number[]) => {
-     if (!userId) {
-         toast.error('User ID is not available!') 
-         return
-       }
-  
+    if (!userId) {
+      toast.error('User ID is not available!')
+      return
+    }
+
     try {
       const formData = new FormData()
       formData.append('Title', newCourse.title)
@@ -267,7 +266,7 @@ export default function CoursesManagement() {
       newCourse.learningOutcomes.forEach((outcome: string) => {
         formData.append('LearningOutcomes', outcome)
       })
-  
+
       if (newCourse.imageURL) {
         formData.append('ImageURL', newCourse.imageURL)
       }
@@ -275,18 +274,12 @@ export default function CoursesManagement() {
         formData.append('IntroURL', newCourse.introURL)
       }
 
-      
       const createdCourse = await addCourseMutation(formData).unwrap()
       // const courseId = createdCourse.id // ID của course vừa tạo
       const courseId = createdCourse.data.courseId // ID của course vừa tạo
 
+      await Promise.all(selectedTagIds.map((tagId) => addCourseTag({ courseId, tagId }).unwrap()))
 
-      await Promise.all(
-        selectedTagIds.map((tagId) =>
-          addCourseTag({ courseId, tagId }).unwrap()
-          )
-        )
-  
       toast.success('Course created successfully!')
       // setCourses([...courses, { ...createdCourse, createdAt: new Date().toISOString() }])
       // fetchCourses()
@@ -300,17 +293,15 @@ export default function CoursesManagement() {
     }
   }
 
-
-
   const handleEditCourse = (course: Course) => {
-    console.log('course trước khi edit:', course); 
+    console.log('course trước khi edit:', course)
 
     setEditCourse(course)
     setEditModalOpen(true)
   }
 
   const handleUpdateCourse = async (updatedCourse: Course) => {
-    console.log('updatedCourse khi update:', updatedCourse); 
+    console.log('updatedCourse khi update:', updatedCourse)
 
     if (
       !updatedCourse.title ||
@@ -322,10 +313,10 @@ export default function CoursesManagement() {
       return
     }
 
-     if (!userId) {
-       toast.error('User ID is not available!')
-       return
-     }
+    if (!userId) {
+      toast.error('User ID is not available!')
+      return
+    }
 
     try {
       const formData = new FormData()
@@ -335,11 +326,11 @@ export default function CoursesManagement() {
       formData.append('Price', updatedCourse.price.toString())
       formData.append('DifficultyLevel', updatedCourse.difficultyLevel)
       formData.append('Prerequisites', updatedCourse.prerequisites)
-  
+
       updatedCourse.learningOutcomes.forEach((outcome: string) => {
         formData.append('LearningOutcomes', outcome)
       })
-  
+
       if (updatedCourse.imageURL) {
         formData.append('ImageURL', updatedCourse.imageURL)
       }
@@ -349,7 +340,7 @@ export default function CoursesManagement() {
       formData.append('UpdatedBy', userId)
 
       await updateCourseMutation(formData).unwrap()
-  
+
       toast.success('Course updated successfully!')
       // setCourses(courses.map((course) => (course.id === updatedCourse.id ? updatedCourse : course)))
       setEditModalOpen(false)
@@ -359,7 +350,6 @@ export default function CoursesManagement() {
       toast.error('Failed to update course!')
     }
   }
-
 
   const handleDeleteCourse = async (courseId: number) => {
     if (!window.confirm('Are you sure you want to delete this course?')) return
@@ -376,7 +366,7 @@ export default function CoursesManagement() {
     }
   }
 
-    const handleApproveOrReject = async (courseId: number, newStatus: CourseApprovalStatus) => {
+  const handleApproveOrReject = async (courseId: number, newStatus: CourseApprovalStatus) => {
     try {
       await approveCourse({ courseId, status: newStatus }).unwrap()
       toast.success('Course status updated successfully!')
@@ -408,7 +398,7 @@ export default function CoursesManagement() {
 
   const renderRow = (course: Course) => {
     const transformed = transformStatus(course.approvalStatus)
-  
+
     return (
       <TableRow
         key={course.id}
@@ -421,14 +411,12 @@ export default function CoursesManagement() {
         {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
         {visibleColumns['duration'] && <TableCell>{course.duration}</TableCell>}
         {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
-  
+
         {/* Status */}
         {visibleColumns['approvalStatus'] && (
-          <TableCell sx={getStatusColor(transformed)}>
-            {transformed || 'N/A'}
-          </TableCell>
+          <TableCell sx={getStatusColor(transformed)}>{transformed || 'N/A'}</TableCell>
         )}
-  
+
         {visibleColumns['createdAt'] && (
           <TableCell>
             <FormatDateTime date={course.createdAt || ''} />
@@ -437,7 +425,7 @@ export default function CoursesManagement() {
       </TableRow>
     )
   }
-  
+
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
       <ToastContainer position='top-right' autoClose={3000} />
@@ -521,8 +509,8 @@ export default function CoursesManagement() {
           <Loader className='w-12 h-12 border-t-4 border-gray-300 border-solid rounded-full animate-spin' />
           <p className='mt-2 text-gray-500 text-sm'>Loading courses...</p>
         </div>
-        ) : isError ? (
-            <p className='text-red-500 text-sm'>Failed to load courses!</p>
+      ) : isError ? (
+        <p className='text-red-500 text-sm'>Failed to load courses!</p>
       ) : (
         <Table
           columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
@@ -541,24 +529,19 @@ export default function CoursesManagement() {
           title='Course Detail'
           fields={[
             { label: 'ID', value: selectedCourseId, isID: true },
-            { label: 'Instructor',
-              value: detailData.courseDetails?.instructors
-              ?.map((inst) => inst.fullname)
-              .join(', ') || 'No instructors',
-            isName:true
+            {
+              label: 'Instructor',
+              value: detailData.courseDetails?.instructors?.map((inst) => inst.fullname).join(', ') || 'No instructors',
+              isName: true
             },
             { label: 'Title', value: detailData.courseDetails?.title },
             {
               label: 'Duration',
-              value: detailData.courseDetails?.duration
-                ? detailData.courseDetails?.duration + ' hours'
-                : 'N/A'
+              value: detailData.courseDetails?.duration ? detailData.courseDetails?.duration + ' hours' : 'N/A'
             },
             {
               label: 'Price',
-              value: detailData.courseDetails?.price
-                ? detailData.courseDetails?.price  + ' $'
-                : 'N/A'
+              value: detailData.courseDetails?.price ? detailData.courseDetails?.price + ' $' : 'N/A'
             },
             { label: 'Enrollements', value: detailData.courseDetails?.enrollment?.totalEnrollments },
             { label: 'imageURL', value: detailData.courseDetails?.imageURL, isImage: true },
@@ -567,13 +550,13 @@ export default function CoursesManagement() {
               label: 'Difficulty',
               value: [
                 {
-                  label: detailData.courseDetails?.difficultyLevel??'N/A',
+                  label: detailData.courseDetails?.difficultyLevel ?? 'N/A',
                   color:
                     detailData.courseDetails?.difficultyLevel === 'Beginner'
                       ? 'green'
                       : detailData.courseDetails?.difficultyLevel === 'Intermediate'
-                      ? 'blue'
-                      : 'red'
+                        ? 'blue'
+                        : 'red'
                 }
               ],
               isStatus: true
@@ -596,16 +579,15 @@ export default function CoursesManagement() {
               content: detailData.courseDetails?.prerequisites ?? 'No prerequisites available'
             },
             {
-                label: 'Learning Outcomes',
-                content:
-                  detailData.courseDetails?.learningOutcomes?.join('\n') || 'No outcomes'
-              },
+              label: 'Learning Outcomes',
+              content: detailData.courseDetails?.learningOutcomes?.join('\n') || 'No outcomes'
+            },
             {
               label: 'Review Info',
               content: `Average Rating: ${
                 detailData.courseDetails?.review?.averageRating ?? 0
               }\nTotal Ratings: ${detailData.courseDetails?.review?.totalRatings ?? 0}`
-            },
+            }
             // {
             //   label: 'Section Details',
             //   content: detailData.sectionDetails
@@ -618,9 +600,7 @@ export default function CoursesManagement() {
             //     .join('\n') || 'No sections'
             // }
           ]}
-
           actions={[
-
             // {
             //   label: 'Change Status',
             //   icon: <RefreshCw style={{ color: '#F59E0B' }} />,
@@ -641,16 +621,16 @@ export default function CoursesManagement() {
               icon: <Bot style={{ color: '#14B8A6' }} />,
               onClick: async () => {
                 if (!selectedCourseId) {
-                  console.log('No course id => cannot approve by AI');
-                  return;
+                  console.log('No course id => cannot approve by AI')
+                  return
                 }
                 try {
                   // Gọi mutation RTK Query
-                  await approveCourseByAI(selectedCourseId).unwrap();
-                  toast.success('AI approval successful!');
+                  await approveCourseByAI(selectedCourseId).unwrap()
+                  toast.success('AI approval successful!')
                 } catch (error: any) {
-                  console.error('Error approving course by AI:', error);
-                  toast.error('Failed to approve course by AI!');
+                  console.error('Error approving course by AI:', error)
+                  toast.error('Failed to approve course by AI!')
                 }
               }
             },
@@ -659,7 +639,7 @@ export default function CoursesManagement() {
               label: 'Update',
               icon: <Pencil style={{ color: '#3B82F6' }} />,
               onClick: () => {
-                if (!detailData?.courseDetails) return;
+                if (!detailData?.courseDetails) return
 
                 const c: Course = {
                   id: selectedCourseId,
@@ -673,10 +653,9 @@ export default function CoursesManagement() {
                   updatedBy: '',
                   prerequisites: detailData.courseDetails.prerequisites ?? '',
                   learningOutcomes: detailData.courseDetails.learningOutcomes ?? []
+                }
 
-                };
-            
-                handleEditCourse(c);
+                handleEditCourse(c)
               }
             },
             {
@@ -684,13 +663,12 @@ export default function CoursesManagement() {
               icon: <Trash2 style={{ color: '#DC2626' }} />,
               onClick: () => {
                 if (!selectedCourseId) {
-                  console.log('No course id => cannot delete');
-                  return;
+                  console.log('No course id => cannot delete')
+                  return
                 }
-                handleDeleteCourse(selectedCourseId);
+                handleDeleteCourse(selectedCourseId)
               }
-            },
-            
+            }
           ]}
         />
       )}
