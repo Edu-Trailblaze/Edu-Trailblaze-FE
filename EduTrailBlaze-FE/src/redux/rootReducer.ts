@@ -54,6 +54,6 @@ export const rootReducer = combineReducers({
 
   [userCertificateApi.reducerPath]:userCertificateApi.reducer,
   [orderApi.reducerPath]:orderApi.reducer,
-  [dashboardApi.reducerPath]:dashboardApi.reducer
+  [dashboardApi.reducerPath]:dashboardApi.reducer,
   [chatAngentApi.reducerPath]: chatAngentApi.reducer
 })

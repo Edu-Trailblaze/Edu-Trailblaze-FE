@@ -44,6 +44,6 @@ export const apiMiddlewares: Middleware[] = [
 
   userCertificateApi.middleware,
   orderApi.middleware,
-  dashboardApi.middleware
+  dashboardApi.middleware,
   chatAngentApi.middleware
 ]
