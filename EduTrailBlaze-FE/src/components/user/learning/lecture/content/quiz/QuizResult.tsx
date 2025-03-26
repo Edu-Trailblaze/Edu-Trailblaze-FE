@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { usePostUserProgressMutation } from '../../../../../../redux/services/userProgress.service'
 import { toast } from 'react-toastify'
 
@@ -23,15 +23,16 @@ export default function QuizResult({
   nextLecutre
   // refetchUserProgress
 }: QuizResultProps) {
+  const hasShownToast = useRef(false)
   const [postUserProgress] = usePostUserProgressMutation()
 
   const handleUserProgress = async () => {
     try {
       await postUserProgress({ userId: userId, lectureId: lecture.id })
-      toast.success('Quiz completed!')
-      // if (refetchUserProgress) {
-      //   refetchUserProgress()
-      // }
+      if (!hasShownToast.current) {
+        toast.success('Quiz completed!')
+        hasShownToast.current = true
+      }
     } catch (error) {
       console.error('Error enrolling:', error)
     }

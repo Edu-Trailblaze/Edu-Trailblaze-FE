@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import {
   FileVideo,
   ChevronDown,
@@ -12,6 +12,8 @@ import {
   Lock
 } from 'lucide-react'
 import { useGetUserProgressQuery } from '../../../../../redux/services/userProgress.service'
+import { toast } from 'react-toastify'
+import { useParams, useRouter } from 'next/navigation'
 
 interface ModuleBarProps {
   decodedUserId: string
@@ -23,8 +25,6 @@ interface ModuleBarProps {
   setExpandedSections: React.Dispatch<React.SetStateAction<{ [key: number]: boolean }>>
   isSidebarOpen: boolean
   onCloseSidebar: () => void
-  // refetchUserProgress: () => void
-  // userProgress: UserProgressResponse[] | undefined
 }
 
 export default function LectureSideBar({
@@ -37,9 +37,10 @@ export default function LectureSideBar({
   setExpandedSections,
   isSidebarOpen,
   onCloseSidebar
-  // refetchUserProgress,
-  // userProgress
 }: ModuleBarProps) {
+  const router = useRouter()
+  const { courseURL } = useParams()
+  console.log('courseURL', courseURL)
   const { data: userProgress, isLoading: progressLoading } = useGetUserProgressQuery({ userId: decodedUserId })
 
   const toggleExpand = (index: number) => {
@@ -63,6 +64,38 @@ export default function LectureSideBar({
         })) || []
     return { ...section, lectures: sectionLectures }
   })
+
+  // Check if current lecture is the last lecture
+  const allLectures = processedSections.flatMap((section) => section.lectures)
+  const lastLecture = allLectures.at(-1) // Lấy phần tử cuối cùng của mảng
+  const isCurrentLectureLast = activeLectureId === lastLecture?.id
+
+  const isLastLectureCompleted = useMemo(() => {
+    return lastLecture && userProgress?.some((p) => p.lectureId === lastLecture.id && p.isCompleted)
+  }, [userProgress, lastLecture])
+
+  const hasShownToast = useRef(false)
+
+  useEffect(() => {
+    if (isCurrentLectureLast && isLastLectureCompleted && !hasShownToast.current) {
+      toast.success(
+        <div>
+          🎉 Congrats! You have completed the last lecture!
+          <button
+            onClick={() => router.push(`/student/course/${Number(courseURL)}`)}
+            className='bg-blue-500 text-white px-4 py-2 rounded mt-2'
+          >
+            Go to Course Details
+          </button>
+        </div>,
+        {
+          autoClose: 3000,
+          closeOnClick: false
+        }
+      )
+      hasShownToast.current = true // Đánh dấu đã hiển thị
+    }
+  }, [isCurrentLectureLast, isLastLectureCompleted])
 
   const getLectureIcon = (lectureType: string) => {
     switch (lectureType) {
@@ -94,6 +127,7 @@ export default function LectureSideBar({
         </button>
       </div>
 
+      {/* {isCurrentLectureLast && <p className='text-red-500 text-sm mt-2'>You are on the last lecture!</p>} */}
       {/* Sections List */}
       <div className='flex-1 overflow-y-auto'>
         {processedSections.map((section) => (
