@@ -132,11 +132,12 @@ interface CourseDetails {
 }
 
 interface InstructorCourseDetails {
-  courseId: string
+  courseId: number
   courseName: string
   courseImage: string
   completionPercentage: number
   createdAt: string
+  status: string
 }
 
 interface CourseResponseData {
