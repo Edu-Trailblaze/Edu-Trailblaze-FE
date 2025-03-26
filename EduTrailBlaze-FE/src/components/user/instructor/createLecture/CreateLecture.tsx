@@ -21,6 +21,8 @@ export default function CreateLecture({ sectionId }: LectureInfoProps) {
     duration: 0
   })
 
+  console.log('LectureInfo:', lectureInfo)
+
   const handleAddLecture = async () => {
     const formData = new FormData()
     formData.append('SectionId', String(lectureInfo.sectionId))

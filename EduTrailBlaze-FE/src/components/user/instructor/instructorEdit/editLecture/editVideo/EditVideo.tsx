@@ -17,7 +17,7 @@ export default function EditVideo({ lectureId }: VideoItemProp) {
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [videoPreview, setVideoPreview] = useState<string | null>(null)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
-  const [postVideo] = usePostVideoMutation()
+  const [postVideo, { isLoading: createLoading }] = usePostVideoMutation()
   const {
     data: videoData,
     isLoading: videoDataLoading,
