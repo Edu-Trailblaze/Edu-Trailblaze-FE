@@ -22,6 +22,7 @@ import { enrollApi } from './services/enroll.service'
 import { userProgressApi } from './services/userProgress.service'
 import { userCertificateApi } from './services/userCertificate.service'
 import { orderApi } from './services/order.service'
+import { dashboardApi } from './services/dashboard.service'
 import { chatAngentApi } from '@/redux/services/chatAi.service'
 
 export const rootReducer = combineReducers({
@@ -51,7 +52,8 @@ export const rootReducer = combineReducers({
   [userProgressApi.reducerPath]: userProgressApi.reducer,
   [enrollApi.reducerPath]: enrollApi.reducer,
 
-  [userCertificateApi.reducerPath]: userCertificateApi.reducer,
-  [orderApi.reducerPath]: orderApi.reducer,
+  [userCertificateApi.reducerPath]:userCertificateApi.reducer,
+  [orderApi.reducerPath]:orderApi.reducer,
+  [dashboardApi.reducerPath]:dashboardApi.reducer,
   [chatAngentApi.reducerPath]: chatAngentApi.reducer
 })

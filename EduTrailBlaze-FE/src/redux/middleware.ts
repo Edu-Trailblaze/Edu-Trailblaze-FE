@@ -20,6 +20,7 @@ import { userProgressApi } from './services/userProgress.service'
 
 import { userCertificateApi } from './services/userCertificate.service'
 import { orderApi } from './services/order.service'
+import { dashboardApi } from './services/dashboard.service'
 import { chatAngentApi } from '@/redux/services/chatAi.service'
 
 export const apiMiddlewares: Middleware[] = [
@@ -43,6 +44,6 @@ export const apiMiddlewares: Middleware[] = [
 
   userCertificateApi.middleware,
   orderApi.middleware,
-
+  dashboardApi.middleware,
   chatAngentApi.middleware
 ]
