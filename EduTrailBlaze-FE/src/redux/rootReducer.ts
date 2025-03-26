@@ -1,7 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 import courseReducer from './slice/course.slice'
 import cartReducer from './slice/cart.slice'
-import filterReducer from './slice/filter.slice'
 import { courseApi } from './services/courseDetail.service'
 import { courseTagApi } from './services/courseTag.service'
 import { authApi } from './services/auth.service'
@@ -24,6 +23,7 @@ import { userProgressApi } from './services/userProgress.service'
 import { userCertificateApi } from './services/userCertificate.service'
 import { orderApi } from './services/order.service'
 import { dashboardApi } from './services/dashboard.service'
+import { chatAngentApi } from '@/redux/services/chatAi.service'
 
 export const rootReducer = combineReducers({
   // Slice reducers
@@ -35,7 +35,7 @@ export const rootReducer = combineReducers({
 
   // API reducers
   [courseApi.reducerPath]: courseApi.reducer,
-  [courseTagApi.reducerPath]: courseTagApi.reducer, 
+  [courseTagApi.reducerPath]: courseTagApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [lectureApi.reducerPath]: lectureApi.reducer,
   [sectionApi.reducerPath]: sectionApi.reducer,
@@ -55,5 +55,5 @@ export const rootReducer = combineReducers({
   [userCertificateApi.reducerPath]:userCertificateApi.reducer,
   [orderApi.reducerPath]:orderApi.reducer,
   [dashboardApi.reducerPath]:dashboardApi.reducer
-
+  [chatAngentApi.reducerPath]: chatAngentApi.reducer
 })

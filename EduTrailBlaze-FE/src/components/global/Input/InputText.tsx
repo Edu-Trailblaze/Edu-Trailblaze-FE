@@ -6,8 +6,10 @@ interface InputTextProps {
   placeholder?: string
   value?: string
   onChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   type?: 'text' | 'textarea'
   rows?: number
+  disabled?: boolean
   subtitle?: string
   required?: boolean
   helperText?: string // Dùng để hiển thị nội dung tooltip động
@@ -23,6 +25,8 @@ export default function InputText({
   placeholder,
   value,
   onChange,
+  onKeyDown,
+  disabled,
   type = 'text',
   rows = 4,
   subtitle,
@@ -63,7 +67,9 @@ export default function InputText({
             name={name}
             placeholder={placeholder}
             value={value}
+            disabled={disabled}
             rows={rows}
+            onKeyDown={onKeyDown}
             onChange={onChange}
             className={inputClass}
           />
@@ -74,7 +80,9 @@ export default function InputText({
             type='text'
             placeholder={placeholder}
             value={value}
+            disabled={disabled}
             onChange={onChange}
+            onKeyDown={onKeyDown}
             className={`${inputClass} ${iconLeft ? 'pl-9' : ''}`}
           />
         )}

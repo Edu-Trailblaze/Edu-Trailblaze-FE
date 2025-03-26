@@ -7,9 +7,9 @@ import { StoreProvider } from '../providers/StoreProvider'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import Modal from 'react-modal';
-import { useEffect } from 'react';
-
+import Modal from 'react-modal'
+import { useEffect } from 'react'
+import MainWrapper from '@/app/MainWrapper'
 
 // export const metadata: Metadata = {
 //   title: 'EduTrailBlaze',
@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   useEffect(() => {
-    Modal.setAppElement('body'); 
-  },);
+    Modal.setAppElement('body')
+  })
   return (
     <html lang='en'>
       <body>
@@ -31,7 +31,7 @@ export default function RootLayout({
           <StoreProvider>
             <ToastContainer
               position='top-right'
-              autoClose={5000}
+              autoClose={3000}
               hideProgressBar={false}
               closeOnClick={false}
               pauseOnFocusLoss
@@ -39,7 +39,7 @@ export default function RootLayout({
               pauseOnHover
               theme='light'
             />
-            {children}
+            <MainWrapper>{children}</MainWrapper>
           </StoreProvider>
         </SessionProviderWrapper>
       </body>
