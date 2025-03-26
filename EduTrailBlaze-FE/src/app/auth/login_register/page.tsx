@@ -45,7 +45,7 @@ export default function LoginRegister() {
       dispatch(setCredentials(response.message.data))
 
       if (localStorage.getItem('role') === 'Admin') {
-        router.push('/admin_dashboard/Dashboard/courses')
+        router.push('/admin_dashboard/Dashboard')
       } else {
         router.push('/')
       }
