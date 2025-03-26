@@ -1,6 +1,6 @@
-import CreateForm from '@/components/user/instructor/CreateCourse/CreateForm'
+import CourseFields from '@/components/user/instructor/CreateCourse/Content/CourseFields'
 import React from 'react'
 
 export default function CreateCoursePage() {
-  return <CreateForm />
+  return <CourseFields />
 }
