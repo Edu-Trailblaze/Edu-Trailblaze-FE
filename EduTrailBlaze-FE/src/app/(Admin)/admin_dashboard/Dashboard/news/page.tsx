@@ -22,8 +22,8 @@ import NewsSort from '@/components/admin/Filter/NewsSortFilter/NewsSort'
 import NewsFilter from '@/components/admin/Filter/NewsSortFilter/NewsFilter'
 
 //modal
-import NewsFormModalEdit from '../../../../../components/admin/modal/NewsFormModal/NewsFormModalEdit'
-import NewsFormModalCreate from '../../../../../components/admin/modal/NewsFormModal/NewsFormModalCreate'
+import NewsFormModalEdit from '../../../../../components/admin/Modal/NewsFormModal/NewsFormModalEdit'
+import NewsFormModalCreate from '../../../../../components/admin/Modal/NewsFormModal/NewsFormModalCreate'
 
 // import DetailModal from '@/components/admin/Modal/DetailModal'
 import DetailPopup from '@/components/global/Popup/PopupDetail'
