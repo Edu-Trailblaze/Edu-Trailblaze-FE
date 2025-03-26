@@ -23,7 +23,18 @@ export const dashboardApi = createApi({
     // GET /api/AdminDashboard/total-courses-bought
     getTotalCoursesBought: builder.query<number, void>({
       query: () => 'AdminDashboard/total-courses-bought'
-    })
+    }),
+
+    getPendingCourses: builder.query<PendingCoursesResponse, { pageIndex?: number; pageSize?: number }>({
+      query: ({ pageIndex = 1, pageSize = 10 }) => ({
+        url: `AdminDashboard/pending-courses`,
+            method: 'GET',
+            params: {
+              pageIndex,
+              pageSize
+            }
+          })
+        }),
   })
 })
 
@@ -32,5 +43,6 @@ export const {
   useGetNumberOfInstructorsQuery,
   useGetNumberOfStudentsQuery,
   useGetTotalRevenueQuery,
-  useGetTotalCoursesBoughtQuery
+  useGetTotalCoursesBoughtQuery,
+  useGetPendingCoursesQuery
 } = dashboardApi

@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 
 
 export default function Dashboard() {
-  const router = useRouter();
+  // const router = useRouter();
 
 
   // Call each endpoint
@@ -243,12 +243,12 @@ export default function Dashboard() {
           <div className="lg:col-span-7 bg-white/80 backdrop-blur-sm rounded-lg border-0 shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-blue-900">Top Courses</h2>
-              <button
+              {/* <button
                 className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center"
                 onClick={() => router.push("/admin_dashboard/Dashboard/courses")}
               >
                 View All <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
+              </button> */}
             </div>
             <div className="space-y-4">
               {topCourses.map((course, idx) => {
