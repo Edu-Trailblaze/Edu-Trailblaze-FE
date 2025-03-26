@@ -231,7 +231,15 @@ export default function CourseHeader({
               </div>
               <p className='font-bold text-xl mb-1'>{courseDetails.difficultyLevel}</p>
               <p className='font-medium text-gray-800'>Difficulty</p>
-              <p className='text-sm text-gray-500 text-center'>Suitable for all levels</p>
+              <p className='text-sm text-gray-500 text-center'>
+                {courseDetails.difficultyLevel === 'Beginner'
+                  ? 'Perfect for newcomers with no prior experience'
+                  : courseDetails.difficultyLevel === 'Intermediate'
+                    ? 'Ideal for those with some foundational knowledge'
+                    : courseDetails.difficultyLevel === 'Advanced'
+                      ? 'Designed for experienced learners seeking mastery'
+                      : 'Suitable for all skill levels'}
+              </p>
             </div>
 
             <div className='flex flex-col items-center p-4 border-b sm:border-b md:border-b-0 md:border-r border-gray-200'>
