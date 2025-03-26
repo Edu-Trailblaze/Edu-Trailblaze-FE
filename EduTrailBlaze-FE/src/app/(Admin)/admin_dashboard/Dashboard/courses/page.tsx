@@ -7,6 +7,8 @@ import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 // React, libs
+import Link from 'next/link'
+import { useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
@@ -22,12 +24,13 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import Pagination from '@/components/admin/Pagination/Pagination'
 import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
-import CourseFormModalCreate from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalCreate'
-import CourseFormModalEdit from '../../../../../components/admin/modal/CourseFormModal/CourseFormModalEdit'
+import CourseFormModalCreate from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalCreate'
+import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalEdit'
 import DetailPopup from '@/components/global/Popup/PopupDetail'
-import StatusModal from '@/components/admin/modal/CourseFormModal/CourseStatusModal'
+import StatusModal from '../../../../../components/admin/Modal/CourseFormModal/CourseStatusModal'
+
 //icon
-import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot } from 'lucide-react'
+import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot, ListChecks  } from 'lucide-react'
 
 //type
 // import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type'
@@ -104,6 +107,7 @@ const courseFields: { label: string; accessor: CourseKey }[] = [
 
 export default function CoursesManagement() {
   const dispatch = useDispatch()
+
 
   //state
   const [userId, setUserId] = useState('')
@@ -436,6 +440,7 @@ export default function CoursesManagement() {
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
           <TableSearch />
           <div className='flex items-center gap-4 self-end'>
+          
             <div className='relative'>
               <button
                 className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
@@ -492,6 +497,15 @@ export default function CoursesManagement() {
                   onClear={() => dispatch(clearSortForTable(tableKey))}
                 />
               )}
+            </div>
+
+            <div className='relative'>
+              <Link
+                href="/admin_dashboard/Dashboard/courses/approve_pending"
+                className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
+              >
+                <ListChecks size={18} />
+              </Link>
             </div>
 
             {/* ADD */}
