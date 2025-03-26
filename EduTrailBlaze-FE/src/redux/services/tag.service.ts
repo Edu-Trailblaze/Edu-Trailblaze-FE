@@ -11,16 +11,16 @@ export const tagApi = createApi({
     getTag: build.query<ITag[], void>({
       query: () => ({
         url: `Tag`,
-        method: 'GET',
+        method: 'GET'
       })
     }),
     getInstructorSpecialties: build.query<InstructorSpecialties, string>({
       query: (userId) => ({
         url: `UserTag/GetUserTagByUserId/${userId}`,
-        method: 'GET',
+        method: 'GET'
       })
     }),
-    postTag: build.mutation<any, { userId: string; tagId: number[]}>({
+    postTag: build.mutation<any, { userId: string; tagId: number[] }>({
       query: (body) => ({
         url: `UserTag/AddOrUpdateTags`,
         method: 'POST',
@@ -28,7 +28,15 @@ export const tagApi = createApi({
       }),
       invalidatesTags: ['Tags']
     }),
+
+    getUserTagByUserId: build.query<{ userId: string; tag: number[] }, string>({
+      query: (userId) => ({
+        url: `UserTag/GetUserTagByUserId/${userId}`,
+        method: 'GET'
+      })
+    })
   })
 })
 
-export const { useGetTagQuery, useGetInstructorSpecialtiesQuery,usePostTagMutation } = tagApi
+export const { useGetTagQuery, useGetInstructorSpecialtiesQuery, usePostTagMutation, useGetUserTagByUserIdQuery } =
+  tagApi
