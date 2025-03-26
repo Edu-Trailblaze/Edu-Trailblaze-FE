@@ -44,9 +44,9 @@ export default function ProfilePage() {
   useEffect(() => {
     if (profile) {
       setFormData({
-        fullName: profile.fullName,
-        profilePicture: profile.profilePictureUrl,
-        phoneNumber: profile.phoneNumber
+        fullName: profile.fullName || '',
+        profilePicture: profile.profilePictureUrl || '',
+        phoneNumber: profile.phoneNumber || '',
       })
       setImagePreviewUrl(profile.profilePictureUrl)
     }
