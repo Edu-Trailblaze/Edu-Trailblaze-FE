@@ -267,12 +267,14 @@ const QuizCreator = ({ lectureId }: QuizItemProp) => {
                 />
               </div>
 
-              <div className='bg-white border rounded-md shadow-sm px-4 py-7 w-[28rem]'>
-                <label htmlFor='quiz-title' className='block text-sm font-semibold text-blue-800 mb-1'>
-                  LectureId
-                </label>
-                <div className='mt-1'>
-                  <div className='border rounded-md py-2 px-3 text-gray-500'>{quiz.lectureId}</div>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <div className='bg-white border rounded-md shadow-sm px-4 py-7 w-[455px]'>
+                  <label htmlFor='quiz-title' className='block text-sm font-semibold text-blue-800 mb-1'>
+                    LectureId
+                  </label>
+                  <div className='mt-2'>
+                    <div className='w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200'>{quiz.lectureId}</div>
+                  </div>
                 </div>
               </div>
 
