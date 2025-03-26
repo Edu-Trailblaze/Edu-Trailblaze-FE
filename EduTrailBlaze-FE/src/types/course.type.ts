@@ -132,11 +132,12 @@ interface CourseDetails {
 }
 
 interface InstructorCourseDetails {
-  courseId: string
+  courseId: number
   courseName: string
   courseImage: string
   completionPercentage: number
   createdAt: string
+  status: string
 }
 
 interface CourseResponseData {
@@ -248,4 +249,36 @@ type CourseApprovalStatus = 'Approved' | 'Rejected' | 'Pending'
 interface ApproveCourseRequest {
   courseId: number
   status: CourseApprovalStatus
+}
+
+
+interface IPendingCourseItem {
+  id: number
+  title: string
+  imageURL: string
+  description: string
+  price: number
+  duration: number
+  difficultyLevel: string
+  prerequisites: string
+  learningOutcomes: string[]
+  estimatedCompletionTime: number
+  createdAt: string
+  updatedAt: string
+  createdBy: string
+  updatedBy: string
+  isPublished: boolean
+  isDeleted: boolean
+  approvalStatus: string
+  isInstructorSpecialtyCourse: boolean
+}
+
+interface PendingCoursesResponse {
+  items: IPendingCourseItem[]
+  pageIndex: number
+  pageSize: number
+  totalCount: number
+  totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
 }

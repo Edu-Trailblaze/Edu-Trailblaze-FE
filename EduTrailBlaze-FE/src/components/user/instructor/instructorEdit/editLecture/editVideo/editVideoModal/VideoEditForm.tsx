@@ -102,7 +102,7 @@ export default function VideoEditForm({ lectureId }: VideoEditFormProps) {
         window.location.reload()
       }, 2000)
     } catch (error) {
-      setNotification({ show: true, message: 'Failed to update video.', type: 'error' })
+      setNotification({ show: true, message: 'Failed to update video. Missing some fields, please check again', type: 'error' })
     } finally {
       setIsSaving(false)
       setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000)

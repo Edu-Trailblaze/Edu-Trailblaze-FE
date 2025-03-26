@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Search, ChevronDown, Settings, HelpCircle, Lightbulb, Video, MessageCircle, MoreVertical } from 'lucide-react'
+import { Search, Settings, HelpCircle, Lightbulb, Video, MessageCircle, MoreVertical } from 'lucide-react'
 import CourseDisplay from './course/courseDisplay'
 import { jwtDecode } from 'jwt-decode'
 import { useGetTagQuery } from '@/redux/services/tag.service'
@@ -9,20 +9,24 @@ import LoadingPage from '@/components/animate/Loading/LoadingPage'
 import { Listbox } from '@headlessui/react'
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import * as signalR from '@microsoft/signalr'
+import Modal from 'react-modal'
+import '@/components/global/Modal/ReactModal.css'
+import Carousel from './courseRequirement/Carousel'
 
 export default function InstructorCourses() {
   const [userId, setUserId] = useState('')
   // const [sortOption, setSortOption] = useState('newest')
+  const [isModalOpen, setIsModelOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [tagSelected, setTagSelected] = useState<number | undefined>(undefined)
   const { data: tagData, isLoading: tagLoading, isFetching: tagFetching } = useGetTagQuery()
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
   interface Notification {
-    message: string;
-    imageUrl: string;
-    createdAt: string;
+    message: string
+    imageUrl: string
+    createdAt: string
   }
 
   useEffect(() => {
@@ -40,42 +44,45 @@ export default function InstructorCourses() {
 
     // Initialize SignalR connection
     const newConnection = new signalR.HubConnectionBuilder()
-    .withUrl("https://edu-trailblaze.azurewebsites.net/notifications-hub", {
-      accessTokenFactory: () => localStorage.getItem("accessToken") || "",
-    })
-    .withAutomaticReconnect()
-    .build();
-  
+      .withUrl('https://edu-trailblaze.azurewebsites.net/notifications-hub', {
+        accessTokenFactory: () => localStorage.getItem('accessToken') || ''
+      })
+      .withAutomaticReconnect()
+      .build()
 
-    setConnection(newConnection);
+    setConnection(newConnection)
 
     return () => {
-      newConnection.stop();
+      newConnection.stop()
     }
   }, [])
 
-useEffect(() => {
+  useEffect(() => {
     if (connection) {
       connection
         .start()
-        .then(() => console.log("Connected to SignalR!"))
-        .catch(err => console.error("SignalR Connection Failed", err));
+        .then(() => console.log('Connected to SignalR!'))
+        .catch((err) => console.error('SignalR Connection Failed', err))
 
-        connection.on("ReceiveNotification", (notification: Notification) => {
-          console.log("New Notification:", notification);
-          setNotifications(prev => [notification, ...prev]); // Add new notifications at the top
-        });
+      connection.on('ReceiveNotification', (notification: Notification) => {
+        console.log('New Notification:', notification)
+        setNotifications((prev) => [notification, ...prev]) // Add new notifications at the top
+      })
 
       return () => {
-        connection.off("ReceiveNotification");
-        connection.stop();
-      };
+        connection.off('ReceiveNotification')
+        connection.stop()
+      }
     }
-  }, [connection]);
+  }, [connection])
 
   const handleSearch = () => {
     // This function will trigger a search when called
     console.log('Searching for:', searchQuery)
+  }
+
+  const handleCloseModal = () => {
+    setIsModelOpen(false)
   }
 
   if (tagLoading || tagFetching) return <LoadingPage />
@@ -90,7 +97,7 @@ useEffect(() => {
             <button className='text-gray-500 hover:text-gray-700'>
               <Settings size={20} />
             </button>
-            <button className='text-gray-500 hover:text-gray-700'>
+            <button onClick={() => setIsModelOpen(true)} className='text-gray-500 hover:text-gray-700'>
               <HelpCircle size={20} />
             </button>
           </div>
@@ -249,27 +256,27 @@ useEffect(() => {
         <div className='mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
           <h2 className='text-xl font-bold text-gray-800 mb-4'>Recent Activity</h2>
           <div className='space-y-4'>
-          {notifications.length === 0 ? (
-          <p className='text-sm text-gray-500'>No recent activity</p>
-        ) : (
-          notifications.map((notif, index) => (
-            <div key={index} className='flex'>
-              <div className='flex-shrink-0 mr-3'>
-                <img
-                  src={notif.imageUrl || 'https://via.placeholder.com/32'} 
-                  alt="User Profile"
-                  className='h-8 w-8 rounded-full'
-                />
-              </div>
-              <div>
-                <p className='text-sm text-gray-600'>
-                  <span className='font-medium text-gray-900'>{notif.message}</span>
-                </p>
-                <p className='text-xs text-gray-500 mt-1'>{new Date(notif.createdAt).toLocaleString()}</p>
-              </div>
-            </div>
-          ))
-        )}
+            {notifications.length === 0 ? (
+              <p className='text-sm text-gray-500'>No recent activity</p>
+            ) : (
+              notifications.map((notif, index) => (
+                <div key={index} className='flex'>
+                  <div className='flex-shrink-0 mr-3'>
+                    <img
+                      src={notif.imageUrl || 'https://via.placeholder.com/32'}
+                      alt='User Profile'
+                      className='h-8 w-8 rounded-full'
+                    />
+                  </div>
+                  <div>
+                    <p className='text-sm text-gray-600'>
+                      <span className='font-medium text-gray-900'>{notif.message}</span>
+                    </p>
+                    <p className='text-xs text-gray-500 mt-1'>{new Date(notif.createdAt).toLocaleString()}</p>
+                  </div>
+                </div>
+              ))
+            )}
             {/*<div className='flex'>
               <div className='flex-shrink-0 mr-3'>
                 <div className='h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center'>
@@ -377,6 +384,28 @@ useEffect(() => {
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <Modal
+          key='unique-modal-key'
+          isOpen={isModalOpen}
+          onRequestClose={handleCloseModal}
+          className={'bg-transparent border-none p-0'}
+          overlayClassName='modal-overlay'
+          shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
+        >
+          <div style={{ height: '600px'}}>
+            <Carousel
+              baseWidth={400}
+              autoplay={true}
+              autoplayDelay={3000}
+              pauseOnHover={true}
+              loop={true}
+              round={false}
+            />
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

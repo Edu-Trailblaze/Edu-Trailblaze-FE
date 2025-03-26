@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 
-export default function RequestPaymentMethod() {
+export default function ApproveFail() {
   const [isVisible, setIsVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
@@ -35,11 +35,14 @@ export default function RequestPaymentMethod() {
             </svg>
           </div>
           <div className='ml-1 flex flex-col'>
-            <p className='text-red-800 font-semibold text-sm'>Payment method needed</p>
+            <p className='text-red-800 font-semibold text-sm'>Fail to Approve</p>
             <div className='mt-2 text-red-700 text-sm'>
               <ul role='list' className='list-disc pl-5 mt-1'>
-                <li>Please select a payment method to continue checkout.</li>
-                <li>Available payment methods: VnPay, MoMo, Paypal or Your App Ballance</li>
+                <li>Please check your specialty information in profile again.</li>
+                <li>
+                  Our AI Bot found that you have not chosen your specialties yet. So it does not meet the requirements
+                  for review.
+                </li>
               </ul>
             </div>
           </div>

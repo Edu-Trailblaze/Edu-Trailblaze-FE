@@ -1,5 +1,5 @@
 import { DataPoint, IInstructor, TopCourse } from '@/types/instructor.type'
-import { BASE_URL } from '@/utils/config';
+import { BASE_URL } from '@/utils/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const instructorApi = createApi({
@@ -49,6 +49,12 @@ export const instructorApi = createApi({
         url: `InstructorDashboard/get-top-performing-courses?instructorId=${InstructorId}&top=${top}`
       })
     }),
+    approveCourseByAIIns: build.mutation<any, number>({
+      query: (courseId) => ({
+        url: `InstructorDashboard/approve-course-by-ai?courseId=${courseId}`,
+        method: 'POST'
+      })
+    })
   })
 })
 
@@ -60,5 +66,6 @@ export const {
   useGetCourseCompletionRateQuery,
   useGetEnrollmentDataQuery,
   useGetRevenueDataQuery,
-  useGetTopCourseQuery
+  useGetTopCourseQuery,
+  useApproveCourseByAIInsMutation
 } = instructorApi
