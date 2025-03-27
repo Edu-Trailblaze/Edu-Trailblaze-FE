@@ -8,23 +8,21 @@ import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 //api
 import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { TableRow, TableCell } from '@mui/material'
 import { ToastContainer, toast } from 'react-toastify'
-import dayjs from 'dayjs'
+
 
 import Pagination from '@/components/admin/Pagination/Pagination'
 import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
+import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //sort filter
 import OrderSort from '@/components/admin/Filter/OrderSortFilter/OrderSort'
-import OrderFilter from '@/components/admin/Filter/OrderSortFilter/OrderFilter'
-
-//modal
-import DetailPopup from '@/components/global/Popup/PopupDetail'
+import DateFilter from '@/components/admin/Filter/DateFilter'
 
 //icon
 import { Filter, ArrowUpDown } from 'lucide-react'
@@ -54,7 +52,15 @@ export default function OrdersManagement() {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
-  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  const [searchResult, setSearchResult] = useState<Order[]>([]);
+  const [dateResult, setDateResult] = useState<Order[]>([]);
+  const display = useMemo(() => {
+    return searchResult.filter(order => dateResult.includes(order));
+  }, [searchResult, dateResult]);
+  
+  const [localFromDate, setLocalFromDate] = useState('');
+  const [localToDate, setLocalToDate] = useState('');
+
   const tableKey = 'orders'
   const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
 
@@ -102,6 +108,9 @@ export default function OrdersManagement() {
 
       setOrders(ordersWithNames)
       setAllOrders(ordersWithNames)
+
+      setSearchResult(ordersWithNames);
+      setDateResult(ordersWithNames);
     } catch (error) {
       console.error('Error fetching orders:', error)
       toast.error('Failed to fetch orders!')
@@ -114,29 +123,7 @@ export default function OrdersManagement() {
     fetchOrders(pageIndex)
   }, [pageIndex])
 
-  const handleFilterApply = () => {
-    const from = fromDate ? dayjs(fromDate) : null
-    const to = toDate ? dayjs(toDate) : null
-    const kw = keyword.toLowerCase()
 
-    const filtered = allOrders.filter((item) => {
-      const itemDate = dayjs(item.orderDate)
-
-      if (from && itemDate.isBefore(from, 'day')) return false
-      if (to && itemDate.isAfter(to, 'day')) return false
-
-      if (kw) {
-        const inUser = item.userName?.toLowerCase().includes(kw)
-        const inStatus = item.orderStatus.toLowerCase().includes(kw)
-        if (!inUser && !inStatus) return false
-      }
-      return true
-    })
-
-    setOrders(filtered)
-    setFilterOpen(false)
-    console.log('Filtered orders:', filtered)
-  }
 
 
   function getOrderStatusColor(status: string) {
@@ -156,7 +143,7 @@ export default function OrdersManagement() {
     <TableRow key={order.id} hover onClick={() => setSelectedOrder(order)}>
       {visibleColumns['id'] && <TableCell>{order.id}</TableCell>}
       {visibleColumns['userName'] && <TableCell>{order.userName}</TableCell>}
-      {visibleColumns['orderAmount'] && <TableCell>{order.orderAmount}</TableCell>}
+      {visibleColumns['orderAmount'] && <TableCell>{order.orderAmount}$</TableCell>}
       {visibleColumns['orderDate'] && (
         <TableCell>
           <FormatDateTime date={order.orderDate} />
@@ -177,8 +164,14 @@ export default function OrdersManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Orders Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
-          <div className='flex items-center gap-4 self-end'>
+            <TableSearch
+              data={allOrders}
+              filterKeys={['userName', 'orderStatus']}  
+              onFilteredData={(filteredData) => {
+                setSearchResult(filteredData);
+              }}
+            />         
+            <div className='flex items-center gap-4 self-end'>
             <div className='relative'>
               <button
                 className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
@@ -187,14 +180,35 @@ export default function OrdersManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-                <OrderFilter
-                  onClose={() => setFilterOpen(false)}
-                  onClear={() => {
-                    dispatch(clearFilter())
-                    setOrders(allOrders)
-                  }}
-                  onFilterApply={handleFilterApply}
-                />
+                <DateFilter
+                fromDate={localFromDate}
+                toDate={localToDate}
+                onChange={(newValues) => {
+                  if (newValues.fromDate !== undefined) {
+                    setLocalFromDate(newValues.fromDate);
+                  }
+                  if (newValues.toDate !== undefined) {
+                    setLocalToDate(newValues.toDate);
+                  }
+                }}
+                onReset={() => {
+                  setLocalFromDate('');
+                  setLocalToDate('');
+                }}
+                onApply={() => {
+                  const from = localFromDate ? new Date(localFromDate) : null;
+                  const to = localToDate ? new Date(localToDate) : null;
+                  const filtered = allOrders.filter((item) => {
+                    if (!item.orderDate) return false;
+                    const itemDate = new Date(item.orderDate);
+                    if (from && itemDate < from) return false;
+                    if (to && itemDate > to) return false;
+                    return true;
+                  });
+                  setDateResult(filtered);
+                  setFilterOpen(false);
+                }}
+              />
               )}
             </div>
 
@@ -228,7 +242,7 @@ export default function OrdersManagement() {
         <Table
           columns={[...orderFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
-          data={orders}
+          data={display}
         />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />

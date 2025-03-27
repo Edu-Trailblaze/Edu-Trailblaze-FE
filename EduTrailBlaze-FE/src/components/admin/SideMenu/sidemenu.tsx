@@ -296,15 +296,15 @@ export default function SideMenu() {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Box
-                component="img"
-                src="/assets/logos/ETB_Logo.png"
-                alt="EduTrailBlaze Logo"
-                sx={{
-                  height: 32,
-                  width: "auto",
-                }}
-              />
+            <Box
+              component="img"
+              src="https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871415/ETB_Logo_vpv1gu.png"
+              alt="EduTrailBlaze Logo"
+              sx={{
+                height: 32, 
+                width: "auto",
+              }}
+            />
             </Box>
           </Box>
         </Link>

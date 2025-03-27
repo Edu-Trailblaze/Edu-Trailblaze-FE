@@ -4,32 +4,31 @@ import api from '@/components/config/axios'
 //redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 import 'react-toastify/dist/ReactToastify.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import Pagination from '@/components/admin/Pagination/Pagination'
 import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
-import dayjs from 'dayjs'
 
 import DetailPopup from '@/components/global/Popup/PopupDetail'
 
 //sort filter
-import ReviewFilter from '@/components/admin/Filter/ReviewSortFilter/ReviewFilter'
+import DateFilter from '@/components/admin/Filter/DateFilter'
 import ReviewSort from '@/components/admin/Filter/ReviewSortFilter/ReviewSort'
 
 //icon
-import { Filter, ArrowUpDown, Trash2 } from 'lucide-react'
+import { Filter, ArrowUpDown, Trash2, Star  } from 'lucide-react'
 import { TableRow, TableCell } from '@mui/material'
 
 export type Review = {
   id?: number
   courseId?: number
+  courseTitle?: string
   rating: number
   reviewText: string
   createdAt: string
@@ -52,8 +51,8 @@ export type ReviewDetail = {
 }
 
 const reviewFields: { label: string; accessor: keyof Review }[] = [
-  { label: 'Review ID', accessor: 'id' },
-  { label: 'Course ID', accessor: 'courseId' },
+  { label: 'ID', accessor: 'id' },
+  { label: 'Course', accessor: 'courseId' },
   { label: 'Rating', accessor: 'rating' },
   { label: 'Date', accessor: 'createdAt' }
 ]
@@ -61,7 +60,14 @@ const reviewFields: { label: string; accessor: keyof Review }[] = [
 export default function ReviewsManagement() {
   const dispatch = useDispatch()
 
-  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  const [localFromDate, setLocalFromDate] = useState('');
+  const [localToDate, setLocalToDate] = useState('');
+  const [searchResult, setSearchResult] = useState<Review[]>([]);
+  const [dateResult, setDateResult] = useState<Review[]>([]);
+  const display = useMemo(() => {
+    return searchResult.filter(review => dateResult.includes(review));
+  }, [searchResult, dateResult]);
+
   const tableKey = 'reviews'
   const visibleColumns = useSelector((state: RootState) => state.sort[tableKey] || {})
 
@@ -72,12 +78,7 @@ export default function ReviewsManagement() {
   const [allReviews, setAllReviews] = useState<Review[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
-
-  //modal
-  // const [selectedReview, setSelectedReview] = useState<Review | null>(null)
   const [selectedReview, setSelectedReview] = useState<ReviewDetail | null>(null)
-  const [isEditModalOpen, setEditModalOpen] = useState(false)
-  const [editReview, setEditReview] = useState<Review | null>(null)
 
   //  Pagination
   const [pageIndex, setPageIndex] = useState(1)
@@ -90,8 +91,27 @@ export default function ReviewsManagement() {
       const response = await api.get('/Review/get-paging-review', {
         params: { pageIndex: page, pageSize }
       })
-      setReviews(response.data.items)
-      setAllReviews(response.data.items)
+      const reviewsData: Review[] = response.data.items
+  
+      const reviewFinalData = await Promise.all(
+        reviewsData.map(async (review) => {
+          if (review.courseId) {
+            try {
+              const courseResponse = await api.get(`/Course/${review.courseId}`)
+              return { ...review, courseTitle: courseResponse.data.title }
+            } catch (error) {
+              console.error('Error fetching course title for review', review.id, error)
+              return review
+            }
+          }
+          return review
+        })
+      )
+  
+      setReviews(reviewFinalData)
+      setAllReviews(reviewFinalData)
+      setSearchResult(reviewFinalData)
+      setDateResult(reviewFinalData)
       setTotalPages(response.data.totalPages)
     } catch (error) {
       console.error('Error fetching reviews:', error)
@@ -100,30 +120,11 @@ export default function ReviewsManagement() {
       setLoading(false)
     }
   }
+  
 
   useEffect(() => {
     fetchReviews(pageIndex)
   }, [pageIndex])
-
-  // const openEditModal = (review: Review) => {
-  //   setEditReview(review)
-  //   setEditModalOpen(true)
-  // }
-
-  // const handleEditReview = async (updatedReview: Review) => {
-  //   try {
-  //     await api.put(`/Review/${updatedReview.id}`, {
-  //       rating: updatedReview.rating,
-  //       reviewText: updatedReview.reviewText
-  //     })
-  //     toast.success('Review updated successfully!')
-  //     setEditModalOpen(false)
-  //     fetchReviews(pageIndex)
-  //   } catch (error) {
-  //     console.error('Error updating review:', error)
-  //     toast.error('Failed to update review!')
-  //   }
-  // }
 
   // Gọi API /Review/{review.id}, lấy ra userId => gọi tiếp /User/{userId}
   const handleDetail = async (review: Review) => {
@@ -187,29 +188,7 @@ export default function ReviewsManagement() {
     setSortOpen(false)
   }
 
-  const handleFilterApply = () => {
-    const from = fromDate ? dayjs(fromDate) : null
-    const to = toDate ? dayjs(toDate) : null
-    const kw = keyword.toLowerCase()
 
-    const filtered = allReviews.filter((item) => {
-      const itemDate = dayjs(item.createdAt)
-      if (from && itemDate.isBefore(from, 'day')) return false
-      if (to && itemDate.isAfter(to, 'day')) return false
-
-      if (kw) {
-        const inText = item.reviewText.toLowerCase().includes(kw)
-        const inRating = item.rating.toString().includes(kw)
-        if (!inText && !inRating) return false
-      }
-
-      return true
-    })
-
-    setReviews(filtered)
-    setFilterOpen(false)
-    console.log('Filtered reviews:', filtered)
-  }
 
   const renderRow = (review: Review) => (
     <TableRow
@@ -218,9 +197,23 @@ export default function ReviewsManagement() {
       onClick={() => handleDetail(review)}
     >
       {visibleColumns['id'] && <td className='p-4'>{review.id}</td>}
-      {visibleColumns['courseId'] && <td>{review.courseId}</td>}
-      {visibleColumns['rating'] && <td>{review.rating}</td>}
-      {/* {visibleColumns['reviewText'] && <td>{review.reviewText}</td>} */}
+      {visibleColumns['courseId'] && <td>{review.courseTitle || review.courseId}</td>}
+      {visibleColumns['rating'] && (
+        <TableCell align="left" style={{ verticalAlign: 'middle' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+            {review.rating}
+            <Star
+              size={16}
+              style={{
+                marginLeft: '4px',
+                color: 'gold',
+                fill: 'gold'
+              }}
+              strokeWidth={0}
+            />
+          </div>
+        </TableCell>
+      )}
       {visibleColumns['createdAt'] && (
         <TableCell>
           <FormatDateTime date={review.createdAt} />
@@ -235,9 +228,14 @@ export default function ReviewsManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Reviews Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+        <TableSearch
+            data={allReviews}
+            filterKeys={['reviewText', 'rating']}
+            onFilteredData={(filteredData) => {
+              setSearchResult(filteredData);
+            }}
+          />          
           <div className='flex items-center gap-4 self-end'>
-            {/* FILTER */}
             <div className='relative'>
               <button
                 className='w-8 h-8 flex items-center justify-center rounded-full bg-[#FDCB58]'
@@ -246,14 +244,35 @@ export default function ReviewsManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-                <ReviewFilter
-                  onClose={() => setFilterOpen(false)}
-                  onClear={() => {
-                    dispatch(clearFilter())
-                    setReviews(allReviews)
-                  }}
-                  onFilterApply={handleFilterApply}
-                />
+                <DateFilter
+                fromDate={localFromDate}
+                toDate={localToDate}
+                onChange={(newValues) => {                
+                  if (newValues.fromDate !== undefined) {
+                    setLocalFromDate(newValues.fromDate);
+                  }
+                  if (newValues.toDate !== undefined) {
+                    setLocalToDate(newValues.toDate);
+                  }
+                }}
+                onReset={() => {                        
+                  setLocalFromDate('');
+                  setLocalToDate('');
+                }}
+                onApply={() => {                        
+                  const from = localFromDate ? new Date(localFromDate) : null;
+                  const to = localToDate ? new Date(localToDate) : null;
+                  const filtered = allReviews.filter((item) => {
+                    if (!item.createdAt) return false;
+                    const itemDate = new Date(item.createdAt);
+                    if (from && itemDate < from) return false;
+                    if (to && itemDate > to) return false;
+                    return true;
+                  });
+                  setDateResult(filtered);
+                  setFilterOpen(false);
+                }}
+              />
               )}
             </div>
 
@@ -287,7 +306,7 @@ export default function ReviewsManagement() {
         <Table
           columns={[...reviewFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
-          data={reviews}
+          data={display}
         />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
@@ -298,11 +317,25 @@ export default function ReviewsManagement() {
           title='Review Detail'
           fields={[
             { label: 'Review ID', value: selectedReview.id, isID: true },
-            // { label: 'Course ID', value: selectedReview.courseId },
             { label: 'Course Title', value: selectedReview.courseTitle },
-            // { label: 'User ID', value: selectedReview.userId },
             { label: 'Email', value: selectedReview.user?.email || '' },
-            { label: 'Rating', value: selectedReview.rating },
+            {
+              label: 'Rating',
+              value: (
+                <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  {selectedReview.rating}
+                  <Star
+                    size={16}
+                    style={{
+                      marginLeft: '4px',
+                      color: 'gold',
+                      fill: 'gold'
+                    }}
+                    strokeWidth={0}
+                  />
+                </div>
+              )
+            },          
             { label: 'Date', value: selectedReview.createdAt, isDate: true }
           ]}
           widgets={[
@@ -323,18 +356,6 @@ export default function ReviewsManagement() {
           ]}
         />
       )}
-      {/* {editReview && (
-        <ReviewFormModalEdit
-          initialValues={editReview}
-          setEditReview={setEditReview}
-          onSubmit={handleEditReview}
-          onCancel={() => {
-            setEditModalOpen(false)
-            setEditReview(null)
-          }}
-          isOpen={isEditModalOpen}
-        />
-      )} */}
     </div>
   )
 }

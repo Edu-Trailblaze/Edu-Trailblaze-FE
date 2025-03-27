@@ -227,34 +227,34 @@ export default function NewsManagement() {
               </button>
               {isFilterOpen && (
                 <DateFilter
-  fromDate={localFromDate}
-  toDate={localToDate}
-  onChange={(newValues) => {                
-    if (newValues.fromDate !== undefined) {
-      setLocalFromDate(newValues.fromDate);
-    }
-    if (newValues.toDate !== undefined) {
-      setLocalToDate(newValues.toDate);
-    }
-  }}
-  onReset={() => {                        
-    setLocalFromDate('');
-    setLocalToDate('');
-  }}
-  onApply={() => {                        
-    const from = localFromDate ? new Date(localFromDate) : null;
-    const to = localToDate ? new Date(localToDate) : null;
-    const filtered = allNews.filter((item) => {
-      if (!item.createdAt) return false;
-      const itemDate = new Date(item.createdAt);
-      if (from && itemDate < from) return false;
-      if (to && itemDate > to) return false;
-      return true;
-    });
-    setDateResult(filtered);
-    setFilterOpen(false);
-  }}
-/>
+                  fromDate={localFromDate}
+                  toDate={localToDate}
+                  onChange={(newValues) => {                
+                    if (newValues.fromDate !== undefined) {
+                      setLocalFromDate(newValues.fromDate);
+                    }
+                    if (newValues.toDate !== undefined) {
+                      setLocalToDate(newValues.toDate);
+                    }
+                  }}
+                  onReset={() => {                        
+                    setLocalFromDate('');
+                    setLocalToDate('');
+                  }}
+                  onApply={() => {                        
+                    const from = localFromDate ? new Date(localFromDate) : null;
+                    const to = localToDate ? new Date(localToDate) : null;
+                    const filtered = allNews.filter((item) => {
+                      if (!item.createdAt) return false;
+                      const itemDate = new Date(item.createdAt);
+                      if (from && itemDate < from) return false;
+                      if (to && itemDate > to) return false;
+                      return true;
+                    });
+                    setDateResult(filtered);
+                    setFilterOpen(false);
+                  }}
+                />
 
             )}
 

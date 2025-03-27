@@ -11,7 +11,7 @@ import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
 import { TableRow, TableCell } from '@mui/material'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import Pagination from '@/components/admin/Pagination/Pagination'
 import Table from '@/components/admin/Table/Table'
@@ -21,7 +21,7 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 
 //sort filter
 import VoucherSort from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherSort'
-import VoucherFilter from '../../../../../components/admin/Filter/VoucherSortFilter/VoucherFilter'
+import DateFilter from '@/components/admin/Filter/DateFilter'
 //modal
 import DetailPopup from '@/components/global/Popup/PopupDetail'
 import VoucherFormModalCreate from '../../../../../components/admin/Modal/VoucherFormModal/VoucherFormModalCreate'
@@ -46,10 +46,10 @@ export type Voucher = {
 export type VoucherCreate = Omit<Voucher, 'createdAt'>
 
 const voucherFields: { label: string; accessor: keyof Voucher }[] = [
-  { label: 'Voucher ID', accessor: 'id' },
-  { label: 'Discount Type', accessor: 'discountType' },
+  { label: 'ID', accessor: 'id' },
+  { label: 'Type', accessor: 'discountType' },
   { label: 'Discount Value', accessor: 'discountValue' },
-  { label: 'Voucher Code', accessor: 'voucherCode' },
+  { label: 'Code', accessor: 'voucherCode' },
   { label: 'Expiry Date', accessor: 'expiryDate' }
 ]
 
@@ -65,8 +65,13 @@ export default function VouchersManagement() {
   const [isSortOpen, setSortOpen] = useState(false)
   const [isFilterOpen, setFilterOpen] = useState(false)
 
-  //redux filter
-  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  const [searchResult, setSearchResult] = useState<Voucher[]>([]);
+  const [dateResult, setDateResult] = useState<Voucher[]>([]);
+  const display = useMemo(() => {
+    return searchResult.filter(voucher => dateResult.includes(voucher));
+  }, [searchResult, dateResult]);
+    const [localFromDate, setLocalFromDate] = useState('');
+    const [localToDate, setLocalToDate] = useState('');
 
   //redux sort
   const tableKey = 'vouchers'
@@ -102,6 +107,8 @@ export default function VouchersManagement() {
       })
       setVouchers(response.data.items)
       setAllVouchers(response.data.items)
+      setSearchResult(response.data.items);
+      setDateResult(response.data.items);
       setTotalPages(response.data.totalPages)
     } catch (error) {
       console.error('Error fetching vouchers:', error)
@@ -187,7 +194,13 @@ export default function VouchersManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Vouchers Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+        <TableSearch
+            data={allVouchers}
+            filterKeys={['voucherCode', 'discountType']}
+            onFilteredData={(filteredData) => {
+              setSearchResult(filteredData);
+            }}
+          />          
           <div className='flex items-center gap-4 self-end'>
             <div className='relative'>
               <button
@@ -197,64 +210,35 @@ export default function VouchersManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-                <VoucherFilter
-                  onClose={() => setFilterOpen(false)}
-                  onClear={() => {
-                    dispatch(clearFilter())
-                    setVouchers(allVouchers)
-                  }}
-                  // onFilterApply={() => {
-                  //   //  GET fromDate, toDate, keyword từ Redux
-                  //   const from = fromDate ? new Date(fromDate) : null
-                  //   const to = toDate ? new Date(toDate) : null
-                  //   const kw = keyword.toLowerCase()
-
-                  //   // filter
-                  //   const filterVoucher = allVouchers.filter((item) => {
-                  //     const itemDate = new Date(item.expiryDate)
-                  //     if (from && itemDate < from) return false
-                  //     if (to && itemDate > to) return false
-
-                  //     if (kw) {
-                  //       const inCode = item.voucherCode.toLowerCase().includes(kw)
-                  //       const inType = item.discountType.toLowerCase().includes(kw)
-                  //       if (!inCode && !inType) return false
-                  //     }
-                  //     return true
-                  //   })
-
-                  //   setVouchers(filterVoucher)
-                  //   console.log('Filtered voucher:', filterVoucher)
-                  // }}
-                  onFilterApply={() => {
-                    //  GET fromDate, toDate, keyword từ Redux
-                    const from = fromDate ? new Date(fromDate) : null
-                    const to = toDate ? new Date(toDate) : null
-                    const kw = keyword.toLowerCase()
-
-                    const filterVoucher = allVouchers.filter((item) => {
-                      const itemDate = new Date(item.expiryDate)
-
-                      if (from && itemDate < from) {
-                        return false
-                      }
-                      if (to && itemDate > to) {
-                        return false
-                      }
-
-                      if (kw) {
-                        const inCode = item.voucherCode.toLowerCase().includes(kw)
-                        const inType = item.discountType.toLowerCase().includes(kw)
-                        if (!inCode && !inType) {
-                          return false
-                        }
-                      }
-                      return true
-                    })
-
-                    setVouchers(filterVoucher)
-                  }}
-                />
+                <DateFilter
+                fromDate={localFromDate}
+                toDate={localToDate}
+                onChange={(newValues) => {
+                  if (newValues.fromDate !== undefined) {
+                    setLocalFromDate(newValues.fromDate);
+                  }
+                  if (newValues.toDate !== undefined) {
+                    setLocalToDate(newValues.toDate);
+                  }
+                }}
+                onReset={() => {
+                  setLocalFromDate('');
+                  setLocalToDate('');
+                }}
+                onApply={() => {
+                  const from = localFromDate ? new Date(localFromDate) : null;
+                  const to = localToDate ? new Date(localToDate) : null;
+                  const filtered = allVouchers.filter((item) => {
+                    if (!item.expiryDate) return false;
+                    const itemDate = new Date(item.expiryDate);
+                    if (from && itemDate < from) return false;
+                    if (to && itemDate > to) return false;
+                    return true;
+                  });
+                  setDateResult(filtered);
+                  setFilterOpen(false);
+                }}
+              />
               )}
             </div>
 
@@ -295,7 +279,7 @@ export default function VouchersManagement() {
         <Table
           columns={[...voucherFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
-          data={vouchers}
+          data={display}
         />
       )}
       <Pagination pageIndex={pageIndex} totalPages={totalPages} onPageChange={(page) => setPageIndex(page)} />
