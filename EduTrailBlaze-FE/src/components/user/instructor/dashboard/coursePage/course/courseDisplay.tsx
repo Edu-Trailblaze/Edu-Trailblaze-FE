@@ -21,7 +21,7 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModelOpen] = useState(false)
   const [failModalOpen, setFailModalOpen] = useState(false)
-  const [approveStatus, setApproveStatus] = useState('')
+  const [approveStatus, setApproveStatus] = useState<{ [key: number]: string }>({})
   const {
     data: courses,
     isLoading: courseLoading,
@@ -44,13 +44,15 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
     try {
       const result = await approveCourse(courseId).unwrap()
       console.log('Course approved:', result.message)
+      setApproveStatus((prev) => ({
+        ...prev,
+        [courseId]: result.message
+      }))
       if (result.message === 'Approved') {
         setIsModelOpen(true)
       } else if (result.message === 'Rejected') {
         setFailModalOpen(true)
       }
-
-      setApproveStatus(result.message)
     } catch (error) {
       console.error(error)
     } finally {
@@ -79,11 +81,11 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
                 </div>
                 <div className='ml-4'>
                   <h3 className='text-lg font-medium text-gray-900'>{courseItem.courseName}</h3>
-                  {approveStatus ? (
-                    approveStatus === 'Approved' ? (
+                  {approveStatus[courseItem.courseId] ? (
+                    approveStatus[courseItem.courseId] === 'Approved' ? (
                       <p className='text-sm text-gray-500'>Pending</p>
                     ) : (
-                      <p className='text-sm text-red-500'>{approveStatus}</p>
+                      <p className='text-sm text-red-500'>{approveStatus[courseItem.courseId]}</p>
                     )
                   ) : (
                     <p
@@ -118,7 +120,7 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
                     <>
                       {courseItem.status === 'Approved' ||
                       courseItem.status === 'Pending' ||
-                      approveStatus === 'Approved' ? (
+                      approveStatus[courseItem.courseId] === 'Approved' ? (
                         ''
                       ) : (
                         <button
