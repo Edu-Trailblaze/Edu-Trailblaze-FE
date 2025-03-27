@@ -43,6 +43,25 @@ export const dashboardApi = createApi({
     getTopStudentsEnrollment: builder.query<TopStudentEnrollment[], void>({
       query: () => 'Enrollment/top-5-students-with-most-enrollments'
     }),
+
+    getTotalEnrollmentsByMonth: builder.query<number, { month: number; year: number }>({
+      query: ({ month, year }) => ({
+        url: 'Enrollment/total-enrollment-by-month',
+        method: 'GET',
+        params: { month, year },
+      }),
+      transformResponse: (response: TotalEnrollmentsResponse) => response.data,
+    }),
+
+    getTotalRevenueByMonth: builder.query<number, { month: number; year: number }>({
+      query: ({ month, year }) => ({
+        url: 'Order/total-revenue-by-month',
+        method: 'GET',
+        params: { month, year },
+      }),
+      transformResponse: (response: TotalRevenueResponse) => response.data,
+    }),
+
   })
 })
 
@@ -54,5 +73,7 @@ export const {
   useGetTotalCoursesBoughtQuery,
   useGetPendingCoursesQuery,
   useGetTopSaleCoursesQuery,
-  useGetTopStudentsEnrollmentQuery
+  useGetTopStudentsEnrollmentQuery,
+  useGetTotalEnrollmentsByMonthQuery,
+  useGetTotalRevenueByMonthQuery
 } = dashboardApi

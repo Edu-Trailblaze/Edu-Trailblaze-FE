@@ -44,3 +44,13 @@ type TopStudentEnrollment = {
   phoneNumber?: string
   totalEnrollments: number
 }
+
+interface TotalEnrollmentsResponse {
+  statusCode: number;
+  data: number;
+}
+
+interface TotalRevenueResponse {
+  statusCode: number;
+  data: number;
+}
