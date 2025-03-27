@@ -43,14 +43,16 @@ export const reviewApi = createApi({
         url: 'Review',
         method: 'POST',
         body
-      })
+      }),
+      invalidatesTags: ['Reviews']
     }),
     putReview: build.mutation<any, PutReview>({
       query: (body) => ({
         url: 'Review',
         method: 'PUT',
         body
-      })
+      }),
+      invalidatesTags: ['Reviews']
     })
   })
 })
