@@ -571,8 +571,8 @@ export default function HomeCourses() {
             <div className='mt-10'>
               <div className='mb-[30px]'>
                 <p className='mb-[10px] font-bold'>Our suggestion</p>
-                <h1 className='text-4xl font-bold'>Start learning with trending courses</h1>
-                <p>courses on the top trends in the world today.</p>
+                <h1 className='text-4xl font-bold'>Explore trending courses</h1>
+                <p>Courses on the top trends in the world today.</p>
               </div>
 
               {trendingCoursesLoading || trendingCoursesFetching ? (
