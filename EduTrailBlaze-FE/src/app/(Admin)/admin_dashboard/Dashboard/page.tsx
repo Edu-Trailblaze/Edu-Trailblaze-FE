@@ -24,7 +24,6 @@ export default function Dashboard() {
           <div>
             <h1 className="text-2xl font-bold flex items-center text-blue-900">
               EduPlatform
-              <span className="text-sm font-normal text-blue-700 ml-3">Some info here</span>
             </h1>
           </div>
           <div className="text-sm text-blue-700">

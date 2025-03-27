@@ -25,6 +25,8 @@ export default function TopCourses() {
             "bg-blue-50 border-blue-100 hover:bg-blue-100/70",
             "bg-purple-50 border-purple-100 hover:bg-purple-100/70",
             "bg-green-50 border-green-100 hover:bg-green-100/70",
+            "bg-red-50 border-red-100 hover:bg-red-100/70",
+            "bg-yellow-50 border-yellow-100 hover:bg-yellow-100/70",
           ]
           return (
             <div

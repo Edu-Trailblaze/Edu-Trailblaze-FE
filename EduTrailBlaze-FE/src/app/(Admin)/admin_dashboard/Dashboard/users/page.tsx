@@ -17,17 +17,12 @@
   import Loader from '@/components/animate/loader/loader'
   import Pagination from '@/components/admin/Pagination/Pagination'
 
-  //sort filter
-  import UserSort from '@/components/admin/Filter/UserSortFilter/UserSort'
-  import UserFilter from '@/components/admin/Filter/UserSortFilter/UserFilter'
-
-  //modal
-  // import UserFormModalEdit from '@/components/admin/Modal/UserFormModal/UserFormModalEdit'
-  // import UserFormModalCreate from '@/components/admin/Modal/UserFormModal/UserFormModalCreate'
   import DetailPopup from '@/components/global/Popup/PopupDetail'
 
+import UserSort from '@/components/admin/Filter/UserSortFilter/UserSort'
+
   //icon
-  import { Filter, ArrowUpDown, Plus } from 'lucide-react'
+  import {  ArrowUpDown, Plus } from 'lucide-react'
 
 
   export type User = {
