@@ -54,8 +54,8 @@ export default function InstructorHeader() {
       {/* Navigation Bar */}
       <nav className='bg-white shadow-sm'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between h-16'>
-            <div className='flex'>
+          <div className='flex justify-end h-16'>
+            {/* <div className='flex'>
               <div className='flex-shrink-0 flex items-center'>
                 <div className='h-8 w-44 relative'>
                   <Link href={'/'}>
@@ -65,7 +65,7 @@ export default function InstructorHeader() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className='flex items-center'>
               <Link href={'/'}>
                 <div className='hover:bg-sky-100 hover:text-blue-600 p-2 rounded-lg'>Learn on EduTrail</div>
