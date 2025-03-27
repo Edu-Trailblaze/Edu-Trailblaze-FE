@@ -51,7 +51,7 @@ export const courseApi = createApi({
         method: 'GET'
       })
     }),
-    
+
     getInstructorOfCourse: build.query<ICourseInstructor[], number>({
       query: (id) => ({
         url: `Course/get-instructors-of-a-course?courseId=${id}`
@@ -69,6 +69,11 @@ export const courseApi = createApi({
     >({
       query: ({ tagId, studentId, pageIndex, pageSize }) => ({
         url: `Course/get-paging-course-information?TagId=${tagId}&StudentId=${studentId}&IsPublished=true&PageIndex=${pageIndex}&PageSize=${pageSize}`
+      })
+    }),
+    getTrendingCourse: build.query<CourseDetails[], { studentId: string; numberOfCourses: number }>({
+      query: ({ studentId, numberOfCourses }) => ({
+        url: `Course/get-personal-item-recommendation?userId=${studentId}&numberOfCourses=${numberOfCourses}`
       })
     }),
     getCoursePaging: build.query<CourseResponseData, CourseSearchRequest>({
@@ -108,14 +113,12 @@ export const courseApi = createApi({
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Courses', id: 'LIST' }])
     }),
 
-    deleteCourse: build.mutation<void, number>({ 
+    deleteCourse: build.mutation<void, number>({
       query: (courseId) => ({
         url: `Course?courseId=${courseId}`,
         method: 'DELETE'
       }),
-      invalidatesTags: (result, error, arg) => [
-        { type: 'Courses', id: 'LIST' }
-      ]
+      invalidatesTags: (result, error, arg) => [{ type: 'Courses', id: 'LIST' }]
     }),
 
     getCoursePageInformation: build.query<RecommendCourse, number>({
@@ -139,8 +142,7 @@ export const courseApi = createApi({
         method: 'PUT'
       }),
       invalidatesTags: []
-    }),
-    
+    })
   })
 })
 
@@ -152,6 +154,7 @@ export const {
   useGetInstructorOfCourseQuery,
   useGetCourseByIdAndTagQuery,
   useGetCourseByIdAndTagPagingQuery,
+  useGetTrendingCourseQuery,
   useGetCoursePagingQuery,
   useGetInstructorCoursePagingQuery,
   useGetCourseByIdQuery,

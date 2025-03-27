@@ -60,7 +60,7 @@ export default function InstructorHeader() {
                 <div className='h-8 w-44 relative'>
                   <Link href={'/'}>
                     <div className='absolute inset-0 flex items-center cursor-pointer'>
-                      <img alt='EduTrailBlaze Logo' src='/assets/logos/ETB_Logo.png' className='h-8 md:h-10' />
+                      <img alt='EduTrailBlaze Logo' src='https://res.cloudinary.com/dtjgueyp2/image/upload/v1742871415/ETB_Logo_vpv1gu.png' className='h-8 md:h-10' />
                     </div>
                   </Link>
                 </div>

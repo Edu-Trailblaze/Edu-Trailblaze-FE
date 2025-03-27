@@ -2,7 +2,8 @@
 import {
   useGetAllCoursesQuery,
   useGetCourseByIdAndTagPagingQuery,
-  useGetCourseByIdAndTagQuery
+  useGetCourseByIdAndTagQuery,
+  useGetTrendingCourseQuery
 } from '@/redux/services/courseDetail.service'
 import React, { useEffect, useRef, useState } from 'react'
 import InstructorItem from './InstructorItem'
@@ -36,6 +37,11 @@ export default function HomeCourses() {
     isFetching: coursesPagingFetching,
     status: coursesPagingStatus
   } = useGetCourseByIdAndTagPagingQuery({ tagId: selectedTag, studentId: userId, pageIndex: 1, pageSize: 8 })
+  const {
+    data: trendingCourses,
+    isLoading: trendingCoursesLoading,
+    isFetching: trendingCoursesFetching
+  } = useGetTrendingCourseQuery({ studentId: userId, numberOfCourses: 8 })
   const { data: tags, isLoading: tagsLoading, isFetching: tagsFetching } = useGetTagQuery()
   const [postCart, { isLoading: isAddingToCart, isSuccess: addedToCart, error: cartError, status: cartStatus }] =
     usePostCartMutation()
@@ -115,15 +121,15 @@ export default function HomeCourses() {
     setModalOpen(false)
   }
 
-  const nextSlide = () => {
+  const nextSlide = (courses: any[]) => {
     setCurrentIndex((prevIndex) =>
-      prevIndex + coursesPerSlide >= (paidCourses?.length ?? 0) ? 0 : prevIndex + coursesPerSlide
+      prevIndex + coursesPerSlide >= (courses?.length ?? 0) ? 0 : prevIndex + coursesPerSlide
     )
   }
 
-  const prevSlide = () => {
+  const prevSlide = (courses: any[]) => {
     setCurrentIndex((prevIndex) =>
-      prevIndex - coursesPerSlide < 0 ? (paidCourses?.length ?? 0) - coursesPerSlide : prevIndex - coursesPerSlide
+      prevIndex - coursesPerSlide < 0 ? (courses?.length ?? 0) - coursesPerSlide : prevIndex - coursesPerSlide
     )
   }
 
@@ -174,8 +180,8 @@ export default function HomeCourses() {
           </ul>
         </div>
         <div className='bg-[#F4F4F4] py-[20px]'>
-          {/** Premium courses layout */}
           <div className='container'>
+            {/** Premium courses layout */}
             <div>
               <div className='mb-[30px]'>
                 <p className='mb-[10px] font-bold'>Invest in Yourself</p>
@@ -195,7 +201,7 @@ export default function HomeCourses() {
               ) : (
                 <div className='relative'>
                   <button
-                    onClick={prevSlide}
+                    onClick={() => prevSlide(paidCourses)}
                     className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -ml-3 md:-ml-4 hidden sm:block'
                     aria-label='Scroll left'
                   >
@@ -349,7 +355,7 @@ export default function HomeCourses() {
                     ))}
                   </div>
                   <button
-                    onClick={nextSlide}
+                    onClick={() => nextSlide(paidCourses)}
                     className='absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -mr-3 md:-mr-4 hidden sm:block'
                     aria-label='Scroll right'
                   >
@@ -387,7 +393,7 @@ export default function HomeCourses() {
               ) : (
                 <div className='relative'>
                   <button
-                    onClick={prevSlide}
+                    onClick={() => prevSlide(freeCourses)}
                     className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -ml-3 md:-ml-4 hidden sm:block'
                     aria-label='Scroll left'
                   >
@@ -396,7 +402,7 @@ export default function HomeCourses() {
                   <div className='flex gap-3 md:gap-4 lg:gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory'>
                     {freeCourses?.slice(currentIndex, currentIndex + coursesPerSlide).map((course, index) => (
                       <div
-                        className='relative flex-shrink-0 snap-start w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-1'
+                        className='relative flex-shrink-0 snap-start w-full sm:w-1/2 md:w-1/3 lg:w-[300px] px-1'
                         key={course.course.id}
                       >
                         <Link href={`/student/course/${course.course.id}`}>
@@ -426,97 +432,316 @@ export default function HomeCourses() {
                                 <InstructorItem courseId={course.course.id} />
                               </p>
                               <div className='flex items-center space-x-1 mb-2'>
-                                <span className='text-gray-700 text-xs md:text-sm font-medium'>4.6</span>
                                 {/* <!-- Star icons --> */}
                                 <div className='flex justify-between items-center'>
                                   {renderStarRating(course.review.averageRating)}
                                   <span className='text-gray-400 text-xs ml-1'>{`(${course.review.totalRatings})`}</span>
                                 </div>
-
-                                <span className='text-gray-400 text-xs'>(40,856)</span>
                               </div>
 
                               <div className='flex justify-between items-center mt-auto'>
-                                <p className='text-base md:text-lg font-bold text-gray-900'>Free</p>
+                                <p className='text-base md:text-lg font-bold text-gray-900 '>
+                                  {formatCurrency(course.course.price)}
+                                </p>
+
                                 <button
-                                  className='w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base'
+                                  key={course.course.id}
+                                  className={`w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 flex justify-center items-center gap-2 ${isAddingToCart ? 'opacity-75 cursor-not-allowed' : 'hover:from-blue-600 hover:to-blue-900'} text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base`}
                                   onClick={(e) => {
                                     e.preventDefault()
                                     handleAddToCart(userId, course.course.id)
                                   }}
-                                  disabled={isAddingToCart}
+                                  disabled={addingToCart[course.course.id]}
                                 >
-                                  {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
+                                  {addingToCart[course.course.id] ? (
+                                    <>
+                                      <svg
+                                        className='animate-spin h-5 w-5 text-white'
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        fill='none'
+                                        viewBox='0 0 24 24'
+                                      >
+                                        <circle
+                                          className='opacity-25'
+                                          cx='12'
+                                          cy='12'
+                                          r='10'
+                                          stroke='currentColor'
+                                          strokeWidth='4'
+                                        ></circle>
+                                        <path
+                                          className='opacity-75'
+                                          fill='currentColor'
+                                          d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                        ></path>
+                                      </svg>
+                                      Adding...
+                                    </>
+                                  ) : (
+                                    <p>Add to Cart</p>
+                                  )}
                                 </button>
                               </div>
                             </div>
                           </div>
-                          {hoveredCourse === course.course.id && (
-                            <div
-                              className={`absolute w-80 bg-white p-4 rounded-xl border shadow-2xl z-[999]
-                               ${
-                                 index === 0
-                                   ? 'left-[calc(100%)]' // First course: show on right
-                                   : '-left-[320px]' // Other courses: show on left
-                               } ${windowWidth < 768 ? 'w-full' : 'w-64 md:w-72 lg:w-80'} ${getPopupPosition(index)}`}
-                              style={{
-                                top: '50%',
-                                transform: 'translateY(-50%)'
-                              }}
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <h4 className='font-semibold text-base md:text-lg mb-1'>{course.course.title}</h4>
-                              <p className='text-xs md:text-sm text-gray-500 mb-2'>
-                                Updated{' '}
-                                <span className='text-green-600 font-medium'>
-                                  {formatDate(course.course.updatedAt)}
-                                </span>
-                              </p>
-                              <div className='space-y-1 mb-3'>
-                                <p className='text-xs md:text-sm text-gray-600'>• Duration: {course.course.duration}</p>
-                                <p className='text-xs md:text-sm text-gray-600'>
-                                  • Difficulty: {course.course.difficultyLevel}
-                                </p>
-                                {windowWidth >= 768 && (
-                                  <p className='text-xs md:text-sm text-gray-600'>• {course.course.prerequisites}</p>
-                                )}
-                              </div>
-
-                              {windowWidth >= 768 && (
-                                <p className='text-gray-700 text-xs md:text-sm mb-3'>{course.course.description}</p>
-                              )}
-
-                              <div className='mb-3'>
-                                <p className='text-xs md:text-sm font-medium mb-1'>What you'll learn:</p>
-                                <ul className='space-y-1 text-xs md:text-sm text-gray-800'>
-                                  {course.course.learningOutcomes
-                                    ?.slice(0, windowWidth < 768 ? 2 : 3)
-                                    .map((outcome, idx) => (
-                                      <li key={idx} className='flex items-start'>
-                                        <span className='mr-2 text-green-600'>✔</span> {outcome}
-                                      </li>
-                                    ))}
-                                  {course.course.learningOutcomes?.length > (windowWidth < 768 ? 2 : 3) && (
-                                    <li className='text-purple-600 text-xs md:text-sm'>
-                                      + {course.course.learningOutcomes.length - (windowWidth < 768 ? 2 : 3)} more
-                                    </li>
-                                  )}
-                                </ul>
-                              </div>
-
-                              {/* Arrow pointer */}
-                              <div
-                                className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rotate-45 border
-                ${index === 0 ? 'left-0 -ml-2 border-l border-b' : 'right-0 -mr-2 border-t border-r'}`}
-                              />
-                            </div>
-                          )}
                         </Link>
+                        {hoveredCourse === course.course.id && (
+                          <div
+                            className={`absolute w-80 bg-white p-4 rounded-xl border shadow-2xl z-[999]
+                             ${
+                               index === 0
+                                 ? 'left-[calc(100%)]' // First course: show on right
+                                 : '-left-[320px]' // Other courses: show on left
+                             } ${windowWidth < 768 ? 'w-full' : 'w-64 md:w-72 lg:w-80'} ${getPopupPosition(index)}`}
+                            style={{
+                              top: '50%',
+                              transform: 'translateY(-50%)'
+                            }}
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <h4 className='font-semibold text-base md:text-lg mb-1'>{course.course.title}</h4>
+                            <p className='text-xs md:text-sm text-gray-500 mb-2'>
+                              Updated{' '}
+                              <span className='text-green-600 font-medium'>{formatDate(course.course.updatedAt)}</span>
+                            </p>
+                            <div className='space-y-1 mb-3'>
+                              <p className='text-xs md:text-sm text-gray-600'>• Duration: {course.course.duration}</p>
+                              <p className='text-xs md:text-sm text-gray-600'>
+                                • Difficulty: {course.course.difficultyLevel}
+                              </p>
+                              {windowWidth >= 768 && (
+                                <p className='text-xs md:text-sm text-gray-600'>• {course.course.prerequisites}</p>
+                              )}
+                            </div>
+
+                            {windowWidth >= 768 && (
+                              <p className='text-gray-700 text-xs md:text-sm mb-3'>{course.course.description}</p>
+                            )}
+
+                            <div className='mb-3'>
+                              <p className='text-xs md:text-sm font-medium mb-1'>What you'll learn:</p>
+                              <ul className='space-y-1 text-xs md:text-sm text-gray-800'>
+                                {course.course.learningOutcomes
+                                  ?.slice(0, windowWidth < 768 ? 2 : 3)
+                                  .map((outcome, idx) => (
+                                    <li key={idx} className='flex items-start'>
+                                      <span className='mr-2 text-green-600'>✔</span> {outcome}
+                                    </li>
+                                  ))}
+                                {course.course.learningOutcomes?.length > (windowWidth < 768 ? 2 : 3) && (
+                                  <li className='text-purple-600 text-xs md:text-sm'>
+                                    + {course.course.learningOutcomes.length - (windowWidth < 768 ? 2 : 3)} more
+                                  </li>
+                                )}
+                              </ul>
+                            </div>
+
+                            {/* Arrow pointer */}
+                            <div
+                              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rotate-45 border
+              ${index === 0 ? 'left-0 -ml-2 border-l border-b' : 'right-0 -mr-2 border-t border-r'}`}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                   <button
-                    onClick={nextSlide}
+                    onClick={() => nextSlide(freeCourses)}
+                    className='absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -mr-3 md:-mr-4 hidden sm:block'
+                    aria-label='Scroll right'
+                  >
+                    <ChevronRight size={windowWidth < 768 ? 20 : 24} />
+                  </button>
+                  <div className='mt-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4'>
+                    <button
+                      className='w-full sm:w-auto px-4 py-2 bg-blue-500 text-white font-medium rounded-md transition hover:bg-blue-700 text-sm md:text-base'
+                      type='button'
+                    >
+                      Explore All Courses
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/** Trending courses layout */}
+          <div className='container'>
+            <div className='mt-10'>
+              <div className='mb-[30px]'>
+                <p className='mb-[10px] font-bold'>Our suggestion</p>
+                <h1 className='text-4xl font-bold'>Start learning with trending courses</h1>
+                <p>courses on the top trends in the world today.</p>
+              </div>
+
+              {trendingCoursesLoading || trendingCoursesFetching ? (
+                <div className='grid grid-cols-2 gap-6'>
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+              ) : trendingCourses?.length === 0 ? (
+                <p>No trending courses available at the moment.</p>
+              ) : (
+                <div className='relative'>
+                  <button
+                    onClick={() => prevSlide(trendingCourses ?? [])}
+                    className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -ml-3 md:-ml-4 hidden sm:block'
+                    aria-label='Scroll left'
+                  >
+                    <ChevronLeft size={windowWidth < 768 ? 20 : 24} />
+                  </button>
+                  <div className='flex gap-3 md:gap-4 lg:gap-6 scrollbar-hide scroll-smooth snap-x snap-mandatory pl-5'>
+                    {trendingCourses?.slice(currentIndex, currentIndex + coursesPerSlide).map((course, index) => (
+                      <div
+                        className='relative flex-shrink-0 snap-start w-full sm:w-1/2 md:w-1/3 lg:w-[300px] px-1'
+                        key={course.course.id}
+                      >
+                        <Link href={`/student/course/${course.course.id}`}>
+                          <div
+                            className='relative transform transition duration-300 hover:scale-105 rounded-lg shadow-md w-full hover:shadow-xl bg-white border border-gray-200 p-3 hover:z-10 h-full flex flex-col'
+                            onMouseEnter={() => setHoveredCourse(course.course.id)}
+                            onMouseLeave={() => setHoveredCourse(null)}
+                          >
+                            {course.course.imageURL !== null ? (
+                              <div className='mb-3 rounded-lg overflow-hidden'>
+                                <img
+                                  className='w-full h-32 sm:h-36 md:h-40 object-cover rounded-md'
+                                  src={course.course.imageURL}
+                                  alt='course_image'
+                                />
+                              </div>
+                            ) : (
+                              <div className='bg-gradient-to-br from-rose-100 via-purple-200 to-purple-200 mb-3 h-32 sm:h-36 md:h-40 rounded-lg' />
+                            )}
+
+                            <div className='px-1 mb-2 flex-grow'>
+                              <h2 className='font-semibold text-base md:text-lg line-clamp-2 mb-1'>
+                                {course.course.title}
+                              </h2>
+                              <p className='text-xs md:text-sm text-gray-600 mb-1'>
+                                <span className='font-medium'>Instructor:</span>{' '}
+                                <InstructorItem courseId={course.course.id} />
+                              </p>
+                              <div className='flex items-center space-x-1 mb-2'>
+                                {/* <!-- Star icons --> */}
+                                <div className='flex justify-between items-center'>
+                                  {renderStarRating(course.review.averageRating)}
+                                  <span className='text-gray-400 text-xs ml-1'>{`(${course.review.totalRatings})`}</span>
+                                </div>
+                              </div>
+
+                              <div className='flex justify-between items-center mt-auto'>
+                                <p className='text-base md:text-lg font-bold text-gray-900 '>
+                                  {formatCurrency(course.course.price)}
+                                </p>
+
+                                <button
+                                  key={course.course.id}
+                                  className={`w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 flex justify-center items-center gap-2 ${isAddingToCart ? 'opacity-75 cursor-not-allowed' : 'hover:from-blue-600 hover:to-blue-900'} text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base`}
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    handleAddToCart(userId, course.course.id)
+                                  }}
+                                  disabled={addingToCart[course.course.id]}
+                                >
+                                  {addingToCart[course.course.id] ? (
+                                    <>
+                                      <svg
+                                        className='animate-spin h-5 w-5 text-white'
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        fill='none'
+                                        viewBox='0 0 24 24'
+                                      >
+                                        <circle
+                                          className='opacity-25'
+                                          cx='12'
+                                          cy='12'
+                                          r='10'
+                                          stroke='currentColor'
+                                          strokeWidth='4'
+                                        ></circle>
+                                        <path
+                                          className='opacity-75'
+                                          fill='currentColor'
+                                          d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                                        ></path>
+                                      </svg>
+                                      Adding...
+                                    </>
+                                  ) : (
+                                    <p>Add to Cart</p>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                        {hoveredCourse === course.course.id && (
+                          <div
+                            className={`absolute w-80 bg-white p-4 rounded-xl border shadow-2xl z-[999]
+                             ${
+                               index === 0
+                                 ? 'left-[calc(100%)]' // First course: show on right
+                                 : '-left-[320px]' // Other courses: show on left
+                             } ${windowWidth < 768 ? 'w-full' : 'w-64 md:w-72 lg:w-80'} ${getPopupPosition(index)}`}
+                            style={{
+                              top: '50%',
+                              transform: 'translateY(-50%)'
+                            }}
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <h4 className='font-semibold text-base md:text-lg mb-1'>{course.course.title}</h4>
+                            <p className='text-xs md:text-sm text-gray-500 mb-2'>
+                              Updated{' '}
+                              <span className='text-green-600 font-medium'>{formatDate(course.course.updatedAt)}</span>
+                            </p>
+                            <div className='space-y-1 mb-3'>
+                              <p className='text-xs md:text-sm text-gray-600'>• Duration: {course.course.duration}</p>
+                              <p className='text-xs md:text-sm text-gray-600'>
+                                • Difficulty: {course.course.difficultyLevel}
+                              </p>
+                              {windowWidth >= 768 && (
+                                <p className='text-xs md:text-sm text-gray-600'>• {course.course.prerequisites}</p>
+                              )}
+                            </div>
+
+                            {windowWidth >= 768 && (
+                              <p className='text-gray-700 text-xs md:text-sm mb-3'>{course.course.description}</p>
+                            )}
+
+                            <div className='mb-3'>
+                              <p className='text-xs md:text-sm font-medium mb-1'>What you'll learn:</p>
+                              <ul className='space-y-1 text-xs md:text-sm text-gray-800'>
+                                {course.course.learningOutcomes
+                                  ?.slice(0, windowWidth < 768 ? 2 : 3)
+                                  .map((outcome, idx) => (
+                                    <li key={idx} className='flex items-start'>
+                                      <span className='mr-2 text-green-600'>✔</span> {outcome}
+                                    </li>
+                                  ))}
+                                {course.course.learningOutcomes?.length > (windowWidth < 768 ? 2 : 3) && (
+                                  <li className='text-purple-600 text-xs md:text-sm'>
+                                    + {course.course.learningOutcomes.length - (windowWidth < 768 ? 2 : 3)} more
+                                  </li>
+                                )}
+                              </ul>
+                            </div>
+
+                            {/* Arrow pointer */}
+                            <div
+                              className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rotate-45 border
+              ${index === 0 ? 'left-0 -ml-2 border-l border-b' : 'right-0 -mr-2 border-t border-r'}`}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => nextSlide(trendingCourses ?? [])}
                     className='absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-1 md:p-2 shadow-lg border border-gray-200 hover:bg-gray-100 -mr-3 md:-mr-4 hidden sm:block'
                     aria-label='Scroll right'
                   >
