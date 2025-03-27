@@ -32,7 +32,7 @@ export default function CourseSuggestion({ recommendedCourses }: CourseSuggestio
       {/* Title with decorative element */}
       <div className='flex items-center mb-6'>
         <div className='w-1 h-8 bg-blue-600 rounded mr-3'></div>
-        <h2 className='text-2xl font-bold'>Students also bought</h2>
+        <h2 className='text-2xl font-bold'>Recommend Courses</h2>
       </div>
 
       {/* Course List */}

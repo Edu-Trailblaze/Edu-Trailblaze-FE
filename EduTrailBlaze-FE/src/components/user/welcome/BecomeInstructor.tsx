@@ -36,12 +36,12 @@ export default function BecomeInstructor() {
       setUserRole('')
     }
   }, [])
-  
+
   useEffect(() => {
     if (userChangeRole) {
-      localStorage.setItem('role', userChangeRole);
+      localStorage.setItem('role', userChangeRole)
     }
-  }, [userChangeRole]); // This effect runs whenever userChangeRole changes
+  }, [userChangeRole]) // This effect runs whenever userChangeRole changes
 
   const handleChangeRole = async () => {
     if (!userId) {
