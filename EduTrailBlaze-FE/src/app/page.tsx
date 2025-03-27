@@ -13,7 +13,7 @@ export default function Home() {
     <div>
       <WebHeader />
       {/* <ImageSlider /> */}
-      <RollingGallery autoplay={true} pauseOnHover={true}/>
+      <RollingGallery autoplay={true} pauseOnHover={false}/>
       <HomeCourses />
       <MakeDiffer />
       <div className='flex items-center justify-center mb-20'>
