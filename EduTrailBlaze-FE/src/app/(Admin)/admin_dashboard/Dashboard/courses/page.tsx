@@ -389,15 +389,18 @@ const display = useMemo(() => {
         return { color: 'red' }
       case 'Approved':
         return { color: 'green' }
+      case 'Draft':
+        return { color: 'darkgray' }
       default:
         return {}
     }
   }
-
+  
   function transformStatus(rawStatus: string | undefined): string {
     if (!rawStatus) return ''
     if (rawStatus === 'Reject') return 'Rejected'
     if (rawStatus === 'Approve') return 'Approved'
+    // Nếu rawStatus là 'Draft', chỉ cần trả về nó
     return rawStatus
   }
 
@@ -537,11 +540,6 @@ const display = useMemo(() => {
       ) : isError ? (
         <p className='text-red-500 text-sm'>Failed to load courses!</p>
       ) : (
-        // <Table
-        //   columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
-        //   renderRow={renderRow}
-        //   data={courses}
-        // />
         <Table
           columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
@@ -573,7 +571,7 @@ const display = useMemo(() => {
             },
             {
               label: 'Price',
-              value: detailData.courseDetails?.price ? detailData.courseDetails?.price + '$' : 'N/A'
+              value: detailData.courseDetails?.price ? detailData.courseDetails?.price + 'VND' : 'N/A'
             },
             { label: 'Enrollements', value: detailData.courseDetails?.enrollment?.totalEnrollments },
             { label: 'imageURL', value: detailData.courseDetails?.imageURL, isImage: true },

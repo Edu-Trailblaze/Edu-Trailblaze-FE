@@ -24,7 +24,6 @@ import { RefreshCw, Bot } from "lucide-react"
 // Kiểu approval status
 type CourseApprovalStatus = "Approved" | "Rejected" | "Pending"
 
-// Kiểu item cho pending courses
 interface PendingCourseItem {
   id: number
   title: string
@@ -35,7 +34,8 @@ interface PendingCourseItem {
   difficultyLevel: string
   approvalStatus: string
   createdAt: string
-  // ... có thể bổ sung thêm tuỳ theo API
+  learningOutcomes: string[]
+  prerequisites:string
 }
 
 export default function ApprovePendingCourses() {
@@ -129,16 +129,53 @@ export default function ApprovePendingCourses() {
           onClose={() => setSelectedCourse(null)}
           title="Course Details"
           fields={[
-            { label: "ID", value: selectedCourse.id },
+            { label: "ID", value: selectedCourse.id ,  isID: true },
             { label: "Title", value: selectedCourse.title },
-            { label: "Description", value: selectedCourse.description },
-            { label: "Price", value: selectedCourse.price },
-            { label: "Duration", value: selectedCourse.duration },
-            { label: "Difficulty", value: selectedCourse.difficultyLevel },
-            { label: "Status", value: selectedCourse.approvalStatus },
-            { label: "Created At", value: selectedCourse.createdAt },
-            { label: "Image URL", value: selectedCourse.imageURL, isImage: true }
+            {
+              label: 'Price',
+              value: selectedCourse.price ? selectedCourse.price + 'VND' : 'N/A'
+            },
+            {
+              label: 'Duration',
+              value: selectedCourse.duration ? selectedCourse.duration + ' hours' : 'N/A'
+            },
+
+            { label: "Status", value: <span style={{ color: "goldenrod" }}>{selectedCourse.approvalStatus}</span> },
+            { label: "Image URL", value: selectedCourse.imageURL, isImage: true },
+            {
+              label: 'Difficulty',
+              value: [
+                {
+                  label: selectedCourse.difficultyLevel ?? 'N/A',
+                  color:
+                  selectedCourse.difficultyLevel === 'Beginner'
+                      ? 'green'
+                      : selectedCourse.difficultyLevel === 'Intermediate'
+                        ? 'blue'
+                        : 'red'
+                }
+              ],
+              isStatus: true
+            },
+            { label: "Date", value: <FormatDateTime date={selectedCourse.createdAt} /> },
+
           ]}
+          widgets={[
+            {
+              label: 'Description',
+              content: selectedCourse.description ?? 'No description available'
+            },
+            {
+              label: 'Prerequisites',
+              content: selectedCourse.prerequisites ?? 'No prerequisites available'
+            },
+            {
+              label: 'Learning Outcomes',
+              content: selectedCourse.learningOutcomes?.join('\n') || 'No outcomes'
+            },
+
+          ]}
+
           actions={[
             {
               label: "Change Status",
@@ -153,23 +190,7 @@ export default function ApprovePendingCourses() {
                 setStatusModalOpen(true)
               }
             },
-            {
-              label: "Approve by AI",
-              icon: <Bot style={{ color: "#14B8A6" }} />,
-              onClick: async () => {
-                if (!selectedCourse) {
-                  console.log("No course selected => cannot approve by AI")
-                  return
-                }
-                try {
-                  await approveCourseByAI(selectedCourse.id).unwrap()
-                  toast.success(`AI approval successful for course #${selectedCourse.id}!`)
-                } catch (error: any) {
-                  console.error("Error approving course by AI:", error)
-                  toast.error("Failed to approve course by AI!")
-                }
-              }
-            }
+
           ]}
         />
       )}

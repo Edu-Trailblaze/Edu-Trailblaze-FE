@@ -16,7 +16,6 @@ const TableSearch = <T extends Record<string, any>>({
 }: TableSearchProps<T>) => {
   const [query, setQuery] = useState(initialQuery);
 
-  // Sử dụng debounce để tránh gọi callback quá nhiều lần
   useEffect(() => {
     const timer = setTimeout(() => {
       const lowerQuery = query.toLowerCase();
@@ -29,7 +28,6 @@ const TableSearch = <T extends Record<string, any>>({
           return false;
         })
       );
-      console.log("Filtered data:", filtered);
 
       onFilteredData(filtered);
     }, 500);
