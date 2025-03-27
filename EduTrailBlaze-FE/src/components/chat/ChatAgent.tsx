@@ -12,7 +12,7 @@ import { FaSpinner } from 'react-icons/fa'
 type Message = {
   user_message: string
   isUser: boolean
-  timestamp: Date
+  // timestamp: Date
 }
 
 export default function ChatAgent() {
@@ -46,8 +46,8 @@ export default function ChatAgent() {
     if (messageLoading) return
     const userMessage: Message = {
       user_message: input,
-      isUser: true,
-      timestamp: new Date()
+      isUser: true
+      // timestamp: new Date()
     }
     setMessages((prev) => [...prev, userMessage])
     setInput('')
@@ -56,15 +56,15 @@ export default function ChatAgent() {
 
   async function handleGenerateResponse(userMessage: string) {
     try {
-      setMessages((prev) => [...prev, { user_message: '...', isUser: false, timestamp: new Date() }])
+      setMessages((prev) => [...prev, { user_message: '...', isUser: false }])
 
       const response = await postMessage({ user_message: userMessage }).unwrap()
       setMessages((prev) => {
         const updatedMessages = [...prev]
         updatedMessages[updatedMessages.length - 1] = {
           user_message: response.response || 'Sorry, I cannot understand that',
-          isUser: false,
-          timestamp: new Date()
+          isUser: false
+          // timestamp: new Date()
         }
         return updatedMessages
       })
@@ -73,8 +73,8 @@ export default function ChatAgent() {
         const updatedMessages = [...prev]
         updatedMessages[updatedMessages.length - 1] = {
           user_message: 'Sorry, something went wrong. Please try again.',
-          isUser: false,
-          timestamp: new Date()
+          isUser: false
+          // timestamp: new Date()
         }
         return updatedMessages
       })
