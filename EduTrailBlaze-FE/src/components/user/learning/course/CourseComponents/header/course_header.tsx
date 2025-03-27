@@ -54,7 +54,7 @@ export default function CourseHeader({
         courseId: Number(courseURL),
         studentId: userId
       }).unwrap()
-      window.location.reload()
+      // window.location.reload()
     } catch (error) {
       toast.error('Enrollment failed' + error)
     }

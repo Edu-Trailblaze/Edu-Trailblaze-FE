@@ -101,18 +101,18 @@ const RollingGallery: React.FC<RollingGalleryProps> = ({
     }
   };
 
-  // const handleMouseEnter = (): void => {
-  //   if (autoplay && pauseOnHover) {
-  //     controls.stop();
-  //   }
-  // };
+  const handleMouseEnter = (): void => {
+    if (autoplay && pauseOnHover) {
+      controls.stop();
+    }
+  };
 
-  // const handleMouseLeave = (): void => {
-  //   if (autoplay && pauseOnHover) {
-  //     const currentAngle = rotation.get();
-  //     startInfiniteSpin(currentAngle);
-  //   }
-  // };
+  const handleMouseLeave = (): void => {
+    if (autoplay && pauseOnHover) {
+      const currentAngle = rotation.get();
+      startInfiniteSpin(currentAngle);
+    }
+  };
 
   return (
     <div className="relative h-[500px] w-full overflow-hidden">

@@ -111,7 +111,7 @@ export default function Course() {
           <CourseSection courseDetails={detail} section={section} lecture={lecture} />
         </div>
         <div id='review' className='scroll-mt-48'>
-          <CourseReview courseDetails={detail} courseId={Number(courseURL)} />
+          <CourseReview courseDetails={detail} courseId={Number(courseURL)} userId={userId}/>
         </div>
         <div id='suggestion' className='scroll-mt-48'>
           <CourseSuggestion recommendedCourses={recommendedCourses} />
