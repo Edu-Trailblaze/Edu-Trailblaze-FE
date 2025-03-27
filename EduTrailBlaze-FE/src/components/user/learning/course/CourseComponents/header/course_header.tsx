@@ -192,7 +192,7 @@ export default function CourseHeader({
                 <div className='absolute bottom-4 left-4 bg-white bg-opacity-90 px-4 py-2 rounded-lg shadow-md z-20'>
                   <div className='flex items-center'>
                     <Clock size={16} className='text-blue-600 mr-2' />
-                    <span className='font-medium'>{courseDetails.duration} hours</span>
+                    <span className='font-medium'>{courseDetails.duration} mins</span>
                   </div>
                 </div>
               </div>
