@@ -23,20 +23,28 @@ export const reviewApi = createApi({
       }),
       providesTags: ['Reviews']
     }),
-    getReviewInfo: build.query<ReviewInfo, number>({ // <-- MỚI
-         query: (courseId) => ({
-           url: `Review/get-review-info/${courseId}`,
-           method: 'GET'
-         }),
-         providesTags: ['Reviews']
-       })
-
+    getReviewInfo: build.query<ReviewInfo, number>({
+      // <-- MỚI
+      query: (courseId) => ({
+        url: `Review/get-review-info/${courseId}`,
+        method: 'GET'
+      }),
+      providesTags: ['Reviews']
+    }),
+    postReview: build.mutation<any, ReviewByUser>({
+      query: (body) => ({
+        url: 'Review',
+        method: 'POST',
+        body
+      })
+    })
   })
 })
 
 export const {
   useGetRatingDetailQuery,
   useGetReviewPagingQuery,
-  useGetReviewInfoQuery,       // <-- MỚI
-  useLazyGetReviewInfoQuery,   // <-- MỚI
+  useGetReviewInfoQuery, // <-- MỚI
+  useLazyGetReviewInfoQuery, // <-- MỚI
+  usePostReviewMutation
 } = reviewApi
