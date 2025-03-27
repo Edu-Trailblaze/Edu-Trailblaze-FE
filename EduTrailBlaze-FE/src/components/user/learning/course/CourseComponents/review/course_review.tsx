@@ -27,7 +27,7 @@ export default function CourseReview({ courseDetails, courseId, userId }: PostRe
           </button>
         </div>
 
-        <ReviewList id={courseId} />
+        <ReviewList courseId={courseId} userId={userId}/>
       </div>
 
       {/* Add Review Modal */}

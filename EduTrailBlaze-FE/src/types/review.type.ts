@@ -66,3 +66,9 @@ interface ReviewByUser {
   rating: number,
   reviewText: string
 }
+
+interface PutReview {
+  reviewId: number
+  rating: number
+  reviewText: string
+}
