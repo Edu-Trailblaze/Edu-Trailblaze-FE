@@ -334,7 +334,7 @@ export default function MyLearning() {
                     {/* <Heart className={`h-5 w-5 ${course.isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} /> */}
                     <Heart className={`h-5 w-5 text-gray-400`} />
                   </button>
-                  <div className='absolute bottom-0 left-0 right-0 h-2 bg-gray-200'>
+                  <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200'>
                     <div
                       className='bg-blue-600 h-1'
                       style={{
