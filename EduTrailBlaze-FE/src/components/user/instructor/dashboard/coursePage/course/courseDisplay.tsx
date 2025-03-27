@@ -17,6 +17,7 @@ interface CourseSearchProp {
 }
 export default function CourseDisplay({ searchQuery, InstructorId, tagId }: CourseSearchProp) {
   const [pageIndex, setPageIndex] = useState(1)
+  const [requestApprove, setRequestApprove] = useState<{ [key: string]: boolean }>({})
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModelOpen] = useState(false)
   const [failModalOpen, setFailModalOpen] = useState(false)
@@ -39,7 +40,7 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
   if (!courses?.items) return <div>No courses found</div>
 
   const handleApproveCourse = async (courseId: number) => {
-    setIsLoading(true)
+    setRequestApprove((prev) => ({ ...prev, [courseId]: true }))
     try {
       const result = await approveCourse(courseId).unwrap()
       console.log('Course approved:', result.message)
@@ -53,7 +54,7 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
     } catch (error) {
       console.error(error)
     } finally {
-      setIsLoading(false)
+      setRequestApprove((prev) => ({ ...prev, [courseId]: false }))
     }
   }
 
@@ -124,9 +125,9 @@ export default function CourseDisplay({ searchQuery, InstructorId, tagId }: Cour
                           type='button'
                           onClick={() => handleApproveCourse(courseItem.courseId)}
                           disabled={isLoading}
-                          className={`w-44 transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 ${isLoading ? 'opacity-75 cursor-not-allowed' : 'hover:from-blue-600 hover:to-blue-800'} flex justify-center items-center text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base`}
+                          className={`w-44 transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 ${isLoading ? 'opacity-75 cursor-not-allowed' : 'hover:from-blue-600 hover:to-blue-800'} flex justify-center items-center gap-1 text-white font-medium py-2 md:py-2 rounded-lg text-sm md:text-base`}
                         >
-                          {isLoading ? (
+                          {requestApprove[courseItem.courseId] ? (
                             <>
                               <svg
                                 className='animate-spin h-5 w-5 text-white'

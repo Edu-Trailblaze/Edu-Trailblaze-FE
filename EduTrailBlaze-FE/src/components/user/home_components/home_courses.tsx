@@ -23,6 +23,7 @@ import { formatCurrency } from '@/helper/format'
 
 export default function HomeCourses() {
   const [activeIndex, setActiveIndex] = useState(0)
+  const [addingToCart, setAddingToCart] = useState<{ [key: string]: boolean }>({})
   const [hoveredCourse, setHoveredCourse] = useState<number | null>(null)
   const [userId, setUserId] = useState('')
   const [selectedTag, setSelectedTag] = useState(1)
@@ -92,6 +93,7 @@ export default function HomeCourses() {
 
   const handleAddToCart = async (userId: string, courseId: number) => {
     console.log(cartStatus, cartError)
+    setAddingToCart((prev) => ({ ...prev, [courseId]: true }))
     try {
       if (userId === '' || userId === 'undefined') {
         setModalOpen(true)
@@ -104,6 +106,8 @@ export default function HomeCourses() {
     } catch (error) {
       console.log('Error adding to cart: ', error)
       if ((error as any).originalStatus === 400) toast.error('Course already in cart')
+    } finally {
+      setAddingToCart((prev) => ({ ...prev, [courseId]: false }))
     }
   }
 
@@ -243,14 +247,15 @@ export default function HomeCourses() {
                                 </p>
 
                                 <button
+                                  key={course.course.id}
                                   className={`w-[150px] transform hover:scale-105 transition-transform duration-300 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-800 flex justify-center items-center gap-2 ${isAddingToCart ? 'opacity-75 cursor-not-allowed' : 'hover:from-blue-600 hover:to-blue-900'} text-white font-medium py-1 md:py-2 rounded-lg text-sm md:text-base`}
                                   onClick={(e) => {
                                     e.preventDefault()
                                     handleAddToCart(userId, course.course.id)
                                   }}
-                                  disabled={isAddingToCart}
+                                  disabled={addingToCart[course.course.id]}
                                 >
-                                  {isAddingToCart ? (
+                                  {addingToCart[course.course.id] ? (
                                     <>
                                       <svg
                                         className='animate-spin h-5 w-5 text-white'

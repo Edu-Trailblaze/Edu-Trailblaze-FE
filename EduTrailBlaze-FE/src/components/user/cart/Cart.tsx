@@ -20,7 +20,7 @@ import '@/components/global/Modal/ReactModal.css'
 
 export default function Cart() {
   const [isCheckOut, setIsCheckOut] = useState(false)
-  const [isRemove, setIsRemove] = useState(false)
+  const [isRemove, setIsRemove] = useState<{ [key: string]: boolean }>({})
   const [isRemoveAll, setIsRemoveAll] = useState(false)
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
@@ -75,14 +75,14 @@ export default function Cart() {
   }
 
   const handleRemoveItem = async (userId: string, courseId: number) => {
-    setIsRemove(true)
+    setIsRemove((prev) => ({ ...prev, [courseId]: true }))
     try {
       await deleteCartItem({ userId, courseId }).unwrap()
       location.reload()
     } catch (error) {
       console.error('Error removing item from cart:', error)
     } finally {
-      setIsRemove(false)
+      setIsRemove((prev) => ({ ...prev, [courseId]: false }))
     }
   }
 
@@ -190,10 +190,10 @@ export default function Cart() {
                           <div className='flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4'>
                             <button
                               className='w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-150 flex justify-center items-center gap-2'
-                              disabled={isRemove}
+                              disabled={isRemove[cartItem.cartCourseInformation.id]}
                               onClick={() => handleRemoveItem(userId, cartItem.cartCourseInformation.id)}
                             >
-                              {isRemove ? (
+                              {isRemove[cartItem.cartCourseInformation.id] ? (
                                 <>
                                   <svg
                                     className='animate-spin h-5 w-5 text-white'
