@@ -24,7 +24,7 @@ const Layout = (props: any) => {
           {props.children}
         </section>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }
