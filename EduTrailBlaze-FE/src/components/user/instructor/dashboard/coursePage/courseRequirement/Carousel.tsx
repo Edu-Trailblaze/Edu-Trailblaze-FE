@@ -4,10 +4,7 @@ import { motion, PanInfo, useMotionValue, useTransform } from "framer-motion";
 import {
   FiFileText,
 } from "react-icons/fi";
-import { TbHexagonNumber3 } from "react-icons/tb";
-import { RiFolderVideoLine } from "react-icons/ri";
-import { FcReading } from "react-icons/fc";
-import { MdOutlineQuiz } from "react-icons/md";
+import { TbHexagonNumber1, TbHexagonNumber2, TbHexagonNumber3, TbHexagonNumber4, TbHexagonNumber5 } from "react-icons/tb";
 
 export interface CarouselItem {
   title: string;
@@ -34,28 +31,34 @@ const DEFAULT_ITEMS: CarouselItem[] = [
     icon: <FiFileText className="h-[22px] w-[22px] text-white" />,
   },
   {
+    title: "About Specialties",
+    description: "The Instructor must choose their specialties in Profile.",
+    id: 2,
+    icon: <TbHexagonNumber1 className="h-[22px] w-[22px] text-white" />,
+  },
+  {
     title: "Number of Lectures in Course",
     description: "The courses must contain at least 3 lectures with contents.",
-    id: 2,
-    icon: <TbHexagonNumber3 className="h-[22px] w-[22px] text-white" />,
+    id: 3,
+    icon: <TbHexagonNumber2 className="h-[22px] w-[22px] text-white" />,
   },
   {
     title: "Video Content",
     description: "The courses must contain at least 1 video lectures with video file.",
-    id: 3,
-    icon: <RiFolderVideoLine className="h-[22px] w-[22px] text-white" />,
+    id: 4,
+    icon: <TbHexagonNumber3 className="h-[22px] w-[22px] text-white" />,
   },
   {
     title: "Reading Content",
     description: "The courses must contain at least 1 reading lectures with reading file (docx, pdf).",
-    id: 4,
-    icon: <FcReading className="h-[22px] w-[22px] text-white" />,
+    id: 5,
+    icon: <TbHexagonNumber4 className="h-[22px] w-[22px] text-white" />,
   },
   {
     title: "Quiz Content",
     description: "The courses must contain at least 1 quiz lectures.",
-    id: 5,
-    icon: <MdOutlineQuiz className="h-[22px] w-[22px] text-white" />,
+    id: 6,
+    icon: <TbHexagonNumber5 className="h-[22px] w-[22px] text-white" />,
   },
 ];
 
