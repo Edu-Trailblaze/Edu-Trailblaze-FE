@@ -35,8 +35,8 @@ export default function InstructorsCard() {
       </CardTitle>
     </CardHeader>
     <CardContent>
-      <div className="text-2xl font-bold text-purple-900">{instructorsCount}</div>
-      <div className="grid grid-cols-2 gap-4 mt-2">
+      <div className="text-5xl font-bold text-purple-900">{instructorsCount}</div>
+      {/* <div className="grid grid-cols-2 gap-4 mt-2">
         <div>
           <p className="text-xs text-purple-700">Active</p>
           <p className="text-sm font-medium">{Math.round(instructorsCount * 0.9)}</p>
@@ -45,7 +45,7 @@ export default function InstructorsCard() {
           <p className="text-xs text-purple-700">New</p>
           <p className="text-sm font-medium">{Math.round(instructorsCount * 0.1)}</p>
         </div>
-      </div>
+      </div> */}
     </CardContent>
   </Card>
   )

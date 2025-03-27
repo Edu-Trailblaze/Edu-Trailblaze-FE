@@ -282,3 +282,12 @@ interface PendingCoursesResponse {
   hasPreviousPage: boolean
   hasNextPage: boolean
 }
+
+ type TopSaleCourse = {
+  rank: number
+  totalSales: number
+  id: number
+  title: string
+  imageURL: string
+  description: string
+}

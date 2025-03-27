@@ -32,7 +32,7 @@ export default function RevenueCard() {
     <Card className="border-0 shadow-md bg-gradient-to-br from-amber-50 to-amber-100 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
     <CardHeader className="pb-2">
       <CardTitle className="text-sm font-medium flex items-center text-amber-700">
-        <DollarSign className="h-4 w-4 mr-2" /> Revenue
+        <DollarSign className="h-4 w-4 mr-2" />Revenue
       </CardTitle>
     </CardHeader>
     <CardContent>

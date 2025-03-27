@@ -35,3 +35,12 @@ interface IMyLearningData {
 interface Enrollment {
   totalEnrollments: number
 }
+
+type TopStudentEnrollment = {
+  rank: number
+  userName: string
+  email: string
+  fullName: string
+  phoneNumber?: string
+  totalEnrollments: number
+}

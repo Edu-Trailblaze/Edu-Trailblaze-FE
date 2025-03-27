@@ -1,5 +1,6 @@
 'use client'
 //redux
+import { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
@@ -19,7 +20,7 @@ import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 
 //sort filter
 import NewsSort from '@/components/admin/Filter/NewsSortFilter/NewsSort'
-import NewsFilter from '@/components/admin/Filter/NewsSortFilter/NewsFilter'
+import DateFilter from '@/components/admin/Filter/DateFilter'
 
 //modal
 import NewsFormModalEdit from '../../../../../components/admin/Modal/NewsFormModal/NewsFormModalEdit'
@@ -54,6 +55,7 @@ const newsFields: { label: string; accessor: keyof News }[] = [
 export default function NewsManagement() {
   const dispatch = useDispatch()
 
+  const allNewsRef = useRef<News[]>([]);
   const [allNews, setAllNews] = useState<News[]>([])
   const [news, setNews] = useState<News[]>([])
   const [loading, setLoading] = useState<boolean>(true)
@@ -63,7 +65,10 @@ export default function NewsManagement() {
   const [isFilterOpen, setFilterOpen] = useState(false)
 
   //redux filter
-  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  // const { fromDate, toDate } = useSelector((state: RootState) => state.filter)
+  // const filterState = useSelector((state: RootState) => state.filter);
+  const [localFromDate, setLocalFromDate] = useState('');
+  const [localToDate, setLocalToDate] = useState('');
 
   //redux sort
   const [isSortOpen, setSortOpen] = useState(false)
@@ -85,6 +90,7 @@ export default function NewsManagement() {
       const response = await api.get('/News')
       setNews(response.data)
       setAllNews(response.data)
+      allNewsRef.current = response.data;
     } catch (error) {
       console.error('Error fetching news:', error)
     } finally {
@@ -152,7 +158,6 @@ export default function NewsManagement() {
   }
 
   const handleApplySort = (newVisibleColumns: Record<keyof News, boolean>) => {
-    // save state
     dispatch(setSortForTable({ tableKey, visibility: newVisibleColumns }))
     setSortOpen(false)
   }
@@ -161,7 +166,7 @@ export default function NewsManagement() {
     <TableRow
       key={news.id}
       hover
-      onClick={() => setSelectedNews(news)} // Click toàn dòng => DetailPopup
+      onClick={() => setSelectedNews(news)} 
     >
       {visibleColumns['id'] && <TableCell>{news.id}</TableCell>}
       {visibleColumns['title'] && <TableCell>{news.title}</TableCell>}
@@ -189,7 +194,13 @@ export default function NewsManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>News Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+         <TableSearch
+            data={allNews}                        
+            filterKeys={['title']}                
+            onFilteredData={(filteredData) => {  
+              setNews(filteredData)
+            }}
+          />
           <div className='flex items-center gap-4 self-end'>
             <div className='relative'>
               <button
@@ -199,37 +210,36 @@ export default function NewsManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-                <NewsFilter
-                  onClose={() => setFilterOpen(false)}
-                  onClear={() => {
-                    dispatch(clearFilter())
-                    setNews(allNews)
-                  }}
-                  onFilterApply={() => {
-                    //  GET fromDate, toDate, keyword từ Redux
-                    const from = fromDate ? new Date(fromDate) : null
-                    const to = toDate ? new Date(toDate) : null
-                    const kw = keyword.toLowerCase()
+  <DateFilter
+    fromDate={localFromDate}                   // CHANGED: Dùng state cục bộ
+    toDate={localToDate}                       // CHANGED: Dùng state cục bộ
+    onChange={(newValues) => {                  // CHANGED: Cập nhật local state
+      if (newValues.fromDate !== undefined) {
+        setLocalFromDate(newValues.fromDate);
+      }
+      if (newValues.toDate !== undefined) {
+        setLocalToDate(newValues.toDate);
+      }
+    }}
+    onReset={() => {                           // CHANGED: Reset local state
+      setLocalFromDate('');
+      setLocalToDate('');
+    }}
+    onApply={() => {                           // CHANGED: Filter cục bộ sử dụng dữ liệu gốc từ ref
+      const from = localFromDate ? new Date(localFromDate) : null;
+      const to = localToDate ? new Date(localToDate) : null;
+      const filtered = allNewsRef.current.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        if (from && itemDate < from) return false;
+        if (to && itemDate > to) return false;
+        return true;
+      });
+      setNews(filtered);
+      setFilterOpen(false);
+    }}
+  />
+)}
 
-                    // filter
-                    const filtered = allNews.filter((item) => {
-                      const itemDate = new Date(item.createdAt)
-                      if (from && itemDate < from) return false
-                      if (to && itemDate > to) return false
-
-                      if (kw) {
-                        const inTitle = item.title.toLowerCase().includes(kw)
-                        const inContent = item.content.toLowerCase().includes(kw)
-                        if (!inTitle && !inContent) return false
-                      }
-                      return true
-                    })
-
-                    setNews(filtered)
-                    console.log('Filtered news:', filtered)
-                  }}
-                />
-              )}
             </div>
 
             <div className='relative'>

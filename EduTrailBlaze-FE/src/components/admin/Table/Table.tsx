@@ -5,6 +5,7 @@ const Table = ({
     columns,
     renderRow,
     data,
+    onSort  
     // selectedRows,
     // onSelectRow
 
@@ -12,6 +13,7 @@ const Table = ({
     columns: { label: string; accessor: string; className?: string }[];
     renderRow: (item: any) => React.ReactNode;
     data: any[];
+    onSort?: (columnKey: string) => void;
     // selectedRows: Set<string>;  
     // onSelectRow: (id: string) => void;
 }) => {
@@ -31,6 +33,9 @@ const Table = ({
                                 fontSize: "0.9rem",
                                 textAlign: "left",
 
+                            }}
+                            onClick={() => {
+                                if (onSort) onSort(col.accessor);
                             }}
                         >
                             {col.label}

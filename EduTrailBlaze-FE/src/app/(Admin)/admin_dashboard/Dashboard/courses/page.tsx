@@ -22,7 +22,8 @@ import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import Pagination from '@/components/admin/Pagination/Pagination'
-import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
+// import CourseFilter from '@/components/admin/Filter/CourseSortFilter/CourseFilter'
+import DateFilter from '@/components/admin/Filter/DateFilter'
 import CourseSort from '@/components/admin/Filter/CourseSortFilter/CourseSort'
 import CourseFormModalCreate from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalCreate'
 import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFormModal/CourseFormModalEdit'
@@ -83,7 +84,6 @@ import { useAddCourseTagMutation } from '@/redux/services/courseTag.service'
 import { useLazyGetReviewInfoQuery } from '@/redux/services/review.service'
 import {
   useGetCoursePagingQuery,
-  useGetCourseQuery,
   useGetCourseDetailsQuery,
   useAddCourseMutation,
   useUpdateCourseMutation,
@@ -102,8 +102,8 @@ const courseFields: { label: string; accessor: CourseKey }[] = [
   { label: 'Duration', accessor: 'duration' },
   { label: 'Difficulty', accessor: 'difficultyLevel' },
   { label: 'Status', accessor: 'approvalStatus' },
-  { label: 'Created at', accessor: 'createdAt' }
-]
+  { label: 'Date', accessor: 'createdAt' }
+] 
 
 export default function CoursesManagement() {
   const dispatch = useDispatch()
@@ -123,9 +123,12 @@ export default function CoursesManagement() {
   //filter&sort
   const [isFilterOpen, setFilterOpen] = useState(false)
   const [isSortOpen, setSortOpen] = useState(false)
+  const [sortField, setSortField] = useState<keyof Course | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   //redux filter
-  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  const { fromDate, toDate } = useSelector((state: RootState) => state.filter)
+  const filterState = useSelector((state: RootState) => state.filter);
 
   //redux sort
   const tableKey = 'courses'
@@ -165,7 +168,9 @@ export default function CoursesManagement() {
     isError
   } = useGetCoursePagingQuery({
     PageIndex: pageIndex,
-    PageSize: pageSize
+    PageSize: pageSize,
+    Sort: sortField ?? undefined,
+    SortDirection: sortField ? sortDirection : undefined,
   })
   const {
     data: detailData,
@@ -215,45 +220,7 @@ export default function CoursesManagement() {
       toast.error('Failed to fetch course review info!')
     }
   }
-  // const handleAddCourse = async (newCourse: CourseCreate) => {
-  //   if (!userId) {
-  //     toast.error('User ID is not available!')
-  //     return
-  //   }
-  //   try {
-  //     const formData = new FormData()
-  //     formData.append('Title', newCourse.title)
-  //     formData.append('Description', newCourse.description)
-  //     formData.append('Price', newCourse.price.toString())
-  //     formData.append('DifficultyLevel', newCourse.difficultyLevel)
-  //     formData.append('CreatedBy', userId)
-  //     formData.append('Prerequisites', newCourse.prerequisites)
-  //     newCourse.learningOutcomes.forEach((outcome) => {
-  //       formData.append('LearningOutcomes', outcome)
-  //     })
-  //     if (newCourse.imageURL) {
-  //       formData.append('ImageURL', newCourse.imageURL)
-  //     }
-  //     if (newCourse.introURL) {
-  //       formData.append('IntroURL', newCourse.introURL)
-  //     }
-  //     const response = await axios.post(API_URL, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data'
-  //       }
-  //     })
-  //     toast.success('Course created successfully!')
-  //     setCourses([...courses, { ...response.data, createdAt: new Date().toISOString() }])
-  //     fetchCourses()
-  //     setAddModalOpen(false)
-  //   } catch (error: any) {
-  //     console.error('Error adding course:', error)
-  //     if (error.response) {
-  //       console.log('Server error response:', error.response.data)
-  //     }
-  //     toast.error('Failed to create course!')
-  //   }
-  // }
+
 
   const handleAddCourse = async (newCourse: CourseCreate, selectedTagIds: number[]) => {
     if (!userId) {
@@ -382,6 +349,24 @@ export default function CoursesManagement() {
     }
   }
 
+  const handleSort = (columnKey: string) => {
+    const key = columnKey as keyof Course;
+    setSortField((prevField) => {
+      if (prevField === key) {
+        // Nếu đang sort cùng cột, đảo ngược direction
+        setSortDirection((prevDirection) => (prevDirection === "asc" ? "desc" : "asc"));
+        return key;
+      } else {
+        // Chọn cột mới => direction default "asc"
+        setSortDirection("asc");
+        return key;
+      }
+    });
+  };
+
+ 
+
+
   function getStatusColor(status: string) {
     switch (status) {
       case 'Pending':
@@ -438,7 +423,14 @@ export default function CoursesManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Courses Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch />
+          <TableSearch 
+            data={allCourses}                           // CHANGED: truyền data từ allCourses (toàn bộ dữ liệu)  
+            filterKeys={['title']}                      // CHANGED: chỉ lọc theo trường "title"
+            onFilteredData={(filteredData) => {         // CHANGED: cập nhật lại state courses từ dữ liệu lọc
+              setCourses(filteredData)
+            }}
+          />   
+           
           <div className='flex items-center gap-4 self-end'>
           
             <div className='relative'>
@@ -449,35 +441,29 @@ export default function CoursesManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-                <CourseFilter
-                  onClose={() => setFilterOpen(false)}
-                  onClear={() => {
-                    dispatch(clearFilter())
-                    setAllCourses(allCourses)
-                  }}
-                  onFilterApply={() => {
-                    const from = fromDate ? new Date(fromDate) : null
-                    const to = toDate ? new Date(toDate) : null
-                    const kw = keyword.toLowerCase()
+              <DateFilter
+                fromDate={fromDate}
+                toDate={toDate}
+                onChange={(newValues) => {
+                  dispatch(setFilter({ ...filterState, ...newValues }))
+                }}
+                onReset={() => {
+                  dispatch(setFilter({ fromDate: '', toDate: '' }))
+                }}
+                onApply={() => {
+                  // Logic filter cục bộ theo date (nếu cần)
+                  const filtered = allCourses.filter((item) => {
+                    const itemDate = new Date(item.createdAt || '')
+                    if (fromDate && itemDate < new Date(fromDate)) return false
+                    if (toDate && itemDate > new Date(toDate)) return false
+                    return true
+                  })
+                  setCourses(filtered)
+                  setFilterOpen(false)
+                }}
+              />
+            )}
 
-                    const filtered = allCourses.filter((item) => {
-                      const itemDate = new Date(item.createdAt || '')
-                      if (from && itemDate < from) return false
-                      if (to && itemDate > to) return false
-
-                      if (kw) {
-                        const inTitle = item.title.toLowerCase().includes(kw)
-                        const inDescription = item.description.toLowerCase().includes(kw)
-                        if (!inTitle && !inDescription) return false
-                      }
-                      return true
-                    })
-
-                    setCourses(filtered)
-                    console.log('Filtered courses:', filtered)
-                  }}
-                />
-              )}
             </div>
 
             {/* Sort */}
@@ -528,11 +514,18 @@ export default function CoursesManagement() {
       ) : isError ? (
         <p className='text-red-500 text-sm'>Failed to load courses!</p>
       ) : (
-        <Table
-          columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
-          renderRow={renderRow}
-          data={courses}
-        />
+        // <Table
+        //   columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
+        //   renderRow={renderRow}
+        //   data={courses}
+        // />
+         <Table
+           columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
+           renderRow={renderRow}
+           data={courses}
+           onSort={handleSort}
+         />
+
       )}
 
       {/* <Pagination /> */}
@@ -557,7 +550,7 @@ export default function CoursesManagement() {
             },
             {
               label: 'Price',
-              value: detailData.courseDetails?.price ? detailData.courseDetails?.price + ' $' : 'N/A'
+              value: detailData.courseDetails?.price ? detailData.courseDetails?.price + '$' : 'N/A'
             },
             { label: 'Enrollements', value: detailData.courseDetails?.enrollment?.totalEnrollments },
             { label: 'imageURL', value: detailData.courseDetails?.imageURL, isImage: true },
@@ -604,50 +597,40 @@ export default function CoursesManagement() {
                 detailData.courseDetails?.review?.averageRating ?? 0
               }\nTotal Ratings: ${detailData.courseDetails?.review?.totalRatings ?? 0}`
             }
-            // {
-            //   label: 'Section Details',
-            //   content: detailData.sectionDetails
-            //     ?.map(
-            //       (sec, idx) =>
-            //         `Section ${idx + 1}: ${sec.title}\nLectures: ${
-            //           sec.numberOfLectures
-            //         }\nDuration: ${sec.duration}\n`
-            //     )
-            //     .join('\n') || 'No sections'
-            // }
+
           ]}
           actions={[
-            {
-              label: 'Change Status',
-              icon: <RefreshCw style={{ color: '#F59E0B' }} />,
-              onClick: () => {
-                if (!selectedCourseId) {
-                  console.log('No course id => cannot change status')
-                  return
-                }
-                setStatusCourseId(selectedCourseId)
-                setStatusCurrent(detailData.courseDetails?.approvalStatus as CourseApprovalStatus)
-                setStatusModalOpen(true)
-              }
-            },
-            {
-              label: 'Approve by AI',
-              icon: <Bot style={{ color: '#14B8A6' }} />,
-              onClick: async () => {
-                if (!selectedCourseId) {
-                  console.log('No course id => cannot approve by AI')
-                  return
-                }
-                try {
-                  // Gọi mutation RTK Query
-                  await approveCourseByAI(selectedCourseId).unwrap()
-                  toast.success('AI approval successful!')
-                } catch (error: any) {
-                  console.error('Error approving course by AI:', error)
-                  toast.error('Failed to approve course by AI!')
-                }
-              }
-            },
+            // {
+            //   label: 'Change Status',
+            //   icon: <RefreshCw style={{ color: '#F59E0B' }} />,
+            //   onClick: () => {
+            //     if (!selectedCourseId) {
+            //       console.log('No course id => cannot change status')
+            //       return
+            //     }
+            //     setStatusCourseId(selectedCourseId)
+            //     setStatusCurrent(detailData.courseDetails?.approvalStatus as CourseApprovalStatus)
+            //     setStatusModalOpen(true)
+            //   }
+            // },
+            // {
+            //   label: 'Approve by AI',
+            //   icon: <Bot style={{ color: '#14B8A6' }} />,
+            //   onClick: async () => {
+            //     if (!selectedCourseId) {
+            //       console.log('No course id => cannot approve by AI')
+            //       return
+            //     }
+            //     try {
+            //       // Gọi mutation RTK Query
+            //       await approveCourseByAI(selectedCourseId).unwrap()
+            //       toast.success('AI approval successful!')
+            //     } catch (error: any) {
+            //       console.error('Error approving course by AI:', error)
+            //       toast.error('Failed to approve course by AI!')
+            //     }
+            //   }
+            // },
 
             {
               label: 'Update',

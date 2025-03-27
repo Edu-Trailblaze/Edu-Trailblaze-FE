@@ -35,8 +35,8 @@ export default function StudentsCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-blue-900">{studentsCount}</div>
-        <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="text-5xl font-bold text-blue-900">{studentsCount}</div>
+        {/* <div className="grid grid-cols-2 gap-4 mt-2">
           <div>
             <p className="text-xs text-blue-700">Active</p>
             <p className="text-sm font-medium">{Math.round(studentsCount * 0.8)}</p>
@@ -45,7 +45,7 @@ export default function StudentsCard() {
             <p className="text-xs text-blue-700">New</p>
             <p className="text-sm font-medium">{Math.round(studentsCount * 0.2)}</p>
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )

@@ -1,5 +1,4 @@
-import React from 'react'
-import { Search } from 'lucide-react'
+import React, { useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
@@ -12,9 +11,18 @@ interface CourseFilterProps {
 
 const CourseFilter: React.FC<CourseFilterProps> = ({ onClose, onClear, onFilterApply }) => {
   const dispatch = useDispatch()
-  const { fromDate, toDate, keyword } = useSelector((state: RootState) => state.filter)
+  const { fromDate, toDate } = useSelector((state: RootState) => state.filter)
+
+  // Kiểm tra valid: nếu cả hai có giá trị, thì fromDate phải nhỏ hơn hoặc bằng toDate
+  const isDateValid = useMemo(() => {
+    if (fromDate && toDate) {
+      return new Date(fromDate) <= new Date(toDate)
+    }
+    return true
+  }, [fromDate, toDate])
 
   const applyFilters = () => {
+    if (!isDateValid) return
     onFilterApply()
     onClose()
   }
@@ -33,7 +41,11 @@ const CourseFilter: React.FC<CourseFilterProps> = ({ onClose, onClear, onFilterA
           Clear
         </button>
         <h4 className='font-semibold text-gray-700'>Filters</h4>
-        <button onClick={applyFilters} className='text-sm bg-black text-white px-3 py-1 rounded-md'>
+        <button
+          onClick={applyFilters}
+          className={`text-sm px-3 py-1 rounded-md ${isDateValid ? 'bg-black text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+          disabled={!isDateValid}
+        >
           Done
         </button>
       </div>
@@ -46,8 +58,8 @@ const CourseFilter: React.FC<CourseFilterProps> = ({ onClose, onClear, onFilterA
             <span className='text-sm font-medium text-gray-700'>Date range</span>
             <button
               onClick={() => {
-                // Reset only fromDate, toDate trong Redux
-                dispatch(setFilter({ fromDate: '', toDate: '', keyword }))
+                // Reset chỉ date range
+                dispatch(setFilter({ fromDate: '', toDate: '' }))
               }}
               className='text-sm text-teal-600'
             >
@@ -62,8 +74,7 @@ const CourseFilter: React.FC<CourseFilterProps> = ({ onClose, onClear, onFilterA
                 dispatch(
                   setFilter({
                     fromDate: e.target.value,
-                    toDate,
-                    keyword
+                    toDate
                   })
                 )
               }
@@ -76,45 +87,16 @@ const CourseFilter: React.FC<CourseFilterProps> = ({ onClose, onClear, onFilterA
                 dispatch(
                   setFilter({
                     fromDate,
-                    toDate: e.target.value,
-                    keyword
+                    toDate: e.target.value
                   })
                 )
               }
               className='border p-2 rounded-md w-full'
             />
           </div>
-        </div>
-
-        {/* Keyword Search */}
-        <div className='mb-4'>
-          <div className='flex justify-between items-center'>
-            <span className='text-sm font-medium text-gray-700'>Keyword search</span>
-            <button
-              onClick={() => dispatch(setFilter({ fromDate, toDate, keyword: '' }))}
-              className='text-sm text-teal-600'
-            >
-              Reset
-            </button>
-          </div>
-          <div className='relative'>
-            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={16} />
-            <input
-              type='text'
-              placeholder='Search...'
-              value={keyword}
-              onChange={(e) =>
-                dispatch(
-                  setFilter({
-                    fromDate,
-                    toDate,
-                    keyword: e.target.value
-                  })
-                )
-              }
-              className='border p-2 rounded-md w-full pl-8'
-            />
-          </div>
+          {!isDateValid && (
+            <p className='text-xs text-red-500 mt-1'>From date must be earlier than or equal to To date.</p>
+          )}
         </div>
       </div>
     </div>
