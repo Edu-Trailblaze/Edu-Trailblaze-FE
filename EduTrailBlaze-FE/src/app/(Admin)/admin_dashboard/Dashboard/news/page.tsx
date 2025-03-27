@@ -1,6 +1,5 @@
 'use client'
 //redux
-import { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
@@ -11,7 +10,7 @@ import api from '@/components/config/axios'
 import 'react-toastify/dist/ReactToastify.css'
 import { TableRow, TableCell } from '@mui/material'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef  } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import Table from '@/components/admin/Table/Table'
 import TableSearch from '@/components/admin/TableSearch/TableSearch'
@@ -49,7 +48,7 @@ const newsFields: { label: string; accessor: keyof News }[] = [
   { label: 'Title', accessor: 'title' },
   { label: 'Content', accessor: 'content' },
   { label: 'Image URL', accessor: 'imageUrl' },
-  { label: 'Created on', accessor: 'createdAt' }
+  { label: 'Date', accessor: 'createdAt' }
 ]
 
 export default function NewsManagement() {
@@ -61,12 +60,15 @@ export default function NewsManagement() {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedNews, setSelectedNews] = useState<News | null>(null)
 
+  //search
+  const [searchResult, setSearchResult] = useState<News[]>([]);
+  const [dateResult, setDateResult] = useState<News[]>([]);
+  const display = useMemo(() => {
+    return searchResult.filter(course => dateResult.includes(course));
+  }, [searchResult, dateResult]);
+
   //filter
   const [isFilterOpen, setFilterOpen] = useState(false)
-
-  //redux filter
-  // const { fromDate, toDate } = useSelector((state: RootState) => state.filter)
-  // const filterState = useSelector((state: RootState) => state.filter);
   const [localFromDate, setLocalFromDate] = useState('');
   const [localToDate, setLocalToDate] = useState('');
 
@@ -87,20 +89,33 @@ export default function NewsManagement() {
 
   const fetchNews = async () => {
     try {
-      const response = await api.get('/News')
-      setNews(response.data)
-      setAllNews(response.data)
-      allNewsRef.current = response.data;
+      const response = await api.get('/News');
+      const data = response.data;
+      setNews(data);
+      setAllNews(data);
+      setSearchResult(data); 
+      setDateResult(data);  
+      allNewsRef.current = data;
+      return data; 
     } catch (error) {
-      console.error('Error fetching news:', error)
+      console.error('Error fetching news:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  // useEffect(() => {
+  //   fetchNews()
+  // }, [])
 
   useEffect(() => {
-    fetchNews()
-  }, [])
+    fetchNews().then((fetched) => {
+      setAllNews(fetched);
+      setNews(fetched);
+      setSearchResult(fetched);
+      setDateResult(fetched);
+    });
+  }, []);
 
   const handleAddNews = async (newNews: NewsCreate) => {
     try {
@@ -162,6 +177,7 @@ export default function NewsManagement() {
     setSortOpen(false)
   }
 
+
   const renderRow = (news: News) => (
     <TableRow
       key={news.id}
@@ -194,11 +210,11 @@ export default function NewsManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>News Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-         <TableSearch
-            data={allNews}                        
-            filterKeys={['title']}                
-            onFilteredData={(filteredData) => {  
-              setNews(filteredData)
+        <TableSearch
+            data={allNews}
+            filterKeys={['title']}
+            onFilteredData={(filteredData) => {
+              setSearchResult(filteredData);
             }}
           />
           <div className='flex items-center gap-4 self-end'>
@@ -210,35 +226,37 @@ export default function NewsManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-  <DateFilter
-    fromDate={localFromDate}                   // CHANGED: Dùng state cục bộ
-    toDate={localToDate}                       // CHANGED: Dùng state cục bộ
-    onChange={(newValues) => {                  // CHANGED: Cập nhật local state
-      if (newValues.fromDate !== undefined) {
-        setLocalFromDate(newValues.fromDate);
-      }
-      if (newValues.toDate !== undefined) {
-        setLocalToDate(newValues.toDate);
-      }
-    }}
-    onReset={() => {                           // CHANGED: Reset local state
-      setLocalFromDate('');
-      setLocalToDate('');
-    }}
-    onApply={() => {                           // CHANGED: Filter cục bộ sử dụng dữ liệu gốc từ ref
-      const from = localFromDate ? new Date(localFromDate) : null;
-      const to = localToDate ? new Date(localToDate) : null;
-      const filtered = allNewsRef.current.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        if (from && itemDate < from) return false;
-        if (to && itemDate > to) return false;
-        return true;
-      });
-      setNews(filtered);
-      setFilterOpen(false);
-    }}
-  />
-)}
+                <DateFilter
+  fromDate={localFromDate}
+  toDate={localToDate}
+  onChange={(newValues) => {                
+    if (newValues.fromDate !== undefined) {
+      setLocalFromDate(newValues.fromDate);
+    }
+    if (newValues.toDate !== undefined) {
+      setLocalToDate(newValues.toDate);
+    }
+  }}
+  onReset={() => {                        
+    setLocalFromDate('');
+    setLocalToDate('');
+  }}
+  onApply={() => {                        
+    const from = localFromDate ? new Date(localFromDate) : null;
+    const to = localToDate ? new Date(localToDate) : null;
+    const filtered = allNews.filter((item) => {
+      if (!item.createdAt) return false;
+      const itemDate = new Date(item.createdAt);
+      if (from && itemDate < from) return false;
+      if (to && itemDate > to) return false;
+      return true;
+    });
+    setDateResult(filtered);
+    setFilterOpen(false);
+  }}
+/>
+
+            )}
 
             </div>
 
@@ -279,8 +297,8 @@ export default function NewsManagement() {
         <Table
           columns={[...newsFields.filter((field) => visibleColumns[field.accessor])]}
           renderRow={renderRow}
-          data={news}
-        />
+          data={display}
+       />
       )}
 
       {selectedNews && (

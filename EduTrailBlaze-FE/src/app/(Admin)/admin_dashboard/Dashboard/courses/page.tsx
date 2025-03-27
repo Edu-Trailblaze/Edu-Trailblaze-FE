@@ -8,12 +8,10 @@ import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 // React, libs
 import Link from 'next/link'
-import { useNavigate } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
-import axios from 'axios'
 import 'react-toastify/dist/ReactToastify.css'
 import { TableRow, TableCell } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 
 //components
@@ -33,8 +31,6 @@ import StatusModal from '../../../../../components/admin/Modal/CourseFormModal/C
 //icon
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot, ListChecks  } from 'lucide-react'
 
-//type
-// import { Course, CourseCreate, ICourseDetails} from '../../../../../types/course.type'
 
 export interface Course {
   id: number
@@ -116,19 +112,23 @@ export default function CoursesManagement() {
   // const [selectedCourse, setSelectedCourse] = useState<CourseDetails | null>(null)
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null)
 
+
   const [isStatusModalOpen, setStatusModalOpen] = useState(false)
   const [statusCourseId, setStatusCourseId] = useState<number | null>(null)
   const [statusCurrent, setStatusCurrent] = useState<CourseApprovalStatus>('Pending')
 
+//search
+const [searchResult, setSearchResult] = useState<Course[]>([]);
+const [dateResult, setDateResult] = useState<Course[]>([]);
+const display = useMemo(() => {
+  return searchResult.filter(course => dateResult.includes(course));
+}, [searchResult, dateResult]);
+
   //filter&sort
   const [isFilterOpen, setFilterOpen] = useState(false)
   const [isSortOpen, setSortOpen] = useState(false)
-  const [sortField, setSortField] = useState<keyof Course | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-  //redux filter
-  const { fromDate, toDate } = useSelector((state: RootState) => state.filter)
-  const filterState = useSelector((state: RootState) => state.filter);
+  const [localFromDate, setLocalFromDate] = useState('');
+  const [localToDate, setLocalToDate] = useState('');
 
   //redux sort
   const tableKey = 'courses'
@@ -137,6 +137,8 @@ export default function CoursesManagement() {
     dispatch(setSortForTable({ tableKey, visibility: newVisibleColumns }))
     setSortOpen(false)
   }
+  const [sortField, setSortField] = useState<keyof Course | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   //modal
   const [isAddModalOpen, setAddModalOpen] = useState(false)
@@ -201,15 +203,28 @@ export default function CoursesManagement() {
     }
   }, [])
 
+  // useEffect(() => {
+  //   if (pagingData?.items) {
+  //     setAllCourses(pagingData.items.map((item) => item.course))
+  //     setCourses(pagingData.items.map((item) => item.course))
+  //   }
+  //   if (pagingData?.totalPages) {
+  //     setTotalPages(pagingData.totalPages)
+  //   }
+  // }, [pagingData])
+
   useEffect(() => {
     if (pagingData?.items) {
-      setAllCourses(pagingData.items.map((item) => item.course))
-      setCourses(pagingData.items.map((item) => item.course))
+      const fetched = pagingData.items.map((item) => item.course);
+      setAllCourses(fetched);
+      setSearchResult(fetched);
+      setDateResult(fetched);
     }
     if (pagingData?.totalPages) {
-      setTotalPages(pagingData.totalPages)
+      setTotalPages(pagingData.totalPages);
     }
-  }, [pagingData])
+  }, [pagingData]);
+  
 
   const handleDetail = async (course: Course) => {
     try {
@@ -364,7 +379,6 @@ export default function CoursesManagement() {
     });
   };
 
- 
 
 
   function getStatusColor(status: string) {
@@ -423,13 +437,14 @@ export default function CoursesManagement() {
       <div className='flex items-center justify-between'>
         <h1 className='hidden md:block text-lg font-semibold'>Courses Management</h1>
         <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-          <TableSearch 
-            data={allCourses}                           // CHANGED: truyền data từ allCourses (toàn bộ dữ liệu)  
-            filterKeys={['title']}                      // CHANGED: chỉ lọc theo trường "title"
-            onFilteredData={(filteredData) => {         // CHANGED: cập nhật lại state courses từ dữ liệu lọc
-              setCourses(filteredData)
-            }}
-          />   
+        <TableSearch
+          data={allCourses}
+          filterKeys={['title']}
+          onFilteredData={(filteredData) => {
+            setSearchResult(filteredData);
+          }}
+        />
+ 
            
           <div className='flex items-center gap-4 self-end'>
           
@@ -441,27 +456,35 @@ export default function CoursesManagement() {
                 <Filter size={18} />
               </button>
               {isFilterOpen && (
-              <DateFilter
-                fromDate={fromDate}
-                toDate={toDate}
-                onChange={(newValues) => {
-                  dispatch(setFilter({ ...filterState, ...newValues }))
-                }}
-                onReset={() => {
-                  dispatch(setFilter({ fromDate: '', toDate: '' }))
-                }}
-                onApply={() => {
-                  // Logic filter cục bộ theo date (nếu cần)
-                  const filtered = allCourses.filter((item) => {
-                    const itemDate = new Date(item.createdAt || '')
-                    if (fromDate && itemDate < new Date(fromDate)) return false
-                    if (toDate && itemDate > new Date(toDate)) return false
-                    return true
-                  })
-                  setCourses(filtered)
-                  setFilterOpen(false)
-                }}
-              />
+                <DateFilter
+                  fromDate={localFromDate}
+                  toDate={localToDate}
+                  onChange={(newValues) => {
+                    if (newValues.fromDate !== undefined) {
+                      setLocalFromDate(newValues.fromDate);
+                    }
+                    if (newValues.toDate !== undefined) {
+                      setLocalToDate(newValues.toDate);
+                    }
+                  }}
+                  onReset={() => {
+                    setLocalFromDate('');
+                    setLocalToDate('');
+                  }}
+                  onApply={() => {
+                    const from = localFromDate ? new Date(localFromDate) : null;
+                    const to = localToDate ? new Date(localToDate) : null;
+                    const filtered = allCourses.filter((item) => {
+                      if (!item.createdAt) return false;
+                      const itemDate = new Date(item.createdAt);
+                      if (from && itemDate < from) return false;
+                      if (to && itemDate > to) return false;
+                      return true;
+                    });
+                    setDateResult(filtered);
+                    setFilterOpen(false);
+                  }}
+                />
             )}
 
             </div>
@@ -519,12 +542,12 @@ export default function CoursesManagement() {
         //   renderRow={renderRow}
         //   data={courses}
         // />
-         <Table
-           columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
-           renderRow={renderRow}
-           data={courses}
-           onSort={handleSort}
-         />
+        <Table
+          columns={[...courseFields.filter((field) => visibleColumns[field.accessor])]}
+          renderRow={renderRow}
+          data={display}
+          onSort={handleSort}
+        />
 
       )}
 

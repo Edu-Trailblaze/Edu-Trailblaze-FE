@@ -29,8 +29,10 @@ const TableSearch = <T extends Record<string, any>>({
           return false;
         })
       );
+      console.log("Filtered data:", filtered);
+
       onFilteredData(filtered);
-    }, 5000000);
+    }, 500);
     return () => clearTimeout(timer);
   }, [query, data, filterKeys, onFilteredData]);
 
