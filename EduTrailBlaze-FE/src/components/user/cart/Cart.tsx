@@ -157,7 +157,7 @@ export default function Cart() {
                             <p className='font-light text-sm mb-2'>{cartItem.instructorInformation[0].fullname}</p>
 
                             {/* Rating Section */}
-                            <div className='flex items-center space-x-1 text-yellow-400 mb-2'>
+                            {/* <div className='flex items-center space-x-1 text-yellow-400 mb-2'>
                               <span className='text-gray-600 text-sm font-medium'>4.6</span>
                               {[...Array(4)].map((_, i) => (
                                 <svg
@@ -183,7 +183,7 @@ export default function Cart() {
                               <span className='text-gray-400 text-sm'>(40,856)</span>
                             </div>
 
-                            <p className='font-thin text-sm'>50 total hours • 200 lectures • Diploma</p>
+                            <p className='font-thin text-sm'>50 total hours • 200 lectures • Diploma</p> */}
                           </div>
 
                           {/* Price and Remove Button */}
