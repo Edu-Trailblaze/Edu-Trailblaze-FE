@@ -28,6 +28,8 @@ import CourseFormModalEdit from '../../../../../components/admin/Modal/CourseFor
 import DetailPopup from '@/components/global/Popup/PopupDetail'
 import StatusModal from '../../../../../components/admin/Modal/CourseFormModal/CourseStatusModal'
 
+import { formatCurrency } from '@/helper/format'
+
 //icon
 import { Filter, ArrowUpDown, Plus, Trash2, Pencil, RefreshCw, Bot, ListChecks  } from 'lucide-react'
 
@@ -416,7 +418,7 @@ const display = useMemo(() => {
       >
         {visibleColumns['id'] && <TableCell className='p-4'>{course.id}</TableCell>}
         {visibleColumns['title'] && <TableCell>{course.title}</TableCell>}
-        {visibleColumns['price'] && <TableCell>{course.price}</TableCell>}
+        {visibleColumns['price'] && <TableCell>{formatCurrency(course.price)}</TableCell>}
         {visibleColumns['duration'] && <TableCell>{course.duration}</TableCell>}
         {visibleColumns['difficultyLevel'] && <TableCell>{course.difficultyLevel}</TableCell>}
 
@@ -571,7 +573,7 @@ const display = useMemo(() => {
             },
             {
               label: 'Price',
-              value: detailData.courseDetails?.price ? detailData.courseDetails?.price + 'VND' : 'N/A'
+              value: detailData.courseDetails?.price ? formatCurrency(detailData.courseDetails.price) : 'N/A'
             },
             { label: 'Enrollements', value: detailData.courseDetails?.enrollment?.totalEnrollments },
             { label: 'imageURL', value: detailData.courseDetails?.imageURL, isImage: true },

@@ -16,3 +16,8 @@ interface InstructorSpecialties {
     userId: string;
     tag: number[];
 }
+
+interface StudentCountByTag {
+  tagName: string;
+  studentCount: number;
+}

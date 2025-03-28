@@ -1,18 +1,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BookOpen } from "lucide-react"
-import { useGetTotalCoursesBoughtQuery } from "@/redux/services/dashboard.service"
+import {
+  useGetTotalCoursesBoughtQuery,
+  useGetNearestTimeForEnrollmentsQuery,
+} from "@/redux/services/dashboard.service"
 
 export default function CoursesCard() {
-  const { data: totalCoursesBought = 0, isLoading, isError } = useGetTotalCoursesBoughtQuery()
+  const {
+    data: totalCoursesBought = 0,
+    isLoading: isLoadingTotal,
+    isError: isErrorTotal,
+  } = useGetTotalCoursesBoughtQuery()
 
-  if (isLoading) {
+  const {
+    data: enrollmentsData,
+    isLoading: isLoadingEnroll,
+    isError: isErrorEnroll,
+  } = useGetNearestTimeForEnrollmentsQuery({ time: "month" })
+
+  // Nếu một trong hai API đang loading
+  if (isLoadingTotal || isLoadingEnroll) {
     return (
       <Card
         className="border-0 overflow-hidden"
         style={{
           background: "rgba(236, 253, 245, 0.6)",
           backdropFilter: "blur(8px)",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3)",
+          boxShadow:
+            "0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3)",
         }}
       >
         <CardHeader>
@@ -25,14 +40,16 @@ export default function CoursesCard() {
     )
   }
 
-  if (isError) {
+  // Nếu có lỗi từ bất kỳ API nào hoặc không có dữ liệu enrollments
+  if (isErrorTotal || isErrorEnroll || !enrollmentsData) {
     return (
       <Card
         className="border-0 overflow-hidden"
         style={{
           background: "rgba(236, 253, 245, 0.6)",
           backdropFilter: "blur(8px)",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3)",
+          boxShadow:
+            "0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3)",
         }}
       >
         <CardHeader>
@@ -45,13 +62,19 @@ export default function CoursesCard() {
     )
   }
 
+  // Lấy dữ liệu enrollments tháng này và tháng trước từ API enrollments
+  const currentMonthEnrollments = enrollmentsData[0]?.data ?? 0
+  const lastMonthEnrollments = enrollmentsData[1]?.data ?? 0
+
   return (
     <Card
       className="border-0 overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
       style={{
-        background: "linear-gradient(135deg, rgba(236, 253, 245, 0.8), rgba(209, 250, 229, 0.7))",
+        background:
+          "linear-gradient(135deg, rgba(236, 253, 245, 0.8), rgba(209, 250, 229, 0.7))",
         backdropFilter: "blur(8px)",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3)",
+        boxShadow:
+          "0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.3)",
       }}
     >
       <CardHeader className="pb-2">
@@ -60,19 +83,24 @@ export default function CoursesCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-green-900">{totalCoursesBought}</div>
+        <div className="text-2xl font-bold text-green-900">
+          {totalCoursesBought}
+        </div>
         <div className="grid grid-cols-2 gap-4 mt-2">
           <div>
-            <p className="text-xs text-green-700">Completed</p>
-            <p className="text-sm font-medium text-green-800">{Math.round(totalCoursesBought * 0.65)}</p>
+            <p className="text-xs text-green-700">This Month</p>
+            <p className="text-sm font-medium text-green-800">
+              {currentMonthEnrollments}
+            </p>
           </div>
           <div>
-            <p className="text-xs text-green-700">In Progress</p>
-            <p className="text-sm font-medium text-green-800">{Math.round(totalCoursesBought * 0.35)}</p>
+            <p className="text-xs text-green-700">Last Month</p>
+            <p className="text-sm font-medium text-green-800">
+              {lastMonthEnrollments}
+            </p>
           </div>
         </div>
       </CardContent>
     </Card>
   )
 }
-

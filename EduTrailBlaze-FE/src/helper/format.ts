@@ -10,7 +10,7 @@ export function formatCurrency(amount: number | undefined): string {
     currency: 'VND'
   }).format(amount || 0)
 }
-
+ 
 export function convertDuration(duration: string) {
   const [hours, minutes] = duration.split(':').map(Number)
   return `${hours + minutes / 60} hours`

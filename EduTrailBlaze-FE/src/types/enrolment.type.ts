@@ -45,12 +45,25 @@ type TopStudentEnrollment = {
   totalEnrollments: number
 }
 
+
 interface TotalEnrollmentsResponse {
   statusCode: number;
   data: number;
 }
 
+interface NearestTimeEnrollment {
+  fromDate: string
+  toDate: string
+  data: number
+}
+
 interface TotalRevenueResponse {
   statusCode: number;
+  data: number;
+}
+
+interface NearestTimeRevenue {
+  fromDate: string;
+  toDate: string;
   data: number;
 }
