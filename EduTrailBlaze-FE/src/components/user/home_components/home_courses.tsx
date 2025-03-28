@@ -478,7 +478,7 @@ export default function HomeCourses() {
                                       Adding...
                                     </>
                                   ) : (
-                                    <p>Add to Cart</p>
+                                    <p>Go to Course</p>
                                   )}
                                 </button>
                               </div>
