@@ -1,6 +1,7 @@
 import { BookOpen, Award, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { useGetTopSaleCoursesQuery } from "@/redux/services/dashboard.service"
+import { formatCurrency } from "@/helper/format"
 
 export default function TopCourses() {
   const { data: topCourses, isLoading, isError } = useGetTopSaleCoursesQuery()
@@ -106,8 +107,8 @@ export default function TopCourses() {
                   </div>
                 </div>
                 <div className="text-right flex flex-col items-end">
-                  <div className="font-bold text-blue-900 text-lg">{Number(course.totalSales).toLocaleString()} VND</div>
-                  <div className="flex items-center mt-1">
+                <div className="font-bold text-blue-900 text-lg">{formatCurrency(course.totalSales)}</div>
+                <div className="flex items-center mt-1">
                     <Award className="h-4 w-4 text-amber-500 mr-1" />
                     <span className="text-xs font-medium text-blue-700">Rank {course.rank}</span>
                   </div>

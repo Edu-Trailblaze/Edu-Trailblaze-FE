@@ -2,7 +2,6 @@
 //redux
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setFilter, clearFilter } from '@/redux/slice/filter.slice'
 import { setSortForTable, clearSortForTable } from '@/redux/slice/sort.slice'
 
 //api
@@ -19,6 +18,7 @@ import TableSearch from '@/components/admin/TableSearch/TableSearch'
 import Loader from '@/components/animate/loader/loader'
 import FormatDateTime from '@/components/admin/Date/FormatDateTime'
 import DetailPopup from '@/components/global/Popup/PopupDetail'
+import { formatCurrency } from '@/helper/format'
 
 //sort filter
 import OrderSort from '@/components/admin/Filter/OrderSortFilter/OrderSort'
@@ -143,7 +143,7 @@ export default function OrdersManagement() {
     <TableRow key={order.id} hover onClick={() => setSelectedOrder(order)}>
       {visibleColumns['id'] && <TableCell>{order.id}</TableCell>}
       {visibleColumns['userName'] && <TableCell>{order.userName}</TableCell>}
-      {visibleColumns['orderAmount'] && <TableCell>{order.orderAmount}$</TableCell>}
+      {visibleColumns['orderAmount'] && <TableCell>{formatCurrency(order.orderAmount)}</TableCell>}
       {visibleColumns['orderDate'] && (
         <TableCell>
           <FormatDateTime date={order.orderDate} />
@@ -254,7 +254,7 @@ export default function OrdersManagement() {
           fields={[
             { label: 'Id', value: selectedOrder.id, isID: true },
             { label: 'User Name', value: selectedOrder.userName },
-            { label: 'Amount', value: selectedOrder.orderAmount },
+            { label: 'Amount', value: formatCurrency(selectedOrder.orderAmount) },
             { label: 'Order Date', value: selectedOrder.orderDate },
             {
               label: 'Status',

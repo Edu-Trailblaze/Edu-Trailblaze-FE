@@ -62,6 +62,19 @@ export const dashboardApi = createApi({
       transformResponse: (response: TotalRevenueResponse) => response.data,
     }),
 
+
+    getStudentCountByTag: builder.query<StudentCountByTag[], void>({
+      query: () => 'Course/get-student-count-by-tag'
+    }),
+
+    getNearestTimeForRevenue: builder.query<NearestTimeRevenue[], { time: 'week' | 'month' | 'year' }>({
+      query: ({ time }) => `AdminDashboard/get-nearest-time-for-revenue?Time=${time}`
+    }),
+
+    getNearestTimeForEnrollments: builder.query<NearestTimeEnrollment[], { time: 'week' | 'month' | 'year' }>({
+      query: ({ time }) => `AdminDashboard/get-nearest-time-for-enrollments?Time=${time}`
+    }),
+
   })
 })
 
@@ -75,5 +88,8 @@ export const {
   useGetTopSaleCoursesQuery,
   useGetTopStudentsEnrollmentQuery,
   useGetTotalEnrollmentsByMonthQuery,
-  useGetTotalRevenueByMonthQuery
+  useGetTotalRevenueByMonthQuery,
+  useGetStudentCountByTagQuery,
+  useGetNearestTimeForRevenueQuery,
+  useGetNearestTimeForEnrollmentsQuery
 } = dashboardApi
