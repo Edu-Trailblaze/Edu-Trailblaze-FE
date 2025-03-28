@@ -14,7 +14,7 @@ export default function CreateLecture({ sectionId }: LectureInfoProps) {
   const [postLecture, { isLoading: addLectureLoading }] = useCreateLectureMutation()
   const [lectureInfo, setLectureInfo] = useState({
     sectionId: sectionId,
-    lectureType: '',
+    lectureType: 'Video',
     title: '',
     content: '',
     description: '',
