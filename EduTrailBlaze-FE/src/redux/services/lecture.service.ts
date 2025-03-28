@@ -6,7 +6,7 @@ export const lectureApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL
   }),
-  tagTypes: ['Lectures'],
+  tagTypes: ['Lectures', 'Sections'],
   endpoints: (build) => ({
     getAllLecture: build.query<ILecture[], void>({
       query: () => 'Lecture',
@@ -42,7 +42,8 @@ export const lectureApi = createApi({
         url: 'Lecture/create-section-lecture-vip',
         method: 'POST',
         body: formData
-      })
+      }),
+      invalidatesTags: ['Sections']
     }),
 
     getLectureById: build.query<ILecture, number>({

@@ -31,7 +31,8 @@ export const sectionApi = createApi({
       query: (courseId) => ({
         url: `Section/get-sections-by-conditions?CourseId=${courseId}`,
         method: 'GET'
-      })
+      }),
+      providesTags: ['Sections']
     }),
 
     updateSection: build.mutation<void, EditSection>({
