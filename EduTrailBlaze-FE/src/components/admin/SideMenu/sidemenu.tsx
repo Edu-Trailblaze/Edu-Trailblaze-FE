@@ -6,8 +6,6 @@ import { useState } from "react"
 import {
   Box,
   Badge,
-  Menu,
-  MenuItem,
   useTheme,
   Drawer,
   List,
@@ -19,15 +17,13 @@ import {
   Typography,
 } from "@mui/material"
 
-import EqualizerIcon from "@mui/icons-material/Equalizer"
 import SchoolIcon from "@mui/icons-material/School"
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"
 import Person2Icon from "@mui/icons-material/Person2"
 import ExitToAppIcon from "@mui/icons-material/Logout"
 import NewspaperIcon from "@mui/icons-material/Newspaper"
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard"
-import NotificationsIcon from "@mui/icons-material/Notifications"
-import MoreVertIcon from "@mui/icons-material/MoreVert"
+// import NotificationsIcon from "@mui/icons-material/Notifications"
 import { Star } from "lucide-react"
 
 import Link from "next/link"
@@ -47,11 +43,11 @@ const generalIcons = [
 ]
 
 // Personal section
-const personalRoutes = ["profile", "notifications"]
-const personalTranslations = ["Profile", "Notification"]
+const personalRoutes = ["profile"]
+const personalTranslations = ["Profile"]
 const personalIcons = [
   <Person2Icon key="profile" fontSize="small" />,
-  <NotificationsIcon key="notifications" fontSize="small" />,
+  // <NotificationsIcon key="notifications" fontSize="small" />,
   <ExitToAppIcon key="signout" fontSize="small" />,
 ]
 
