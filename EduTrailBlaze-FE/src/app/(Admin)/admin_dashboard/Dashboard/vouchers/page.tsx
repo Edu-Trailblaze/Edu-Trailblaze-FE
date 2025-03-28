@@ -290,9 +290,9 @@ export default function VouchersManagement() {
           title='Voucher Detail'
           fields={[
             { label: 'Voucher ID', value: selectedVoucher.id, isID: true },
+            { label: 'Voucher Code', value: selectedVoucher.voucherCode },
             { label: 'Discount Type', value: selectedVoucher.discountType },
             { label: 'Discount Value', value: selectedVoucher.discountValue },
-            { label: 'Voucher Code', value: selectedVoucher.voucherCode },
             { label: 'Expiry Date', value: selectedVoucher.expiryDate, isDate: true },
           ]}
           actions={[
