@@ -294,7 +294,6 @@ export default function VouchersManagement() {
             { label: 'Discount Value', value: selectedVoucher.discountValue },
             { label: 'Voucher Code', value: selectedVoucher.voucherCode },
             { label: 'Expiry Date', value: selectedVoucher.expiryDate, isDate: true },
-            { label: 'Minimum Order Value', value: selectedVoucher.minimumOrderValue }
           ]}
           actions={[
             {
