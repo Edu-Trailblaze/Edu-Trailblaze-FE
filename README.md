@@ -1,4 +1,4 @@
-# 📚 Course Platform  
+# Course Platform  
 
 ![Next.js](https://img.shields.io/badge/Next.js-000?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -11,18 +11,18 @@
 
 A modern e-learning platform inspired by Udemy and Coursera. 
 
-## 🚀 Features  
-- 📖 **Students**: Browse and enroll in courses.  
-- 🎓 **Teachers**: Create and publish courses.  
-- 🛠️ **Admin**: Manage users, courses, and platform settings.  
-- 🔐 **Authentication & Authorization** with role-based access control.  
-- 🎨 **Responsive UI** built with Next.js, Tailwind CSS, ShadCN UI, Motion and MUI.  
+## Features  
+- **Students**: Browse and enroll in courses.  
+- **Teachers**: Create and publish courses.  
+- **Admin**: Manage users, courses, and platform settings.  
+- **Authentication & Authorization** with role-based access control.  
+- **Responsive UI** built with Next.js, Tailwind CSS, ShadCN UI, Motion and MUI.  
 
-## 🛠️ Tech Stack  
+## Tech Stack  
 - **Frontend**: Next.js, TypeScript, Tailwind CSS, ShadCN UI, MUI, Redux Toolkit, Motion  
 - **Authentication**: (NextAuth, Firebase, etc.)  
 
-## 📦 Installation  
+## Installation  
 ```sh
 git clone [https://github.com/Edu-Trailblaze/Edu-Trailblaze-FE.git]  
 cd EduTrailBlaze-FE 
@@ -30,15 +30,15 @@ npm install
 npm run dev  
 ```  
 
-## 📸 Screenshots  
+## Screenshots  
 ![Image](https://github.com/user-attachments/assets/b2fa4565-6f2b-4857-83eb-e436590e7068) 
 ![Image](https://github.com/user-attachments/assets/aff4aab1-0b2d-4f9b-bc2d-03503cdb95fd)
 
-## 🎯 Roadmap  
+## Roadmap  
 - ✅ Basic authentication & authorization  
 - ✅ Course creation & management  
 - ✅ Payment integration
 - ✅ AI-based course recommendations
 
-## 📜 License  
+## License  
 This project is licensed under the MIT License.  
